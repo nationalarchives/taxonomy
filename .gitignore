@@ -1,0 +1,5 @@
+#Ignore target folder
+/target
+.classpath
+.project
+.settings

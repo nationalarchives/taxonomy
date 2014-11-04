@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
-import org.apache.lucene.analysis.reverse.ReverseStringFilterFactory;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -24,7 +21,7 @@ import org.apache.lucene.util.Version;
 public class Searcher {
 	
 	public Document getDoc(ScoreDoc scoreDoc) throws IOException {
-		File file = new File("C:/IAIndex");
+		File file = new File(CatConstants.IAVIEW_INDEX);
 		SimpleFSDirectory index = new SimpleFSDirectory(file);
 		DirectoryReader ireader = DirectoryReader.open(index);
 		IndexSearcher isearcher = new IndexSearcher(ireader);
@@ -37,12 +34,12 @@ public class Searcher {
 	public List<InformationAssetView> performSearch(String queryString, int size)
 			throws IOException, ParseException {
 
-		File file = new File("C:/IAIndex");
+		File file = new File(CatConstants.IAVIEW_INDEX);
 		Analyzer analyzer = new WhitespaceAnalyzer(Version.LUCENE_44);
 		SimpleFSDirectory index = new SimpleFSDirectory(file);
 		DirectoryReader ireader = DirectoryReader.open(index);
 		IndexSearcher isearcher = new IndexSearcher(ireader);
-		QueryParser parser = new QueryParser(Version.LUCENE_44, "description",
+		QueryParser parser = new QueryParser(Version.LUCENE_44, "DESCRIPTION",
 				analyzer);
 		Query query = parser.parse(queryString);
 		TopDocs topDocs = isearcher.search(query, size);
@@ -54,12 +51,12 @@ public class Searcher {
 			ScoreDoc scoreDoc = topDocs.scoreDocs[i];
 			Document hitDoc = isearcher.doc(scoreDoc.doc);
 			InformationAssetView assetView = new InformationAssetView();
-			assetView.set_id(hitDoc.get("_id"));
-			assetView.setCATDOCREF(hitDoc.get("catdocref"));
-			assetView.setTITLE(hitDoc.get("title"));
-			assetView.setDESCRIPTION(hitDoc.get("description"));
+			assetView.set_id(hitDoc.get("id"));
+			assetView.setCATDOCREF(hitDoc.get("CATDOCREF"));
+			assetView.setTITLE(hitDoc.get("TITLE"));
+			assetView.setDESCRIPTION(hitDoc.get("DESCRIPTION"));
 			assetView.setScore(scoreDoc.score);
-			String[] iaidArray = hitDoc.get("urlparams").split("/");
+			String[] iaidArray = hitDoc.get("URLPARAMS").split("/");
 			String iaid = iaidArray[iaidArray.length - 1];
 			assetView.setURLPARAMS(iaid);
 			docs.add(assetView);

@@ -14,10 +14,11 @@ import com.mongodb.WriteConcern;
 
 public class MongoAccess {
 
+
 	public DBCollection connectToDb(String database, String collection) {
 		Mongo conn;
 		try {
-			conn = new Mongo("localhost", 27017);
+			conn = new Mongo(CatConstants.MONGO_HOST, CatConstants.MONGO_PORT);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -48,7 +49,7 @@ public class MongoAccess {
 	public List<Category> getCategories() throws MongoException {
 
 		List<Category> categories = new ArrayList<Category>();
-		DBCollection dbCollection = connectToDb("mydb", "taxonomy");
+		DBCollection dbCollection = connectToDb("taxonomy", "categories");
 		DBCursor cursor = dbCollection.find();
 		for (DBObject doc : cursor) {
 			Category category = new Category();
@@ -59,19 +60,6 @@ public class MongoAccess {
 		}
 		cursor.close();
 		return categories;
-	}
-
-	public Category getCategory(String id) throws MongoException {
-
-		DBCollection dbCollection = connectToDb("mydb", "taxonomy");
-		BasicDBObject query = new BasicDBObject();
-		query.put("_id", id);
-		DBObject doc = dbCollection.findOne(query);
-		Category category = new Category();
-		category.set_id(doc.get("_id").toString());
-		category.setCategory(doc.get("CATEGORY").toString());
-		category.setQUERY(doc.get("QUERY").toString());
-		return category;
 	}
 
 	public void addTrainingDocument(TrainingDocument trainingDocument,

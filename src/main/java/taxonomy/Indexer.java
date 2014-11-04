@@ -2,40 +2,44 @@ package taxonomy;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
-import org.apache.lucene.analysis.core.WhitespaceTokenizer;
-import org.apache.lucene.analysis.reverse.ReverseStringFilter;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
-import org.apache.lucene.analysis.TokenFilter;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 
+//TODO 4 all those methods do not require context and could be static
+//TODO 4 use private methods where appropriate
 public class Indexer {
+
+
 
 	public Indexer() {
 	}
 
 	
-	
-	public IndexWriter getIndexWriter(boolean create, String indexDirectory)
+	/**
+	 * initialize index writer from index directory
+	 * @param create
+	 * @param indexDirectory
+	 * @return
+	 * @throws IOException
+	 */
+	private IndexWriter getIndexWriter(boolean create, String indexDirectory)
 			throws IOException {
 
 		IndexWriter indexWriter = null;
@@ -50,12 +54,39 @@ public class Indexer {
 		}
 		return indexWriter;
 	} 
+	
+	/**
+	 * initialize index reader from index directory
+	 * @param indexDirectory
+	 * @return
+	 * @throws IOException
+	 */
+	public IndexReader getIndexReader(String indexDirectory)
+			throws IOException {
 
+		IndexReader indexReader = null;
+
+		if (indexReader == null) {
+			Analyzer analyzer = new WhitespaceAnalyzer(Version.LUCENE_44);
+			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_44,
+					analyzer);
+			File file = new File(indexDirectory);
+			SimpleFSDirectory index = new SimpleFSDirectory(file);
+			//TODO 2 make sure it does not get the deleted elements
+			indexReader =  DirectoryReader.open(index);
+		}
+		return indexReader;
+	} 
+	
+	/**
+	 * build index of trainingDocument from mongo db trainingset<br/> 
+	 * remove punctuation from Description, title
+	 * @throws IOException
+	 */
 	public void buildTrainingIndex() throws IOException {
 
-		MongoClient mongoClient = new MongoClient("localhost", 27017);
-		DB db = mongoClient.getDB("trainingset");
-		DBCollection collection = db.getCollection("categories");
+		MongoAccess mongoAccess = new MongoAccess();
+		DBCollection collection = mongoAccess.connectToDb("trainingset", "InformationAssetView");
 		DBCursor cursor = collection.find();
 		try {
 			while (cursor.hasNext()) {
@@ -75,11 +106,18 @@ public class Indexer {
 
 	}
 
+	/**
+	 * Create a lucene document from an trainingDocument object and add it to the TrainingIndex index
+	 * @param trainingDocument
+	 * @throws IOException
+	 */
 	@SuppressWarnings("deprecation")
 	public void indexTrainingSet(TrainingDocument trainingDocument)
 			throws IOException {
-
-		IndexWriter writer = getIndexWriter(false, "C:/TrainingIndex");
+		//TODO 4 handle exceptions, do not stop the process unless several errors occur
+		//TODO 1 bulk insert, this is far too slow to do it unitary!
+		//TODO 4 Field is deprecated, use appropriate fields.
+		IndexWriter writer = getIndexWriter(false, CatConstants.TRAINING_INDEX);
 
 		Document doc = new Document();
 		doc.add(new Field("_id", trainingDocument.get_id(), Field.Store.YES,
@@ -97,13 +135,17 @@ public class Indexer {
 		writer.close();
 	}
 
+	/**
+	 * build index of IAViews from mongodb of IA
+	 * @throws IOException
+	 */
 	public void buildIndex() throws IOException {
 
 		String connectionString = "mongodb://***REMOVED***.***REMOVED***:27017";
 		MongoClientURI uri = new MongoClientURI(connectionString);
 		MongoClient mongoClient = new MongoClient(uri);
-		DB db = mongoClient.getDB("iadata120125m1015");
-		DBCollection collection = db.getCollection("InformationAsset");
+		MongoAccess mongoAccess = new MongoAccess();
+		DBCollection collection = mongoAccess.connectToDb("iadata120125m1015", "InformationAsset");
 		DBCursor cursor = collection.find();
 		try {
 			while (cursor.hasNext()) {
@@ -133,8 +175,14 @@ public class Indexer {
 
 	}
 
+	/**
+	 * Create a lucene document from an IAView object and add it to the IAIndex index
+	 * @param asset
+	 * @throws IOException
+	 */
+	//TODO 1 use enum for textfield names to reuse them in other classes
 	public void indexAsset(InformationAssetViewFull asset) throws IOException {
-		IndexWriter writer = getIndexWriter(false, "C:/IAIndex");
+		IndexWriter writer = getIndexWriter(false, CatConstants.IAVIEW_INDEX);
 		Document doc = new Document();
 		doc.add(new TextField("_id", asset.get_id(), Field.Store.YES));
 		doc.add(new TextField("catdocref", asset.getCATDOCREF(),
