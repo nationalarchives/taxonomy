@@ -20,24 +20,29 @@ import com.mongodb.WriteConcern;
 public class MongoAccess {
 
 
-	public DBCollection connectToDb(String database, String collection) {
-		Mongo conn;
-		try {
-			conn = new Mongo(CatConstants.MONGO_HOST, CatConstants.MONGO_PORT);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		WriteConcern w = new WriteConcern(1, 2000);
-		conn.setWriteConcern(w);
+	public DBCollection getMongoCollection(String database, String collection) {
+		Mongo conn = connectToMongoDb(CatConstants.MONGO_HOST, CatConstants.MONGO_PORT);
 		DB db = conn.getDB(database);
 		DBCollection dbCollection = db.getCollection(collection);
 		// conn.close();
 		return dbCollection;
 	}
 
+	public Mongo connectToMongoDb(String host, int port) {
+		Mongo conn;
+		try {
+			conn = new Mongo(host, port);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		WriteConcern w = new WriteConcern(1, 2000);
+		conn.setWriteConcern(w);
+		return conn;
+	}
+
 	public InformationAsset getInformationAsset(String catdocref) {
 
-		DBCollection dbCollection = connectToDb("iadata120125m0518",
+		DBCollection dbCollection = getMongoCollection("iadata120125m0518",
 				"InformationAsset");
 		BasicDBObject query = new BasicDBObject();
 		query.put("IAID", catdocref);
@@ -54,7 +59,7 @@ public class MongoAccess {
 	public List<Category> getCategories() throws MongoException {
 
 		List<Category> categories = new ArrayList<Category>();
-		DBCollection dbCollection = connectToDb("taxonomy", "categories");
+		DBCollection dbCollection = getMongoCollection("taxonomy", "categories");
 		DBCursor cursor = dbCollection.find();
 		for (DBObject doc : cursor) {
 			Category category = new Category();

@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>cat-ws</artifactId>
 	<name>Categorisation Web Service</name>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<dependencies>
 		<dependency>

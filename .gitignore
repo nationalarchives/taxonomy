@@ -1,6 +1,6 @@
 #Ignore target folder
-/target
+target/
 .classpath
 .project
 .settings
-/bin/
+bin/

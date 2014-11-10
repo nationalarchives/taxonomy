@@ -91,7 +91,7 @@ public class Indexer {
 	public void buildTrainingIndex() throws IOException {
 
 		MongoAccess mongoAccess = new MongoAccess();
-		DBCollection collection = mongoAccess.connectToDb("trainingset", "InformationAssetView");
+		DBCollection collection = mongoAccess.getMongoCollection("taxonomy", "trainingset");
 		DBCursor cursor = collection.find();
 		try {
 			while (cursor.hasNext()) {
@@ -144,13 +144,14 @@ public class Indexer {
 	 * build index of IAViews from mongodb of IA
 	 * @throws IOException
 	 */
+	@Deprecated
 	public void buildIndex() throws IOException {
 
-		String connectionString = "mongodb://***REMOVED***.***REMOVED***:27017";
+		String connectionString = "mongodb://localhost:27017";
 		MongoClientURI uri = new MongoClientURI(connectionString);
 		MongoClient mongoClient = new MongoClient(uri);
 		MongoAccess mongoAccess = new MongoAccess();
-		DBCollection collection = mongoAccess.connectToDb("iadata120125m1015", "InformationAsset");
+		DBCollection collection = mongoAccess.getMongoCollection("iadata120125m1015", "InformationAsset");
 		DBCursor cursor = collection.find();
 		try {
 			while (cursor.hasNext()) {
@@ -186,6 +187,7 @@ public class Indexer {
 	 * @throws IOException
 	 */
 	//TODO 1 use enum for textfield names to reuse them in other classes
+	@Deprecated
 	public void indexAsset(InformationAssetViewFull asset) throws IOException {
 		IndexWriter writer = getIndexWriter(false, CatConstants.IAVIEW_INDEX);
 		Document doc = new Document();
