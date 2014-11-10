@@ -1,4 +1,4 @@
-package taxonomy;
+package taxonomy.repository.domain;
 
 public class InformationAsset {
 	private String _id;

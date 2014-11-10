@@ -1,4 +1,4 @@
-package taxonomy;
+package taxonomy.repository.lucene;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +17,9 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
+
+import taxonomy.CatConstants;
+import taxonomy.repository.domain.InformationAssetView;
 
 public class Searcher {
 	

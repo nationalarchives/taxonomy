@@ -1,7 +1,12 @@
-package taxonomy;
+package taxonomy.repository.mongo;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import taxonomy.CatConstants;
+import taxonomy.repository.domain.Category;
+import taxonomy.repository.domain.InformationAsset;
+import taxonomy.repository.domain.TrainingDocument;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;

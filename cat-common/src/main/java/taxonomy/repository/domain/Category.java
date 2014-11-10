@@ -1,4 +1,4 @@
-package taxonomy;
+package taxonomy.repository.domain;
 
 public class Category {
 	private String _id;

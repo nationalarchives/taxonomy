@@ -14,6 +14,15 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.Version;
 
+import taxonomy.repository.domain.Category;
+import taxonomy.repository.domain.InformationAsset;
+import taxonomy.repository.domain.InformationAssetView;
+import taxonomy.repository.domain.TrainingDocument;
+import taxonomy.repository.lucene.Indexer;
+import taxonomy.repository.lucene.Searcher;
+import taxonomy.repository.mongo.MongoAccess;
+import taxonomy.service.impl.Categoriser;
+
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;

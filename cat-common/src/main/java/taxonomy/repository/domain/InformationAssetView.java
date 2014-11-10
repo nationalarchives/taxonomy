@@ -1,4 +1,4 @@
-package taxonomy;
+package taxonomy.repository.domain;
 
 import java.util.List;
 

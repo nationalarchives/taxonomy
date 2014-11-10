@@ -1,4 +1,4 @@
-package taxonomy;
+package taxonomy.repository.lucene;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +14,11 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
+
+import taxonomy.CatConstants;
+import taxonomy.repository.domain.InformationAssetViewFull;
+import taxonomy.repository.domain.TrainingDocument;
+import taxonomy.repository.mongo.MongoAccess;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
