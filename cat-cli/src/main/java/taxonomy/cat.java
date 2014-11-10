@@ -44,9 +44,9 @@ public class cat {
 	public static void main(String[] args) throws IOException, ParseException {
 		System.out.println("Start cat application.");
 
-		Categoriser.createTrainingSet(100);
+//		Categoriser.createTrainingSet(100);
 //
-//		Categoriser.indexTrainingSet();
+		Categoriser.indexTrainingSet();
 //
 //		Categoriser.categoriseIAViewSolrDocument("CO 273/632/2");
 

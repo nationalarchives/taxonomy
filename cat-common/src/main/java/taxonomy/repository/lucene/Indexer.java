@@ -50,11 +50,17 @@ public class Indexer {
 		IndexWriter indexWriter = null;
 
 		if (indexWriter == null) {
-			Analyzer analyzer = new WhitespaceAnalyzer(Version.LUCENE_44);
-			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_44,
+			Analyzer analyzer = new WhitespaceAnalyzer(CatConstants.LUCENE_VERSION);
+			IndexWriterConfig config = new IndexWriterConfig(CatConstants.LUCENE_VERSION,
 					analyzer);
 			File file = new File(indexDirectory);
 			SimpleFSDirectory index = new SimpleFSDirectory(file);
+			
+//			if (IndexWriter.isLocked(index)) {
+//				System.out.println("[WARN]Directory unlocked");
+//			     IndexWriter.unlock(index);
+//			   }
+			
 			indexWriter = new IndexWriter(index, config);
 		}
 		return indexWriter;
@@ -72,8 +78,8 @@ public class Indexer {
 		IndexReader indexReader = null;
 
 		if (indexReader == null) {
-			Analyzer analyzer = new WhitespaceAnalyzer(Version.LUCENE_44);
-			IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_44,
+			Analyzer analyzer = new WhitespaceAnalyzer(CatConstants.LUCENE_VERSION);
+			IndexWriterConfig config = new IndexWriterConfig(CatConstants.LUCENE_VERSION,
 					analyzer);
 			File file = new File(indexDirectory);
 			SimpleFSDirectory index = new SimpleFSDirectory(file);
@@ -92,6 +98,11 @@ public class Indexer {
 
 		MongoAccess mongoAccess = new MongoAccess();
 		DBCollection collection = mongoAccess.getMongoCollection("taxonomy", "trainingset");
+		
+
+		IndexWriter writer = getIndexWriter(false, CatConstants.TRAINING_INDEX);
+		writer.deleteAll();
+		
 		DBCursor cursor = collection.find();
 		try {
 			while (cursor.hasNext()) {
@@ -103,10 +114,11 @@ public class Indexer {
 						"DESCRIPTION").replaceAll("\\<.*?>", ""));
 				trainingDocument.setTitle(dbObject.getString("TITLE")
 						.replaceAll("\\<.*?>", ""));
-				indexTrainingSet(trainingDocument);
+				indexTrainingSet(trainingDocument, writer);
 			}
 		} finally {
 			cursor.close();
+			writer.close();
 		}
 
 	}
@@ -117,12 +129,11 @@ public class Indexer {
 	 * @throws IOException
 	 */
 	@SuppressWarnings("deprecation")
-	public void indexTrainingSet(TrainingDocument trainingDocument)
+	public void indexTrainingSet(TrainingDocument trainingDocument, IndexWriter writer)
 			throws IOException {
 		//TODO 4 handle exceptions, do not stop the process unless several errors occur
 		//TODO 1 bulk insert, this is far too slow to do it unitary!
 		//TODO 4 Field is deprecated, use appropriate fields.
-		IndexWriter writer = getIndexWriter(false, CatConstants.TRAINING_INDEX);
 
 		Document doc = new Document();
 		doc.add(new Field("_id", trainingDocument.get_id(), Field.Store.YES,
@@ -136,8 +147,6 @@ public class Indexer {
 				Field.Store.YES, Field.Index.ANALYZED,
 				Field.TermVector.WITH_POSITIONS_OFFSETS));
 		writer.addDocument(doc);
-
-		writer.close();
 	}
 
 	/**

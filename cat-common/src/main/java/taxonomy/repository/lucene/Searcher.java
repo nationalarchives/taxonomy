@@ -38,11 +38,11 @@ public class Searcher {
 			throws IOException, ParseException {
 
 		File file = new File(CatConstants.IAVIEW_INDEX);
-		Analyzer analyzer = new WhitespaceAnalyzer(Version.LUCENE_44);
+		Analyzer analyzer = new WhitespaceAnalyzer(CatConstants.LUCENE_VERSION);
 		SimpleFSDirectory index = new SimpleFSDirectory(file);
 		DirectoryReader ireader = DirectoryReader.open(index);
 		IndexSearcher isearcher = new IndexSearcher(ireader);
-		QueryParser parser = new QueryParser(Version.LUCENE_44, "DESCRIPTION",
+		QueryParser parser = new QueryParser(CatConstants.LUCENE_VERSION, "DESCRIPTION",
 				analyzer);
 		Query query = parser.parse(queryString);
 		TopDocs topDocs = isearcher.search(query, size);

@@ -203,7 +203,7 @@ public class Categoriser {
 				.getIndexReader(CatConstants.IAVIEW_INDEX);
 		IndexSearcher searcher = new IndexSearcher(indexReader);
 
-		QueryParser qp = new QueryParser(Version.LUCENE_44, field,new WhitespaceAnalyzer(Version.LUCENE_44));
+		QueryParser qp = new QueryParser(CatConstants.LUCENE_VERSION, field,new WhitespaceAnalyzer(CatConstants.LUCENE_VERSION));
 		return searcher.search(qp.parse(QueryParser.escape(value)), numHits);
 	}
 
@@ -297,7 +297,7 @@ public class Categoriser {
 		DirectoryReader ireader = DirectoryReader.open(directory);
 		IndexSearcher isearcher = new IndexSearcher(ireader);
 
-		Analyzer analyzer = new EnglishAnalyzer(Version.LUCENE_44);
+		Analyzer analyzer = new EnglishAnalyzer(CatConstants.LUCENE_VERSION);
 
 		MoreLikeThis moreLikeThis = new MoreLikeThis(ireader);
 		moreLikeThis.setAnalyzer(analyzer);
