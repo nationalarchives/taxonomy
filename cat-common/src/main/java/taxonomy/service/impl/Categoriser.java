@@ -28,7 +28,9 @@ import org.apache.lucene.util.Version;
 import taxonomy.CatConstants;
 import taxonomy.repository.domain.Category;
 import taxonomy.repository.domain.InformationAsset;
+import taxonomy.repository.domain.InformationAssetFields;
 import taxonomy.repository.domain.InformationAssetView;
+import taxonomy.repository.domain.InformationAssetViewFields;
 import taxonomy.repository.domain.TrainingDocument;
 import taxonomy.repository.lucene.Indexer;
 import taxonomy.repository.lucene.Searcher;
@@ -45,284 +47,268 @@ import com.mongodb.DBObject;
  *
  */
 public class Categoriser {
-	
-	/**
-	 * Create index of IAViews from mongodb collection InformationAsset</br> NOT
-	 * TO USE ATM: taken from Paul
-	 * 
-	 * @throws IOException
-	 */
-	@Deprecated
-	public static void createIndex() throws IOException {
 
-		Indexer indexer = new Indexer();
-		indexer.buildIndex();
-		System.out.println("Finished building index.");
-	}
+    /**
+     * Create index of IAViews from mongodb collection InformationAsset</br> NOT
+     * TO USE ATM: taken from Paul
+     * 
+     * @throws IOException
+     */
+    @Deprecated
+    public static void createIndex() throws IOException {
 
-	public static void createTrainingSet(int trainingSetSize)
-			throws IOException, ParseException {
-		System.out.println(".createTrainingSet : START");
+	Indexer indexer = new Indexer();
+	indexer.buildIndex();
+	System.out.println("Finished building index.");
+    }
 
-		MongoAccess mongoAccess = new MongoAccess();
-		List<Category> categories = mongoAccess.getCategories();
-		Searcher searcher = new Searcher();
-		DBCollection dBCollection = mongoAccess.getMongoCollection(
-				"taxonomy", "trainingset");
-		
-		//empty collection
-		dBCollection.remove(new BasicDBObject());
-		
-		
-		for (Category category : categories) {
-			List<InformationAssetView> trainingSet;
-			try {
-				trainingSet = searcher.performSearch(category.getQUERY(),
-						trainingSetSize);
-				System.out.println(".createTrainingSet: Category="
-						+ category.getCATEGORY() + ", found "
-						+ trainingSet.size() + " result(s)");
-				if (trainingSet.size() > 0) {
-					
-					for (InformationAssetView iaView : trainingSet) {
-						TrainingDocument trainingDocument = new TrainingDocument();
-						trainingDocument.setCategory(category.getCATEGORY());
-						trainingDocument
-								.setDescription(iaView.getDESCRIPTION());
-						trainingDocument.setTitle(iaView.getTITLE());
-						mongoAccess.addTrainingDocument(trainingDocument,
-								dBCollection);
-						System.out.println(trainingDocument.getCategory()
-								+ ":"
-								+ trainingDocument.getTitle().replaceAll(
-										"\\<.*?>", ""));
-					}
-				}
-			} catch (ParseException e) {
-				//TODO 1 several errors occur while creating the training set, to investigate
-				System.out
-						.println("[ERROR] .createTrainingSet< An error occured: "
-								+ e.getMessage());
-			}
+    public static void createTrainingSet(int trainingSetSize) throws IOException, ParseException {
+	System.out.println(".createTrainingSet : START");
+
+	MongoAccess mongoAccess = new MongoAccess();
+	List<Category> categories = mongoAccess.getCategories();
+	Searcher searcher = new Searcher();
+	DBCollection dBCollection = mongoAccess.getMongoCollection(CatConstants.MONGO_TAXONOMY_DB,
+		CatConstants.MONGO_TRAININGSET_COLL);
+
+	// empty collection
+	dBCollection.remove(new BasicDBObject());
+
+	for (Category category : categories) {
+	    List<InformationAssetView> trainingSet;
+	    try {
+		trainingSet = searcher.performSearch(category.getQUERY(), trainingSetSize);
+		System.out.println(".createTrainingSet: Category=" + category.getCATEGORY() + ", found "
+			+ trainingSet.size() + " result(s)");
+		if (trainingSet.size() > 0) {
+
+		    for (InformationAssetView iaView : trainingSet) {
+			TrainingDocument trainingDocument = new TrainingDocument();
+			trainingDocument.setCategory(category.getCATEGORY());
+			trainingDocument.setDescription(iaView.getDESCRIPTION());
+			trainingDocument.setTitle(iaView.getTITLE());
+			mongoAccess.addTrainingDocument(trainingDocument, dBCollection);
+			System.out.println(trainingDocument.getCategory() + ":"
+				+ trainingDocument.getTitle().replaceAll("\\<.*?>", ""));
+		    }
 		}
-		System.out.println(".createTrainingSet : END");
+	    } catch (ParseException e) {
+		// TODO 1 several errors occur while creating the training set,
+		// to investigate
+		System.out.println("[ERROR] .createTrainingSet< An error occured: " + e.getMessage());
+	    }
 	}
+	System.out.println(".createTrainingSet : END");
+    }
 
-	public static void indexTrainingSet() throws IOException {
-		System.out.println(".createTrainingIndex : START");
-		Indexer indexer = new Indexer();
-		indexer.buildTrainingIndex();
-		System.out.println(".createTrainingIndex : END");
+    public static void indexTrainingSet() throws IOException {
+	System.out.println(".createTrainingIndex : START");
+	Indexer indexer = new Indexer();
+	indexer.buildTrainingIndex();
+	System.out.println(".createTrainingIndex : END");
+    }
+
+    /**
+     * categorise a document by running the MLT process against the training set
+     * 
+     * @param catdocref
+     *            IAID
+     * @throws IOException
+     */
+    @Deprecated
+    private static void categoriseIAMongoDocument(String catdocref) throws IOException {
+
+	MongoAccess mongoAccess = new MongoAccess();
+
+	InformationAsset informationAsset = mongoAccess.getInformationAsset(catdocref);
+
+	Categoriser categoriser = new Categoriser();
+	Reader reader = new StringReader(informationAsset.getDescription());
+	List<String> result = categoriser.runMlt(CatConstants.TRAINING_INDEX, reader, 100);
+
+	System.out.println("DOCUMENT");
+	System.out.println("------------------------");
+	System.out.println("TITLE: " + informationAsset.getTitle());
+	System.out.println("IAID: " + informationAsset.getCatdocref());
+	System.out.println("DESCRIPTION: " + informationAsset.getDescription());
+	System.out.println();
+	for (String category : result) {
+	    System.out.println("CATEGORY: " + category);
 	}
+	System.out.println("------------------------");
 
-	/**
-	 * categorise a document by running the MLT process against the training set
-	 * 
-	 * @param catdocref
-	 *            IAID
-	 * @throws IOException
-	 */
-	@Deprecated
-	private static void categoriseIAMongoDocument(String catdocref)
-			throws IOException {
+	System.out.println();
 
-		MongoAccess mongoAccess = new MongoAccess();
+    }
 
-		InformationAsset informationAsset = mongoAccess
-				.getInformationAsset(catdocref);
+    /**
+     * categorise a document by running the MLT process against the training set
+     * 
+     * @param catdocref
+     *            IAID
+     * @throws IOException
+     * @throws ParseException
+     */
+    public static List<String> categoriseIAViewSolrDocument(String catdocref) throws IOException, ParseException {
+	// TODO 2 do not instantiate several indexReaders for the same index
+	Indexer indexer = new Indexer();
+	IndexReader indexReader = indexer.getIndexReader(CatConstants.IAVIEW_INDEX);
+	// TODO 4 CATDOCREF in schema.xml should be stored as string?
+	// and not text_gen: do not need to be tokenized. makes search by
+	// catdocref more complicated that it needs (look for a bunch of terms,
+	// what if they are provided in the wrong order? have to check it also
+	TopDocs results = searchIAViewIndexByFieldAndPhrase("CATDOCREF", catdocref, 1);
 
-		Categoriser categoriser = new Categoriser();
-		Reader reader = new StringReader(informationAsset.getDescription());
-		List<String> result = categoriser.runMlt(CatConstants.TRAINING_INDEX,
-				reader, 100);
+	Document doc = indexReader.document(results.scoreDocs[0].doc);
 
-		System.out.println("DOCUMENT");
-		System.out.println("------------------------");
-		System.out.println("TITLE: " + informationAsset.getTitle());
-		System.out.println("IAID: " + informationAsset.getCatdocref());
-		System.out.println("DESCRIPTION: " + informationAsset.getDescription());
-		System.out.println();
-		for (String category : result) {
-			System.out.println("CATEGORY: " + category);
-		}
-		System.out.println("------------------------");
+	Categoriser categoriser = new Categoriser();
+	Reader reader = new StringReader(doc.get(InformationAssetViewFields.DESCRIPTION.toString()));
+	List<String> result = categoriser.runMlt(CatConstants.TRAINING_INDEX, reader, 100);
 
-		System.out.println();
-
+	System.out.println("DOCUMENT");
+	System.out.println("------------------------");
+	System.out.println("TITLE: " + doc.get("TITLE"));
+	System.out.println("IAID: " + doc.get("CATDOCREF"));
+	System.out.println("DESCRIPTION: " + doc.get("DESCRIPTION"));
+	System.out.println();
+	for (String category : result) {
+	    System.out.println("CATEGORY: " + category);
 	}
+	System.out.println("------------------------");
 
-	/**
-	 * categorise a document by running the MLT process against the training set
-	 * 
-	 * @param catdocref
-	 *            IAID
-	 * @throws IOException
-	 * @throws ParseException 
-	 */
-	public static List<String> categoriseIAViewSolrDocument(String catdocref)
-			throws IOException, ParseException {
-		// TODO 2 do not instantiate several indexReaders for the same index
-		Indexer indexer = new Indexer();
-		IndexReader indexReader = indexer
-				.getIndexReader(CatConstants.IAVIEW_INDEX);
-		// TODO 4 CATDOCREF in schema.xml should be stored as string?
-		// and not text_gen: do not need to be tokenized. makes search by
-		// catdocref more complicated that it needs (look for a bunch of terms,
-		// what if they are provided in the wrong order? have to check it also
-		TopDocs results = searchIAViewIndexByFieldAndPhrase("CATDOCREF",
-				catdocref, 1);
+	System.out.println();
 
-		Document doc = indexReader.document(results.scoreDocs[0].doc);
+	return result;
 
-		Categoriser categoriser = new Categoriser();
-		Reader reader = new StringReader(doc.get("DESCRIPTION"));
-		List<String> result = categoriser.runMlt(CatConstants.TRAINING_INDEX,
-				reader, 100);
+    }
 
-		System.out.println("DOCUMENT");
-		System.out.println("------------------------");
-		System.out.println("TITLE: " + doc.get("TITLE"));
-		System.out.println("IAID: " + doc.get("CATDOCREF"));
-		System.out.println("DESCRIPTION: " + doc.get("DESCRIPTION"));
-		System.out.println();
-		for (String category : result) {
-			System.out.println("CATEGORY: " + category);
-		}
-		System.out.println("------------------------");
+    private static TopDocs searchIAViewIndexByFieldAndPhrase(String field, String value, int numHits)
+	    throws IOException, ParseException {
+	Indexer indexer = new Indexer();
+	IndexReader indexReader = indexer.getIndexReader(CatConstants.IAVIEW_INDEX);
+	IndexSearcher searcher = new IndexSearcher(indexReader);
 
-		System.out.println();
-		
-		return result;
+	QueryParser qp = new QueryParser(CatConstants.LUCENE_VERSION, field, new WhitespaceAnalyzer(
+		CatConstants.LUCENE_VERSION));
+	return searcher.search(qp.parse(QueryParser.escape(value)), numHits);
+    }
 
-	}
+    /**
+     * Categorise the whole IA collection
+     * 
+     * @throws IOException
+     */
+    public static void categoriseIAViewsFromSolr() throws IOException {
 
-	private static TopDocs searchIAViewIndexByFieldAndPhrase(String field,
-			String value, int numHits) throws IOException, ParseException {
-		Indexer indexer = new Indexer();
-		IndexReader indexReader = indexer
-				.getIndexReader(CatConstants.IAVIEW_INDEX);
-		IndexSearcher searcher = new IndexSearcher(indexReader);
+	// TODO 1 insert results in a new database/index
 
-		QueryParser qp = new QueryParser(CatConstants.LUCENE_VERSION, field,new WhitespaceAnalyzer(CatConstants.LUCENE_VERSION));
-		return searcher.search(qp.parse(QueryParser.escape(value)), numHits);
-	}
+	Indexer indexer = new Indexer();
+	IndexReader indexReader = indexer.getIndexReader(CatConstants.IAVIEW_INDEX);
+	for (int i = 0; i < indexReader.maxDoc(); i++) {
+	    // TODO 2 Add concurrency: categorize several documents at the same
+	    // time
+	    if (indexReader.hasDeletions()) {
+		System.out
+			.println("[ERROR].categoriseDocument: the reader provides deleted elements though it should not");
+	    }
 
-	/**
-	 * Categorise the whole IA collection
-	 * 
-	 * @throws IOException
-	 */
-	public static void categoriseIAViewsFromSolr() throws IOException {
-		
-		//TODO 1 insert results in a new database/index
-		
-		Indexer indexer = new Indexer();
-		IndexReader indexReader = indexer.getIndexReader(CatConstants.IAVIEW_INDEX);
-		for (int i = 0; i < indexReader.maxDoc(); i++) {
-			//TODO 2 Add concurrency: categorize several documents at the same time
-			if (indexReader.hasDeletions()) {
-				System.out
-						.println("[ERROR].categoriseDocument: the reader provides deleted elements though it should not");
-			}
+	    Document doc = indexReader.document(i);
 
-			Document doc = indexReader.document(i);
+	    Categoriser categoriser = new Categoriser();
+	    Reader reader = new StringReader(doc.get(InformationAssetViewFields.DESCRIPTION.toString()));
+	    List<String> result = categoriser.runMlt(CatConstants.TRAINING_INDEX, reader, 100);
 
-			Categoriser categoriser = new Categoriser();
-			Reader reader = new StringReader(doc.get("DESCRIPTION"));
-			List<String> result = categoriser.runMlt(
-					CatConstants.TRAINING_INDEX, reader, 100);
+	    System.out.println("DOCUMENT");
+	    System.out.println("------------------------");
+	    System.out.println("TITLE: " + doc.get("TITLE"));
+	    System.out.println("IAID: " + doc.get("CATDOCREF"));
+	    System.out.println("DESCRIPTION: " + doc.get("DESCRIPTION"));
+	    System.out.println();
+	    for (String category : result) {
+		System.out.println("CATEGORY: " + category);
+	    }
+	    System.out.println("------------------------");
 
-			System.out.println("DOCUMENT");
-			System.out.println("------------------------");
-			System.out.println("TITLE: " + doc.get("TITLE"));
-			System.out.println("IAID: " + doc.get("CATDOCREF"));
-			System.out.println("DESCRIPTION: " + doc.get("DESCRIPTION"));
-			System.out.println();
-			for (String category : result) {
-				System.out.println("CATEGORY: " + category);
-			}
-			System.out.println("------------------------");
-
-			System.out.println();
-
-		}
-
-		System.out.println("Categorisation finished");
+	    System.out.println();
 
 	}
 
-	/**
-	 * Categorise the whole IA collection
-	 * 
-	 * @throws IOException
-	 */
-	@Deprecated
-	private static void categoriseIAsFromMongoDb() throws IOException {
+	System.out.println("Categorisation finished");
 
-		MongoAccess mongoAccess = new MongoAccess();
+    }
 
-		DBCollection dbCollection = mongoAccess.getMongoCollection(
-				"iadata120125m0518", "InformationAsset");
-		DBCursor cursor = dbCollection.find();
+    /**
+     * Categorise the whole IA collection
+     * 
+     * @throws IOException
+     */
+    @Deprecated
+    private static void categoriseIAsFromMongoDb() throws IOException {
 
-		for (DBObject doc : cursor) {
-			categoriseIAMongoDocument(doc.get("IAID").toString());
-		}
+	MongoAccess mongoAccess = new MongoAccess();
 
-		System.out.println("Categorisation finished");
+	DBCollection dbCollection = mongoAccess
+		.getMongoCollection(CatConstants.MONGO_IA_DB, CatConstants.MONGO_IA_COLL);
+	DBCursor cursor = dbCollection.find();
 
+	for (DBObject doc : cursor) {
+	    categoriseIAMongoDocument(doc.get(InformationAssetFields.IAID.toString()).toString());
 	}
-	
-	
-	
 
-	/**
-	 * run More Like This process on a document by comparing its description to the description of all items of the training set<br/>
-	 * currently we get a fixed number of the top results
-	 * @param modelPath
-	 * path of the training set index
-	 * @param reader
-	 * reader of the document being tested
-	 * @param maxResults
-	 * max number of results to return
-	 * @return
-	 * @throws IOException
-	 */
-	// TODO 1 check and update fields that are being retrieved to create training set, used for MLT (run MLT on title, context desc and desc at least. returns results by score not from a fixed number)
-	public static List<String> runMlt(String modelPath, Reader reader, int maxResults)
-			throws IOException {
+	System.out.println("Categorisation finished");
 
-		Directory directory = FSDirectory.open(new File(modelPath));
+    }
 
-		DirectoryReader ireader = DirectoryReader.open(directory);
-		IndexSearcher isearcher = new IndexSearcher(ireader);
+    /**
+     * run More Like This process on a document by comparing its description to
+     * the description of all items of the training set<br/>
+     * currently we get a fixed number of the top results
+     * 
+     * @param modelPath
+     *            path of the training set index
+     * @param reader
+     *            reader of the document being tested
+     * @param maxResults
+     *            max number of results to return
+     * @return
+     * @throws IOException
+     */
+    // TODO 1 check and update fields that are being retrieved to create
+    // training set, used for MLT (run MLT on title, context desc and desc at
+    // least. returns results by score not from a fixed number)
+    public static List<String> runMlt(String modelPath, Reader reader, int maxResults) throws IOException {
 
-		Analyzer analyzer = new EnglishAnalyzer(CatConstants.LUCENE_VERSION);
+	Directory directory = FSDirectory.open(new File(modelPath));
 
-		MoreLikeThis moreLikeThis = new MoreLikeThis(ireader);
-		moreLikeThis.setAnalyzer(analyzer);
-		moreLikeThis.setFieldNames(new String[] { "description" });
+	DirectoryReader ireader = DirectoryReader.open(directory);
+	IndexSearcher isearcher = new IndexSearcher(ireader);
 
-		Query query = moreLikeThis.like(reader, "description");
-		
-		TopDocs topDocs = isearcher.search(query, maxResults);
+	Analyzer analyzer = new EnglishAnalyzer(CatConstants.LUCENE_VERSION);
 
-		List<String> result = new ArrayList<String>();
+	MoreLikeThis moreLikeThis = new MoreLikeThis(ireader);
+	moreLikeThis.setAnalyzer(analyzer);
+	moreLikeThis.setFieldNames(new String[] { "description" });
 
-		int size = 0;
-		if (topDocs.totalHits <= 100) {
-			size = topDocs.totalHits;
-		}
+	Query query = moreLikeThis.like(reader, "description");
 
-		for (int i = 0; i < size; i++) {
-			ScoreDoc scoreDoc = topDocs.scoreDocs[i];
-			Document hitDoc = isearcher.doc(scoreDoc.doc);
-			String category = hitDoc.get("category");
-			result.add(category);
-		}
-		
-		ireader.close();
-		
-		return new ArrayList<String>(new LinkedHashSet<String>(result));
+	TopDocs topDocs = isearcher.search(query, maxResults);
+
+	List<String> result = new ArrayList<String>();
+
+	int size = 0;
+	if (topDocs.totalHits <= 100) {
+	    size = topDocs.totalHits;
 	}
+
+	for (int i = 0; i < size; i++) {
+	    ScoreDoc scoreDoc = topDocs.scoreDocs[i];
+	    Document hitDoc = isearcher.doc(scoreDoc.doc);
+	    String category = hitDoc.get("category");
+	    result.add(category);
+	}
+
+	ireader.close();
+
+	return new ArrayList<String>(new LinkedHashSet<String>(result));
+    }
 }

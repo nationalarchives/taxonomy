@@ -41,21 +41,18 @@ public class cat {
 	// TODO 3 handle concurrency issues: while creating the training set, if collection is browsed from the solr admin GUI, it crashes
 	// TODO 0 a decide where to store temporary training set and new index
 	
-	public static void main(String[] args) throws IOException, ParseException {
-		System.out.println("Start cat application.");
+    public static void main(String[] args) throws IOException, ParseException {
+	System.out.println("Start cat application.");
 
-//		Categoriser.createTrainingSet(100);
-//
-		Categoriser.indexTrainingSet();
-//
-//		Categoriser.categoriseIAViewSolrDocument("CO 273/632/2");
+	// Categoriser.createTrainingSet(100);
+	//
+	// Categoriser.indexTrainingSet();
+	//
+	// Categoriser.categoriseIAViewSolrDocument("CO 273/632/2");
 
-		
-//		Categoriser.categoriseIAViewsFromSolr();
-		
-		System.out.println("Stop cat application.");
-	}
+	Categoriser.categoriseIAViewsFromSolr();
 
-	
+	System.out.println("Stop cat application.");
+    }
 
 }
