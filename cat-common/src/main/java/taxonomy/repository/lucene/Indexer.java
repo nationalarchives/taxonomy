@@ -7,14 +7,14 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.SimpleFSDirectory;
-import org.apache.lucene.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import taxonomy.CatConstants;
 import taxonomy.repository.domain.InformationAssetFields;
@@ -27,12 +27,12 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
 
 //TODO 4 all those methods do not require context and could be static
 //TODO 4 use private methods where appropriate
 public class Indexer {
+    
+    private static final Logger logger = LoggerFactory.getLogger(Indexer.class);
 
     public Indexer() {
     }
@@ -56,7 +56,7 @@ public class Indexer {
 	    SimpleFSDirectory index = new SimpleFSDirectory(file);
 
 	    // if (IndexWriter.isLocked(index)) {
-	    // System.out.println("[WARN]Directory unlocked");
+	    // logger.debug("[WARN]Directory unlocked");
 	    // IndexWriter.unlock(index);
 	    // }
 
@@ -168,7 +168,7 @@ public class Indexer {
 		DBObject scopecontent = (BasicDBObject) dbObject.get(InformationAssetFields.ScopeContent.toString());
 		String description = (String) scopecontent.get(InformationAssetFields.Description.toString())
 			.toString().replaceAll("\\<.*?>", "");
-		System.out.println(description);
+		logger.debug(description);
 		String urlparams = dbObject.getString(InformationAssetFields.IAID.toString());
 		InformationAssetViewFull informationAssetView = new InformationAssetViewFull();
 		informationAssetView.set_id(_id);
@@ -177,7 +177,7 @@ public class Indexer {
 		informationAssetView.setDESCRIPTION(description);
 		informationAssetView.setURLPARAMS(urlparams);
 		indexAsset(informationAssetView);
-		System.out.println("IA=" + catdocref + " added to index");
+		logger.debug("IA=" + catdocref + " added to index");
 	    }
 	} finally {
 	    cursor.close();

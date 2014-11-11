@@ -3,6 +3,9 @@ package taxonomy.repository.mongo;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import taxonomy.CatConstants;
 import taxonomy.repository.domain.Category;
 import taxonomy.repository.domain.CategoryFields;
@@ -10,6 +13,7 @@ import taxonomy.repository.domain.InformationAsset;
 import taxonomy.repository.domain.InformationAssetFields;
 import taxonomy.repository.domain.InformationAssetViewFields;
 import taxonomy.repository.domain.TrainingDocument;
+import taxonomy.service.impl.Categoriser;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -21,6 +25,7 @@ import com.mongodb.MongoException;
 import com.mongodb.WriteConcern;
 
 public class MongoAccess {
+//    private static final Logger logger = LoggerFactory.getLogger(MongoAccess.class);
 
     public DBCollection getMongoCollection(String database, String collection) {
 	Mongo conn = connectToMongoDb(CatConstants.MONGO_HOST, CatConstants.MONGO_PORT);
@@ -66,7 +71,7 @@ public class MongoAccess {
 	    Category category = new Category();
 	    category.set_id(doc.get(CategoryFields._id.toString()).toString());
 	    category.setCategory(doc.get(CategoryFields.ttl.toString()).toString());
-	    category.setQUERY(doc.get(CategoryFields.query.toString()).toString());
+	    category.setQUERY(doc.get(CategoryFields.qry.toString()).toString());
 	    categories.add(category);
 	}
 	cursor.close();

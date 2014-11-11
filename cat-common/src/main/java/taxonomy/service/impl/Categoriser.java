@@ -24,6 +24,8 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import taxonomy.CatConstants;
 import taxonomy.repository.domain.Category;
@@ -47,6 +49,8 @@ import com.mongodb.DBObject;
  *
  */
 public class Categoriser {
+    
+    private static final Logger logger = LoggerFactory.getLogger(Categoriser.class);
 
     /**
      * Create index of IAViews from mongodb collection InformationAsset</br> NOT
@@ -59,11 +63,11 @@ public class Categoriser {
 
 	Indexer indexer = new Indexer();
 	indexer.buildIndex();
-	System.out.println("Finished building index.");
+	logger.debug("Finished building index.");
     }
 
     public static void createTrainingSet(int trainingSetSize) throws IOException, ParseException {
-	System.out.println(".createTrainingSet : START");
+	logger.debug(".createTrainingSet : START");
 
 	MongoAccess mongoAccess = new MongoAccess();
 	List<Category> categories = mongoAccess.getCategories();
@@ -78,7 +82,7 @@ public class Categoriser {
 	    List<InformationAssetView> trainingSet;
 	    try {
 		trainingSet = searcher.performSearch(category.getQUERY(), trainingSetSize);
-		System.out.println(".createTrainingSet: Category=" + category.getCATEGORY() + ", found "
+		logger.debug(".createTrainingSet: Category=" + category.getCATEGORY() + ", found "
 			+ trainingSet.size() + " result(s)");
 		if (trainingSet.size() > 0) {
 
@@ -88,24 +92,25 @@ public class Categoriser {
 			trainingDocument.setDescription(iaView.getDESCRIPTION());
 			trainingDocument.setTitle(iaView.getTITLE());
 			mongoAccess.addTrainingDocument(trainingDocument, dBCollection);
-			System.out.println(trainingDocument.getCategory() + ":"
+			logger.debug(trainingDocument.getCategory() + ":"
 				+ trainingDocument.getTitle().replaceAll("\\<.*?>", ""));
 		    }
 		}
 	    } catch (ParseException e) {
 		// TODO 1 several errors occur while creating the training set,
 		// to investigate
-		System.out.println("[ERROR] .createTrainingSet< An error occured: " + e.getMessage());
+		logger.debug("[ERROR] .createTrainingSet< An error occured for category: " + category.toString());
+		logger.debug("[ERROR] .createTrainingSet< Error message: " + e.getMessage());
 	    }
 	}
-	System.out.println(".createTrainingSet : END");
+	logger.debug(".createTrainingSet : END");
     }
 
     public static void indexTrainingSet() throws IOException {
-	System.out.println(".createTrainingIndex : START");
+	logger.debug(".createTrainingIndex : START");
 	Indexer indexer = new Indexer();
 	indexer.buildTrainingIndex();
-	System.out.println(".createTrainingIndex : END");
+	logger.debug(".createTrainingIndex : END");
     }
 
     /**
@@ -126,18 +131,18 @@ public class Categoriser {
 	Reader reader = new StringReader(informationAsset.getDescription());
 	List<String> result = categoriser.runMlt(CatConstants.TRAINING_INDEX, reader, 100);
 
-	System.out.println("DOCUMENT");
-	System.out.println("------------------------");
-	System.out.println("TITLE: " + informationAsset.getTitle());
-	System.out.println("IAID: " + informationAsset.getCatdocref());
-	System.out.println("DESCRIPTION: " + informationAsset.getDescription());
-	System.out.println();
+	logger.debug("DOCUMENT");
+	logger.debug("------------------------");
+	logger.debug("TITLE: " + informationAsset.getTitle());
+	logger.debug("IAID: " + informationAsset.getCatdocref());
+	logger.debug("DESCRIPTION: " + informationAsset.getDescription());
+	logger.debug("");
 	for (String category : result) {
-	    System.out.println("CATEGORY: " + category);
+	    logger.debug("CATEGORY: " + category);
 	}
-	System.out.println("------------------------");
+	logger.debug("------------------------");
 
-	System.out.println();
+	logger.debug("");
 
     }
 
@@ -165,18 +170,18 @@ public class Categoriser {
 	Reader reader = new StringReader(doc.get(InformationAssetViewFields.DESCRIPTION.toString()));
 	List<String> result = categoriser.runMlt(CatConstants.TRAINING_INDEX, reader, 100);
 
-	System.out.println("DOCUMENT");
-	System.out.println("------------------------");
-	System.out.println("TITLE: " + doc.get("TITLE"));
-	System.out.println("IAID: " + doc.get("CATDOCREF"));
-	System.out.println("DESCRIPTION: " + doc.get("DESCRIPTION"));
-	System.out.println();
+	logger.debug("DOCUMENT");
+	logger.debug("------------------------");
+	logger.debug("TITLE: " + doc.get("TITLE"));
+	logger.debug("IAID: " + doc.get("CATDOCREF"));
+	logger.debug("DESCRIPTION: " + doc.get("DESCRIPTION"));
+	logger.debug("");
 	for (String category : result) {
-	    System.out.println("CATEGORY: " + category);
+	    logger.debug("CATEGORY: " + category);
 	}
-	System.out.println("------------------------");
+	logger.debug("------------------------");
 
-	System.out.println();
+	logger.debug("");
 
 	return result;
 
@@ -218,22 +223,22 @@ public class Categoriser {
 	    Reader reader = new StringReader(doc.get(InformationAssetViewFields.DESCRIPTION.toString()));
 	    List<String> result = categoriser.runMlt(CatConstants.TRAINING_INDEX, reader, 100);
 
-	    System.out.println("DOCUMENT");
-	    System.out.println("------------------------");
-	    System.out.println("TITLE: " + doc.get("TITLE"));
-	    System.out.println("IAID: " + doc.get("CATDOCREF"));
-	    System.out.println("DESCRIPTION: " + doc.get("DESCRIPTION"));
-	    System.out.println();
+	    logger.debug("DOCUMENT");
+	    logger.debug("------------------------");
+	    logger.debug("TITLE: " + doc.get("TITLE"));
+	    logger.debug("IAID: " + doc.get("CATDOCREF"));
+	    logger.debug("DESCRIPTION: " + doc.get("DESCRIPTION"));
+	    logger.debug("");
 	    for (String category : result) {
-		System.out.println("CATEGORY: " + category);
+		logger.debug("CATEGORY: " + category);
 	    }
-	    System.out.println("------------------------");
+	    logger.debug("------------------------");
 
-	    System.out.println();
+	    logger.debug("");
 
 	}
 
-	System.out.println("Categorisation finished");
+	logger.debug("Categorisation finished");
 
     }
 
@@ -255,7 +260,7 @@ public class Categoriser {
 	    categoriseIAMongoDocument(doc.get(InformationAssetFields.IAID.toString()).toString());
 	}
 
-	System.out.println("Categorisation finished");
+	logger.debug("Categorisation finished");
 
     }
 

@@ -28,4 +28,19 @@ public class Category {
 	public void setCategory(String category) {
 		this.CATEGORY = category;
 	}
+
+	@Override
+	public String toString() {
+	    StringBuilder builder = new StringBuilder();
+	    builder.append("Category [_id=");
+	    builder.append(_id);
+	    builder.append(", QUERY=");
+	    builder.append(QUERY);
+	    builder.append(", CATEGORY=");
+	    builder.append(CATEGORY);
+	    builder.append("]");
+	    return builder.toString();
+	}
+	
+	
 }

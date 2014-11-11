@@ -16,13 +16,16 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.SimpleFSDirectory;
-import org.apache.lucene.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import taxonomy.CatConstants;
 import taxonomy.repository.domain.InformationAssetView;
 import taxonomy.repository.domain.InformationAssetViewFields;
 
 public class Searcher {
+    
+//    private static final Logger logger = LoggerFactory.getLogger(Searcher.class);
 
     public Document getDoc(ScoreDoc scoreDoc) throws IOException {
 	File file = new File(CatConstants.IAVIEW_INDEX);

@@ -1,33 +1,17 @@
 package taxonomy;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.List;
 
-import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import taxonomy.repository.domain.Category;
-import taxonomy.repository.domain.InformationAsset;
-import taxonomy.repository.domain.InformationAssetView;
-import taxonomy.repository.domain.TrainingDocument;
-import taxonomy.repository.lucene.Indexer;
 import taxonomy.repository.lucene.Searcher;
-import taxonomy.repository.mongo.MongoAccess;
 import taxonomy.service.impl.Categoriser;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-
 public class cat {
+    
+    private static final Logger logger = LoggerFactory.getLogger(Searcher.class);
 
 	// TODO 3 add logging system to improve performances, do not use system.out!
 	// TODO 0 0 deadlines, needs, will there be some time to complete things afterwards, can we provide a rough version for testing? Define an agile sprint? Write stories to start?
@@ -42,7 +26,7 @@ public class cat {
 	// TODO 0 a decide where to store temporary training set and new index
 	
     public static void main(String[] args) throws IOException, ParseException {
-	System.out.println("Start cat application.");
+	logger.debug("Start cat application.");
 
 	// Categoriser.createTrainingSet(100);
 	//
@@ -52,7 +36,7 @@ public class cat {
 
 	Categoriser.categoriseIAViewsFromSolr();
 
-	System.out.println("Stop cat application.");
+	logger.debug("Stop cat application.");
     }
 
 }
