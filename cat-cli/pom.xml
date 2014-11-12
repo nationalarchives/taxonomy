@@ -2,11 +2,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>taxonomy</groupId>
-		<artifactId>cat-parent</artifactId>
+		<groupId>gov.tna.discovery</groupId>
+		<artifactId>taxonomy</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>cat-cli</artifactId>
+	<artifactId>taxonomy-cli</artifactId>
 	<name>Categorisation CLI</name>
 	<packaging>jar</packaging>
 	<properties>
@@ -15,8 +15,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>taxonomy</groupId>
-			<artifactId>cat-common</artifactId>
+			<groupId>gov.tna.discovery</groupId>
+			<artifactId>taxonomy-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

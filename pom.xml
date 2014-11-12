@@ -1,16 +1,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>taxonomy</groupId>
-	<artifactId>cat-parent</artifactId>
+	<groupId>gov.tna.discovery</groupId>
+	<artifactId>taxonomy</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Categorisation Application</name>
 	<packaging>pom</packaging>
 	
+	
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.1.8.RELEASE</version>
+    </parent>
+	
+	<properties>
+		<spring.boot.version>1.1.9.RELEASE</spring.boot.version>
+		<java.version>1.7</java.version>
+	</properties>
+
+
 	<modules>
-	<module>cat-cli</module>
-	<module>cat-ws</module>
-	<module>cat-common</module>
+		<module>cat-cli</module>
+		<module>cat-ws</module>
+		<module>cat-common</module>
 	</modules>
 
 	<dependencies>
