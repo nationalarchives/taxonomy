@@ -1,7 +1,7 @@
 package gov.tna.discovery.taxonomy.controller;
 
 import gov.tna.discovery.taxonomy.domain.SearchIAViewRequest;
-import gov.tna.discovery.taxonomy.repository.domain.InformationAssetView;
+import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
 
 import java.util.List;
@@ -34,10 +34,13 @@ public class TaxonomyController {
 	if(StringUtils.isEmpty(searchRequest.getCategoryQuery())){
 	    throw new ParseException("categoryQuery should be provided and not empty");
 	}
-	if(searchRequest.getNumber()==null){
-	    searchRequest.setNumber(10);
+	if(searchRequest.getLimit()==null){
+	    searchRequest.setLimit(10);
 	}
-	return searcher.performSearch(searchRequest.getCategoryQuery(), searchRequest.getScore(), searchRequest.getNumber(), searchRequest.getLuceneAfterScoreDoc());
+	if(searchRequest.getOffset()==null){
+	    searchRequest.setOffset(0);
+	}
+	return searcher.performSearch(searchRequest.getCategoryQuery(), searchRequest.getScore(), searchRequest.getLimit(), searchRequest.getOffset());
     }
     
 

@@ -1,4 +1,4 @@
-package gov.tna.discovery.taxonomy.repository.domain;
+package gov.tna.discovery.taxonomy.repository.domain.lucene;
 
 import java.util.List;
 
@@ -17,6 +17,7 @@ public class InformationAssetView {
 	private String[] PLACE_REGION;
 	private String[] PLACE_COUNTRY;
 	private String[] PERSON_FULLNAME;
+	private String CATEGORY;
 
 
 //search properties
@@ -166,6 +167,20 @@ public class InformationAssetView {
 	public void setPERSON_FULLNAME(String[] pERSON_FULLNAME) {
 		PERSON_FULLNAME = pERSON_FULLNAME;
 	}
+
+	public String getCATEGORY() {
+	    return CATEGORY;
+	}
+
+	public void setCATEGORY(String cATEGORY) {
+	    CATEGORY = cATEGORY;
+	}
+
+	public String[] getPERSON_FULLNAME() {
+	    return PERSON_FULLNAME;
+	}
+	
+	
 		
 }		
 		

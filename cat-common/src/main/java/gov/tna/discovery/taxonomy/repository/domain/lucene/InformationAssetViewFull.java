@@ -1,4 +1,4 @@
-package gov.tna.discovery.taxonomy.repository.domain;
+package gov.tna.discovery.taxonomy.repository.domain.lucene;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package gov.tna.discovery.taxonomy.repository.lucene;
 
 import gov.tna.discovery.taxonomy.CatConstants;
-import gov.tna.discovery.taxonomy.repository.domain.InformationAssetView;
-import gov.tna.discovery.taxonomy.repository.domain.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,9 +37,9 @@ public class Searcher {
 	return hitDoc;
     }
 
-    //FIXME 0 redo pagination, use int skip instead of search after
-    public List<InformationAssetView> performSearch(String queryString, Float mimimumScore, Integer size,
-	    ScoreDoc afterDoc) throws IOException, ParseException {
+    // FIXME 0 redo pagination, use int skip instead of search after
+    public List<InformationAssetView> performSearch(String queryString, Float mimimumScore, Integer limit,
+	    Integer offset) throws IOException, ParseException {
 
 	File file = new File(CatConstants.IAVIEW_INDEX);
 	Analyzer analyzer = new WhitespaceAnalyzer(CatConstants.LUCENE_VERSION);
@@ -50,19 +50,20 @@ public class Searcher {
 		InformationAssetViewFields.DESCRIPTION.toString(), analyzer);
 	Query query = parser.parse(queryString);
 	TopDocs topDocs;
-	if (afterDoc != null) {
-	    topDocs = isearcher.searchAfter(afterDoc, query, size);
-	} else {
-	    topDocs = isearcher.search(query, size);
-	}
+	topDocs = isearcher.search(query, offset + limit);
 	List<InformationAssetView> docs = new ArrayList<InformationAssetView>();
-	if (topDocs.totalHits <= size) {
-	    size = topDocs.totalHits;
+	int totalNumberOfDocumentsToParse = offset + limit;
+	if(topDocs.totalHits<offset){
+	    return docs;
+	}else if(topDocs.totalHits<totalNumberOfDocumentsToParse){
+	    totalNumberOfDocumentsToParse=topDocs.totalHits;
 	}
-	for (int i = 0; i < size; i++) {
+	for (int i = offset; i < totalNumberOfDocumentsToParse; i++) {
+
 	    ScoreDoc scoreDoc = topDocs.scoreDocs[i];
-	    if (mimimumScore!=null && scoreDoc.score<mimimumScore){
-		//FIXME JCT use HitCollector instead? to return the total number of results later
+	    if (mimimumScore != null && scoreDoc.score < mimimumScore) {
+		// FIXME JCT use HitCollector instead? to return the total
+		// number of results later
 		break;
 	    }
 	    Document hitDoc = isearcher.doc(scoreDoc.doc);

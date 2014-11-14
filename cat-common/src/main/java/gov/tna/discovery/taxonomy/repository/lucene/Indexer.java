@@ -1,8 +1,8 @@
 package gov.tna.discovery.taxonomy.repository.lucene;
 
 import gov.tna.discovery.taxonomy.CatConstants;
-import gov.tna.discovery.taxonomy.repository.domain.InformationAssetViewFields;
-import gov.tna.discovery.taxonomy.repository.domain.mongo.TrainingDocument;
+import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
+import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 
 import java.io.File;

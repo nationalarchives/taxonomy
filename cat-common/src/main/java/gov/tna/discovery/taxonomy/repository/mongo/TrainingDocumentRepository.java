@@ -1,6 +1,6 @@
 package gov.tna.discovery.taxonomy.repository.mongo;
 
-import gov.tna.discovery.taxonomy.repository.domain.mongo.TrainingDocument;
+import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

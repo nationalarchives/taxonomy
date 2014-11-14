@@ -1,40 +1,44 @@
 package gov.tna.discovery.taxonomy.repository.domain;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection="trainingset")
 public class TrainingDocument {
-	private String _id;
-	private String title;
-	private String description;
-	private String category;
+    private String _id;
+    private String TITLE;
+    private String DESCRIPTION;
+    private String CATEGORY;
 
-	public String get_id() {
-		return _id;
-	}
+    public String get_id() {
+	return _id;
+    }
 
-	public void set_id(String _id) {
-		this._id = _id;
-	}
+    public void set_id(String _id) {
+	this._id = _id;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTITLE() {
+	return TITLE;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setTITLE(String tITLE) {
+	TITLE = tITLE;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDESCRIPTION() {
+	return DESCRIPTION;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDESCRIPTION(String dESCRIPTION) {
+	DESCRIPTION = dESCRIPTION;
+    }
 
-	public String getCategory() {
-		return category;
-	}
+    public String getCATEGORY() {
+	return CATEGORY;
+    }
 
-	public void setCategory(String category) {
-		this.category = category;
-	}
+    public void setCATEGORY(String cATEGORY) {
+	CATEGORY = cATEGORY;
+    }
+
 }

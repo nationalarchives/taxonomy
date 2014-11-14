@@ -1,10 +1,10 @@
 package gov.tna.discovery.taxonomy.service.impl;
 
 import gov.tna.discovery.taxonomy.CatConstants;
-import gov.tna.discovery.taxonomy.repository.domain.InformationAssetView;
-import gov.tna.discovery.taxonomy.repository.domain.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
+import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.repository.domain.mongo.TrainingDocument;
 import gov.tna.discovery.taxonomy.repository.lucene.Indexer;
 import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
@@ -54,7 +54,7 @@ public class Categoriser {
 
     @Autowired
     TrainingDocumentRepository trainingDocumentRepository;
-    
+
     @Autowired
     Indexer indexer;
 
@@ -67,17 +67,17 @@ public class Categoriser {
 	// empty collection
 	trainingDocumentRepository.deleteAll();
 
-	while(categoryIterator.hasNext()){
+	while (categoryIterator.hasNext()) {
 	    Category category = categoryIterator.next();
-	    List<InformationAssetView> trainingSet;
+	    List<InformationAssetView> IAViewResults;
 	    try {
 		// FIXME JCT add score
-		trainingSet = searcher.performSearch(category.getQry(), null, trainingSetSize, null);
-		logger.debug(".createTrainingSet: Category=" + category.getQry() + ", found " + trainingSet.size()
+		IAViewResults = searcher.performSearch(category.getQry(), null, trainingSetSize, 0);
+		logger.debug(".createTrainingSet: Category=" + category.getQry() + ", found " + IAViewResults.size()
 			+ " result(s)");
-		if (trainingSet.size() > 0) {
+		if (IAViewResults.size() > 0) {
 
-		    for (InformationAssetView iaView : trainingSet) {
+		    for (InformationAssetView iaView : IAViewResults) {
 			TrainingDocument trainingDocument = new TrainingDocument();
 			trainingDocument.setCATEGORY(category.getQry());
 			trainingDocument.setDESCRIPTION(iaView.getDESCRIPTION());
@@ -91,7 +91,8 @@ public class Categoriser {
 		// TODO 1 several errors occur while creating the training set,
 		// to investigate
 		// some queries are not valid: paul takes care of them.
-		// Some queries have wildcards and lucene doesnt accept them: to enable.
+		// Some queries have wildcards and lucene doesnt accept them: to
+		// enable.
 		logger.debug("[ERROR] .createTrainingSet< An error occured for category: " + category.toString());
 		logger.debug("[ERROR] .createTrainingSet< Error message: " + e.getMessage());
 	    }
@@ -104,7 +105,6 @@ public class Categoriser {
 	indexer.buildTrainingIndex();
 	logger.debug(".createTrainingIndex : END");
     }
-
 
     /**
      * categorise a document by running the MLT process against the training set
@@ -201,7 +201,6 @@ public class Categoriser {
 	logger.debug("Categorisation finished");
 
     }
-
 
     /**
      * run More Like This process on a document by comparing its description to
