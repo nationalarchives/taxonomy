@@ -4,13 +4,9 @@ import gov.tna.discovery.taxonomy.domain.SearchIAViewRequest;
 import gov.tna.discovery.taxonomy.repository.domain.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.search.ScoreDoc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/taxonomy")
 public class TaxonomyController {
     
-    private static final Logger logger = LoggerFactory.getLogger(TaxonomyController.class);
+//    private static final Logger logger = LoggerFactory.getLogger(TaxonomyController.class);
 
     @RequestMapping("/hello")
     String home() {

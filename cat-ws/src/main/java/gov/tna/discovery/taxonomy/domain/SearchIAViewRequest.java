@@ -1,8 +1,5 @@
 package gov.tna.discovery.taxonomy.domain;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.apache.lucene.search.ScoreDoc;
 
 public class SearchIAViewRequest {

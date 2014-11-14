@@ -55,6 +55,7 @@ public class InformationAssetViewFull {
 	private String MAPDESIGNATION;
 	private String MAPSCALE;
 	private String PHYSICALCOND;
+	private String CATEGORY;
 
 	// search properties
 	private float score;
@@ -494,4 +495,13 @@ public class InformationAssetViewFull {
 	public void setPHYSICALCOND(String pHYSICALCOND) {
 		PHYSICALCOND = pHYSICALCOND;
 	}
+
+	public String getCATEGORY() {
+	    return CATEGORY;
+	}
+
+	public void setCATEGORY(String cATEGORY) {
+	    CATEGORY = cATEGORY;
+	}
+	
 }

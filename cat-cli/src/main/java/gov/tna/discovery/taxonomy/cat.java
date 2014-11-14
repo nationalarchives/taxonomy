@@ -26,15 +26,16 @@ public class cat {
 	// TODO 0 a decide where to store temporary training set and new index
 	
     public static void main(String[] args) throws IOException, ParseException {
+	Categoriser categoriser = new Categoriser();
 	logger.debug("Start cat application.");
 
-//	 Categoriser.createTrainingSet(100);
+//	 categoriser.createTrainingSet(100);
 	
-//	 Categoriser.indexTrainingSet();
+//	 categoriser.indexTrainingSet();
 	
-//	 Categoriser.categoriseIAViewSolrDocument("CO 273/632/2");
+//	 categoriser.categoriseIAViewSolrDocument("CO 273/632/2");
 
-	Categoriser.categoriseIAViewsFromSolr();
+	categoriser.categoriseIAViewsFromSolr();
 
 	logger.debug("Stop cat application.");
     }

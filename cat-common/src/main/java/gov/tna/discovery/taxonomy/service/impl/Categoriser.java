@@ -1,18 +1,21 @@
 package gov.tna.discovery.taxonomy.service.impl;
 
 import gov.tna.discovery.taxonomy.CatConstants;
-import gov.tna.discovery.taxonomy.repository.domain.Category;
-import gov.tna.discovery.taxonomy.repository.domain.InformationAsset;
-import gov.tna.discovery.taxonomy.repository.domain.InformationAssetFields;
 import gov.tna.discovery.taxonomy.repository.domain.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.InformationAssetViewFields;
-import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
+import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.repository.domain.mongo.TrainingDocument;
+import gov.tna.discovery.taxonomy.repository.lucene.Indexer;
+import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
+import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
+import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -31,28 +34,29 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gov.tna.discovery.taxonomy.repository.lucene.Indexer;
-import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
-import gov.tna.discovery.taxonomy.repository.mongo.MongoAccess;
-import gov.tna.discovery.taxonomy.repository.mongo.MongoInterface;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * class dedicated to the categorisation of documents<br/>
  * use the More Like This feature of Lucene
  *
  */
+@Service
 public class Categoriser {
+
+    private static final Logger logger = LoggerFactory.getLogger(Indexer.class);
+
+    @Autowired
+    CategoryRepository categoryRepository;
+
+    @Autowired
+    TrainingDocumentRepository trainingDocumentRepository;
     
-    private static final Logger logger = LoggerFactory.getLogger(Categoriser.class);
+    @Autowired
+    Indexer indexer;
 
     /**
      * Create index of IAViews from mongodb collection InformationAsset</br> NOT
@@ -60,43 +64,41 @@ public class Categoriser {
      * 
      * @throws IOException
      */
-    @Deprecated
-    public static void createIndex() throws IOException {
+//    @Deprecated
+//    public void createIndex() throws IOException {
+//
+//	Indexer indexer = new Indexer();
+//	indexer.buildIndex();
+//	logger.debug("Finished building index.");
+//    }
 
-	Indexer indexer = new Indexer();
-	indexer.buildIndex();
-	logger.debug("Finished building index.");
-    }
-
-    public static void createTrainingSet(int trainingSetSize) throws IOException, ParseException {
+    public void createTrainingSet(int trainingSetSize) throws IOException, ParseException {
 	logger.debug(".createTrainingSet : START");
 
-	MongoAccess mongoAccess = new MongoAccess();
-	List<Category> categories = mongoAccess.getCategories();
+	Iterator<Category> categoryIterator = categoryRepository.findAll().iterator();
 	Searcher searcher = new Searcher();
-	DBCollection dBCollection = mongoAccess.getMongoCollection(CatConstants.MONGO_TAXONOMY_DB,
-		CatConstants.MONGO_TRAININGSET_COLL);
 
 	// empty collection
-	dBCollection.remove(new BasicDBObject());
+	trainingDocumentRepository.deleteAll();
 
-	for (Category category : categories) {
+	while(categoryIterator.hasNext()){
+	    Category category = categoryIterator.next();
 	    List<InformationAssetView> trainingSet;
 	    try {
-		//FIXME JCT add score
-		trainingSet = searcher.performSearch(category.getQUERY(), null, trainingSetSize, null);
-		logger.debug(".createTrainingSet: Category=" + category.getCATEGORY() + ", found "
-			+ trainingSet.size() + " result(s)");
+		// FIXME JCT add score
+		trainingSet = searcher.performSearch(category.getQry(), null, trainingSetSize, null);
+		logger.debug(".createTrainingSet: Category=" + category.getQry() + ", found " + trainingSet.size()
+			+ " result(s)");
 		if (trainingSet.size() > 0) {
 
 		    for (InformationAssetView iaView : trainingSet) {
 			TrainingDocument trainingDocument = new TrainingDocument();
-			trainingDocument.setCategory(category.getCATEGORY());
-			trainingDocument.setDescription(iaView.getDESCRIPTION());
-			trainingDocument.setTitle(iaView.getTITLE());
-			mongoAccess.addTrainingDocument(trainingDocument, dBCollection);
-			logger.debug(trainingDocument.getCategory() + ":"
-				+ trainingDocument.getTitle().replaceAll("\\<.*?>", ""));
+			trainingDocument.setCATEGORY(category.getQry());
+			trainingDocument.setDESCRIPTION(iaView.getDESCRIPTION());
+			trainingDocument.setTITLE(iaView.getTITLE());
+			trainingDocumentRepository.save(trainingDocument);
+			logger.debug(trainingDocument.getCATEGORY() + ":"
+				+ trainingDocument.getTITLE().replaceAll("\\<.*?>", ""));
 		    }
 		}
 	    } catch (ParseException e) {
@@ -109,9 +111,8 @@ public class Categoriser {
 	logger.debug(".createTrainingSet : END");
     }
 
-    public static void indexTrainingSet() throws IOException {
+    public void indexTrainingSet() throws IOException {
 	logger.debug(".createTrainingIndex : START");
-	Indexer indexer = new Indexer();
 	indexer.buildTrainingIndex();
 	logger.debug(".createTrainingIndex : END");
     }
@@ -123,31 +124,31 @@ public class Categoriser {
      *            IAID
      * @throws IOException
      */
-    @Deprecated
-    private static void categoriseIAMongoDocument(String catdocref) throws IOException {
-
-	MongoInterface mongoAccess = new MongoAccess();
-
-	InformationAsset informationAsset = mongoAccess.getInformationAsset(catdocref);
-
-	Categoriser categoriser = new Categoriser();
-	Reader reader = new StringReader(informationAsset.getDescription());
-	List<String> result = categoriser.runMlt(CatConstants.TRAINING_INDEX, reader, 100);
-
-	logger.debug("DOCUMENT");
-	logger.debug("------------------------");
-	logger.debug("TITLE: " + informationAsset.getTitle());
-	logger.debug("IAID: " + informationAsset.getCatdocref());
-	logger.debug("DESCRIPTION: " + informationAsset.getDescription());
-	logger.debug("");
-	for (String category : result) {
-	    logger.debug("CATEGORY: " + category);
-	}
-	logger.debug("------------------------");
-
-	logger.debug("");
-
-    }
+//    @Deprecated
+//    private void categoriseIAMongoDocument(String catdocref) throws IOException {
+//
+//	MongoInterface mongoAccess = new MongoAccess();
+//
+//	InformationAsset informationAsset = mongoAccess.getInformationAsset(catdocref);
+//
+//	Categoriser categoriser = new Categoriser();
+//	Reader reader = new StringReader(informationAsset.getDescription());
+//	List<String> result = categoriser.runMlt(CatConstants.TRAINING_INDEX, reader, 100);
+//
+//	logger.debug("DOCUMENT");
+//	logger.debug("------------------------");
+//	logger.debug("TITLE: " + informationAsset.getTitle());
+//	logger.debug("IAID: " + informationAsset.getCatdocref());
+//	logger.debug("DESCRIPTION: " + informationAsset.getDescription());
+//	logger.debug("");
+//	for (String category : result) {
+//	    logger.debug("CATEGORY: " + category);
+//	}
+//	logger.debug("------------------------");
+//
+//	logger.debug("");
+//
+//    }
 
     /**
      * categorise a document by running the MLT process against the training set
@@ -157,7 +158,7 @@ public class Categoriser {
      * @throws IOException
      * @throws ParseException
      */
-    public static List<String> categoriseIAViewSolrDocument(String catdocref) throws IOException, ParseException {
+    public List<String> categoriseIAViewSolrDocument(String catdocref) throws IOException, ParseException {
 	// TODO 2 do not instantiate several indexReaders for the same index
 	Indexer indexer = new Indexer();
 	IndexReader indexReader = indexer.getIndexReader(CatConstants.IAVIEW_INDEX);
@@ -190,8 +191,8 @@ public class Categoriser {
 
     }
 
-    private static TopDocs searchIAViewIndexByFieldAndPhrase(String field, String value, int numHits)
-	    throws IOException, ParseException {
+    private TopDocs searchIAViewIndexByFieldAndPhrase(String field, String value, int numHits) throws IOException,
+	    ParseException {
 	Indexer indexer = new Indexer();
 	IndexReader indexReader = indexer.getIndexReader(CatConstants.IAVIEW_INDEX);
 	IndexSearcher searcher = new IndexSearcher(indexReader);
@@ -206,7 +207,7 @@ public class Categoriser {
      * 
      * @throws IOException
      */
-    public static void categoriseIAViewsFromSolr() throws IOException {
+    public void categoriseIAViewsFromSolr() throws IOException {
 
 	// TODO 1 insert results in a new database/index
 
@@ -250,22 +251,22 @@ public class Categoriser {
      * 
      * @throws IOException
      */
-    @Deprecated
-    private static void categoriseIAsFromMongoDb() throws IOException {
-
-	MongoAccess mongoAccess = new MongoAccess();
-
-	DBCollection dbCollection = mongoAccess
-		.getMongoCollection(CatConstants.MONGO_IA_DB, CatConstants.MONGO_IA_COLL);
-	DBCursor cursor = dbCollection.find();
-
-	for (DBObject doc : cursor) {
-	    categoriseIAMongoDocument(doc.get(InformationAssetFields.IAID.toString()).toString());
-	}
-
-	logger.debug("Categorisation finished");
-
-    }
+//    @Deprecated
+//    private void categoriseIAsFromMongoDb() throws IOException {
+//
+//	MongoAccess mongoAccess = new MongoAccess();
+//
+//	DBCollection dbCollection = mongoAccess
+//		.getMongoCollection(CatConstants.MONGO_IA_DB, CatConstants.MONGO_IA_COLL);
+//	DBCursor cursor = dbCollection.find();
+//
+//	for (DBObject doc : cursor) {
+//	    categoriseIAMongoDocument(doc.get(InformationAssetFields.IAID.toString()).toString());
+//	}
+//
+//	logger.debug("Categorisation finished");
+//
+//    }
 
     /**
      * run More Like This process on a document by comparing its description to
@@ -284,7 +285,7 @@ public class Categoriser {
     // TODO 1 check and update fields that are being retrieved to create
     // training set, used for MLT (run MLT on title, context desc and desc at
     // least. returns results by score not from a fixed number)
-    public static List<String> runMlt(String modelPath, Reader reader, int maxResults) throws IOException {
+    public List<String> runMlt(String modelPath, Reader reader, int maxResults) throws IOException {
 
 	Directory directory = FSDirectory.open(new File(modelPath));
 
