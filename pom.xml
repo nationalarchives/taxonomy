@@ -17,6 +17,8 @@
 	<properties>
 		<spring.boot.version>1.1.9.RELEASE</spring.boot.version>
 		<java.version>1.7</java.version>
+		<!-- To run cat application with 'mvn springboot:run' and use spring loaded  -->
+    	<start-class>gov.tna.discovery.taxonomy.WSApplication</start-class>
 	</properties>
 
 

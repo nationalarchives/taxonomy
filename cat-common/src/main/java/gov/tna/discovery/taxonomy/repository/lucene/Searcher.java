@@ -18,14 +18,17 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermRangeFilter;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.util.BytesRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Searcher {
-    
-//    private static final Logger logger = LoggerFactory.getLogger(Searcher.class);
+
+    // private static final Logger logger =
+    // LoggerFactory.getLogger(Searcher.class);
 
     public Document getDoc(ScoreDoc scoreDoc) throws IOException {
 	File file = new File(CatConstants.IAVIEW_INDEX);
@@ -38,7 +41,8 @@ public class Searcher {
 	return hitDoc;
     }
 
-    public List<InformationAssetView> performSearch(String queryString, int size) throws IOException, ParseException {
+    public List<InformationAssetView> performSearch(String queryString, Float mimimumScore, Integer size,
+	    ScoreDoc afterDoc) throws IOException, ParseException {
 
 	File file = new File(CatConstants.IAVIEW_INDEX);
 	Analyzer analyzer = new WhitespaceAnalyzer(CatConstants.LUCENE_VERSION);
@@ -48,15 +52,26 @@ public class Searcher {
 	QueryParser parser = new QueryParser(CatConstants.LUCENE_VERSION,
 		InformationAssetViewFields.DESCRIPTION.toString(), analyzer);
 	Query query = parser.parse(queryString);
-	TopDocs topDocs = isearcher.search(query, size);
+	TopDocs topDocs;
+	if (afterDoc != null) {
+	    topDocs = isearcher.searchAfter(afterDoc, query, size);
+	} else {
+	    topDocs = isearcher.search(query, size);
+	}
 	List<InformationAssetView> docs = new ArrayList<InformationAssetView>();
 	if (topDocs.totalHits <= size) {
 	    size = topDocs.totalHits;
 	}
 	for (int i = 0; i < size; i++) {
 	    ScoreDoc scoreDoc = topDocs.scoreDocs[i];
+	    if (mimimumScore!=null && scoreDoc.score<mimimumScore){
+		//FIXME JCT use HitCollector instead? to return the total number of results later
+		break;
+	    }
 	    Document hitDoc = isearcher.doc(scoreDoc.doc);
 	    InformationAssetView assetView = new InformationAssetView();
+	    assetView.setDoc(scoreDoc.doc);
+	    assetView.setShardIndex(scoreDoc.shardIndex);
 	    assetView.set_id(hitDoc.get(InformationAssetViewFields._id.toString()));
 	    assetView.setCATDOCREF(hitDoc.get(InformationAssetViewFields.CATDOCREF.toString()));
 	    assetView.setTITLE(hitDoc.get(InformationAssetViewFields.TITLE.toString()));

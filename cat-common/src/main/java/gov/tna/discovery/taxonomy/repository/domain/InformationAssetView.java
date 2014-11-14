@@ -29,6 +29,27 @@ public class InformationAssetView {
 	public void setScore(float score) {
 		this.score = score;
 	}
+	
+	private Integer shardIndex;
+	
+	
+	public Integer getShardIndex() {
+	    return shardIndex;
+	}
+
+	public void setShardIndex(Integer shardIndex) {
+	    this.shardIndex = shardIndex;
+	}
+
+	private Integer doc;
+	
+	public Integer getDoc() {
+	    return doc;
+	}
+
+	public void setDoc(Integer doc) {
+	    this.doc = doc;
+	}
 
 	// category
 	private List<String> cids;

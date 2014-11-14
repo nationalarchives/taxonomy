@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import gov.tna.discovery.taxonomy.repository.lucene.Indexer;
 import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
 import gov.tna.discovery.taxonomy.repository.mongo.MongoAccess;
+import gov.tna.discovery.taxonomy.repository.mongo.MongoInterface;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -82,7 +83,8 @@ public class Categoriser {
 	for (Category category : categories) {
 	    List<InformationAssetView> trainingSet;
 	    try {
-		trainingSet = searcher.performSearch(category.getQUERY(), trainingSetSize);
+		//FIXME JCT add score
+		trainingSet = searcher.performSearch(category.getQUERY(), null, trainingSetSize, null);
 		logger.debug(".createTrainingSet: Category=" + category.getCATEGORY() + ", found "
 			+ trainingSet.size() + " result(s)");
 		if (trainingSet.size() > 0) {
@@ -124,7 +126,7 @@ public class Categoriser {
     @Deprecated
     private static void categoriseIAMongoDocument(String catdocref) throws IOException {
 
-	MongoAccess mongoAccess = new MongoAccess();
+	MongoInterface mongoAccess = new MongoAccess();
 
 	InformationAsset informationAsset = mongoAccess.getInformationAsset(catdocref);
 

@@ -9,9 +9,6 @@
 	<artifactId>taxonomy-cli</artifactId>
 	<name>Categorisation CLI</name>
 	<packaging>jar</packaging>
-	<properties>
-		<lucene.version>4.6.1</lucene.version>
-	</properties>
 
 	<dependencies>
 		<dependency>

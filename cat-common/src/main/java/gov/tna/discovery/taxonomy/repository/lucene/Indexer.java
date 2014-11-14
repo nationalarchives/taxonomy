@@ -8,6 +8,8 @@ import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
@@ -104,6 +106,7 @@ public class Indexer {
 	writer.deleteAll();
 
 	DBCursor cursor = collection.find();
+	List<TrainingDocument> trainingDocuments = new ArrayList<TrainingDocument>();
 	try {
 	    while (cursor.hasNext()) {
 		BasicDBObject dbObject = (BasicDBObject) cursor.next();
@@ -114,6 +117,7 @@ public class Indexer {
 			.replaceAll("\\<.*?>", ""));
 		trainingDocument.setTitle(dbObject.getString(InformationAssetViewFields.TITLE.toString()).replaceAll(
 			"\\<.*?>", ""));
+		trainingDocuments.add(trainingDocument);
 		indexTrainingSet(trainingDocument, writer);
 	    }
 	} finally {

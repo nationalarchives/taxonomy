@@ -13,5 +13,14 @@ public class WSApplication {
         SpringApplication.run(WSApplication.class, args);
     }
     
+//    @Bean
+//    public EmbeddedServletContainerFactory servletContainer() {
+//	JettyEmbeddedServletContainerFactory factory = new JettyEmbeddedServletContainerFactory();
+//        factory.setPort(8080);
+//        factory.setSessionTimeout(10, TimeUnit.MINUTES);
+//        factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notfound.html"));
+//        return factory;
+//    }
+    
     
 }
