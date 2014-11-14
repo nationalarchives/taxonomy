@@ -37,6 +37,7 @@ public class Searcher {
 	return hitDoc;
     }
 
+    //FIXME 0 redo pagination, use int skip instead of search after
     public List<InformationAssetView> performSearch(String queryString, Float mimimumScore, Integer size,
 	    ScoreDoc afterDoc) throws IOException, ParseException {
 

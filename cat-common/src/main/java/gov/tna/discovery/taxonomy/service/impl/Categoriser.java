@@ -58,20 +58,6 @@ public class Categoriser {
     @Autowired
     Indexer indexer;
 
-    /**
-     * Create index of IAViews from mongodb collection InformationAsset</br> NOT
-     * TO USE ATM: taken from Paul
-     * 
-     * @throws IOException
-     */
-//    @Deprecated
-//    public void createIndex() throws IOException {
-//
-//	Indexer indexer = new Indexer();
-//	indexer.buildIndex();
-//	logger.debug("Finished building index.");
-//    }
-
     public void createTrainingSet(int trainingSetSize) throws IOException, ParseException {
 	logger.debug(".createTrainingSet : START");
 
@@ -104,6 +90,8 @@ public class Categoriser {
 	    } catch (ParseException e) {
 		// TODO 1 several errors occur while creating the training set,
 		// to investigate
+		// some queries are not valid: paul takes care of them.
+		// Some queries have wildcards and lucene doesnt accept them: to enable.
 		logger.debug("[ERROR] .createTrainingSet< An error occured for category: " + category.toString());
 		logger.debug("[ERROR] .createTrainingSet< Error message: " + e.getMessage());
 	    }
@@ -117,38 +105,6 @@ public class Categoriser {
 	logger.debug(".createTrainingIndex : END");
     }
 
-    /**
-     * categorise a document by running the MLT process against the training set
-     * 
-     * @param catdocref
-     *            IAID
-     * @throws IOException
-     */
-//    @Deprecated
-//    private void categoriseIAMongoDocument(String catdocref) throws IOException {
-//
-//	MongoInterface mongoAccess = new MongoAccess();
-//
-//	InformationAsset informationAsset = mongoAccess.getInformationAsset(catdocref);
-//
-//	Categoriser categoriser = new Categoriser();
-//	Reader reader = new StringReader(informationAsset.getDescription());
-//	List<String> result = categoriser.runMlt(CatConstants.TRAINING_INDEX, reader, 100);
-//
-//	logger.debug("DOCUMENT");
-//	logger.debug("------------------------");
-//	logger.debug("TITLE: " + informationAsset.getTitle());
-//	logger.debug("IAID: " + informationAsset.getCatdocref());
-//	logger.debug("DESCRIPTION: " + informationAsset.getDescription());
-//	logger.debug("");
-//	for (String category : result) {
-//	    logger.debug("CATEGORY: " + category);
-//	}
-//	logger.debug("------------------------");
-//
-//	logger.debug("");
-//
-//    }
 
     /**
      * categorise a document by running the MLT process against the training set
@@ -246,27 +202,6 @@ public class Categoriser {
 
     }
 
-    /**
-     * Categorise the whole IA collection
-     * 
-     * @throws IOException
-     */
-//    @Deprecated
-//    private void categoriseIAsFromMongoDb() throws IOException {
-//
-//	MongoAccess mongoAccess = new MongoAccess();
-//
-//	DBCollection dbCollection = mongoAccess
-//		.getMongoCollection(CatConstants.MONGO_IA_DB, CatConstants.MONGO_IA_COLL);
-//	DBCursor cursor = dbCollection.find();
-//
-//	for (DBObject doc : cursor) {
-//	    categoriseIAMongoDocument(doc.get(InformationAssetFields.IAID.toString()).toString());
-//	}
-//
-//	logger.debug("Categorisation finished");
-//
-//    }
 
     /**
      * run More Like This process on a document by comparing its description to

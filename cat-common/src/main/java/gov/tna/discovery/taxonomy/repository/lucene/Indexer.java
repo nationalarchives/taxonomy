@@ -21,8 +21,6 @@ import org.apache.lucene.store.SimpleFSDirectory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-//TODO 4 all those methods do not require context and could be static
-//TODO 4 use private methods where appropriate
 @Service
 public class Indexer {
 
@@ -72,8 +70,6 @@ public class Indexer {
 	IndexReader indexReader = null;
 
 	if (indexReader == null) {
-//	    Analyzer analyzer = new WhitespaceAnalyzer(CatConstants.LUCENE_VERSION);
-//	    IndexWriterConfig config = new IndexWriterConfig(CatConstants.LUCENE_VERSION, analyzer);
 	    File file = new File(indexDirectory);
 	    SimpleFSDirectory index = new SimpleFSDirectory(file);
 	    // TODO 2 make sure it does not get the deleted elements
@@ -136,76 +132,4 @@ public class Indexer {
 	writer.addDocument(doc);
     }
 
-    /**
-     * build index of IAViews from mongodb of IA
-     * 
-     * @throws IOException
-     */
-    // @Deprecated
-    // public void buildIndex() throws IOException {
-    //
-    // MongoAccess mongoAccess = new MongoAccess();
-    // DBCollection collection =
-    // mongoAccess.getMongoCollection(CatConstants.MONGO_IA_DB,
-    // CatConstants.MONGO_IA_COLL);
-    // DBCursor cursor = collection.find();
-    // try {
-    // while (cursor.hasNext()) {
-    // BasicDBObject dbObject = (BasicDBObject) cursor.next();
-    // String _id = dbObject.getString(InformationAssetFields._id.toString());
-    // String catdocref =
-    // dbObject.getString(InformationAssetFields.IAID.toString());
-    // String title =
-    // dbObject.getString(InformationAssetFields.Title.toString()).replaceAll("\\<.*?>",
-    // "");
-    // DBObject scopecontent = (BasicDBObject)
-    // dbObject.get(InformationAssetFields.ScopeContent.toString());
-    // String description = (String)
-    // scopecontent.get(InformationAssetFields.Description.toString())
-    // .toString().replaceAll("\\<.*?>", "");
-    // logger.debug(description);
-    // String urlparams =
-    // dbObject.getString(InformationAssetFields.IAID.toString());
-    // InformationAssetViewFull informationAssetView = new
-    // InformationAssetViewFull();
-    // informationAssetView.set_id(_id);
-    // informationAssetView.setCATDOCREF(catdocref);
-    // informationAssetView.setTITLE(title);
-    // informationAssetView.setDESCRIPTION(description);
-    // informationAssetView.setURLPARAMS(urlparams);
-    // indexAsset(informationAssetView);
-    // logger.debug("IA=" + catdocref + " added to index");
-    // }
-    // } finally {
-    // cursor.close();
-    // }
-    //
-    // }
-
-    /**
-     * Create a lucene document from an IAView object and add it to the IAIndex
-     * index
-     * 
-     * @param asset
-     * @throws IOException
-     */
-    // @Deprecated
-    // public void indexAsset(InformationAssetViewFull asset) throws IOException
-    // {
-    // IndexWriter writer = getIndexWriter(false, CatConstants.IAVIEW_INDEX);
-    // Document doc = new Document();
-    // doc.add(new TextField(InformationAssetViewFields._id.toString(),
-    // asset.get_id(), Field.Store.YES));
-    // doc.add(new TextField(InformationAssetViewFields.CATDOCREF.toString(),
-    // asset.getCATDOCREF(), Field.Store.YES));
-    // doc.add(new TextField(InformationAssetViewFields.TITLE.toString(),
-    // asset.getTITLE(), Field.Store.YES));
-    // doc.add(new TextField(InformationAssetViewFields.DESCRIPTION.toString(),
-    // asset.getDESCRIPTION(),
-    // Field.Store.YES));
-    // doc.add(new TextField(InformationAssetViewFields.URLPARAMS.toString(),
-    // asset.getURLPARAMS(), Field.Store.YES));
-    // writer.addDocument(doc);
-    // writer.close();
-    // }
 }
