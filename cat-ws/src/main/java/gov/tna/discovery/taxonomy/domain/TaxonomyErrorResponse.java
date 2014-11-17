@@ -1,33 +1,33 @@
 package gov.tna.discovery.taxonomy.domain;
 
 public class TaxonomyErrorResponse {
-    private TaxonomyErrorType errorType;
-    private String errorMessage;
+    private TaxonomyErrorType error;
+    private String message;
 
     public TaxonomyErrorResponse() {
 	super();
     }
 
-    public TaxonomyErrorResponse(TaxonomyErrorType errorType, String errorMessage) {
+    public TaxonomyErrorResponse(TaxonomyErrorType error, String message) {
 	super();
-	this.errorType = errorType;
-	this.errorMessage = errorMessage;
+	this.error = error;
+	this.message = message;
     }
 
-    public TaxonomyErrorType getErrorType() {
-	return errorType;
+    public TaxonomyErrorType getError() {
+	return error;
     }
 
-    public void setErrorType(TaxonomyErrorType errorType) {
-	this.errorType = errorType;
+    public void setError(TaxonomyErrorType error) {
+	this.error = error;
     }
 
-    public String getErrorMessage() {
-	return errorMessage;
+    public String getMessage() {
+	return message;
     }
 
-    public void setErrorMessage(String errorMessage) {
-	this.errorMessage = errorMessage;
+    public void setMessage(String message) {
+	this.message = message;
     }
 
 }

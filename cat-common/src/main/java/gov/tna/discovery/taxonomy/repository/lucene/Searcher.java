@@ -37,7 +37,7 @@ public class Searcher {
 	return hitDoc;
     }
 
-    // FIXME 0 redo pagination, use int skip instead of search after
+    // FIXME 0 return the number of results? > if minimumScore provided, requires to go through the whole collection of topdocs
     public List<InformationAssetView> performSearch(String queryString, Float mimimumScore, Integer limit,
 	    Integer offset) throws IOException, ParseException {
 

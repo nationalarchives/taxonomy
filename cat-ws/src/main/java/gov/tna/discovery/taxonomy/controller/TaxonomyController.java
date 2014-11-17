@@ -18,13 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @EnableAutoConfiguration
 @RequestMapping("/taxonomy")
+//TODO create controller unit tests
 public class TaxonomyController {
     
 //    private static final Logger logger = LoggerFactory.getLogger(TaxonomyController.class);
 
     @RequestMapping("/hello")
     String home() {
-	return "Hello World!";
+	return "Hello World";
     }
 
     @RequestMapping(value="/search", method = RequestMethod.POST, consumes="application/json", produces="application/json")
