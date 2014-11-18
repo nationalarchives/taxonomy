@@ -2,60 +2,55 @@ package gov.tna.discovery.taxonomy.controller;
 
 import gov.tna.discovery.taxonomy.domain.SearchIAViewRequest;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
+import gov.tna.discovery.taxonomy.service.TaxonomyWSService;
+import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
+import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
 
 import java.util.List;
 
-import org.apache.lucene.queryparser.classic.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @EnableAutoConfiguration
 @RequestMapping("/taxonomy")
-//TODO create controller unit tests
 public class TaxonomyController {
-    
-//    private static final Logger logger = LoggerFactory.getLogger(TaxonomyController.class);
 
-    @RequestMapping("/hello")
-    String home() {
-	return "Hello World";
-    }
+    // private static final Logger logger =
+    // LoggerFactory.getLogger(TaxonomyController.class);
 
-    @RequestMapping(value="/search", method = RequestMethod.POST, consumes="application/json", produces="application/json")
+    @Autowired
+    private TaxonomyWSService service;
+
+    @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     @ResponseBody
     List<InformationAssetView> searchIAView(@RequestBody SearchIAViewRequest searchRequest) throws Exception {
-	Searcher searcher = new Searcher();
-	if(StringUtils.isEmpty(searchRequest.getCategoryQuery())){
-	    throw new ParseException("categoryQuery should be provided and not empty");
+	if (StringUtils.isEmpty(searchRequest.getCategoryQuery())) {
+	    throw new TaxonomyException(TaxonomyErrorType.INVALID_CATEGORY_QUERY,
+		    "categoryQuery should be provided and not empty");
 	}
-	if(searchRequest.getLimit()==null){
+	if (searchRequest.getLimit() == null) {
 	    searchRequest.setLimit(10);
 	}
-	if(searchRequest.getOffset()==null){
+	if (searchRequest.getOffset() == null) {
 	    searchRequest.setOffset(0);
 	}
-	return searcher.performSearch(searchRequest.getCategoryQuery(), searchRequest.getScore(), searchRequest.getLimit(), searchRequest.getOffset());
+	return service.performSearch(searchRequest.getCategoryQuery(), searchRequest.getScore(),
+		searchRequest.getLimit(), searchRequest.getOffset());
     }
-    
 
-    
-    @RequestMapping("/publish")
-    String publish(Object category) {
-	return "{\"status:\"ok ?\"}";
-    }
-    
-
-    
-    @RequestMapping("/test")
-    String etst(Object category) {
-	return "{\"test:\"ok ?\"}";
+    @RequestMapping(value = "/publish", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    String publish(@RequestParam(value = "catId") String categoryId) {
+	service.publishUpdateOnCategory(categoryId, null);
+	return "{\"status:\"OK\"}";
     }
 
 }

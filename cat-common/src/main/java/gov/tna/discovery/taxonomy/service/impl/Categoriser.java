@@ -9,6 +9,8 @@ import gov.tna.discovery.taxonomy.repository.lucene.Indexer;
 import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
+import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
+import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +49,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class Categoriser {
 
-    private static final Logger logger = LoggerFactory.getLogger(Indexer.class);
+    private static final Logger logger = LoggerFactory.getLogger(Categoriser.class);
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -58,53 +60,8 @@ public class Categoriser {
     @Autowired
     Indexer indexer;
 
-    public void createTrainingSet(int trainingSetSize) throws IOException, ParseException {
-	logger.debug(".createTrainingSet : START");
-
-	Iterator<Category> categoryIterator = categoryRepository.findAll().iterator();
-	Searcher searcher = new Searcher();
-
-	// empty collection
-	trainingDocumentRepository.deleteAll();
-
-	while (categoryIterator.hasNext()) {
-	    Category category = categoryIterator.next();
-	    List<InformationAssetView> IAViewResults;
-	    try {
-		// FIXME JCT add score
-		IAViewResults = searcher.performSearch(category.getQry(), null, trainingSetSize, 0);
-		logger.debug(".createTrainingSet: Category=" + category.getQry() + ", found " + IAViewResults.size()
-			+ " result(s)");
-		if (IAViewResults.size() > 0) {
-
-		    for (InformationAssetView iaView : IAViewResults) {
-			TrainingDocument trainingDocument = new TrainingDocument();
-			trainingDocument.setCATEGORY(category.getQry());
-			trainingDocument.setDESCRIPTION(iaView.getDESCRIPTION());
-			trainingDocument.setTITLE(iaView.getTITLE());
-			trainingDocumentRepository.save(trainingDocument);
-			logger.debug(trainingDocument.getCATEGORY() + ":"
-				+ trainingDocument.getTITLE().replaceAll("\\<.*?>", ""));
-		    }
-		}
-	    } catch (ParseException e) {
-		// TODO 1 several errors occur while creating the training set,
-		// to investigate
-		// some queries are not valid: paul takes care of them.
-		// Some queries have wildcards and lucene doesnt accept them: to
-		// enable.
-		logger.debug("[ERROR] .createTrainingSet< An error occured for category: " + category.toString());
-		logger.debug("[ERROR] .createTrainingSet< Error message: " + e.getMessage());
-	    }
-	}
-	logger.debug(".createTrainingSet : END");
-    }
-
-    public void indexTrainingSet() throws IOException {
-	logger.debug(".createTrainingIndex : START");
-	indexer.buildTrainingIndex();
-	logger.debug(".createTrainingIndex : END");
-    }
+    @Autowired
+    TrainingSetService trainingSetService;
 
     /**
      * categorise a document by running the MLT process against the training set
@@ -116,7 +73,6 @@ public class Categoriser {
      */
     public List<String> categoriseIAViewSolrDocument(String catdocref) throws IOException, ParseException {
 	// TODO 2 do not instantiate several indexReaders for the same index
-	Indexer indexer = new Indexer();
 	IndexReader indexReader = indexer.getIndexReader(CatConstants.IAVIEW_INDEX);
 	// TODO 4 CATDOCREF in schema.xml should be stored as string?
 	// and not text_gen: do not need to be tokenized. makes search by
@@ -149,7 +105,6 @@ public class Categoriser {
 
     private TopDocs searchIAViewIndexByFieldAndPhrase(String field, String value, int numHits) throws IOException,
 	    ParseException {
-	Indexer indexer = new Indexer();
 	IndexReader indexReader = indexer.getIndexReader(CatConstants.IAVIEW_INDEX);
 	IndexSearcher searcher = new IndexSearcher(indexReader);
 
@@ -167,7 +122,6 @@ public class Categoriser {
 
 	// TODO 1 insert results in a new database/index
 
-	Indexer indexer = new Indexer();
 	IndexReader indexReader = indexer.getIndexReader(CatConstants.IAVIEW_INDEX);
 	for (int i = 0; i < indexReader.maxDoc(); i++) {
 	    // TODO 2 Add concurrency: categorize several documents at the same

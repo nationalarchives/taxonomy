@@ -1,5 +1,7 @@
 package gov.tna.discovery.taxonomy.domain;
 
+import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
+
 public class TaxonomyErrorResponse {
     private TaxonomyErrorType error;
     private String message;

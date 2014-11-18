@@ -2,61 +2,85 @@ package gov.tna.discovery.taxonomy.repository.domain.mongo;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection="categories")
+@Document(collection = "categories")
 public class Category {
     @Id
     private String _id;
-    private String CIAID;
+    @Field(value = "CIAID")
+    private String ciaid;
     private String qry;
     private String ttl;
-    private Float SC;
+    @Field(value = "SC")
+    private Float sc;
+    private Boolean lck;
+
     public String get_id() {
-        return _id;
+	return _id;
     }
+
     public void set_id(String _id) {
-        this._id = _id;
+	this._id = _id;
     }
-    public String getCIAID() {
-        return CIAID;
-    }
-    public void setCIAID(String cIAID) {
-        CIAID = cIAID;
-    }
+
     public String getQry() {
-        return qry;
+	return qry;
     }
+
     public void setQry(String qry) {
-        this.qry = qry;
+	this.qry = qry;
     }
+
     public String getTtl() {
-        return ttl;
+	return ttl;
     }
+
     public void setTtl(String ttl) {
-        this.ttl = ttl;
+	this.ttl = ttl;
     }
-    public Float getSC() {
-        return SC;
+
+    public Boolean getLck() {
+	return lck;
     }
-    public void setSC(Float sC) {
-        SC = sC;
+
+    public void setLck(Boolean lck) {
+	this.lck = lck;
     }
+
+    public String getCiaid() {
+	return ciaid;
+    }
+
+    public void setCiaid(String ciaid) {
+	this.ciaid = ciaid;
+    }
+
+    public Float getSc() {
+	return sc;
+    }
+
+    public void setSc(Float sc) {
+	this.sc = sc;
+    }
+
     @Override
     public String toString() {
 	StringBuilder builder = new StringBuilder();
 	builder.append("Category [_id=");
 	builder.append(_id);
-	builder.append(", CIAID=");
-	builder.append(CIAID);
+	builder.append(", ciaid=");
+	builder.append(ciaid);
 	builder.append(", qry=");
 	builder.append(qry);
 	builder.append(", ttl=");
 	builder.append(ttl);
-	builder.append(", SC=");
-	builder.append(SC);
+	builder.append(", sc=");
+	builder.append(sc);
+	builder.append(", lck=");
+	builder.append(lck);
 	builder.append("]");
 	return builder.toString();
     }
-
 
 }
