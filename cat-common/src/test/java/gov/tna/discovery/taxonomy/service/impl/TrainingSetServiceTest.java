@@ -1,7 +1,9 @@
-package gov.tna.discovery.taxonomy;
+package gov.tna.discovery.taxonomy.service.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import gov.tna.discovery.taxonomy.CatConstants;
+import gov.tna.discovery.taxonomy.ConfigurationTest;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.repository.lucene.Indexer;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;

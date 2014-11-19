@@ -1,5 +1,7 @@
 package gov.tna.discovery.taxonomy;
 
+import gov.tna.discovery.taxonomy.CatConstants;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +20,7 @@ import com.mongodb.Mongo;
 @EnableMongoRepositories
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 @EnableConfigurationProperties
-class MongoConfigurationTest {
+public class MongoConfigurationTest {
 
     private String host;
 
