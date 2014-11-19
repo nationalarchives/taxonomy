@@ -40,8 +40,8 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
      * publishUpdateOnCategory(java.lang.String, java.lang.Float)
      */
     @Override
-    public void publishUpdateOnCategory(String categoryId, Float fixedLimitScore) {
-	Category category = categoryRepository.findOne(categoryId);
+    public void publishUpdateOnCategory(String ciaid, Float fixedLimitScore) {
+	Category category = categoryRepository.findByCiaid(ciaid);
 
 	checkLockOnCategory(category);
 

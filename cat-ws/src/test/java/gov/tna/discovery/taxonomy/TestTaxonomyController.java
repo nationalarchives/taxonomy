@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import gov.tna.discovery.taxonomy.domain.PublishRequest;
 import gov.tna.discovery.taxonomy.domain.SearchIAViewRequest;
 import gov.tna.discovery.taxonomy.domain.TaxonomyErrorResponse;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +45,7 @@ public class TestTaxonomyController {
 
     private static final String WS_PATH_SEARCH = "taxonomy/search";
 
-    private static final String WS_PATH_PUBLISH = "taxonomy/publish?catId={catId}";
-
-    private static final String PUBLISH_CAT_ID_PARAM = "catId";
+    private static final String WS_PATH_PUBLISH = "taxonomy/publish";
 
     // private static final Logger logger =
     // LoggerFactory.getLogger(TestTaxonomyController.class);
@@ -92,42 +92,52 @@ public class TestTaxonomyController {
     public final void testPublicationOKandRunning() {
 	Category category = catRepo.findOne(DISEASE_CATEGORY_ID);
 
-	Map<String, String> urlVariables = new HashMap<String, String>();
-	urlVariables.put(PUBLISH_CAT_ID_PARAM, DISEASE_CATEGORY_ID);
-	ResponseEntity<String> response = restTemplate.getForEntity(WS_URL + WS_PATH_PUBLISH, String.class,
-		urlVariables);
+	PublishRequest publishRequest = new PublishRequest(category.getCiaid());
+	ResponseEntity<String> response = restTemplate.postForEntity(WS_URL + WS_PATH_PUBLISH, publishRequest,
+		String.class);
+
 	assertThat(response.getBody(), is(notNullValue()));
 	assertThat(response.getBody(), containsString("OK"));
     }
 
     @Test
     public final void testPublicationFailedBecauseOfLock() {
+	String ciaid = getLockedCategoryId();
 
-	Category category = catRepo.findOne(DISEASE_CATEGORY_ID);
-	category.setLck(true);
-	catRepo.save(category);
+	PublishRequest publishRequest = new PublishRequest(ciaid);
+	ResponseEntity<TaxonomyErrorResponse> response = restTemplate.postForEntity(WS_URL + WS_PATH_PUBLISH,
+		publishRequest, TaxonomyErrorResponse.class);
 
-	Map<String, String> urlVariables = new HashMap<String, String>();
-	urlVariables.put(PUBLISH_CAT_ID_PARAM, DISEASE_CATEGORY_ID);
-	ResponseEntity<TaxonomyErrorResponse> response = restTemplate.getForEntity(WS_URL + WS_PATH_PUBLISH,
-		TaxonomyErrorResponse.class, urlVariables);
 	assertThat(response.getBody(), is(notNullValue()));
 	assertThat(response.getBody().getError(), equalTo(TaxonomyErrorType.LOCKED_CATEGORY));
 
     }
 
+    private String getLockedCategoryId() {
+	Category category = catRepo.findOne(DISEASE_CATEGORY_ID);
+	category.setLck(true);
+	catRepo.save(category);
+	return category.getCiaid();
+    }
+
     @Test
     public final void testPublicationFailedBecauseOfInvalidQuery() {
 
+	String ciaid = getCategoryIdWithInvalidQuery();
+
+	PublishRequest publishRequest = new PublishRequest(ciaid);
+	ResponseEntity<TaxonomyErrorResponse> response = restTemplate.postForEntity(WS_URL + WS_PATH_PUBLISH,
+		publishRequest, TaxonomyErrorResponse.class);
+
+	assertThat(response.getBody(), is(notNullValue()));
+	assertThat(response.getBody().getError(), equalTo(TaxonomyErrorType.INVALID_CATEGORY_QUERY));
+    }
+
+    private String getCategoryIdWithInvalidQuery() {
 	Category category = catRepo.findOne(DISEASE_CATEGORY_ID);
 	category.setQry("\"venereal disease\" OR");
 	catRepo.save(category);
-
-	Map<String, String> urlVariables = new HashMap<String, String>();
-	urlVariables.put(PUBLISH_CAT_ID_PARAM, DISEASE_CATEGORY_ID);
-	ResponseEntity<TaxonomyErrorResponse> response = restTemplate.getForEntity(WS_URL + WS_PATH_PUBLISH,
-		TaxonomyErrorResponse.class, urlVariables);
-	assertThat(response.getBody(), is(notNullValue()));
-	assertThat(response.getBody().getError(), equalTo(TaxonomyErrorType.INVALID_CATEGORY_QUERY));
+	String ciaid = category.getCiaid();
+	return ciaid;
     }
 }

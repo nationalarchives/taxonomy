@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface TaxonomyWSService {
 
-    public abstract void publishUpdateOnCategory(String categoryId, Float fixedLimitScore);
+    public abstract void publishUpdateOnCategory(String ciaid, Float fixedLimitScore);
 
     public abstract List<InformationAssetView> performSearch(String categoryQuery, Float score, Integer limit,
 	    Integer offset);

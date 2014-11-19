@@ -49,7 +49,7 @@ public class TrainingSetService {
 	try {
 	    // FIXME JCT Iterate instead of taking only 100 elements
 	    IAViewResults = searcher.performSearch(category.getQry(), (fixedLimitScore != null ? fixedLimitScore
-		    : category.getSc()), 100, 0);
+		    : category.getSc()), 1000, 0);
 	    logger.debug(".updateTrainingSetForCategory: Category=" + category.getTtl() + ", found "
 		    + IAViewResults.size() + " result(s)");
 	    if (IAViewResults.size() > 0) {

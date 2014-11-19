@@ -1,5 +1,6 @@
 package gov.tna.discovery.taxonomy.controller;
 
+import gov.tna.discovery.taxonomy.domain.PublishRequest;
 import gov.tna.discovery.taxonomy.domain.SearchIAViewRequest;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.service.TaxonomyWSService;
@@ -23,13 +24,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/taxonomy")
 public class TaxonomyController {
 
+    private static final String STATUS_OK_JSON_RESPONSE = "{\"status\":\"OK\"}";
+
+    private static final String APPLICATION_JSON = "application/json";
     // private static final Logger logger =
     // LoggerFactory.getLogger(TaxonomyController.class);
 
     @Autowired
     private TaxonomyWSService service;
 
-    @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+    @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ResponseBody
     List<InformationAssetView> searchIAView(@RequestBody SearchIAViewRequest searchRequest) throws Exception {
 	if (StringUtils.isEmpty(searchRequest.getCategoryQuery())) {
@@ -46,11 +50,11 @@ public class TaxonomyController {
 		searchRequest.getLimit(), searchRequest.getOffset());
     }
 
-    @RequestMapping(value = "/publish", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/publish", method = RequestMethod.POST, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ResponseBody
-    String publish(@RequestParam(value = "catId") String categoryId) {
-	service.publishUpdateOnCategory(categoryId, null);
-	return "{\"status:\"OK\"}";
+    String publish(@RequestBody PublishRequest publishRequest) {
+	service.publishUpdateOnCategory(publishRequest.getCiaid(), null);
+	return STATUS_OK_JSON_RESPONSE;
     }
 
 }
