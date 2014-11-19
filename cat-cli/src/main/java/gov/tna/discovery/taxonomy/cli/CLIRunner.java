@@ -4,7 +4,9 @@ import java.io.IOException;
 
 import gov.tna.discovery.taxonomy.CLIApplication;
 import gov.tna.discovery.taxonomy.service.impl.Categoriser;
+import gov.tna.discovery.taxonomy.service.impl.TrainingSetService;
 
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +26,14 @@ public class CLIRunner implements CommandLineRunner {
     @Autowired
     Categoriser categoriser;
 
-    public void run(String... args) throws IOException {
+    @Autowired
+    TrainingSetService trainingSetService;
 
-	logger.debug("Start cat application.");
+    public void run(String... args) throws IOException, ParseException {
 
-	// categoriser.createTrainingSet(100);
+	logger.info("Start cat CLI Runner.");
+
+	// trainingSetService.createTrainingSet(0.1f);
 
 	// categoriser.indexTrainingSet();
 
@@ -36,6 +41,6 @@ public class CLIRunner implements CommandLineRunner {
 
 	categoriser.categoriseIAViewsFromSolr();
 
-	logger.debug("Stop cat application.");
+	logger.info("Stop cat CLI Runner.");
     }
 }

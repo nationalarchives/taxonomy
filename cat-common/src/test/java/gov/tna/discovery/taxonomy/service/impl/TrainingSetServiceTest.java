@@ -31,7 +31,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ConfigurationTest.class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 // TODO generate memory db with data set for testing
 public class TrainingSetServiceTest {
     private static final Logger logger = LoggerFactory.getLogger(Indexer.class);

@@ -88,12 +88,12 @@ public class Categoriser {
 
 	logger.debug("DOCUMENT");
 	logger.debug("------------------------");
-	logger.debug("TITLE: " + doc.get("TITLE"));
-	logger.debug("IAID: " + doc.get("CATDOCREF"));
-	logger.debug("DESCRIPTION: " + doc.get("DESCRIPTION"));
+	logger.debug("TITLE: {}", doc.get("TITLE"));
+	logger.debug("IAID: {}", doc.get("CATDOCREF"));
+	logger.debug("DESCRIPTION: {}", doc.get("DESCRIPTION"));
 	logger.debug("");
 	for (String category : result) {
-	    logger.debug("CATEGORY: " + category);
+	    logger.debug("CATEGORY: {}", category);
 	}
 	logger.debug("------------------------");
 
@@ -139,12 +139,12 @@ public class Categoriser {
 
 	    logger.debug("DOCUMENT");
 	    logger.debug("------------------------");
-	    logger.debug("TITLE: " + doc.get("TITLE"));
-	    logger.debug("IAID: " + doc.get("CATDOCREF"));
-	    logger.debug("DESCRIPTION: " + doc.get("DESCRIPTION"));
+	    logger.debug("TITLE: {}", doc.get("TITLE"));
+	    logger.debug("IAID: {}", doc.get("CATDOCREF"));
+	    logger.debug("DESCRIPTION: {}", doc.get("DESCRIPTION"));
 	    logger.debug("");
 	    for (String category : result) {
-		logger.debug("CATEGORY: " + category);
+		logger.info("Document {} has CATEGORY: {}", doc.get("CATDOCREF"), category);
 	    }
 	    logger.debug("------------------------");
 
