@@ -10,20 +10,22 @@ import static org.hamcrest.Matchers.notNullValue;
 import gov.tna.discovery.taxonomy.domain.PublishRequest;
 import gov.tna.discovery.taxonomy.domain.SearchIAViewRequest;
 import gov.tna.discovery.taxonomy.domain.TaxonomyErrorResponse;
+import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
+import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -38,6 +40,8 @@ import org.springframework.web.client.RestTemplate;
 @WebAppConfiguration
 @IntegrationTest({ "server.port=8085", "management.port=8085" })
 public class TestTaxonomyController {
+
+    private static final Logger logger = LoggerFactory.getLogger(TestTaxonomyController.class);
 
     private static final String WS_URL = "http://localhost:8085/";
 
@@ -56,6 +60,12 @@ public class TestTaxonomyController {
 
     @Autowired
     CategoryRepository catRepo;
+
+    @Autowired
+    TrainingDocumentRepository trainingDocRepo;
+
+    @Autowired
+    Searcher searcher;
 
     @Before
     public void setUp() throws Exception {
@@ -89,15 +99,37 @@ public class TestTaxonomyController {
     }
 
     @Test
-    public final void testPublicationOKandRunning() {
+    public final void testPublicationOKandRunning() throws InterruptedException {
 	Category category = catRepo.findOne(DISEASE_CATEGORY_ID);
 
-	PublishRequest publishRequest = new PublishRequest(category.getCiaid());
-	ResponseEntity<String> response = restTemplate.postForEntity(WS_URL + WS_PATH_PUBLISH, publishRequest,
-		String.class);
+	ResponseEntity<String> response = doPublishPostRequestOnWS(category);
 
 	assertThat(response.getBody(), is(notNullValue()));
 	assertThat(response.getBody(), containsString("OK"));
+    }
+
+    @Test
+    public final void testPublicationWasSuccesful() throws InterruptedException {
+	Category category = catRepo.findOne(DISEASE_CATEGORY_ID);
+
+	doPublishPostRequestOnWS(category);
+
+	// Thread.sleep(5000);
+	waitForAsyncPublicationToBeCompleted();
+
+	List<TrainingDocument> trainingDocs = trainingDocRepo.findByCategory(category.getTtl());
+	assertThat(trainingDocs, is(notNullValue()));
+	assertThat(trainingDocs, is(not(empty())));
+	assertThat(trainingDocs.size(), equalTo(17));
+
+	List<InformationAssetView> IAViewResults = searcher.performSearch(category.getQry(), (category.getSc()), 1000,
+		0);
+	assertThat(IAViewResults, is(notNullValue()));
+	assertThat(IAViewResults, is(not(empty())));
+	assertThat(IAViewResults.size(), equalTo(17));
+
+	logger.debug("Publication successed");
+
     }
 
     @Test
@@ -113,13 +145,6 @@ public class TestTaxonomyController {
 
     }
 
-    private String getLockedCategoryId() {
-	Category category = catRepo.findOne(DISEASE_CATEGORY_ID);
-	category.setLck(true);
-	catRepo.save(category);
-	return category.getCiaid();
-    }
-
     @Test
     public final void testPublicationFailedBecauseOfInvalidQuery() {
 
@@ -131,6 +156,27 @@ public class TestTaxonomyController {
 
 	assertThat(response.getBody(), is(notNullValue()));
 	assertThat(response.getBody().getError(), equalTo(TaxonomyErrorType.INVALID_CATEGORY_QUERY));
+    }
+
+    private void waitForAsyncPublicationToBeCompleted() throws InterruptedException {
+	Category category;
+	category = catRepo.findOne(DISEASE_CATEGORY_ID);
+	while (category.getLck() == true) {
+	    Thread.sleep(500);
+	    category = catRepo.findOne(DISEASE_CATEGORY_ID);
+	}
+    }
+
+    private ResponseEntity<String> doPublishPostRequestOnWS(Category category) {
+	PublishRequest publishRequest = new PublishRequest(category.getCiaid());
+	return restTemplate.postForEntity(WS_URL + WS_PATH_PUBLISH, publishRequest, String.class);
+    }
+
+    private String getLockedCategoryId() {
+	Category category = catRepo.findOne(DISEASE_CATEGORY_ID);
+	category.setLck(true);
+	catRepo.save(category);
+	return category.getCiaid();
     }
 
     private String getCategoryIdWithInvalidQuery() {

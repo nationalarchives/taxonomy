@@ -53,7 +53,7 @@ public class TaxonomyController {
     @RequestMapping(value = "/publish", method = RequestMethod.POST, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ResponseBody
     String publish(@RequestBody PublishRequest publishRequest) {
-	service.publishUpdateOnCategory(publishRequest.getCiaid(), null);
+	service.publishUpdateOnCategory(publishRequest.getCiaid());
 	return STATUS_OK_JSON_RESPONSE;
     }
 

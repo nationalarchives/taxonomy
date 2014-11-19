@@ -32,4 +32,15 @@ public class TaxonomyErrorResponse {
 	this.message = message;
     }
 
+    @Override
+    public String toString() {
+	StringBuilder builder = new StringBuilder();
+	builder.append("TaxonomyErrorResponse [error=");
+	builder.append(error);
+	builder.append(", message=");
+	builder.append(message);
+	builder.append("]");
+	return builder.toString();
+    }
+
 }

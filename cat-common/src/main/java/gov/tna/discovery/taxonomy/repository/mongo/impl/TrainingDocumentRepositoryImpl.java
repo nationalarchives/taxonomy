@@ -1,5 +1,6 @@
 package gov.tna.discovery.taxonomy.repository.mongo.impl;
 
+import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepositoryCustom;
 
@@ -18,7 +19,7 @@ public class TrainingDocumentRepositoryImpl implements TrainingDocumentRepositor
     @Override
     public void deleteByCategory(String categoryName) {
 	Query query = new Query(Criteria.where("CATEGORY").is(categoryName));
-	mongoTemplate.remove(query, Category.class);
+	mongoTemplate.remove(query, TrainingDocument.class);
     }
 
 }
