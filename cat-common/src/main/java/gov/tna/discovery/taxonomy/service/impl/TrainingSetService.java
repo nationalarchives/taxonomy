@@ -1,6 +1,6 @@
 package gov.tna.discovery.taxonomy.service.impl;
 
-import gov.tna.discovery.taxonomy.CatConstants;
+import gov.tna.discovery.taxonomy.config.CatConstants;
 import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
@@ -73,12 +73,6 @@ public class TrainingSetService {
 	    logger.error(".updateTrainingSetForCategory< An error occured for category: " + category.toString());
 	    logger.error(".updateTrainingSetForCategory< Error message: " + e.getMessage());
 	    throw e;
-	}
-    }
-
-    private void checkLockOnCategory(Category category) {
-	if (category.getLck() == true) {
-	    throw new TaxonomyException(TaxonomyErrorType.LOCKED_CATEGORY);
 	}
     }
 

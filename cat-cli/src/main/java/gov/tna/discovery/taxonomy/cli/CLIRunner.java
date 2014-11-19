@@ -33,13 +33,13 @@ public class CLIRunner implements CommandLineRunner {
 
 	logger.info("Start cat CLI Runner.");
 
-	// trainingSetService.createTrainingSet(0.1f);
+	trainingSetService.createTrainingSet(0.1f);
 
 	// categoriser.indexTrainingSet();
 
 	// categoriser.categoriseIAViewSolrDocument("CO 273/632/2");
 
-	categoriser.categoriseIAViewsFromSolr();
+	// categoriser.categoriseIAViewsFromSolr();
 
 	logger.info("Stop cat CLI Runner.");
     }

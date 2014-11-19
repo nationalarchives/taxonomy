@@ -2,8 +2,8 @@ package gov.tna.discovery.taxonomy.service.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import gov.tna.discovery.taxonomy.CatConstants;
 import gov.tna.discovery.taxonomy.ConfigurationTest;
+import gov.tna.discovery.taxonomy.config.CatConstants;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.repository.lucene.Indexer;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
@@ -31,6 +31,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ConfigurationTest.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 // TODO generate memory db with data set for testing
 public class TrainingSetServiceTest {
     private static final Logger logger = LoggerFactory.getLogger(Indexer.class);

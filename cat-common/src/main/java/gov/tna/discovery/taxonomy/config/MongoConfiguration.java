@@ -1,4 +1,4 @@
-package gov.tna.discovery.taxonomy;
+package gov.tna.discovery.taxonomy.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

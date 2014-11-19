@@ -1,6 +1,6 @@
 package gov.tna.discovery.taxonomy.repository.lucene;
 
-import gov.tna.discovery.taxonomy.CatConstants;
+import gov.tna.discovery.taxonomy.config.CatConstants;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;

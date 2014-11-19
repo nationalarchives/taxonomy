@@ -1,6 +1,6 @@
 package gov.tna.discovery.taxonomy;
 
-import gov.tna.discovery.taxonomy.CatConstants;
+import gov.tna.discovery.taxonomy.config.CatConstants;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
