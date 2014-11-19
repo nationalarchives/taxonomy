@@ -32,7 +32,7 @@ class MongoConfiguration {
     }
 
     public @Bean MongoDbFactory mongoDbFactory() throws Exception {
-	return new SimpleMongoDbFactory(new Mongo(), CatConstants.MONGO_TAXONOMY_DB);
+	return new SimpleMongoDbFactory(new Mongo(host), CatConstants.MONGO_TAXONOMY_DB);
     }
 
     public @Bean MongoTemplate mongoTemplate() throws Exception {

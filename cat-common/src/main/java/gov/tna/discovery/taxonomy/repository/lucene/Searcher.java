@@ -102,7 +102,7 @@ public class Searcher {
 	QueryParser qp = new QueryParser(CatConstants.LUCENE_VERSION, "CATEGORY", new WhitespaceAnalyzer(
 		CatConstants.LUCENE_VERSION));
 	try {
-	    qp.parse(QueryParser.escape(qry));
+	    qp.parse(qry);
 	} catch (ParseException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.INVALID_CATEGORY_QUERY, e);
 	}
