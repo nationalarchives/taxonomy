@@ -1,15 +1,12 @@
 package gov.tna.discovery.taxonomy;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import gov.tna.discovery.taxonomy.domain.CategoryRelevancy;
 import gov.tna.discovery.taxonomy.domain.PublishRequest;
 import gov.tna.discovery.taxonomy.domain.SearchIAViewRequest;
 import gov.tna.discovery.taxonomy.domain.TaxonomyErrorResponse;
+import gov.tna.discovery.taxonomy.domain.TestCategoriseSingleRequest;
 import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
@@ -18,6 +15,7 @@ import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.junit.After;
@@ -55,6 +53,8 @@ public class TestTaxonomyController {
     // LoggerFactory.getLogger(TestTaxonomyController.class);
 
     private static final String DISEASE_CATEGORY_ID = "541811223158321a80587e43";
+
+    private static final String WS_PATH_TEST_CATEGORISE_SINGLE = "taxonomy/testCategoriseSingle";
 
     RestTemplate restTemplate = new TestRestTemplate();
 
@@ -156,6 +156,35 @@ public class TestTaxonomyController {
 
 	assertThat(response.getBody(), is(notNullValue()));
 	assertThat(response.getBody().getError(), equalTo(TaxonomyErrorType.INVALID_CATEGORY_QUERY));
+    }
+
+    @Test
+    public final void testTestCategoriseSingleDocumentWithMissingDescription() {
+	TestCategoriseSingleRequest request = new TestCategoriseSingleRequest();
+	request.setTitle("TRINITY Church of England School.");
+	ResponseEntity<TaxonomyErrorResponse> response = restTemplate.postForEntity(WS_URL
+		+ WS_PATH_TEST_CATEGORISE_SINGLE, request, TaxonomyErrorResponse.class);
+
+	assertThat(response.getBody(), is(notNullValue()));
+	assertThat(response.getBody().getError(), equalTo(TaxonomyErrorType.INVALID_PARAMETER));
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public final void testTestCategoriseSingleDocumentWithOnlyDescription() {
+	TestCategoriseSingleRequest request = new TestCategoriseSingleRequest();
+	request.setDescription("TRINITY Church of England School.");
+	List<Object> categoryRelevancies = restTemplate.postForEntity(WS_URL + WS_PATH_TEST_CATEGORISE_SINGLE, request,
+		List.class).getBody();
+
+	assertThat(categoryRelevancies, is(notNullValue()));
+	assertThat(categoryRelevancies, is(not(empty())));
+	LinkedHashMap<String, Object> firstElement = (LinkedHashMap<String, Object>) categoryRelevancies.get(0);
+	String categoryName = (String) firstElement.get("name");
+	assertThat(categoryName, is(notNullValue()));
+	assertThat(categoryName, is(equalTo("Disease")));
+
     }
 
     private void waitForAsyncPublicationToBeCompleted() throws InterruptedException {

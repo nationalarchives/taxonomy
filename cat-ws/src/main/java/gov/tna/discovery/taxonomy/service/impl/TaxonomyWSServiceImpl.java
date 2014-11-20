@@ -1,5 +1,7 @@
 package gov.tna.discovery.taxonomy.service.impl;
 
+import gov.tna.discovery.taxonomy.domain.CategoryRelevancy;
+import gov.tna.discovery.taxonomy.domain.TestCategoriseSingleRequest;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
@@ -10,7 +12,11 @@ import gov.tna.discovery.taxonomy.service.async.TaxonomyWSTaskExecutor;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +83,20 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
     @Override
     public List<InformationAssetView> performSearch(String categoryQuery, Float score, Integer limit, Integer offset) {
 	return searcher.performSearch(categoryQuery, score, limit, offset);
+    }
+
+    @Override
+    public List<CategoryRelevancy> testCategoriseSingle(TestCategoriseSingleRequest testCategoriseSingleRequest) {
+	// TODO Auto-generated method stub
+	Map<String, Float> mapOfCategoriesAndScores = new HashMap<String, Float>();
+	mapOfCategoriesAndScores.put("Disease", 0.5f);
+	mapOfCategoriesAndScores.put("War", 0.2f);
+
+	List<CategoryRelevancy> categoryRelevancies = new ArrayList<CategoryRelevancy>();
+	for (Entry<String, Float> element : mapOfCategoriesAndScores.entrySet()) {
+	    categoryRelevancies.add(new CategoryRelevancy(element.getKey(), element.getValue()));
+	}
+	return categoryRelevancies;
     }
 
 }

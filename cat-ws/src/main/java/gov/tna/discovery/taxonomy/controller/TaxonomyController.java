@@ -1,7 +1,9 @@
 package gov.tna.discovery.taxonomy.controller;
 
+import gov.tna.discovery.taxonomy.domain.CategoryRelevancy;
 import gov.tna.discovery.taxonomy.domain.PublishRequest;
 import gov.tna.discovery.taxonomy.domain.SearchIAViewRequest;
+import gov.tna.discovery.taxonomy.domain.TestCategoriseSingleRequest;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.service.TaxonomyWSService;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
@@ -15,7 +17,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,9 +53,18 @@ public class TaxonomyController {
 
     @RequestMapping(value = "/publish", method = RequestMethod.POST, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ResponseBody
-    String publish(@RequestBody PublishRequest publishRequest) {
+    String publish(@RequestBody(required = true) PublishRequest publishRequest) {
 	service.publishUpdateOnCategory(publishRequest.getCiaid());
 	return STATUS_OK_JSON_RESPONSE;
     }
 
+    @RequestMapping(value = "/testCategoriseSingle", method = RequestMethod.POST, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ResponseBody
+    List<CategoryRelevancy> testCategoriseSingle(@RequestBody TestCategoriseSingleRequest testCategoriseSingleRequest) {
+	if (StringUtils.isEmpty(testCategoriseSingleRequest.getDescription())) {
+	    throw new TaxonomyException(TaxonomyErrorType.INVALID_PARAMETER,
+		    "DESCRIPTION should be provided and not emptyw");
+	}
+	return service.testCategoriseSingle(testCategoriseSingleRequest);
+    }
 }

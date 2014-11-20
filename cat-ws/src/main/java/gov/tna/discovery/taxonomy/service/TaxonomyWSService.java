@@ -1,5 +1,7 @@
 package gov.tna.discovery.taxonomy.service;
 
+import gov.tna.discovery.taxonomy.domain.CategoryRelevancy;
+import gov.tna.discovery.taxonomy.domain.TestCategoriseSingleRequest;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 
 import java.util.List;
@@ -12,9 +14,10 @@ import java.util.List;
  */
 public interface TaxonomyWSService {
 
-    public abstract void publishUpdateOnCategory(String ciaid);
+    void publishUpdateOnCategory(String ciaid);
 
-    public abstract List<InformationAssetView> performSearch(String categoryQuery, Float score, Integer limit,
-	    Integer offset);
+    List<InformationAssetView> performSearch(String categoryQuery, Float score, Integer limit, Integer offset);
+
+    List<CategoryRelevancy> testCategoriseSingle(TestCategoriseSingleRequest testCategoriseSingleRequest);
 
 }
