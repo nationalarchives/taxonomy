@@ -54,7 +54,7 @@ public class Searcher {
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	} finally {
-	    LuceneHelperTools.releaseQuietly(iaviewSearcherManager, searcher);
+	    LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager, searcher);
 	}
 	return hitDoc;
     }
@@ -111,7 +111,7 @@ public class Searcher {
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	} finally {
-	    LuceneHelperTools.releaseQuietly(iaviewSearcherManager, isearcher);
+	    LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager, isearcher);
 	}
 	return docs;
     }

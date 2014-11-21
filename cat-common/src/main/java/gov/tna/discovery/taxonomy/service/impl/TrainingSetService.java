@@ -4,6 +4,7 @@ import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.repository.lucene.LuceneHelperTools;
 import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
@@ -21,6 +22,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,8 +95,9 @@ public class TrainingSetService {
      */
     // FIXME JCT make sure the writer is closed
     public void deleteAndUpdateTrainingIndexForCategory(Category category) {
+	IndexWriter writer = null;
 	try {
-	    IndexWriter writer = new IndexWriter(trainingSetDirectory, indexWriterConfig);
+	    writer = new IndexWriter(trainingSetDirectory, indexWriterConfig);
 	    writer.deleteDocuments(new Term(InformationAssetViewFields.CATEGORY.toString(), category.getTtl()));
 
 	    for (TrainingDocument trainingDocument : trainingDocumentRepository.findByCategory(category.getTtl())) {
@@ -103,9 +106,10 @@ public class TrainingSetService {
 		indexTrainingSetDocument(trainingDocument, writer);
 
 	    }
-	    writer.close();
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	} finally {
+	    LuceneHelperTools.closeIndexWriterQuietly(writer);
 	}
     }
 
@@ -116,9 +120,9 @@ public class TrainingSetService {
      * @throws IOException
      */
     public void indexTrainingSet() {
-
+	IndexWriter writer = null;
 	try {
-	    IndexWriter writer = new IndexWriter(trainingSetDirectory, indexWriterConfig);
+	    writer = new IndexWriter(trainingSetDirectory, indexWriterConfig);
 
 	    writer.deleteAll();
 
@@ -131,9 +135,10 @@ public class TrainingSetService {
 		indexTrainingSetDocument(trainingDocument, writer);
 
 	    }
-	    writer.close();
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	} finally {
+	    LuceneHelperTools.closeIndexWriterQuietly(writer);
 	}
 
     }

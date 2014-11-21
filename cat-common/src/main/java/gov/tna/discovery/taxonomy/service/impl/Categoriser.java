@@ -130,7 +130,7 @@ public class Categoriser {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, parseException);
 
 	} finally {
-	    LuceneHelperTools.releaseQuietly(iaviewSearcherManager, searcher);
+	    LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager, searcher);
 	}
     }
 
@@ -241,7 +241,7 @@ public class Categoriser {
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	} finally {
-	    LuceneHelperTools.releaseQuietly(trainingSetSearcherManager, searcher);
+	    LuceneHelperTools.releaseSearcherManagerQuietly(trainingSetSearcherManager, searcher);
 	}
 
 	return result;
