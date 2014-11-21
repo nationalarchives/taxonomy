@@ -5,8 +5,6 @@ package gov.tna.discovery.taxonomy.service.async;
 
 import java.util.List;
 
-import org.hamcrest.core.IsInstanceOf;
-
 import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;

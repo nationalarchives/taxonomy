@@ -1,7 +1,6 @@
 package gov.tna.discovery.taxonomy.repository.mongo.impl;
 
 import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
-import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepositoryCustom;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -13,8 +13,6 @@ import gov.tna.discovery.taxonomy.service.impl.Categoriser;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
