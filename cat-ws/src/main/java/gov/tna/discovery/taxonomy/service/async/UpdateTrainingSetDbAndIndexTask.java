@@ -8,7 +8,8 @@ import java.util.List;
 import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
-import gov.tna.discovery.taxonomy.service.impl.TrainingSetService;
+import gov.tna.discovery.taxonomy.service.TrainingSetService;
+import gov.tna.discovery.taxonomy.service.impl.TrainingSetServiceImpl;
 
 /**
  * Task to launch the publication of an update on a category asynchronously:<br/>
@@ -33,7 +34,7 @@ public class UpdateTrainingSetDbAndIndexTask implements Runnable {
 	for (Object dependency : dependencies) {
 	    if (dependency instanceof TrainingDocumentRepository) {
 		trainingDocumentRepository = (TrainingDocumentRepository) dependency;
-	    } else if (dependency instanceof TrainingSetService) {
+	    } else if (dependency instanceof TrainingSetServiceImpl) {
 		trainingSetService = (TrainingSetService) dependency;
 	    } else if (dependency instanceof CategoryRepository) {
 		categoryRepository = (CategoryRepository) dependency;
@@ -52,7 +53,7 @@ public class UpdateTrainingSetDbAndIndexTask implements Runnable {
 	try {
 	    trainingDocumentRepository.deleteByCategory(category.getTtl());
 	    trainingSetService.updateTrainingSetForCategory(category, null);
-	    trainingSetService.deleteAndUpdateTrainingIndexForCategory(category);
+	    trainingSetService.deleteAndUpdateTraingSetIndexForCategory(category);
 	} finally {
 	    releasePublicationOnCategory(category);
 	}

@@ -3,8 +3,8 @@ package gov.tna.discovery.taxonomy.cli;
 import java.io.IOException;
 
 import gov.tna.discovery.taxonomy.CLIApplication;
-import gov.tna.discovery.taxonomy.service.impl.Categoriser;
-import gov.tna.discovery.taxonomy.service.impl.TrainingSetService;
+import gov.tna.discovery.taxonomy.service.Categoriser;
+import gov.tna.discovery.taxonomy.service.TrainingSetService;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public class CLIRunner implements CommandLineRunner {
 
 	// categoriser.categoriseIAViewSolrDocument("CO 273/632/2");
 
-	categoriser.categoriseIAViewsFromSolr();
+	categoriser.testCategoriseIAViewSolrIndex();
 
 	logger.info("Stop cat CLI Runner.");
     }

@@ -3,6 +3,8 @@ package gov.tna.discovery.taxonomy.service.impl;
 import static org.junit.Assert.assertEquals;
 import gov.tna.discovery.taxonomy.ConfigurationTest;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
+import gov.tna.discovery.taxonomy.service.Categoriser;
+import gov.tna.discovery.taxonomy.service.TrainingSetService;
 
 import java.io.IOException;
 

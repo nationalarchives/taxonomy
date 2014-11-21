@@ -7,7 +7,9 @@ import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
+import gov.tna.discovery.taxonomy.service.Categoriser;
 import gov.tna.discovery.taxonomy.service.TaxonomyWSService;
+import gov.tna.discovery.taxonomy.service.TrainingSetService;
 import gov.tna.discovery.taxonomy.service.async.AsyncTaskManager;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
@@ -88,18 +90,29 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
 
     @Override
     public List<CategoryRelevancy> testCategoriseSingle(TestCategoriseSingleRequest testCategoriseSingleRequest) {
-	InformationAssetView iaView = new InformationAssetView();
-	iaView.setCONTEXTDESCRIPTION(testCategoriseSingleRequest.getContextDescription());
-	iaView.setDESCRIPTION(testCategoriseSingleRequest.getDescription());
-	iaView.setTITLE(testCategoriseSingleRequest.getTitle());
+	InformationAssetView iaView = getIAviewFromRequest(testCategoriseSingleRequest);
 
 	Map<String, Float> mapOfCategoriesAndScores = categoriser.testCategoriseSingle(iaView);
 
+	List<CategoryRelevancy> categoryRelevancies = getListOfCatRelevancyFromMapOfCatAndScore(mapOfCategoriesAndScores);
+	return categoryRelevancies;
+    }
+
+    private List<CategoryRelevancy> getListOfCatRelevancyFromMapOfCatAndScore(
+	    Map<String, Float> mapOfCategoriesAndScores) {
 	List<CategoryRelevancy> categoryRelevancies = new ArrayList<CategoryRelevancy>();
 	for (Entry<String, Float> element : mapOfCategoriesAndScores.entrySet()) {
 	    categoryRelevancies.add(new CategoryRelevancy(element.getKey(), element.getValue()));
 	}
 	return categoryRelevancies;
+    }
+
+    private InformationAssetView getIAviewFromRequest(TestCategoriseSingleRequest testCategoriseSingleRequest) {
+	InformationAssetView iaView = new InformationAssetView();
+	iaView.setCONTEXTDESCRIPTION(testCategoriseSingleRequest.getContextDescription());
+	iaView.setDESCRIPTION(testCategoriseSingleRequest.getDescription());
+	iaView.setTITLE(testCategoriseSingleRequest.getTitle());
+	return iaView;
     }
 
 }

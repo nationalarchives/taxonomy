@@ -8,6 +8,7 @@ import gov.tna.discovery.taxonomy.ConfigurationTest;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
+import gov.tna.discovery.taxonomy.service.Categoriser;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -79,7 +80,7 @@ public class CategoriserTest {
 
 	    Document doc = this.iaViewIndexReader.document(i);
 
-	    Categoriser categoriser = new Categoriser();
+	    Categoriser categoriser = new CategoriserImpl();
 	    Reader reader = new StringReader(doc.get(InformationAssetViewFields.DESCRIPTION.toString()));
 	    Map<String, Float> result = categoriser.runMlt(reader);
 

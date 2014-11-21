@@ -111,6 +111,25 @@ public class Searcher {
 	return docs;
     }
 
+    public TopDocs searchIAViewIndexByFieldAndPhrase(String field, String value, int numHits) {
+	IndexSearcher searcher = null;
+	try {
+	    searcher = iaviewSearcherManager.acquire();
+
+	    QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), field, new WhitespaceAnalyzer(
+		    Version.valueOf(luceneVersion)));
+
+	    return searcher.search(qp.parse(QueryParser.escape(value)), numHits);
+
+	} catch (IOException ioException) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, ioException);
+	} catch (ParseException parseException) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, parseException);
+	} finally {
+	    LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager, searcher);
+	}
+    }
+
     public void checkCategoryQueryValidity(String qry) {
 	QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), "CATEGORY", new WhitespaceAnalyzer(
 		Version.valueOf(luceneVersion)));

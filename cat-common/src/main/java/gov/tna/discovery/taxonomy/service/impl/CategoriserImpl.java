@@ -3,8 +3,11 @@ package gov.tna.discovery.taxonomy.service.impl;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.repository.lucene.LuceneHelperTools;
+import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
+import gov.tna.discovery.taxonomy.service.Categoriser;
+import gov.tna.discovery.taxonomy.service.TrainingSetService;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
 
@@ -41,9 +44,9 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
-public class Categoriser {
+public class CategoriserImpl implements Categoriser {
 
-    private static final Logger logger = LoggerFactory.getLogger(Categoriser.class);
+    private static final Logger logger = LoggerFactory.getLogger(CategoriserImpl.class);
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -59,6 +62,9 @@ public class Categoriser {
 
     @Autowired
     IndexReader trainingSetIndexReader;
+    
+    @Autowired
+    Searcher searcher;
 
     @Autowired
     private SearcherManager iaviewSearcherManager;
@@ -74,20 +80,16 @@ public class Categoriser {
     @Value("${lucene.index.version}")
     private String luceneVersion;
 
-    /**
-     * categorise a document by running the MLT process against the training set
-     * 
-     * @param catdocref
-     *            IAID
-     * @throws IOException
-     * @throws ParseException
+    /* (non-Javadoc)
+     * @see gov.tna.discovery.taxonomy.service.impl.Categoriser#categoriseIAViewSolrDocument(java.lang.String)
      */
+    @Override
     public Map<String, Float> categoriseIAViewSolrDocument(String catdocref) {
 	// TODO 4 CATDOCREF in schema.xml should be stored as string?
 	// and not text_gen: do not need to be tokenized. makes search by
 	// catdocref more complicated that it needs (look for a bunch of terms,
 	// what if they are provided in the wrong order? have to check it also
-	TopDocs results = searchIAViewIndexByFieldAndPhrase("CATDOCREF", catdocref, 1);
+	TopDocs results = searcher.searchIAViewIndexByFieldAndPhrase("CATDOCREF", catdocref, 1);
 
 	Document doc;
 	try {
@@ -116,29 +118,11 @@ public class Categoriser {
 
     }
 
-    private TopDocs searchIAViewIndexByFieldAndPhrase(String field, String value, int numHits) {
-	IndexSearcher searcher = null;
-	try {
-	    searcher = iaviewSearcherManager.acquire();
-	    QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), field, new WhitespaceAnalyzer(
-		    Version.valueOf(luceneVersion)));
-	    return searcher.search(qp.parse(QueryParser.escape(value)), numHits);
-	} catch (IOException ioException) {
-	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, ioException);
-	} catch (ParseException parseException) {
-	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, parseException);
-
-	} finally {
-	    LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager, searcher);
-	}
-    }
-
-    /**
-     * Categorise the whole IA collection
-     * 
-     * @throws IOException
+    /* (non-Javadoc)
+     * @see gov.tna.discovery.taxonomy.service.impl.Categoriser#categoriseIAViewSolrIndex()
      */
-    public void categoriseIAViewsFromSolr() throws IOException {
+    @Override
+    public void testCategoriseIAViewSolrIndex() throws IOException {
 
 	// TODO 1 insert results in a new database/index
 
@@ -175,23 +159,13 @@ public class Categoriser {
 
     }
 
-    /**
-     * run More Like This process on a document by comparing its description to
-     * the description of all items of the training set<br/>
-     * currently we get a fixed number of the top results
-     * 
-     * @param modelPath
-     *            path of the training set index
-     * @param reader
-     *            reader of the document being tested
-     * @param maxResults
-     *            max number of results to return
-     * @return
-     * @throws IOException
+    /* (non-Javadoc)
+     * @see gov.tna.discovery.taxonomy.service.impl.Categoriser#runMlt(java.io.Reader)
      */
     // TODO 1 check and update fields that are being retrieved to create
     // training set, used for MLT (run MLT on title, context desc and desc at
     // least. returns results by score not from a fixed number)
+    @Override
     public Map<String, Float> runMlt(Reader reader) {
 
 	Map<String, Float> result = null;
@@ -246,6 +220,10 @@ public class Categoriser {
 	return result;
     }
 
+    /* (non-Javadoc)
+     * @see gov.tna.discovery.taxonomy.service.impl.Categoriser#testCategoriseSingle(gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView)
+     */
+    @Override
     public Map<String, Float> testCategoriseSingle(InformationAssetView iaView) {
 	Reader reader = new StringReader(iaView.getDESCRIPTION());
 	return runMlt(reader);

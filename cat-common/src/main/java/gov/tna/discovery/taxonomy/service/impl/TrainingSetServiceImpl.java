@@ -8,6 +8,7 @@ import gov.tna.discovery.taxonomy.repository.lucene.LuceneHelperTools;
 import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
+import gov.tna.discovery.taxonomy.service.TrainingSetService;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
 
@@ -30,9 +31,9 @@ import org.springframework.stereotype.Service;
 
 //TODO create Interface for service layer
 @Service
-public class TrainingSetService {
+public class TrainingSetServiceImpl implements TrainingSetService {
 
-    private static final Logger logger = LoggerFactory.getLogger(TrainingSetService.class);
+    private static final Logger logger = LoggerFactory.getLogger(TrainingSetServiceImpl.class);
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -52,6 +53,10 @@ public class TrainingSetService {
     @Value("${lucene.index.trainingSetCollectionPath}")
     private String trainingSetCollectionPath;
 
+    /* (non-Javadoc)
+     * @see gov.tna.discovery.taxonomy.service.impl.TrainingSetService#updateTrainingSetForCategory(gov.tna.discovery.taxonomy.repository.domain.mongo.Category, java.lang.Float)
+     */
+    @Override
     public void updateTrainingSetForCategory(Category category, Float fixedLimitScore) {
 	List<InformationAssetView> IAViewResults;
 	try {
@@ -84,76 +89,19 @@ public class TrainingSetService {
 	}
     }
 
-    /**
-     * index training Set for a category<br/>
-     * delete records for a category in the index then add records from the
-     * trainingset db<br/>
-     * executes both tasks at the same time to use the same indexWriter
-     * 
-     * @param category
+    /* (non-Javadoc)
+     * @see gov.tna.discovery.taxonomy.service.impl.TrainingSetService#indexTrainingSetDocument(gov.tna.discovery.taxonomy.repository.domain.TrainingDocument, org.apache.lucene.index.IndexWriter)
      */
-    public void deleteAndUpdateTrainingIndexForCategory(Category category) {
-	IndexWriter writer = null;
-	try {
-	    writer = new IndexWriter(trainingSetDirectory, indexWriterConfig);
-	    writer.deleteDocuments(new Term(InformationAssetViewFields.CATEGORY.toString(), category.getTtl()));
-
-	    for (TrainingDocument trainingDocument : trainingDocumentRepository.findByCategory(category.getTtl())) {
-		trainingDocument.setDescription(trainingDocument.getDescription().replaceAll("\\<.*?>", ""));
-		trainingDocument.setTitle(trainingDocument.getTitle().replaceAll("\\<.*?>", ""));
-		indexTrainingSetDocument(trainingDocument, writer);
-
-	    }
-	} catch (IOException e) {
-	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
-	} finally {
-	    LuceneHelperTools.closeIndexWriterQuietly(writer);
-	}
-    }
-
-    /**
-     * build index of trainingDocument from mongo db trainingset<br/>
-     * remove punctuation from Description, title
-     * 
-     * @throws IOException
-     */
-    public void indexTrainingSet() {
-	IndexWriter writer = null;
-	try {
-	    writer = new IndexWriter(trainingSetDirectory, indexWriterConfig);
-
-	    writer.deleteAll();
-
-	    Iterator<TrainingDocument> trainingDocumentIterator = trainingDocumentRepository.findAll().iterator();
-
-	    while (trainingDocumentIterator.hasNext()) {
-		TrainingDocument trainingDocument = trainingDocumentIterator.next();
-		trainingDocument.setDescription(trainingDocument.getDescription().replaceAll("\\<.*?>", ""));
-		trainingDocument.setTitle(trainingDocument.getTitle().replaceAll("\\<.*?>", ""));
-		indexTrainingSetDocument(trainingDocument, writer);
-
-	    }
-	} catch (IOException e) {
-	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
-	} finally {
-	    LuceneHelperTools.closeIndexWriterQuietly(writer);
-	}
-
-    }
-
-    /**
-     * Create a lucene document from an trainingDocument object and add it to
-     * the TrainingIndex index
-     * 
-     * @param trainingDocument
-     * @throws IOException
-     */
+    @Override
     @SuppressWarnings("deprecation")
     public void indexTrainingSetDocument(TrainingDocument trainingDocument, IndexWriter writer) throws IOException {
 	// TODO 4 handle exceptions, do not stop the process unless several
 	// errors occur
 	// TODO 1 bulk insert, this is far too slow to do it unitary!
 	// TODO 4 Field is deprecated, use appropriate fields.
+	// FIXME why to remove punctuation before indexing? analyser duty
+	trainingDocument.setDescription(trainingDocument.getDescription().replaceAll("\\<.*?>", ""));
+	trainingDocument.setTitle(trainingDocument.getTitle().replaceAll("\\<.*?>", ""));
 
 	Document doc = new Document();
 	doc.add(new Field(InformationAssetViewFields._id.toString(), trainingDocument.get_id(), Field.Store.YES,
@@ -167,6 +115,10 @@ public class TrainingSetService {
 	writer.addDocument(doc);
     }
 
+    /* (non-Javadoc)
+     * @see gov.tna.discovery.taxonomy.service.impl.TrainingSetService#createTrainingSet(java.lang.Float)
+     */
+    @Override
     public void createTrainingSet(Float fixedLimitScore) throws IOException, ParseException {
 	logger.debug(".createTrainingSet : START");
 
@@ -185,6 +137,52 @@ public class TrainingSetService {
 
 	}
 	logger.debug(".createTrainingSet : END");
+    }
+
+    /* (non-Javadoc)
+     * @see gov.tna.discovery.taxonomy.service.impl.TrainingSetService#deleteAndUpdateTraingSetIndexForCategory(gov.tna.discovery.taxonomy.repository.domain.mongo.Category)
+     */
+    @Override
+    public void deleteAndUpdateTraingSetIndexForCategory(Category category) {
+	IndexWriter writer = null;
+	try {
+	    writer = new IndexWriter(trainingSetDirectory, indexWriterConfig);
+	    writer.deleteDocuments(new Term(InformationAssetViewFields.CATEGORY.toString(), category.getTtl()));
+
+	    for (TrainingDocument trainingDocument : trainingDocumentRepository.findByCategory(category.getTtl())) {
+		indexTrainingSetDocument(trainingDocument, writer);
+	    }
+	} catch (IOException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	} finally {
+	    LuceneHelperTools.closeIndexWriterQuietly(writer);
+	}
+    }
+
+    /* (non-Javadoc)
+     * @see gov.tna.discovery.taxonomy.service.impl.TrainingSetService#indexTrainingSet()
+     */
+    @Override
+    public void indexTrainingSet() {
+	IndexWriter writer = null;
+	try {
+	    writer = new IndexWriter(trainingSetDirectory, indexWriterConfig);
+
+	    writer.deleteAll();
+
+	    Iterator<TrainingDocument> trainingDocumentIterator = trainingDocumentRepository.findAll().iterator();
+
+	    while (trainingDocumentIterator.hasNext()) {
+		TrainingDocument trainingDocument = trainingDocumentIterator.next();
+		indexTrainingSetDocument(trainingDocument, writer);
+
+	    }
+	} catch (IOException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	} finally {
+	    LuceneHelperTools.closeIndexWriterQuietly(writer);
+	}
+
     }
 
 }
