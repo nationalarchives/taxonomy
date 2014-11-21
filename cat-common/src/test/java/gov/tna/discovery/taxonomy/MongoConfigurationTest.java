@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
+import com.github.fakemongo.Fongo;
 import com.mongodb.Mongo;
 
 @Configuration
@@ -48,6 +49,14 @@ public class MongoConfigurationTest {
     public void setDatabase(String database) {
 	this.database = database;
     }
+
+    // public @Bean(name = "fongo") Fongo fongo() {
+    // return new Fongo("Taxonomy Memory Mongo Database");
+    // }
+    //
+    // public @Bean MongoDbFactory mongoDbFactory() throws Exception {
+    // return new SimpleMongoDbFactory(fongo().getMongo(), database);
+    // }
 
     public @Bean MongoDbFactory mongoDbFactory() throws Exception {
 	return new SimpleMongoDbFactory(new Mongo(host, port), database);

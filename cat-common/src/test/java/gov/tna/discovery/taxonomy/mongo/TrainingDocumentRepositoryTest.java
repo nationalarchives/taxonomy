@@ -3,6 +3,7 @@ package gov.tna.discovery.taxonomy.mongo;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import gov.tna.discovery.taxonomy.MongoConfigurationTest;
+import gov.tna.discovery.taxonomy.MongoTestDataSet;
 import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 
@@ -20,12 +21,13 @@ public class TrainingDocumentRepositoryTest {
     @Autowired
     TrainingDocumentRepository repository;
 
-    @Before
-    public void setUp() throws Exception {
-    }
+    // @Autowired
+    // MongoTestDataSet mongoTestDataSet;
 
     @Test
     public void testCollectionCount() {
+	// mongoTestDataSet.createTrainingSetDocument();
+
 	Iterable<TrainingDocument> iterable = repository.findAll();
 	assertThat(iterable, is(notNullValue()));
 	assertThat(iterable.iterator().hasNext(), is(true));
