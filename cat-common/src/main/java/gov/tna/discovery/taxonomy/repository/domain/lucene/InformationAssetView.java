@@ -3,184 +3,178 @@ package gov.tna.discovery.taxonomy.repository.domain.lucene;
 import java.util.List;
 
 public class InformationAssetView {
-	
-	private String _id;
-	private String URLPARAMS;
-	private String CATDOCREF;
-	private String TITLE;
-	private String DESCRIPTION;
-	private String[] CORPBODYS;
-	private String[] SUBJECTS;
-	private String[] PLACE_NAME;
-	private String[] PLACE_TOWN;
-	private String[] PLACE_COUNTY;
-	private String[] PLACE_REGION;
-	private String[] PLACE_COUNTRY;
-	private String[] PERSON_FULLNAME;
-	private String CATEGORY;
 
+    private String _id;
+    private String URLPARAMS;
+    private String CATDOCREF;
+    private String TITLE;
+    private String DESCRIPTION;
+    private String[] CORPBODYS;
+    private String[] SUBJECTS;
+    private String[] PLACE_NAME;
+    private String[] PLACE_TOWN;
+    private String[] PLACE_COUNTY;
+    private String[] PLACE_REGION;
+    private String[] PLACE_COUNTRY;
+    private String[] PERSON_FULLNAME;
+    private String CONTEXTDESCRIPTION;
 
-//search properties
-	private float score;
+    // category
+    private List<String> CIAIDS;
 
-	public float getScore() {
-		return score;
-	}
+    // search properties
+    private float score;
 
-	public void setScore(float score) {
-		this.score = score;
-	}
-	
-	private Integer shardIndex;
-	
-	
-	public Integer getShardIndex() {
-	    return shardIndex;
-	}
+    public float getScore() {
+	return score;
+    }
 
-	public void setShardIndex(Integer shardIndex) {
-	    this.shardIndex = shardIndex;
-	}
+    public void setScore(float score) {
+	this.score = score;
+    }
 
-	private Integer doc;
-	
-	public Integer getDoc() {
-	    return doc;
-	}
+    private Integer shardIndex;
 
-	public void setDoc(Integer doc) {
-	    this.doc = doc;
-	}
+    public Integer getShardIndex() {
+	return shardIndex;
+    }
 
-	// category
-	private List<String> cids;
+    public void setShardIndex(Integer shardIndex) {
+	this.shardIndex = shardIndex;
+    }
 
-	public List<String> getCids() {
-		return cids;
-	}
+    private Integer doc;
 
-	public void setCids(List<String> cids) {
-		this.cids = cids;
-	}
-	
-	// //////////////////////
-	public String get_id() {
-		return _id;
-	}
+    public Integer getDoc() {
+	return doc;
+    }
 
-	public void set_id(String _id) {
-		this._id = _id;
-	}
+    public void setDoc(Integer doc) {
+	this.doc = doc;
+    }
 
-	public String getURLPARAMS() {
-		return URLPARAMS;
-	}
-	
-	public void setURLPARAMS(String uRLPARMAS) {
-		URLPARAMS = uRLPARMAS;
-	}
-	
-	public String getCATDOCREF() {
-		return CATDOCREF;
-	}
+    public List<String> getCIAIDS() {
+	return CIAIDS;
+    }
 
-	public void setCATDOCREF(String cATDOCREF) {
-		CATDOCREF = cATDOCREF;
-	}
-	
-	public String getTITLE() {
-		return TITLE;
-	}
+    public void setCIAIDS(List<String> cIAID) {
+	CIAIDS = cIAID;
+    }
 
-	public void setTITLE(String tITLE) {
-		TITLE = tITLE;
-	}
+    public String get_id() {
+	return _id;
+    }
 
-	public String getDESCRIPTION() {
-		return DESCRIPTION;
-	}
+    public void set_id(String _id) {
+	this._id = _id;
+    }
 
-	public void setDESCRIPTION(String dESCRIPTION) {
-		DESCRIPTION = dESCRIPTION;
-	}
-	
-	public String[] getCORPBODYS() {
-		return CORPBODYS;
-	}
+    public String getURLPARAMS() {
+	return URLPARAMS;
+    }
 
-	public void setCORPBODYS(String[] cORPBODYS) {
-		CORPBODYS = cORPBODYS;
-	}
+    public void setURLPARAMS(String uRLPARMAS) {
+	URLPARAMS = uRLPARMAS;
+    }
 
-	public String[] getSUBJECTS() {
-		return SUBJECTS;
-	}
+    public String getCATDOCREF() {
+	return CATDOCREF;
+    }
 
-	public void setSUBJECTS(String[] sUBJECTS) {
-		SUBJECTS = sUBJECTS;
-	}
+    public void setCATDOCREF(String cATDOCREF) {
+	CATDOCREF = cATDOCREF;
+    }
 
-	public String[] getPLACE_NAME() {
-		return PLACE_NAME;
-	}
+    public String getTITLE() {
+	return TITLE;
+    }
 
-	public void setPLACE_NAME(String[] pLACE_NAME) {
-		PLACE_NAME = pLACE_NAME;
-	}
+    public void setTITLE(String tITLE) {
+	TITLE = tITLE;
+    }
 
-	public String[] getPLACE_TOWN() {
-		return PLACE_TOWN;
-	}
+    public String getDESCRIPTION() {
+	return DESCRIPTION;
+    }
 
-	public void setPLACE_TOWN(String[] pLACE_TOWN) {
-		PLACE_TOWN = pLACE_TOWN;
-	}
-	
-	public String[] getPLACE_COUNTY() {
-		return PLACE_COUNTY;
-	}
+    public void setDESCRIPTION(String dESCRIPTION) {
+	DESCRIPTION = dESCRIPTION;
+    }
 
-	public void setPLACE_COUNTY(String[] pLACE_COUNTY) {
-		PLACE_COUNTY = pLACE_COUNTY;
-	}
+    public String[] getCORPBODYS() {
+	return CORPBODYS;
+    }
 
-	public String[] getPLACE_REGION() {
-		return PLACE_REGION;
-	}
+    public void setCORPBODYS(String[] cORPBODYS) {
+	CORPBODYS = cORPBODYS;
+    }
 
-	public void setPLACE_REGION(String[] pLACE_REGION) {
-		PLACE_REGION = pLACE_REGION;
-	}
+    public String[] getSUBJECTS() {
+	return SUBJECTS;
+    }
 
-	public String[] getPLACE_COUNTRY() {
-		return PLACE_COUNTRY;
-	}
+    public void setSUBJECTS(String[] sUBJECTS) {
+	SUBJECTS = sUBJECTS;
+    }
 
-	public void setPLACE_COUNTRY(String[] pLACE_COUNTRY) {
-		PLACE_COUNTRY = pLACE_COUNTRY;
-	}
+    public String[] getPLACE_NAME() {
+	return PLACE_NAME;
+    }
 
-	public String[] getPERSON_FNAME() {
-		return PERSON_FULLNAME;
-	}
-	
-	public void setPERSON_FULLNAME(String[] pERSON_FULLNAME) {
-		PERSON_FULLNAME = pERSON_FULLNAME;
-	}
+    public void setPLACE_NAME(String[] pLACE_NAME) {
+	PLACE_NAME = pLACE_NAME;
+    }
 
-	public String getCATEGORY() {
-	    return CATEGORY;
-	}
+    public String[] getPLACE_TOWN() {
+	return PLACE_TOWN;
+    }
 
-	public void setCATEGORY(String cATEGORY) {
-	    CATEGORY = cATEGORY;
-	}
+    public void setPLACE_TOWN(String[] pLACE_TOWN) {
+	PLACE_TOWN = pLACE_TOWN;
+    }
 
-	public String[] getPERSON_FULLNAME() {
-	    return PERSON_FULLNAME;
-	}
-	
-	
-		
-}		
-		
+    public String[] getPLACE_COUNTY() {
+	return PLACE_COUNTY;
+    }
+
+    public void setPLACE_COUNTY(String[] pLACE_COUNTY) {
+	PLACE_COUNTY = pLACE_COUNTY;
+    }
+
+    public String[] getPLACE_REGION() {
+	return PLACE_REGION;
+    }
+
+    public void setPLACE_REGION(String[] pLACE_REGION) {
+	PLACE_REGION = pLACE_REGION;
+    }
+
+    public String[] getPLACE_COUNTRY() {
+	return PLACE_COUNTRY;
+    }
+
+    public void setPLACE_COUNTRY(String[] pLACE_COUNTRY) {
+	PLACE_COUNTRY = pLACE_COUNTRY;
+    }
+
+    public String[] getPERSON_FNAME() {
+	return PERSON_FULLNAME;
+    }
+
+    public void setPERSON_FULLNAME(String[] pERSON_FULLNAME) {
+	PERSON_FULLNAME = pERSON_FULLNAME;
+    }
+
+    public String[] getPERSON_FULLNAME() {
+	return PERSON_FULLNAME;
+    }
+
+    public String getCONTEXTDESCRIPTION() {
+	return CONTEXTDESCRIPTION;
+    }
+
+    public void setCONTEXTDESCRIPTION(String cONTEXTDESCRIPTION) {
+	CONTEXTDESCRIPTION = cONTEXTDESCRIPTION;
+    }
+
+}

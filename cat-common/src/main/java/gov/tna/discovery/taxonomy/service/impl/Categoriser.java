@@ -1,12 +1,9 @@
 package gov.tna.discovery.taxonomy.service.impl;
 
 import gov.tna.discovery.taxonomy.config.CatConstants;
-import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
-import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.repository.lucene.Indexer;
-import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
@@ -16,10 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
@@ -39,6 +35,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -63,6 +60,11 @@ public class Categoriser {
     @Autowired
     TrainingSetService trainingSetService;
 
+    @Value("${categorisation.mimimumScore}")
+    private float mimimumScore;
+    @Value("${categorisation.maximumSimilarElements}")
+    private int maximumSimilarElements;
+
     /**
      * categorise a document by running the MLT process against the training set
      * 
@@ -71,7 +73,7 @@ public class Categoriser {
      * @throws IOException
      * @throws ParseException
      */
-    public List<String> categoriseIAViewSolrDocument(String catdocref) throws IOException, ParseException {
+    public Map<String, Float> categoriseIAViewSolrDocument(String catdocref) throws IOException, ParseException {
 	// TODO 2 do not instantiate several indexReaders for the same index
 	IndexReader indexReader = indexer.getIndexReader(CatConstants.IAVIEW_INDEX);
 	// TODO 4 CATDOCREF in schema.xml should be stored as string?
@@ -82,9 +84,8 @@ public class Categoriser {
 
 	Document doc = indexReader.document(results.scoreDocs[0].doc);
 
-	Categoriser categoriser = new Categoriser();
 	Reader reader = new StringReader(doc.get(InformationAssetViewFields.DESCRIPTION.toString()));
-	List<String> result = categoriser.runMlt(CatConstants.TRAINING_INDEX, reader, 100);
+	Map<String, Float> result = runMlt(CatConstants.TRAINING_INDEX, reader);
 
 	logger.debug("DOCUMENT");
 	logger.debug("------------------------");
@@ -92,8 +93,8 @@ public class Categoriser {
 	logger.debug("IAID: {}", doc.get("CATDOCREF"));
 	logger.debug("DESCRIPTION: {}", doc.get("DESCRIPTION"));
 	logger.debug("");
-	for (String category : result) {
-	    logger.debug("CATEGORY: {}", category);
+	for (Entry<String, Float> category : result.entrySet()) {
+	    logger.debug("CATEGORY: {}, score: {}", category.getKey(), category.getValue());
 	}
 	logger.debug("------------------------");
 
@@ -133,18 +134,18 @@ public class Categoriser {
 
 	    Document doc = indexReader.document(i);
 
-	    Categoriser categoriser = new Categoriser();
 	    Reader reader = new StringReader(doc.get(InformationAssetViewFields.DESCRIPTION.toString()));
-	    List<String> result = categoriser.runMlt(CatConstants.TRAINING_INDEX, reader, 100);
+	    Map<String, Float> result = runMlt(CatConstants.TRAINING_INDEX, reader);
 
 	    logger.debug("DOCUMENT");
 	    logger.debug("------------------------");
 	    logger.debug("TITLE: {}", doc.get("TITLE"));
 	    logger.debug("IAID: {}", doc.get("CATDOCREF"));
-	    logger.debug("DESCRIPTION: {}", doc.get("DESCRIPTION"));
+	    logger.info("DESCRIPTION: {}", doc.get("DESCRIPTION"));
 	    logger.debug("");
-	    for (String category : result) {
-		logger.info("Document {} has CATEGORY: {}", doc.get("CATDOCREF"), category);
+	    for (Entry<String, Float> category : result.entrySet()) {
+		logger.info("Document {} has CATEGORY: {}, score: {}", doc.get("CATDOCREF"), category.getKey(),
+			category.getValue());
 	    }
 	    logger.debug("------------------------");
 
@@ -173,39 +174,64 @@ public class Categoriser {
     // TODO 1 check and update fields that are being retrieved to create
     // training set, used for MLT (run MLT on title, context desc and desc at
     // least. returns results by score not from a fixed number)
-    public List<String> runMlt(String modelPath, Reader reader, int maxResults) throws IOException {
+    public Map<String, Float> runMlt(String modelPath, Reader reader) {
 
-	Directory directory = FSDirectory.open(new File(modelPath));
+	Map<String, Float> result = null;
+	try {
+	    Directory directory = FSDirectory.open(new File(modelPath));
 
-	DirectoryReader ireader = DirectoryReader.open(directory);
-	IndexSearcher isearcher = new IndexSearcher(ireader);
+	    DirectoryReader ireader = DirectoryReader.open(directory);
+	    IndexSearcher isearcher = new IndexSearcher(ireader);
 
-	Analyzer analyzer = new EnglishAnalyzer(CatConstants.LUCENE_VERSION);
+	    Analyzer analyzer = new EnglishAnalyzer(CatConstants.LUCENE_VERSION);
 
-	MoreLikeThis moreLikeThis = new MoreLikeThis(ireader);
-	moreLikeThis.setAnalyzer(analyzer);
-	moreLikeThis.setFieldNames(new String[] { InformationAssetViewFields.DESCRIPTION.toString() });
+	    MoreLikeThis moreLikeThis = new MoreLikeThis(ireader);
+	    moreLikeThis.setAnalyzer(analyzer);
+	    moreLikeThis.setFieldNames(new String[] { InformationAssetViewFields.DESCRIPTION.toString() });
 
-	Query query = moreLikeThis.like(reader, InformationAssetViewFields.DESCRIPTION.toString());
+	    Query query = moreLikeThis.like(reader, InformationAssetViewFields.DESCRIPTION.toString());
 
-	TopDocs topDocs = isearcher.search(query, maxResults);
+	    TopDocs topDocs = isearcher.search(query, this.maximumSimilarElements);
 
-	List<String> result = new ArrayList<String>();
+	    result = new LinkedHashMap<String, Float>();
 
-	int size = 0;
-	if (topDocs.totalHits <= 100) {
-	    size = topDocs.totalHits;
+	    int size = 0;
+	    if (topDocs.totalHits <= this.maximumSimilarElements) {
+		size = topDocs.totalHits - 1;
+	    } else {
+		size = this.maximumSimilarElements - 1;
+	    }
+
+	    for (int i = 0; i < size; i++) {
+		ScoreDoc scoreDoc = topDocs.scoreDocs[i];
+		Float score = scoreDoc.score;
+		logger.debug("score for document found: {}", score);
+
+		if (score < this.mimimumScore) {
+		    break;
+		}
+
+		Document hitDoc = isearcher.doc(scoreDoc.doc);
+		String category = hitDoc.get(InformationAssetViewFields.CATEGORY.toString());
+
+		Float existingCategoryScore = result.get(category);
+		if (existingCategoryScore == null || existingCategoryScore < score) {
+		    result.put(category, scoreDoc.score);
+		}
+
+	    }
+
+	    ireader.close();
+	} catch (IOException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	}
 
-	for (int i = 0; i < size; i++) {
-	    ScoreDoc scoreDoc = topDocs.scoreDocs[i];
-	    Document hitDoc = isearcher.doc(scoreDoc.doc);
-	    String category = hitDoc.get(InformationAssetViewFields.CATEGORY.toString());
-	    result.add(category);
-	}
-
-	ireader.close();
-
-	return new ArrayList<String>(new LinkedHashSet<String>(result));
+	return result;
     }
+
+    public Map<String, Float> testCategoriseSingle(InformationAssetView iaView) {
+	Reader reader = new StringReader(iaView.getDESCRIPTION());
+	return runMlt(CatConstants.TRAINING_INDEX, reader);
+    }
+
 }

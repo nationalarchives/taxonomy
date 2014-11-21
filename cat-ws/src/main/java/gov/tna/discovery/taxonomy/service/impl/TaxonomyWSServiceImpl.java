@@ -43,6 +43,9 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
     @Autowired
     AsyncTaskManager asyncExecutor;
 
+    @Autowired
+    Categoriser categoriser;
+
     /*
      * (non-Javadoc)
      * 
@@ -87,10 +90,12 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
 
     @Override
     public List<CategoryRelevancy> testCategoriseSingle(TestCategoriseSingleRequest testCategoriseSingleRequest) {
-	// TODO Auto-generated method stub
-	Map<String, Float> mapOfCategoriesAndScores = new HashMap<String, Float>();
-	mapOfCategoriesAndScores.put("Disease", 0.5f);
-	mapOfCategoriesAndScores.put("War", 0.2f);
+	InformationAssetView iaView = new InformationAssetView();
+	iaView.setCONTEXTDESCRIPTION(testCategoriseSingleRequest.getContextDescription());
+	iaView.setDESCRIPTION(testCategoriseSingleRequest.getDescription());
+	iaView.setTITLE(testCategoriseSingleRequest.getTitle());
+
+	Map<String, Float> mapOfCategoriesAndScores = categoriser.testCategoriseSingle(iaView);
 
 	List<CategoryRelevancy> categoryRelevancies = new ArrayList<CategoryRelevancy>();
 	for (Entry<String, Float> element : mapOfCategoriesAndScores.entrySet()) {

@@ -1,5 +1,6 @@
-package gov.tna.discovery.taxonomy;
+package gov.tna.discovery.taxonomy.service.impl;
 
+import gov.tna.discovery.taxonomy.ConfigurationTest;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.lucene.Indexer;
 import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
