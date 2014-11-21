@@ -6,9 +6,10 @@ import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 
 import java.io.IOException;
 
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.ReaderManager;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.store.Directory;
 import org.junit.FixMethodOrder;
@@ -38,7 +39,7 @@ public class TrainingSetServiceTest {
     TrainingDocumentRepository trainingDocumentRepository;
 
     @Autowired
-    IndexReader trainingSetIndexReader;
+    ReaderManager trainingSetReaderManager;
 
     @Autowired
     private Directory trainingSetDirectory;
@@ -60,8 +61,11 @@ public class TrainingSetServiceTest {
     }
 
     @Test
-    public void test3IndexTrainingSet() throws IOException {
+    public void test3IndexTrainingSet() throws IOException, InterruptedException {
 	trainingSetService.indexTrainingSet();
+	DirectoryReader trainingSetIndexReader = trainingSetReaderManager.acquire();
+	Thread.sleep(1000);
 	assertEquals(141, trainingSetIndexReader.maxDoc());
+	trainingSetReaderManager.release(trainingSetIndexReader);
     }
 }

@@ -8,6 +8,7 @@ import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.ReaderManager;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
@@ -44,6 +45,10 @@ class LuceneConfiguration {
 
     public @Bean IndexReader iaViewIndexReader() throws IOException {
 	return DirectoryReader.open(iaViewDirectory());
+    }
+
+    public @Bean ReaderManager trainingSetReaderManager() throws IOException {
+	return new ReaderManager(trainingSetDirectory());
     }
 
     public @Bean IndexReader trainingSetIndexReader() throws IOException {
@@ -96,25 +101,5 @@ class LuceneConfiguration {
 	this.version = version;
     }
 
-    // FIXME how to make sure that readers see writer's modifications?
-
-    // public @Bean IndexWriter trainingSetIndexWriter() throws IOException {
-    // Analyzer analyzer = new WhitespaceAnalyzer(CatConstants.LUCENE_VERSION);
-    // IndexWriterConfig config = new
-    // IndexWriterConfig(CatConstants.LUCENE_VERSION, analyzer);
-    // File file = new File(CatConstants.TRAINING_INDEX);
-    // SimpleFSDirectory index = new SimpleFSDirectory(file);
-    //
-    // return new IndexWriter(index, config);
-    // }
-    //
-    // public @Bean IndexWriter iaviewIndexWriter() throws IOException {
-    // Analyzer analyzer = new WhitespaceAnalyzer(CatConstants.LUCENE_VERSION);
-    // IndexWriterConfig config = new
-    // IndexWriterConfig(CatConstants.LUCENE_VERSION, analyzer);
-    // File file = new File(CatConstants.IAVIEW_INDEX);
-    // SimpleFSDirectory index = new SimpleFSDirectory(file);
-    //
-    // return new IndexWriter(index, config);
-    // }
+    // TODO refresh the solr index periodically in a separate thread
 }

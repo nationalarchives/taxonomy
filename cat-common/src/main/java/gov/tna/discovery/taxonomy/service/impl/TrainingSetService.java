@@ -22,7 +22,6 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,7 +92,6 @@ public class TrainingSetService {
      * 
      * @param category
      */
-    // FIXME JCT make sure the writer is closed
     public void deleteAndUpdateTrainingIndexForCategory(Category category) {
 	IndexWriter writer = null;
 	try {

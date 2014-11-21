@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-// TODO 3 handle lack of results: many NPE
 @Component
 public class CLIRunner implements CommandLineRunner {
 

@@ -61,10 +61,17 @@ public class CategoriserTest {
 
     }
 
+    /**
+     * Used to find document having categories for another test case. Do not
+     * activate it
+     * 
+     * @throws IOException
+     * @throws ParseException
+     */
     @Test
     @Ignore
     public void toolFindDocumentWithCategory() throws IOException, ParseException {
-	findDocloop: for (int i = 0; i < this.iaViewIndexReader.maxDoc(); i++) {
+	findDocloop: for (int i = 0; i < 2000; i++) {
 	    if (this.iaViewIndexReader.hasDeletions()) {
 		System.out
 			.println("[ERROR].categoriseDocument: the reader provides deleted elements though it should not");
