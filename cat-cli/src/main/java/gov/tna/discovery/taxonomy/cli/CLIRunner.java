@@ -13,11 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-// TODO 1 do not use local index and mongo db, but use dev platform
 // TODO 3 handle lack of results: many NPE
-// TODO 3 empty the collections and index before repopulating them
-// TODO 3 handle concurrency issues: while creating the training set, if
-// collection is browsed from the solr admin GUI, it crashes
 @Component
 public class CLIRunner implements CommandLineRunner {
 

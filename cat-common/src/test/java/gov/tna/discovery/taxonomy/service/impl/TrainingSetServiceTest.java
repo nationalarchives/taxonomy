@@ -2,15 +2,15 @@ package gov.tna.discovery.taxonomy.service.impl;
 
 import static org.junit.Assert.assertEquals;
 import gov.tna.discovery.taxonomy.ConfigurationTest;
-import gov.tna.discovery.taxonomy.config.CatConstants;
-import gov.tna.discovery.taxonomy.repository.lucene.Indexer;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
-import gov.tna.discovery.taxonomy.service.impl.Categoriser;
-import gov.tna.discovery.taxonomy.service.impl.TrainingSetService;
 
 import java.io.IOException;
+
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.store.Directory;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,6 +37,15 @@ public class TrainingSetServiceTest {
     @Autowired
     TrainingDocumentRepository trainingDocumentRepository;
 
+    @Autowired
+    IndexReader trainingSetIndexReader;
+
+    @Autowired
+    private Directory trainingSetDirectory;
+
+    @Autowired
+    private IndexWriterConfig indexWriterConfig;
+
     @Test
     @Ignore
     public void test1CreateTrainingSet() throws IOException, ParseException {
@@ -53,9 +62,6 @@ public class TrainingSetServiceTest {
     @Test
     public void test3IndexTrainingSet() throws IOException {
 	trainingSetService.indexTrainingSet();
-	Indexer indexer = new Indexer();
-	IndexReader indexReader = indexer.getIndexReader(CatConstants.TRAINING_INDEX);
-	assertEquals(141, indexReader.maxDoc());
-
+	assertEquals(141, trainingSetIndexReader.maxDoc());
     }
 }

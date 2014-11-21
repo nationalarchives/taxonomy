@@ -1,12 +1,10 @@
 package gov.tna.discovery.taxonomy.repository.lucene;
 
-import gov.tna.discovery.taxonomy.config.CatConstants;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,31 +12,50 @@ import java.util.List;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.util.IOUtils;
+import org.apache.lucene.util.Version;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 //TODO put timeout on search requests on index: related to wildcard
 @Component
 public class Searcher {
 
+    @Autowired
+    private Analyzer analyzer;
+
+    @Autowired
+    IndexReader iaViewIndexReader;
+
+    @Autowired
+    SearcherManager iaviewSearcherManager;
+
+    @Value("${lucene.index.version}")
+    private String luceneVersion;
+
     // private static final Logger logger =
     // LoggerFactory.getLogger(Searcher.class);
 
-    public Document getDoc(ScoreDoc scoreDoc) throws IOException {
-	File file = new File(CatConstants.IAVIEW_INDEX);
-	SimpleFSDirectory index = new SimpleFSDirectory(file);
-	DirectoryReader ireader = DirectoryReader.open(index);
-	IndexSearcher isearcher = new IndexSearcher(ireader);
-	Document hitDoc = isearcher.doc(scoreDoc.doc);
-	ireader.close();
-	index.close();
+    public Document getDoc(ScoreDoc scoreDoc) {
+	Document hitDoc = null;
+	IndexSearcher searcher = null;
+	try {
+	    searcher = iaviewSearcherManager.acquire();
+	    hitDoc = searcher.doc(scoreDoc.doc);
+	} catch (IOException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	} finally {
+	    LuceneHelperTools.releaseQuietly(iaviewSearcherManager, searcher);
+	}
 	return hitDoc;
     }
 
@@ -47,13 +64,11 @@ public class Searcher {
     public List<InformationAssetView> performSearch(String queryString, Float mimimumScore, Integer limit,
 	    Integer offset) {
 	List<InformationAssetView> docs = new ArrayList<InformationAssetView>();
+
+	IndexSearcher isearcher = null;
 	try {
-	    File file = new File(CatConstants.IAVIEW_INDEX);
-	    Analyzer analyzer = new WhitespaceAnalyzer(CatConstants.LUCENE_VERSION);
-	    SimpleFSDirectory index = new SimpleFSDirectory(file);
-	    DirectoryReader ireader = DirectoryReader.open(index);
-	    IndexSearcher isearcher = new IndexSearcher(ireader);
-	    QueryParser parser = new QueryParser(CatConstants.LUCENE_VERSION,
+	    isearcher = iaviewSearcherManager.acquire();
+	    QueryParser parser = new QueryParser(Version.valueOf(luceneVersion),
 		    InformationAssetViewFields.DESCRIPTION.toString(), analyzer);
 	    parser.setAllowLeadingWildcard(true);
 	    Query query;
@@ -74,7 +89,8 @@ public class Searcher {
 
 		ScoreDoc scoreDoc = topDocs.scoreDocs[i];
 		if (mimimumScore != null && scoreDoc.score < mimimumScore) {
-		    // FIXME JCT use HitCollector instead? to return the total
+		    // FIXME JCT use HitCollector instead? to return the
+		    // total
 		    // number of results later
 		    break;
 		}
@@ -92,17 +108,17 @@ public class Searcher {
 		assetView.setURLPARAMS(iaid);
 		docs.add(assetView);
 	    }
-	    ireader.close();
-	    index.close();
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	} finally {
+	    LuceneHelperTools.releaseQuietly(iaviewSearcherManager, isearcher);
 	}
 	return docs;
     }
 
     public void checkCategoryQueryValidity(String qry) {
-	QueryParser qp = new QueryParser(CatConstants.LUCENE_VERSION, "CATEGORY", new WhitespaceAnalyzer(
-		CatConstants.LUCENE_VERSION));
+	QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), "CATEGORY", new WhitespaceAnalyzer(
+		Version.valueOf(luceneVersion)));
 	try {
 	    qp.parse(qry);
 	} catch (ParseException e) {

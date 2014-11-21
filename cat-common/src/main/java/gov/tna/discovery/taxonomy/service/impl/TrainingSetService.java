@@ -1,11 +1,9 @@
 package gov.tna.discovery.taxonomy.service.impl;
 
-import gov.tna.discovery.taxonomy.config.CatConstants;
 import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.repository.lucene.Indexer;
 import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
@@ -19,11 +17,14 @@ import java.util.List;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.store.Directory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 //TODO create Interface for service layer
@@ -39,10 +40,16 @@ public class TrainingSetService {
     TrainingDocumentRepository trainingDocumentRepository;
 
     @Autowired
-    Indexer indexer;
+    Searcher searcher;
 
     @Autowired
-    Searcher searcher;
+    private Directory trainingSetDirectory;
+
+    @Autowired
+    private IndexWriterConfig indexWriterConfig;
+
+    @Value("${lucene.index.trainingSetCollectionPath}")
+    private String trainingSetCollectionPath;
 
     public void updateTrainingSetForCategory(Category category, Float fixedLimitScore) {
 	List<InformationAssetView> IAViewResults;
@@ -84,10 +91,10 @@ public class TrainingSetService {
      * 
      * @param category
      */
+    // FIXME JCT make sure the writer is closed
     public void deleteAndUpdateTrainingIndexForCategory(Category category) {
-
 	try {
-	    IndexWriter writer = indexer.getIndexWriter(false, CatConstants.TRAINING_INDEX);
+	    IndexWriter writer = new IndexWriter(trainingSetDirectory, indexWriterConfig);
 	    writer.deleteDocuments(new Term(InformationAssetViewFields.CATEGORY.toString(), category.getTtl()));
 
 	    for (TrainingDocument trainingDocument : trainingDocumentRepository.findByCategory(category.getTtl())) {
@@ -100,7 +107,6 @@ public class TrainingSetService {
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	}
-
     }
 
     /**
@@ -109,11 +115,11 @@ public class TrainingSetService {
      * 
      * @throws IOException
      */
-    public void indexTrainingSet() throws IOException {
-
-	IndexWriter writer = indexer.getIndexWriter(false, CatConstants.TRAINING_INDEX);
+    public void indexTrainingSet() {
 
 	try {
+	    IndexWriter writer = new IndexWriter(trainingSetDirectory, indexWriterConfig);
+
 	    writer.deleteAll();
 
 	    Iterator<TrainingDocument> trainingDocumentIterator = trainingDocumentRepository.findAll().iterator();
@@ -125,8 +131,9 @@ public class TrainingSetService {
 		indexTrainingSetDocument(trainingDocument, writer);
 
 	    }
-	} finally {
 	    writer.close();
+	} catch (IOException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	}
 
     }

@@ -1,14 +1,13 @@
 package gov.tna.discovery.taxonomy.service.impl;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import gov.tna.discovery.taxonomy.ConfigurationTest;
-import gov.tna.discovery.taxonomy.config.CatConstants;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
-import gov.tna.discovery.taxonomy.repository.lucene.Indexer;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
-import gov.tna.discovery.taxonomy.service.impl.Categoriser;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -30,15 +29,17 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ConfigurationTest.class)
-// TODO generate memory db with data set for testing
 public class CategoriserTest {
-    private static final Logger logger = LoggerFactory.getLogger(Indexer.class);
+    private static final Logger logger = LoggerFactory.getLogger(CategoriserTest.class);
 
     @Autowired
     Categoriser categoriser;
 
     @Autowired
     TrainingDocumentRepository trainingDocumentRepository;
+
+    @Autowired
+    IndexReader iaViewIndexReader;
 
     @Test
     // FIXME need to add data set for that method. it changes after every
@@ -63,21 +64,17 @@ public class CategoriserTest {
     @Test
     @Ignore
     public void toolFindDocumentWithCategory() throws IOException, ParseException {
-	Indexer indexer = new Indexer();
-	IndexReader indexReader = indexer.getIndexReader(CatConstants.IAVIEW_INDEX);
-	findDocloop: for (int i = 0; i < indexReader.maxDoc(); i++) {
-	    // TODO 2 Add concurrency: categorize several documents at the same
-	    // time
-	    if (indexReader.hasDeletions()) {
+	findDocloop: for (int i = 0; i < this.iaViewIndexReader.maxDoc(); i++) {
+	    if (this.iaViewIndexReader.hasDeletions()) {
 		System.out
 			.println("[ERROR].categoriseDocument: the reader provides deleted elements though it should not");
 	    }
 
-	    Document doc = indexReader.document(i);
+	    Document doc = this.iaViewIndexReader.document(i);
 
 	    Categoriser categoriser = new Categoriser();
 	    Reader reader = new StringReader(doc.get(InformationAssetViewFields.DESCRIPTION.toString()));
-	    Map<String, Float> result = categoriser.runMlt(CatConstants.TRAINING_INDEX, reader);
+	    Map<String, Float> result = categoriser.runMlt(reader);
 
 	    logger.debug("DOCUMENT");
 	    logger.debug("------------------------");
