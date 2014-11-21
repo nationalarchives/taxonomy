@@ -4,13 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TestCategoriseSingleRequest {
 
-    @JsonProperty(value = "TITLE")
     private String title;
 
-    @JsonProperty(value = "DESCRIPTION", required = true)
+    @JsonProperty(required = true)
     private String description;
 
-    @JsonProperty(value = "CONTEXTDESCRIPTION")
     private String contextDescription;
 
     public String getTitle() {
