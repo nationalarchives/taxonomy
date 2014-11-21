@@ -60,9 +60,9 @@ public class Categoriser {
     @Autowired
     TrainingSetService trainingSetService;
 
-    @Value("${categorisation.mimimumScore}")
+    @Value("${lucene.mlt.mimimumScore}")
     private float mimimumScore;
-    @Value("${categorisation.maximumSimilarElements}")
+    @Value("${lucene.mlt.maximumSimilarElements}")
     private int maximumSimilarElements;
 
     /**

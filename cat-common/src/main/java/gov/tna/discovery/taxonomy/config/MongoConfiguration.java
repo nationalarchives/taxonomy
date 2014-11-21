@@ -3,7 +3,6 @@ package gov.tna.discovery.taxonomy.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -19,9 +18,12 @@ import com.mongodb.Mongo;
 @EnableMongoRepositories
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 @EnableConfigurationProperties
-class MongoConfiguration {
+public class MongoConfiguration {
 
     private String host;
+    private Integer port;
+
+    private String database;
 
     public String getHost() {
 	return host;
@@ -31,8 +33,24 @@ class MongoConfiguration {
 	this.host = host;
     }
 
+    public Integer getPort() {
+	return port;
+    }
+
+    public void setPort(Integer port) {
+	this.port = port;
+    }
+
+    public String getDatabase() {
+	return database;
+    }
+
+    public void setDatabase(String database) {
+	this.database = database;
+    }
+
     public @Bean MongoDbFactory mongoDbFactory() throws Exception {
-	return new SimpleMongoDbFactory(new Mongo(host), CatConstants.MONGO_TAXONOMY_DB);
+	return new SimpleMongoDbFactory(new Mongo(host, port), database);
     }
 
     public @Bean MongoTemplate mongoTemplate() throws Exception {

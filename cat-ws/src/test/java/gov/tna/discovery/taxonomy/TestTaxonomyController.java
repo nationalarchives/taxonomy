@@ -2,7 +2,6 @@ package gov.tna.discovery.taxonomy;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import gov.tna.discovery.taxonomy.domain.CategoryRelevancy;
 import gov.tna.discovery.taxonomy.domain.PublishRequest;
 import gov.tna.discovery.taxonomy.domain.SearchIAViewRequest;
 import gov.tna.discovery.taxonomy.domain.TaxonomyErrorResponse;
@@ -174,7 +173,7 @@ public class TestTaxonomyController {
     @Test
     public final void testTestCategoriseSingleDocumentWithOnlyDescription() {
 	TestCategoriseSingleRequest request = new TestCategoriseSingleRequest();
-	request.setDescription("TRINITY Church of England School.");
+	request.setDescription("Registration Sub-District: Greasley Civil Parish, Township or Place: Annesley Felley RD 429 RS 1 ED 1");
 	List<Object> categoryRelevancies = restTemplate.postForEntity(WS_URL + WS_PATH_TEST_CATEGORISE_SINGLE, request,
 		List.class).getBody();
 
@@ -183,7 +182,7 @@ public class TestTaxonomyController {
 	LinkedHashMap<String, Object> firstElement = (LinkedHashMap<String, Object>) categoryRelevancies.get(0);
 	String categoryName = (String) firstElement.get("name");
 	assertThat(categoryName, is(notNullValue()));
-	assertThat(categoryName, is(equalTo("Disease")));
+	assertThat(categoryName, is(equalTo("Merchant seamen")));
 
     }
 

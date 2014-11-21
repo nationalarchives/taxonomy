@@ -1,7 +1,5 @@
 package gov.tna.discovery.taxonomy;
 
-import gov.tna.discovery.taxonomy.config.CatConstants;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +21,9 @@ import com.mongodb.Mongo;
 public class MongoConfigurationTest {
 
     private String host;
+    private Integer port;
+
+    private String database;
 
     public String getHost() {
 	return host;
@@ -32,8 +33,24 @@ public class MongoConfigurationTest {
 	this.host = host;
     }
 
+    public Integer getPort() {
+	return port;
+    }
+
+    public void setPort(Integer port) {
+	this.port = port;
+    }
+
+    public String getDatabase() {
+	return database;
+    }
+
+    public void setDatabase(String database) {
+	this.database = database;
+    }
+
     public @Bean MongoDbFactory mongoDbFactory() throws Exception {
-	return new SimpleMongoDbFactory(new Mongo(), CatConstants.MONGO_TAXONOMY_DB);
+	return new SimpleMongoDbFactory(new Mongo(host, port), database);
     }
 
     public @Bean MongoTemplate mongoTemplate() throws Exception {

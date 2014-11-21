@@ -1,24 +1,17 @@
 package gov.tna.discovery.taxonomy.repository.lucene;
 
 import gov.tna.discovery.taxonomy.config.CatConstants;
-import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
-import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
-import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.SimpleFSDirectory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 //TODO use NRTManagerReopenThread to instanciate indexWriters
