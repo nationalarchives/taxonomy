@@ -13,17 +13,20 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 /**
- * Task executor for Taxonomy WS <br/>
- * responsible for launching asynchronous tasks
+ * Task manager for Taxonomy WS <br/>
+ * responsible for launching asynchronous tasks and providing the needed
+ * dependencies
+ * 
+ * See {@link gov.tna.discovery.taxonomy.config.AsyncConfiguration}
  * 
  * @author jcharlet
  *
  */
 @Service
-public class TaxonomyWSTaskExecutor {
+public class AsyncTaskManager {
 
     @Autowired
-    private Executor asyncExecutor;
+    private Executor threadPoolTaskExecutor;
 
     @Autowired
     TrainingDocumentRepository trainingDocumentRepository;
@@ -40,8 +43,8 @@ public class TaxonomyWSTaskExecutor {
      * @param category
      */
     public void updateTrainingSetDbAndIndex(Category category) {
-	asyncExecutor.execute(new UpdateTrainingSetDbAndIndexTask(category, Arrays.asList(trainingDocumentRepository,
-		trainingSetService, categoryRepository)));
+	threadPoolTaskExecutor.execute(new UpdateTrainingSetDbAndIndexTask(category, Arrays.asList(
+		trainingDocumentRepository, trainingSetService, categoryRepository)));
     }
 
 }

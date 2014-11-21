@@ -45,7 +45,13 @@ public class AsyncConfiguration {
 	this.queueCapacity = queueCapacity;
     }
 
-    public @Bean Executor asyncExecutor() {
+    /**
+     * See
+     * {@link org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor}
+     * 
+     * @return
+     */
+    public @Bean Executor threadPoolTaskExecutor() {
 	ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 	executor.setCorePoolSize(corePoolSize);
 	executor.setMaxPoolSize(maxPoolSize);

@@ -76,6 +76,14 @@ public class TrainingSetService {
 	}
     }
 
+    /**
+     * index training Set for a category<br/>
+     * delete records for a category in the index then add records from the
+     * trainingset db<br/>
+     * executes both tasks at the same time to use the same indexWriter
+     * 
+     * @param category
+     */
     public void deleteAndUpdateTrainingIndexForCategory(Category category) {
 
 	try {

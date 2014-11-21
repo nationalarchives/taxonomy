@@ -8,7 +8,7 @@ import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.TaxonomyWSService;
-import gov.tna.discovery.taxonomy.service.async.TaxonomyWSTaskExecutor;
+import gov.tna.discovery.taxonomy.service.async.AsyncTaskManager;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
 
@@ -41,7 +41,7 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
     Searcher searcher;
 
     @Autowired
-    TaxonomyWSTaskExecutor asyncExecutor;
+    AsyncTaskManager asyncExecutor;
 
     /*
      * (non-Javadoc)
