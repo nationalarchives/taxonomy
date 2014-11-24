@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -56,21 +57,13 @@ class LuceneConfiguration {
     }
 
     public @Bean SearcherManager iaviewSearcherManager() throws IOException {
-	// return new SearcherManager(iaviewIndexWriter(), true, null);
+	// return new SearcherManager(iaviewIndexWriter(), true, lnull);
 	return new SearcherManager(iaViewDirectory(), null);
     }
 
     public @Bean SearcherManager trainingSetSearcherManager() throws IOException {
 	// return new SearcherManager(iaviewIndexWriter(), true, null);
 	return new SearcherManager(trainingSetDirectory(), null);
-    }
-
-    public @Bean Analyzer analyzer() {
-	return new WhitespaceAnalyzer(Version.valueOf(version));
-    }
-
-    public @Bean IndexWriterConfig indexWriterConfig() {
-	return new IndexWriterConfig(Version.valueOf(version), analyzer());
     }
 
     /**
@@ -101,5 +94,4 @@ class LuceneConfiguration {
 	this.version = version;
     }
 
-    // TODO refresh the solr index periodically in a separate thread
 }

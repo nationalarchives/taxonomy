@@ -9,7 +9,7 @@ import gov.tna.discovery.taxonomy.domain.TestCategoriseSingleRequest;
 import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
+import gov.tna.discovery.taxonomy.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
@@ -64,7 +64,7 @@ public class TestTaxonomyController {
     TrainingDocumentRepository trainingDocRepo;
 
     @Autowired
-    Searcher searcher;
+    IAViewRepository iaViewRepository;
 
     @Before
     public void setUp() throws Exception {
@@ -121,8 +121,8 @@ public class TestTaxonomyController {
 	assertThat(trainingDocs, is(not(empty())));
 	assertThat(trainingDocs.size(), equalTo(17));
 
-	List<InformationAssetView> IAViewResults = searcher.performSearch(category.getQry(), (category.getSc()), 1000,
-		0);
+	List<InformationAssetView> IAViewResults = iaViewRepository.performSearch(category.getQry(),
+		(category.getSc()), 1000, 0);
 	assertThat(IAViewResults, is(notNullValue()));
 	assertThat(IAViewResults, is(not(empty())));
 	assertThat(IAViewResults.size(), equalTo(17));
@@ -182,7 +182,7 @@ public class TestTaxonomyController {
 	LinkedHashMap<String, Object> firstElement = (LinkedHashMap<String, Object>) categoryRelevancies.get(0);
 	String categoryName = (String) firstElement.get("name");
 	assertThat(categoryName, is(notNullValue()));
-	assertThat(categoryName, is(equalTo("Merchant seamen")));
+	assertThat(categoryName, is(equalTo("Sewerage")));
 
     }
 

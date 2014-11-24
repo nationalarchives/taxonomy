@@ -4,8 +4,8 @@ import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.repository.lucene.LuceneHelperTools;
-import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.TrainingSetService;
@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
@@ -23,6 +24,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,27 +44,32 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     TrainingDocumentRepository trainingDocumentRepository;
 
     @Autowired
-    Searcher searcher;
+    IAViewRepository iaViewRepository;
 
     @Autowired
     private Directory trainingSetDirectory;
 
-    @Autowired
-    private IndexWriterConfig indexWriterConfig;
-
     @Value("${lucene.index.trainingSetCollectionPath}")
     private String trainingSetCollectionPath;
 
-    /* (non-Javadoc)
-     * @see gov.tna.discovery.taxonomy.service.impl.TrainingSetService#updateTrainingSetForCategory(gov.tna.discovery.taxonomy.repository.domain.mongo.Category, java.lang.Float)
+    @Value("${lucene.index.version}")
+    private String luceneVersion;
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gov.tna.discovery.taxonomy.service.impl.TrainingSetService#
+     * updateTrainingSetForCategory
+     * (gov.tna.discovery.taxonomy.repository.domain.mongo.Category,
+     * java.lang.Float)
      */
     @Override
     public void updateTrainingSetForCategory(Category category, Float fixedLimitScore) {
 	List<InformationAssetView> IAViewResults;
 	try {
 	    // FIXME JCT Iterate instead of taking only 100 elements
-	    IAViewResults = searcher.performSearch(category.getQry(), (fixedLimitScore != null ? fixedLimitScore
-		    : category.getSc()), 1000, 0);
+	    IAViewResults = iaViewRepository.performSearch(category.getQry(),
+		    (fixedLimitScore != null ? fixedLimitScore : category.getSc()), 1000, 0);
 	    logger.debug(".updateTrainingSetForCategory: Category=" + category.getTtl() + ", found "
 		    + IAViewResults.size() + " result(s)");
 	    if (IAViewResults.size() > 0) {
@@ -89,8 +96,13 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	}
     }
 
-    /* (non-Javadoc)
-     * @see gov.tna.discovery.taxonomy.service.impl.TrainingSetService#indexTrainingSetDocument(gov.tna.discovery.taxonomy.repository.domain.TrainingDocument, org.apache.lucene.index.IndexWriter)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gov.tna.discovery.taxonomy.service.impl.TrainingSetService#
+     * indexTrainingSetDocument
+     * (gov.tna.discovery.taxonomy.repository.domain.TrainingDocument,
+     * org.apache.lucene.index.IndexWriter)
      */
     @Override
     @SuppressWarnings("deprecation")
@@ -115,8 +127,12 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	writer.addDocument(doc);
     }
 
-    /* (non-Javadoc)
-     * @see gov.tna.discovery.taxonomy.service.impl.TrainingSetService#createTrainingSet(java.lang.Float)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * gov.tna.discovery.taxonomy.service.impl.TrainingSetService#createTrainingSet
+     * (java.lang.Float)
      */
     @Override
     public void createTrainingSet(Float fixedLimitScore) throws IOException, ParseException {
@@ -139,14 +155,19 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	logger.debug(".createTrainingSet : END");
     }
 
-    /* (non-Javadoc)
-     * @see gov.tna.discovery.taxonomy.service.impl.TrainingSetService#deleteAndUpdateTraingSetIndexForCategory(gov.tna.discovery.taxonomy.repository.domain.mongo.Category)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gov.tna.discovery.taxonomy.service.impl.TrainingSetService#
+     * deleteAndUpdateTraingSetIndexForCategory
+     * (gov.tna.discovery.taxonomy.repository.domain.mongo.Category)
      */
     @Override
     public void deleteAndUpdateTraingSetIndexForCategory(Category category) {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, indexWriterConfig);
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(),
+		    new EnglishAnalyzer(getLuceneVersion())));
 	    writer.deleteDocuments(new Term(InformationAssetViewFields.CATEGORY.toString(), category.getTtl()));
 
 	    for (TrainingDocument trainingDocument : trainingDocumentRepository.findByCategory(category.getTtl())) {
@@ -159,14 +180,23 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	}
     }
 
-    /* (non-Javadoc)
-     * @see gov.tna.discovery.taxonomy.service.impl.TrainingSetService#indexTrainingSet()
+    private Version getLuceneVersion() {
+	return Version.valueOf(luceneVersion);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * gov.tna.discovery.taxonomy.service.impl.TrainingSetService#indexTrainingSet
+     * ()
      */
     @Override
     public void indexTrainingSet() {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, indexWriterConfig);
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(),
+		    new EnglishAnalyzer(getLuceneVersion())));
 
 	    writer.deleteAll();
 

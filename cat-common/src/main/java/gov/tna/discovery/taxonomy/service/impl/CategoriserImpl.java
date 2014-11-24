@@ -2,8 +2,8 @@ package gov.tna.discovery.taxonomy.service.impl;
 
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.repository.lucene.LuceneHelperTools;
-import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.Categoriser;
@@ -19,13 +19,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queries.mlt.MoreLikeThis;
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -62,12 +59,9 @@ public class CategoriserImpl implements Categoriser {
 
     @Autowired
     IndexReader trainingSetIndexReader;
-    
-    @Autowired
-    Searcher searcher;
 
     @Autowired
-    private SearcherManager iaviewSearcherManager;
+    IAViewRepository iaViewRepository;
 
     @Autowired
     private SearcherManager trainingSetSearcherManager;
@@ -80,8 +74,17 @@ public class CategoriserImpl implements Categoriser {
     @Value("${lucene.index.version}")
     private String luceneVersion;
 
-    /* (non-Javadoc)
-     * @see gov.tna.discovery.taxonomy.service.impl.Categoriser#categoriseIAViewSolrDocument(java.lang.String)
+    @Value("${lucene.mlt.minTermFreq}")
+    private int minTermFreq;
+
+    @Value("${lucene.mlt.minDocFreq}")
+    private int minDocFreq;
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gov.tna.discovery.taxonomy.service.impl.Categoriser#
+     * categoriseIAViewSolrDocument(java.lang.String)
      */
     @Override
     public Map<String, Float> categoriseIAViewSolrDocument(String catdocref) {
@@ -89,7 +92,7 @@ public class CategoriserImpl implements Categoriser {
 	// and not text_gen: do not need to be tokenized. makes search by
 	// catdocref more complicated that it needs (look for a bunch of terms,
 	// what if they are provided in the wrong order? have to check it also
-	TopDocs results = searcher.searchIAViewIndexByFieldAndPhrase("CATDOCREF", catdocref, 1);
+	TopDocs results = iaViewRepository.searchIAViewIndexByFieldAndPhrase("CATDOCREF", catdocref, 1);
 
 	Document doc;
 	try {
@@ -118,8 +121,12 @@ public class CategoriserImpl implements Categoriser {
 
     }
 
-    /* (non-Javadoc)
-     * @see gov.tna.discovery.taxonomy.service.impl.Categoriser#categoriseIAViewSolrIndex()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * gov.tna.discovery.taxonomy.service.impl.Categoriser#categoriseIAViewSolrIndex
+     * ()
      */
     @Override
     public void testCategoriseIAViewSolrIndex() throws IOException {
@@ -159,8 +166,12 @@ public class CategoriserImpl implements Categoriser {
 
     }
 
-    /* (non-Javadoc)
-     * @see gov.tna.discovery.taxonomy.service.impl.Categoriser#runMlt(java.io.Reader)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * gov.tna.discovery.taxonomy.service.impl.Categoriser#runMlt(java.io.Reader
+     * )
      */
     // TODO 1 check and update fields that are being retrieved to create
     // training set, used for MLT (run MLT on title, context desc and desc at
@@ -176,6 +187,8 @@ public class CategoriserImpl implements Categoriser {
 	    Analyzer analyzer = new EnglishAnalyzer(Version.valueOf(luceneVersion));
 
 	    MoreLikeThis moreLikeThis = new MoreLikeThis(this.trainingSetIndexReader);
+	    moreLikeThis.setMinTermFreq(minTermFreq);
+	    moreLikeThis.setMinDocFreq(minDocFreq);
 	    moreLikeThis.setAnalyzer(analyzer);
 	    moreLikeThis.setFieldNames(new String[] { InformationAssetViewFields.DESCRIPTION.toString() });
 
@@ -204,6 +217,7 @@ public class CategoriserImpl implements Categoriser {
 		Document hitDoc = searcher.doc(scoreDoc.doc);
 		String category = hitDoc.get(InformationAssetViewFields.CATEGORY.toString());
 
+		// TODO Improve with k nearest neighbour algorithm
 		Float existingCategoryScore = result.get(category);
 		if (existingCategoryScore == null || existingCategoryScore < score) {
 		    result.put(category, scoreDoc.score);
@@ -220,8 +234,13 @@ public class CategoriserImpl implements Categoriser {
 	return result;
     }
 
-    /* (non-Javadoc)
-     * @see gov.tna.discovery.taxonomy.service.impl.Categoriser#testCategoriseSingle(gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * gov.tna.discovery.taxonomy.service.impl.Categoriser#testCategoriseSingle
+     * (gov
+     * .tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView)
      */
     @Override
     public Map<String, Float> testCategoriseSingle(InformationAssetView iaView) {
