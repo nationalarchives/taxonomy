@@ -1,8 +1,12 @@
 package gov.tna.discovery.taxonomy.service.impl;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import gov.tna.discovery.taxonomy.ConfigurationTest;
+import gov.tna.discovery.taxonomy.MongoTestDataSet;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
@@ -17,6 +21,8 @@ import java.util.Map.Entry;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +45,20 @@ public class CategoriserTest {
 
     @Autowired
     IndexReader iaViewIndexReader;
+
+    // @Autowired
+    // MongoTestDataSet mongoTestDataSet;
+    //
+    // @Before
+    // public void initDataSet() throws IOException {
+    // mongoTestDataSet.initCategoryCollection();
+    // mongoTestDataSet.initTrainingSetCollection();
+    // }
+    //
+    // @After
+    // public void emptyDataSet() throws IOException {
+    // mongoTestDataSet.dropDatabase();
+    // }
 
     @Test
     // FIXME need to add data set for that method. it changes after every

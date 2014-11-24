@@ -5,22 +5,36 @@ import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+
+import org.apache.lucene.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
-//@Component
-//@ConditionalOnMissingBean(name = "fongo")
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+
+@Component
+// @ConditionalOnMissingBean(name = "fongo")
 public class MongoTestDataSet {
 
-    // @Autowired
+    @Autowired
     CategoryRepository categoryRepository;
 
-    // @Autowired
+    @Autowired
     TrainingDocumentRepository trainingDocumentRepository;
 
-    public void createCategory() {
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    public void initCategoryCollectionWith1element() {
 	Category category = new Category();
 	category.setCiaid("C10032");
 	category.setTtl("Disease");
@@ -35,6 +49,42 @@ public class MongoTestDataSet {
 	trainingDocument.setDescription("Cloth planning and the clothes ration 1944-1947.");
 	trainingDocument.setTitle("Rationing");
 	trainingDocumentRepository.save(trainingDocument);
+    }
 
+    public void initCategoryCollection() throws IOException {
+	URL url = Thread.currentThread().getContextClassLoader().getResource("dataset/taxonomy.json");
+	File file = new File(url.getPath());
+	FileInputStream fileIs = new FileInputStream(file);
+	InputStreamReader isReader = new InputStreamReader(fileIs);
+	BufferedReader bufReader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+	String strLine = null;
+	DBCollection collection = mongoTemplate.getCollection("categories");
+	while ((strLine = bufReader.readLine()) != null) {
+	    DBObject bson = (DBObject) JSON.parse(strLine);
+	    collection.insert(bson);
+	}
+
+	IOUtils.closeWhileHandlingException(fileIs, isReader, bufReader);
+    }
+
+    public void initTrainingSetCollection() throws IOException {
+	URL url = Thread.currentThread().getContextClassLoader().getResource("dataset/trainingset.json");
+	File file = new File(url.getPath());
+	FileInputStream fileIs = new FileInputStream(file);
+	InputStreamReader isReader = new InputStreamReader(fileIs);
+	BufferedReader bufReader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+	String strLine = null;
+	DBCollection collection = mongoTemplate.getCollection("trainingset");
+	while ((strLine = bufReader.readLine()) != null) {
+	    DBObject bson = (DBObject) JSON.parse(strLine);
+	    collection.insert(bson);
+	}
+
+	IOUtils.closeWhileHandlingException(fileIs, isReader, bufReader);
+    }
+
+    public void dropDatabase() {
+	mongoTemplate.dropCollection(Category.class);
+	mongoTemplate.dropCollection(TrainingDocument.class);
     }
 }

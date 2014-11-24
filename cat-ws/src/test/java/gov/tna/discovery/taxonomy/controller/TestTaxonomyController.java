@@ -1,7 +1,13 @@
-package gov.tna.discovery.taxonomy;
+package gov.tna.discovery.taxonomy.controller;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import gov.tna.discovery.taxonomy.WSApplication;
 import gov.tna.discovery.taxonomy.domain.PublishRequest;
 import gov.tna.discovery.taxonomy.domain.SearchIAViewRequest;
 import gov.tna.discovery.taxonomy.domain.TaxonomyErrorResponse;
@@ -18,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -51,7 +56,7 @@ public class TestTaxonomyController {
     // private static final Logger logger =
     // LoggerFactory.getLogger(TestTaxonomyController.class);
 
-    private static final String DISEASE_CATEGORY_ID = "541811223158321a80587e43";
+    private static final String DISEASE_CATEGORY_CIAID = "C10032";
 
     private static final String WS_PATH_TEST_CATEGORISE_SINGLE = "taxonomy/testCategoriseSingle";
 
@@ -66,23 +71,33 @@ public class TestTaxonomyController {
     @Autowired
     IAViewRepository iaViewRepository;
 
-    @Before
-    public void setUp() throws Exception {
+    // @Autowired
+    // MongoTestDataSet mongoTestDataSet;
+    //
+    // @Before
+    // public void initDataSet() throws IOException {
+    // mongoTestDataSet.initCategoryCollection();
+    // mongoTestDataSet.initTrainingSetCollection();
+    // }
+    //
+    // @After
+    // public void emptyDataSet() throws IOException {
+    // mongoTestDataSet.dropDatabase();
+    // }
+
+    @After
+    public void resetDataSet() {
+	Category category = catRepo.findByCiaid(DISEASE_CATEGORY_CIAID);
+	category.setLck(false);
+	category.setQry("\"venereal disease\" OR \"tropical disease\" OR \"industrial disease\" OR \"infectious disease\" OR \"bubonic plague\" OR \"yellow fever\" OR \"malaria\" OR \"tuberculosis\" OR \"scurvy\" OR \"rickets\" OR \"measles\" OR \"influenza\" OR \"bronchitis\" OR \"pneumoconiosis\" OR \"emphysema\" OR \"byssinosis\" OR \"polio\" OR \"dengue fever\" OR \"rabies\" OR \"swine fever\" OR \"weils disease\" OR \"cancer\" OR \"asthma\" OR \"syphilis\" OR \"typhoid\" OR \"gonorrhoea\" OR \"smallpox\" OR \"cholera\" OR \"cholera morbus\" OR \"typhus\" OR \"meningitis\" OR \"dysentery\" OR \"scarlatina\" OR \"scarlet fever\" OR \"pneumonia\" OR \"cynanche tonsillaris\" OR \"synocha\" OR \"opthalmia\" OR \"whooping cough\" OR \"HIV\" OR \"asbestosis\" OR \"mesothelioma\" OR \"beri beri\" OR \"multiple sclerosis\" OR \"diabetes\" OR \"leus venerea\" OR \"leprosy\" OR \"poliomyelitis\" OR \"encephalitis\" OR \"Trypanosomiasis\"");
+	catRepo.save(category);
+
     }
 
     @Test
     public final void testWSisUp() {
 	String responseBody = restTemplate.getForEntity(WS_URL + WS_PATH_HEALTH, String.class).getBody();
 	assertThat(responseBody, containsString("UP"));
-    }
-
-    @After
-    public void resetDataSet() {
-	Category category = catRepo.findOne(DISEASE_CATEGORY_ID);
-	category.setLck(false);
-	category.setQry("\"venereal disease\" OR \"tropical disease\" OR \"industrial disease\" OR \"infectious disease\" OR \"bubonic plague\" OR \"yellow fever\" OR \"malaria\" OR \"tuberculosis\" OR \"scurvy\" OR \"rickets\" OR \"measles\" OR \"influenza\" OR \"bronchitis\" OR \"pneumoconiosis\" OR \"emphysema\" OR \"byssinosis\" OR \"polio\" OR \"dengue fever\" OR \"rabies\" OR \"swine fever\" OR \"weils disease\" OR \"cancer\" OR \"asthma\" OR \"syphilis\" OR \"typhoid\" OR \"gonorrhoea\" OR \"smallpox\" OR \"cholera\" OR \"cholera morbus\" OR \"typhus\" OR \"meningitis\" OR \"dysentery\" OR \"scarlatina\" OR \"scarlet fever\" OR \"pneumonia\" OR \"cynanche tonsillaris\" OR \"synocha\" OR \"opthalmia\" OR \"whooping cough\" OR \"HIV\" OR \"asbestosis\" OR \"mesothelioma\" OR \"beri beri\" OR \"multiple sclerosis\" OR \"diabetes\" OR \"leus venerea\" OR \"leprosy\" OR \"poliomyelitis\" OR \"encephalitis\" OR \"Trypanosomiasis\"");
-	catRepo.save(category);
-
     }
 
     @SuppressWarnings("unchecked")
@@ -99,7 +114,7 @@ public class TestTaxonomyController {
 
     @Test
     public final void testPublicationOKandRunning() throws InterruptedException {
-	Category category = catRepo.findOne(DISEASE_CATEGORY_ID);
+	Category category = catRepo.findByCiaid(DISEASE_CATEGORY_CIAID);
 
 	ResponseEntity<String> response = doPublishPostRequestOnWS(category);
 
@@ -109,9 +124,9 @@ public class TestTaxonomyController {
 
     @Test
     public final void testPublicationWasSuccesful() throws InterruptedException {
-	Category category = catRepo.findOne(DISEASE_CATEGORY_ID);
+	Category category = catRepo.findByCiaid(DISEASE_CATEGORY_CIAID);
 
-	doPublishPostRequestOnWS(category);
+	ResponseEntity<String> response = doPublishPostRequestOnWS(category);
 
 	// Thread.sleep(5000);
 	waitForAsyncPublicationToBeCompleted();
@@ -188,10 +203,10 @@ public class TestTaxonomyController {
 
     private void waitForAsyncPublicationToBeCompleted() throws InterruptedException {
 	Category category;
-	category = catRepo.findOne(DISEASE_CATEGORY_ID);
+	category = catRepo.findByCiaid(DISEASE_CATEGORY_CIAID);
 	while (category.getLck() == true) {
 	    Thread.sleep(500);
-	    category = catRepo.findOne(DISEASE_CATEGORY_ID);
+	    category = catRepo.findByCiaid(DISEASE_CATEGORY_CIAID);
 	}
     }
 
@@ -201,14 +216,14 @@ public class TestTaxonomyController {
     }
 
     private String getLockedCategoryId() {
-	Category category = catRepo.findOne(DISEASE_CATEGORY_ID);
+	Category category = catRepo.findByCiaid(DISEASE_CATEGORY_CIAID);
 	category.setLck(true);
 	catRepo.save(category);
 	return category.getCiaid();
     }
 
     private String getCategoryIdWithInvalidQuery() {
-	Category category = catRepo.findOne(DISEASE_CATEGORY_ID);
+	Category category = catRepo.findByCiaid(DISEASE_CATEGORY_CIAID);
 	category.setQry("\"venereal disease\" OR");
 	catRepo.save(category);
 	String ciaid = category.getCiaid();
