@@ -1,9 +1,7 @@
 package gov.tna.discovery.taxonomy.service.impl;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 import gov.tna.discovery.taxonomy.ConfigurationTest;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
@@ -48,7 +46,7 @@ public class CategoriserTest {
     public void testCategoriseIAViewSolrDocument() throws IOException, ParseException {
 	Map<String, Float> categories = categoriser.categoriseIAViewSolrDocument("CO 273/630/9");
 	assertThat(categories, is(notNullValue()));
-	assertThat(categories.size(), is(equalTo(3)));
+	assertThat(categories.keySet(), is(not(empty())));
     }
 
     @Test
@@ -57,7 +55,18 @@ public class CategoriserTest {
 	iaView.setDESCRIPTION("Singapore Harbour Board: indemnity against any damage caused by explosives on board HM ships in harbour area.");
 	Map<String, Float> mapOfCategoriesAndScores = categoriser.testCategoriseSingle(iaView);
 	assertThat(mapOfCategoriesAndScores, is(notNullValue()));
-	assertThat(mapOfCategoriesAndScores.size(), is(equalTo(3)));
+	assertThat(mapOfCategoriesAndScores.keySet(), is(not(empty())));
+	assertThat(mapOfCategoriesAndScores.containsKey("Mental illness"), is(true));
+
+    }
+
+    @Test
+    public void testTestCategoriseSingleWithIncompleteDescription() {
+	InformationAssetView iaView = new InformationAssetView();
+	iaView.setDESCRIPTION("Singapore Harbour Board: indemnity against any damage caused by explosives");
+	Map<String, Float> mapOfCategoriesAndScores = categoriser.testCategoriseSingle(iaView);
+	assertThat(mapOfCategoriesAndScores, is(notNullValue()));
+	assertThat(mapOfCategoriesAndScores.keySet(), is(not(empty())));
 	assertThat(mapOfCategoriesAndScores.containsKey("Mental illness"), is(true));
 
     }

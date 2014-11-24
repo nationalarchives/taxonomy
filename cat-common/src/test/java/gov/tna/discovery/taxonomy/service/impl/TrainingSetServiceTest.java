@@ -46,9 +46,6 @@ public class TrainingSetServiceTest {
     @Autowired
     private Directory trainingSetDirectory;
 
-    @Autowired
-    private IndexWriterConfig indexWriterConfig;
-
     @Test
     @Ignore
     public void test1CreateTrainingSet() throws IOException, ParseException {
@@ -62,6 +59,8 @@ public class TrainingSetServiceTest {
 	assertEquals(141l, trainingDocumentRepository.count());
     }
 
+    // FIXME refresh the solr index periodically in a separate thread and use it
+    // here to prevent this test from failing from time to time
     @Test
     public void test3IndexTrainingSet() throws IOException, InterruptedException {
 	trainingSetService.indexTrainingSet();

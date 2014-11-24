@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -26,10 +27,7 @@ import org.springframework.stereotype.Component;
 
 //TODO put timeout on search requests on index: related to wildcard
 @Component
-public class Searcher {
-
-    @Autowired
-    private Analyzer analyzer;
+public class IAViewRepository {
 
     @Autowired
     SearcherManager iaviewSearcherManager;
@@ -64,7 +62,8 @@ public class Searcher {
 	try {
 	    isearcher = iaviewSearcherManager.acquire();
 	    QueryParser parser = new QueryParser(Version.valueOf(luceneVersion),
-		    InformationAssetViewFields.DESCRIPTION.toString(), analyzer);
+		    InformationAssetViewFields.DESCRIPTION.toString(), new WhitespaceAnalyzer(
+			    Version.valueOf(luceneVersion)));
 	    parser.setAllowLeadingWildcard(true);
 	    Query query;
 	    try {

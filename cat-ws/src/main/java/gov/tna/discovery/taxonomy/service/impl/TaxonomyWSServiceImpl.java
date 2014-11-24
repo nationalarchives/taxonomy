@@ -4,7 +4,7 @@ import gov.tna.discovery.taxonomy.domain.CategoryRelevancy;
 import gov.tna.discovery.taxonomy.domain.TestCategoriseSingleRequest;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.repository.lucene.Searcher;
+import gov.tna.discovery.taxonomy.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.Categoriser;
@@ -38,7 +38,7 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
     TrainingSetService trainingSetService;
 
     @Autowired
-    Searcher searcher;
+    IAViewRepository iaViewRepository;
 
     @Autowired
     AsyncTaskManager asyncExecutor;
@@ -58,7 +58,7 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
 
 	checkLockOnCategory(category);
 
-	searcher.checkCategoryQueryValidity(category.getQry());
+	iaViewRepository.checkCategoryQueryValidity(category.getQry());
 
 	lockPublicationOnCategory(category);
 
@@ -85,7 +85,7 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
      */
     @Override
     public List<InformationAssetView> performSearch(String categoryQuery, Float score, Integer limit, Integer offset) {
-	return searcher.performSearch(categoryQuery, score, limit, offset);
+	return iaViewRepository.performSearch(categoryQuery, score, limit, offset);
     }
 
     @Override
