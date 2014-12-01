@@ -22,4 +22,14 @@ public class PublishRequest {
     public void setCiaid(String ciaid) {
 	this.ciaid = ciaid;
     }
+
+    @Override
+    public String toString() {
+	StringBuilder builder = new StringBuilder();
+	builder.append("PublishRequest [ciaid=");
+	builder.append(ciaid);
+	builder.append("]");
+	return builder.toString();
+    }
+
 }

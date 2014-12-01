@@ -58,4 +58,11 @@ public interface TrainingSetService {
      */
     public abstract void indexTrainingSet();
 
+    /**
+     * delete training document from mongoDb by category
+     * 
+     * @param ttl
+     */
+    public abstract void deleteMongoTrainingDocumentByCategory(String category);
+
 }

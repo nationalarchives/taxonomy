@@ -5,12 +5,12 @@ import org.springframework.stereotype.Repository;
 /**
  * Repository dedicated to training document database. <br/>
  * dedicated to methods that are too complex to be provided with spring
- * repository
+ * repository<br/>
+ * returns the number of removed elements
  * 
  * @author jcharlet
- *
  */
 @Repository
 public interface TrainingDocumentRepositoryCustom {
-    void deleteByCategory(String category);
+    int deleteByCategory(String category);
 }

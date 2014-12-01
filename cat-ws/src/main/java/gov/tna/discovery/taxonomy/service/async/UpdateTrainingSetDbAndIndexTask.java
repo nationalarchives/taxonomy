@@ -22,8 +22,6 @@ public class UpdateTrainingSetDbAndIndexTask implements Runnable {
 
     private Category category;
 
-    TrainingDocumentRepository trainingDocumentRepository;
-
     TrainingSetService trainingSetService;
 
     CategoryRepository categoryRepository;
@@ -32,9 +30,7 @@ public class UpdateTrainingSetDbAndIndexTask implements Runnable {
 	super();
 	this.category = category;
 	for (Object dependency : dependencies) {
-	    if (dependency instanceof TrainingDocumentRepository) {
-		trainingDocumentRepository = (TrainingDocumentRepository) dependency;
-	    } else if (dependency instanceof TrainingSetServiceImpl) {
+	    if (dependency instanceof TrainingSetServiceImpl) {
 		trainingSetService = (TrainingSetService) dependency;
 	    } else if (dependency instanceof CategoryRepository) {
 		categoryRepository = (CategoryRepository) dependency;
@@ -51,7 +47,7 @@ public class UpdateTrainingSetDbAndIndexTask implements Runnable {
     public void run() {
 
 	try {
-	    trainingDocumentRepository.deleteByCategory(category.getTtl());
+	    trainingSetService.deleteMongoTrainingDocumentByCategory(category.getTtl());
 	    trainingSetService.updateTrainingSetForCategory(category, null);
 	    trainingSetService.deleteAndUpdateTraingSetIndexForCategory(category);
 	} finally {

@@ -28,9 +28,6 @@ public class AsyncTaskManager {
     private Executor threadPoolTaskExecutor;
 
     @Autowired
-    TrainingDocumentRepository trainingDocumentRepository;
-
-    @Autowired
     TrainingSetService trainingSetService;
 
     @Autowired
@@ -42,8 +39,8 @@ public class AsyncTaskManager {
      * @param category
      */
     public void updateTrainingSetDbAndIndex(Category category) {
-	threadPoolTaskExecutor.execute(new UpdateTrainingSetDbAndIndexTask(category, Arrays.asList(
-		trainingDocumentRepository, trainingSetService, categoryRepository)));
+	threadPoolTaskExecutor.execute(new UpdateTrainingSetDbAndIndexTask(category, Arrays.asList(trainingSetService,
+		categoryRepository)));
     }
 
 }

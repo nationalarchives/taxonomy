@@ -177,4 +177,17 @@ public class InformationAssetView {
 	CONTEXTDESCRIPTION = cONTEXTDESCRIPTION;
     }
 
+    @Override
+    public String toString() {
+	StringBuilder builder = new StringBuilder();
+	builder.append("InformationAssetView [CATDOCREF=");
+	builder.append(CATDOCREF);
+	builder.append(", TITLE=");
+	builder.append(TITLE);
+	builder.append(", score=");
+	builder.append(score);
+	builder.append("]");
+	return builder.toString();
+    }
+
 }

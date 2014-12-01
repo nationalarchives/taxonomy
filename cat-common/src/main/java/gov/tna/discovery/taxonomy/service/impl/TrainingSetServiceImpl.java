@@ -170,7 +170,9 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 		    new EnglishAnalyzer(getLuceneVersion())));
 	    writer.deleteDocuments(new Term(InformationAssetViewFields.CATEGORY.toString(), category.getTtl()));
 
-	    for (TrainingDocument trainingDocument : trainingDocumentRepository.findByCategory(category.getTtl())) {
+	    List<TrainingDocument> trainingDocuments = trainingDocumentRepository.findByCategory(category.getTtl());
+	    logger.info(".deleteAndUpdateTraingSetIndexForCategory: indexing {} elements", trainingDocuments.size());
+	    for (TrainingDocument trainingDocument : trainingDocuments) {
 		indexTrainingSetDocument(trainingDocument, writer);
 	    }
 	} catch (IOException e) {
@@ -213,6 +215,12 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	    LuceneHelperTools.closeIndexWriterQuietly(writer);
 	}
 
+    }
+
+    @Override
+    public void deleteMongoTrainingDocumentByCategory(String category) {
+	int numberOfRemovedElements = trainingDocumentRepository.deleteByCategory(category);
+	logger.info(".deleteMongoTrainingDocumentByCategory < removed {} elements", numberOfRemovedElements);
     }
 
 }

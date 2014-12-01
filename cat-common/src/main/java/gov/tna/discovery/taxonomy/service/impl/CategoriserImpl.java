@@ -150,7 +150,7 @@ public class CategoriserImpl implements Categoriser {
 	    logger.debug("------------------------");
 	    logger.debug("TITLE: {}", doc.get("TITLE"));
 	    logger.debug("IAID: {}", doc.get("CATDOCREF"));
-	    logger.info("DESCRIPTION: {}", doc.get("DESCRIPTION"));
+	    logger.debug("DESCRIPTION: {}", doc.get("DESCRIPTION"));
 	    logger.debug("");
 	    for (Entry<String, Float> category : result.entrySet()) {
 		logger.info("Document {} has CATEGORY: {}, score: {}", doc.get("CATDOCREF"), category.getKey(),
@@ -195,6 +195,7 @@ public class CategoriserImpl implements Categoriser {
 	    Query query = moreLikeThis.like(reader, InformationAssetViewFields.DESCRIPTION.toString());
 
 	    TopDocs topDocs = searcher.search(query, this.maximumSimilarElements);
+	    logger.info(".runMlt: found {} total hits", topDocs.totalHits);
 
 	    result = new LinkedHashMap<String, Float>();
 

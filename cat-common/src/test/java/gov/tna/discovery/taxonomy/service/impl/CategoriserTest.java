@@ -56,7 +56,6 @@ public class CategoriserTest {
 	Map<String, Float> mapOfCategoriesAndScores = categoriser.testCategoriseSingle(iaView);
 	assertThat(mapOfCategoriesAndScores, is(notNullValue()));
 	assertThat(mapOfCategoriesAndScores.keySet(), is(not(empty())));
-	assertThat(mapOfCategoriesAndScores.containsKey("Mental illness"), is(true));
 
     }
 
@@ -67,7 +66,6 @@ public class CategoriserTest {
 	Map<String, Float> mapOfCategoriesAndScores = categoriser.testCategoriseSingle(iaView);
 	assertThat(mapOfCategoriesAndScores, is(notNullValue()));
 	assertThat(mapOfCategoriesAndScores.keySet(), is(not(empty())));
-	assertThat(mapOfCategoriesAndScores.containsKey("Mental illness"), is(true));
 
     }
 

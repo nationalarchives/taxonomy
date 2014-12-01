@@ -35,4 +35,17 @@ public class TestCategoriseSingleRequest {
 	this.contextDescription = contextDescription;
     }
 
+    @Override
+    public String toString() {
+	StringBuilder builder = new StringBuilder();
+	builder.append("TestCategoriseSingleRequest [title=");
+	builder.append(title);
+	builder.append(", description=");
+	builder.append(description);
+	builder.append(", contextDescription=");
+	builder.append(contextDescription);
+	builder.append("]");
+	return builder.toString();
+    }
+
 }
