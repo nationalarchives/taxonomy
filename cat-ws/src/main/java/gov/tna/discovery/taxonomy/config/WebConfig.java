@@ -14,8 +14,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.handler.DispatcherServletWebRequest;
 import org.springframework.web.servlet.handler.WebRequestHandlerInterceptorAdapter;
 
-@Configuration
-@EnableWebMvc
+//FIXME Log input/output of methods/ws endpoints generically with that class
+//@Configuration
+//@EnableWebMvc
 public class WebConfig extends WebMvcConfigurerAdapter {
 
     public class LogRequestInterceptor implements WebRequestInterceptor {
