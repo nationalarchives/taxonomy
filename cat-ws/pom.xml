@@ -9,9 +9,10 @@
 	<artifactId>taxonomy-ws</artifactId>
 	<name>Categorisation Web Service</name>
 	<packaging>war</packaging>
-
+	
 	<properties>
-		<spring.boot.version>1.1.8.RELEASE</spring.boot.version>
+		<!-- To run cat application with 'mvn springboot:run' and use spring loaded  -->
+    	<start-class>gov.tna.discovery.taxonomy.WSApplication</start-class>
 	</properties>
 
 	<dependencies>
