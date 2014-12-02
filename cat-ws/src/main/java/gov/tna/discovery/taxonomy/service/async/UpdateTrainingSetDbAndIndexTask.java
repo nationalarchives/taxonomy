@@ -3,13 +3,12 @@
  */
 package gov.tna.discovery.taxonomy.service.async;
 
-import java.util.List;
-
 import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
-import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.TrainingSetService;
 import gov.tna.discovery.taxonomy.service.impl.TrainingSetServiceImpl;
+
+import java.util.List;
 
 /**
  * Task to launch the publication of an update on a category asynchronously:<br/>

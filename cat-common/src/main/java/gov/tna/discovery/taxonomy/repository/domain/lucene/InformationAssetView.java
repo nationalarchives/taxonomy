@@ -4,7 +4,6 @@ import java.util.List;
 
 public class InformationAssetView {
 
-    private String _id;
     private String URLPARAMS;
     private String CATDOCREF;
     private String TITLE;
@@ -19,7 +18,12 @@ public class InformationAssetView {
     private String[] PERSON_FULLNAME;
     private String CONTEXTDESCRIPTION;
 
+    private Integer doc;
+    private String DOCREFERENCE;
+
     // category
+    // FIXME must store categories in iaview and not ciaids (not a relational
+    // db)
     private List<String> CIAIDS;
 
     // search properties
@@ -43,8 +47,6 @@ public class InformationAssetView {
 	this.shardIndex = shardIndex;
     }
 
-    private Integer doc;
-
     public Integer getDoc() {
 	return doc;
     }
@@ -59,14 +61,6 @@ public class InformationAssetView {
 
     public void setCIAIDS(List<String> cIAID) {
 	CIAIDS = cIAID;
-    }
-
-    public String get_id() {
-	return _id;
-    }
-
-    public void set_id(String _id) {
-	this._id = _id;
     }
 
     public String getURLPARAMS() {
@@ -177,13 +171,23 @@ public class InformationAssetView {
 	CONTEXTDESCRIPTION = cONTEXTDESCRIPTION;
     }
 
+    public String getDOCREFERENCE() {
+	return DOCREFERENCE;
+    }
+
+    public void setDOCREFERENCE(String dOCREFERENCE) {
+	DOCREFERENCE = dOCREFERENCE;
+    }
+
     @Override
     public String toString() {
 	StringBuilder builder = new StringBuilder();
 	builder.append("InformationAssetView [CATDOCREF=");
 	builder.append(CATDOCREF);
-	builder.append(", TITLE=");
-	builder.append(TITLE);
+	builder.append(", DOCREFERENCE=");
+	builder.append(DOCREFERENCE);
+	builder.append(", CIAIDS=");
+	builder.append(CIAIDS);
 	builder.append(", score=");
 	builder.append(score);
 	builder.append("]");

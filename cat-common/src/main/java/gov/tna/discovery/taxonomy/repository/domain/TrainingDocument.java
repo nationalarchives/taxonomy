@@ -14,6 +14,9 @@ public class TrainingDocument {
     @Field(value = "CATEGORY")
     private String category;
 
+    @Field(value = "DOCREFERENCE")
+    private String docReference;
+
     public String get_id() {
 	return _id;
     }
@@ -44,6 +47,14 @@ public class TrainingDocument {
 
     public void setCategory(String category) {
 	this.category = category;
+    }
+
+    public String getDocReference() {
+	return docReference;
+    }
+
+    public void setDocReference(String docReference) {
+	this.docReference = docReference;
     }
 
 }

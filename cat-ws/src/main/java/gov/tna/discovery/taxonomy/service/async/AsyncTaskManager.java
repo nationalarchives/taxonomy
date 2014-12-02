@@ -2,7 +2,6 @@ package gov.tna.discovery.taxonomy.service.async;
 
 import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
-import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.TrainingSetService;
 
 import java.util.Arrays;

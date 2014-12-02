@@ -93,8 +93,7 @@ public class IAViewRepository {
 		InformationAssetView assetView = new InformationAssetView();
 		assetView.setDoc(scoreDoc.doc);
 		assetView.setShardIndex(scoreDoc.shardIndex);
-		assetView.set_id(hitDoc.get(InformationAssetViewFields._id.toString()));
-		assetView.setCATDOCREF(hitDoc.get(InformationAssetViewFields.CATDOCREF.toString()));
+		assetView.setDOCREFERENCE(hitDoc.get(InformationAssetViewFields.DOCREFERENCE.toString()));
 		assetView.setTITLE(hitDoc.get(InformationAssetViewFields.TITLE.toString()));
 		assetView.setDESCRIPTION(hitDoc.get(InformationAssetViewFields.DESCRIPTION.toString()));
 		assetView.setScore(scoreDoc.score);

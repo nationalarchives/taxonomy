@@ -209,7 +209,6 @@ public class CategoriserImpl implements Categoriser {
 	    for (int i = 0; i < size; i++) {
 		ScoreDoc scoreDoc = topDocs.scoreDocs[i];
 		Float score = scoreDoc.score;
-		logger.debug("score for document found: {}", score);
 
 		if (score < this.mimimumScore) {
 		    break;
@@ -217,6 +216,8 @@ public class CategoriserImpl implements Categoriser {
 
 		Document hitDoc = searcher.doc(scoreDoc.doc);
 		String category = hitDoc.get(InformationAssetViewFields.CATEGORY.toString());
+		String docReference = hitDoc.get(InformationAssetViewFields.DOCREFERENCE.toString());
+		logger.debug(".runMlt: found doc, score: {}, docreference: {}", score, docReference);
 
 		// TODO Improve with k nearest neighbour algorithm
 		Float existingCategoryScore = result.get(category);

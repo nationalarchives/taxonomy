@@ -1,5 +1,8 @@
 package gov.tna.discovery.taxonomy.service.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.either;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import gov.tna.discovery.taxonomy.ConfigurationTest;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
@@ -7,11 +10,8 @@ import gov.tna.discovery.taxonomy.service.Categoriser;
 import gov.tna.discovery.taxonomy.service.TrainingSetService;
 
 import java.io.IOException;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.ReaderManager;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.store.Directory;

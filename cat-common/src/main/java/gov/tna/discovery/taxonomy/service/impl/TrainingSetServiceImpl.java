@@ -19,6 +19,8 @@ import java.util.List;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
@@ -79,6 +81,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 		    trainingDocument.setCategory(category.getTtl());
 		    trainingDocument.setDescription(iaView.getDESCRIPTION());
 		    trainingDocument.setTitle(iaView.getTITLE());
+		    trainingDocument.setDocReference(iaView.getDOCREFERENCE());
 		    trainingDocumentRepository.save(trainingDocument);
 		    logger.debug(trainingDocument.getCategory() + ":" + iaView.getCATDOCREF() + " - "
 			    + trainingDocument.getTitle().replaceAll("\\<.*?>", ""));
@@ -105,25 +108,23 @@ public class TrainingSetServiceImpl implements TrainingSetService {
      * org.apache.lucene.index.IndexWriter)
      */
     @Override
-    @SuppressWarnings("deprecation")
     public void indexTrainingSetDocument(TrainingDocument trainingDocument, IndexWriter writer) throws IOException {
 	// TODO 4 handle exceptions, do not stop the process unless several
 	// errors occur
 	// TODO 1 bulk insert, this is far too slow to do it unitary!
-	// TODO 4 Field is deprecated, use appropriate fields.
 	// FIXME why to remove punctuation before indexing? analyser duty
 	trainingDocument.setDescription(trainingDocument.getDescription().replaceAll("\\<.*?>", ""));
 	trainingDocument.setTitle(trainingDocument.getTitle().replaceAll("\\<.*?>", ""));
 
 	Document doc = new Document();
-	doc.add(new Field(InformationAssetViewFields._id.toString(), trainingDocument.get_id(), Field.Store.YES,
-		Field.Index.NOT_ANALYZED));
-	doc.add(new Field(InformationAssetViewFields.CATEGORY.toString(), trainingDocument.getCategory(),
-		Field.Store.YES, Field.Index.NOT_ANALYZED, Field.TermVector.NO));
-	doc.add(new Field(InformationAssetViewFields.TITLE.toString(), trainingDocument.getTitle(), Field.Store.YES,
-		Field.Index.ANALYZED, Field.TermVector.WITH_POSITIONS_OFFSETS));
-	doc.add(new Field(InformationAssetViewFields.DESCRIPTION.toString(), trainingDocument.getDescription(),
-		Field.Store.YES, Field.Index.ANALYZED, Field.TermVector.WITH_POSITIONS_OFFSETS));
+
+	doc.add(new StringField(InformationAssetViewFields.DOCREFERENCE.toString(), trainingDocument.getDocReference(),
+		Field.Store.YES));
+	doc.add(new StringField(InformationAssetViewFields.CATEGORY.toString(), trainingDocument.getCategory(),
+		Field.Store.YES));
+	doc.add(new TextField(InformationAssetViewFields.TITLE.toString(), trainingDocument.getTitle(), Field.Store.YES));
+	doc.add(new TextField(InformationAssetViewFields.DESCRIPTION.toString(), trainingDocument.getDescription(),
+		Field.Store.YES));
 	writer.addDocument(doc);
     }
 
