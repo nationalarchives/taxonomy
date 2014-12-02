@@ -14,7 +14,11 @@ import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -66,8 +70,10 @@ public class CategoriserImpl implements Categoriser {
     @Autowired
     private SearcherManager trainingSetSearcherManager;
 
-    @Value("${lucene.mlt.mimimumScore}")
-    private float mimimumScore;
+    @Value("${lucene.mlt.mimimumScoreForMlt}")
+    private float mimimumScoreForMlt;
+    @Value("${lucene.mlt.mimimumGlobalScoreForACategory}")
+    private float mimimumGlobalScoreForACategory;
     @Value("${lucene.mlt.maximumSimilarElements}")
     private int maximumSimilarElements;
 
@@ -195,7 +201,8 @@ public class CategoriserImpl implements Categoriser {
 	    Query query = moreLikeThis.like(reader, InformationAssetViewFields.DESCRIPTION.toString());
 
 	    TopDocs topDocs = searcher.search(query, this.maximumSimilarElements);
-	    logger.info(".runMlt: found {} total hits", topDocs.totalHits);
+	    logger.info(".runMlt: found {} total hits, processed {} hits", topDocs.totalHits,
+		    this.maximumSimilarElements);
 
 	    result = new LinkedHashMap<String, Float>();
 
@@ -208,22 +215,25 @@ public class CategoriserImpl implements Categoriser {
 
 	    for (int i = 0; i < size; i++) {
 		ScoreDoc scoreDoc = topDocs.scoreDocs[i];
-		Float score = scoreDoc.score;
+		Float currrentScore = scoreDoc.score;
 
-		if (score < this.mimimumScore) {
+		if (currrentScore < this.mimimumScoreForMlt) {
 		    break;
 		}
 
 		Document hitDoc = searcher.doc(scoreDoc.doc);
 		String category = hitDoc.get(InformationAssetViewFields.CATEGORY.toString());
 		String docReference = hitDoc.get(InformationAssetViewFields.DOCREFERENCE.toString());
-		logger.debug(".runMlt: found doc, score: {}, docreference: {}", score, docReference);
+		logger.debug(".runMlt: found doc, category: {}, score: {}, docreference: {}", category, currrentScore,
+			docReference);
 
-		// TODO Improve with k nearest neighbour algorithm
+		Float scoreToSet = currrentScore;
 		Float existingCategoryScore = result.get(category);
-		if (existingCategoryScore == null || existingCategoryScore < score) {
-		    result.put(category, scoreDoc.score);
+		// k nearest neighbour algorithm
+		if (existingCategoryScore != null) {
+		    scoreToSet += existingCategoryScore;
 		}
+		result.put(category, scoreToSet);
 
 	    }
 
@@ -233,7 +243,30 @@ public class CategoriserImpl implements Categoriser {
 	    LuceneHelperTools.releaseSearcherManagerQuietly(trainingSetSearcherManager, searcher);
 	}
 
-	return result;
+	Map<String, Float> sortedResults = sortMapByValueDescAndFilterCategoriesByGlobalScore(result);
+
+	return sortedResults;
+    }
+
+    private Map<String, Float> sortMapByValueDescAndFilterCategoriesByGlobalScore(Map<String, Float> result) {
+	// Sort entries by Value in descending Order
+	List<Map.Entry<String, Float>> entries = new ArrayList<Map.Entry<String, Float>>(result.entrySet());
+	Collections.sort(entries, new Comparator<Map.Entry<String, Float>>() {
+	    public int compare(Map.Entry<String, Float> a, Map.Entry<String, Float> b) {
+		return b.getValue().compareTo(a.getValue());
+	    }
+	});
+
+	// add entries to the map to returned. Do not add entries below the
+	// minimum global score for a category
+	Map<String, Float> sortedResults = new LinkedHashMap<String, Float>();
+	for (Map.Entry<String, Float> entry : entries) {
+	    if (entry.getValue() < this.mimimumGlobalScoreForACategory) {
+		break;
+	    }
+	    sortedResults.put(entry.getKey(), entry.getValue());
+	}
+	return sortedResults;
     }
 
     /*
