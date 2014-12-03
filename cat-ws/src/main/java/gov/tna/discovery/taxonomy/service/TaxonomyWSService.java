@@ -14,10 +14,10 @@ import java.util.List;
  */
 public interface TaxonomyWSService {
 
-    void publishUpdateOnCategory(String ciaid);
+    public void publishUpdateOnCategory(String ciaid);
 
-    List<InformationAssetView> performSearch(String categoryQuery, Float score, Integer limit, Integer offset);
+    public List<InformationAssetView> performSearch(String categoryQuery, Float score, Integer limit, Integer offset);
 
-    List<CategoryRelevancy> testCategoriseSingle(TestCategoriseSingleRequest testCategoriseSingleRequest);
+    public List<CategoryRelevancy> testCategoriseSingle(TestCategoriseSingleRequest testCategoriseSingleRequest);
 
 }

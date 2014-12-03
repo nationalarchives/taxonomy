@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface TrainingDocumentRepository extends CrudRepository<TrainingDocument, Long>,
 	TrainingDocumentRepositoryCustom {
 
-    List<TrainingDocument> findByCategory(String category);
+    public List<TrainingDocument> findByCategory(String category);
 
 }

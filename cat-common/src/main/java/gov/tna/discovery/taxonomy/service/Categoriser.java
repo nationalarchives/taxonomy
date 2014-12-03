@@ -20,14 +20,14 @@ public interface Categoriser {
      * @throws ParseException
      */
     @Deprecated
-    public abstract Map<String, Float> categoriseIAViewSolrDocument(String catdocref);
+    public Map<String, Float> categoriseIAViewSolrDocument(String catdocref);
 
     /**
      * Categorise the whole IA collection
      * 
      * @throws IOException
      */
-    public abstract void testCategoriseIAViewSolrIndex() throws IOException;
+    public void testCategoriseIAViewSolrIndex() throws IOException;
 
     /**
      * run More Like This process on a document by comparing its description to
@@ -42,7 +42,7 @@ public interface Categoriser {
     // TODO 1 check and update fields that are being retrieved to create
     // training set, used for MLT (run MLT on title, context desc and desc at
     // least. returns results by score not from a fixed number)
-    public abstract Map<String, Float> runMlt(Reader reader);
+    public Map<String, Float> runMlt(Reader reader);
 
     /**
      * Preview the categorisation of a document
@@ -50,6 +50,6 @@ public interface Categoriser {
      * @param iaView
      * @return
      */
-    public abstract Map<String, Float> testCategoriseSingle(InformationAssetView iaView);
+    public Map<String, Float> testCategoriseSingle(InformationAssetView iaView);
 
 }
