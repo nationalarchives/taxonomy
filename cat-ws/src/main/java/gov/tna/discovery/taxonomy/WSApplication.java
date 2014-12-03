@@ -9,7 +9,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @ComponentScan
 @EnableAutoConfiguration
-@PropertySource("application.properties")
+@PropertySource("application.yml")
 public class WSApplication {
 
     public static void main(String[] args) throws Exception {
