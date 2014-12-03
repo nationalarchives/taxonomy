@@ -32,9 +32,6 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
     CategoryRepository categoryRepository;
 
     @Autowired
-    TrainingDocumentRepository trainingDocumentRepository;
-
-    @Autowired
     TrainingSetService trainingSetService;
 
     @Autowired

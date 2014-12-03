@@ -1,0 +1,1 @@
+Please find here the configuration to use to set up the trainingSet collection in Solr

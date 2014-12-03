@@ -4,10 +4,8 @@ import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.repository.lucene.LuceneHelperTools;
-import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.Categoriser;
-import gov.tna.discovery.taxonomy.service.TrainingSetService;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
 
@@ -48,15 +46,6 @@ import org.springframework.stereotype.Service;
 public class CategoriserImpl implements Categoriser {
 
     private static final Logger logger = LoggerFactory.getLogger(CategoriserImpl.class);
-
-    @Autowired
-    CategoryRepository categoryRepository;
-
-    @Autowired
-    TrainingDocumentRepository trainingDocumentRepository;
-
-    @Autowired
-    TrainingSetService trainingSetService;
 
     @Autowired
     IndexReader iaViewIndexReader;
