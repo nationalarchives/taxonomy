@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 //TODO put timeout on search requests on index: related to wildcard
+//TODO create IAVIewService and put in IAViewRepository only simple execution of queries
 @Component
 public class IAViewRepository {
 
@@ -97,9 +98,6 @@ public class IAViewRepository {
 		assetView.setTITLE(hitDoc.get(InformationAssetViewFields.TITLE.toString()));
 		assetView.setDESCRIPTION(hitDoc.get(InformationAssetViewFields.DESCRIPTION.toString()));
 		assetView.setScore(scoreDoc.score);
-		String[] iaidArray = hitDoc.get(InformationAssetViewFields.URLPARAMS.toString()).split("/");
-		String iaid = iaidArray[iaidArray.length - 1];
-		assetView.setURLPARAMS(iaid);
 		docs.add(assetView);
 	    }
 	} catch (IOException e) {

@@ -4,7 +4,6 @@ import java.util.List;
 
 public class InformationAssetView {
 
-    private String URLPARAMS;
     private String CATDOCREF;
     private String TITLE;
     private String DESCRIPTION;
@@ -61,14 +60,6 @@ public class InformationAssetView {
 
     public void setCIAIDS(List<String> cIAID) {
 	CIAIDS = cIAID;
-    }
-
-    public String getURLPARAMS() {
-	return URLPARAMS;
-    }
-
-    public void setURLPARAMS(String uRLPARMAS) {
-	URLPARAMS = uRLPARMAS;
     }
 
     public String getCATDOCREF() {
