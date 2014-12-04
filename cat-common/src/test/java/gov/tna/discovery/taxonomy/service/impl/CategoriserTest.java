@@ -15,8 +15,6 @@ import java.util.Map;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -68,12 +66,10 @@ public class CategoriserTest {
 	iaView.setTITLE("UK bilateral aid programme: review by Ministry of Overseas Development working party; papers, minutes and correspondance");
 	iaView.setDESCRIPTION("UK bilateral aid programme: review by Ministry of Overseas Development working party; papers, minutes and correspondence.");
 	iaView.setCONTEXTDESCRIPTION("Board of Trade and successors: Export Policy and Promotion Division and successors: Registered Files (XP Series).");
-	iaView.setCOVERINGDATES("1969");
 
 	Map<String, Float> mapOfCategoriesAndScores = categoriser.testCategoriseSingle(iaView);
 	assertThat(mapOfCategoriesAndScores, is(notNullValue()));
 	assertThat(mapOfCategoriesAndScores.keySet(), is(not(empty())));
-
     }
 
 }

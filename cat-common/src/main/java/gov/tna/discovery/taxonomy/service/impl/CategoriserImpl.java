@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -22,24 +23,24 @@ import java.util.Map.Entry;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queries.mlt.MoreLikeThis;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 /**
  * class dedicated to the categorisation of documents<br/>
@@ -78,6 +79,11 @@ public class CategoriserImpl implements Categoriser {
 
     @Value("${lucene.mlt.minDocFreq}")
     private int minDocFreq;
+
+    private static final String[] fieldsToAnalyse = new String[] { InformationAssetViewFields.DESCRIPTION.toString(),
+	    InformationAssetViewFields.TITLE.toString(), InformationAssetViewFields.CONTEXTDESCRIPTION.toString(),
+	    InformationAssetViewFields.CORPBODYS.toString(), InformationAssetViewFields.SUBJECTS.toString(),
+	    InformationAssetViewFields.PERSON_FULLNAME.toString(), InformationAssetViewFields.PLACE_NAME.toString() };
 
     /*
      * (non-Javadoc)
@@ -135,8 +141,7 @@ public class CategoriserImpl implements Categoriser {
 	    // TODO 2 Add concurrency: categorize several documents at the same
 	    // time
 	    if (this.iaViewIndexReader.hasDeletions()) {
-		System.out
-			.println("[ERROR].categoriseDocument: the reader provides deleted elements though it should not");
+		logger.error(".testCategoriseIAViewSolrIndex: the reader provides deleted elements though it should not");
 	    }
 
 	    Document doc = this.iaViewIndexReader.document(i);
@@ -187,12 +192,6 @@ public class CategoriserImpl implements Categoriser {
 	    moreLikeThis.setMinTermFreq(minTermFreq);
 	    moreLikeThis.setMinDocFreq(minDocFreq);
 	    moreLikeThis.setAnalyzer(analyzer);
-	    String[] fieldsToAnalyse = new String[] { InformationAssetViewFields.DESCRIPTION.toString(),
-		    InformationAssetViewFields.TITLE.toString(),
-		    InformationAssetViewFields.CONTEXTDESCRIPTION.toString(),
-		    InformationAssetViewFields.CORPBODYS.toString(), InformationAssetViewFields.SUBJECTS.toString(),
-		    InformationAssetViewFields.PERSON_FULLNAME.toString(),
-		    InformationAssetViewFields.PLACE_NAME.toString() };
 	    moreLikeThis.setFieldNames(fieldsToAnalyse);
 
 	    BooleanQuery fullQuery = new BooleanQuery();
@@ -289,28 +288,22 @@ public class CategoriserImpl implements Categoriser {
 	try {
 	    for (Field field : iaView.getClass().getDeclaredFields()) {
 		field.setAccessible(true);
-		String value = String.valueOf(field.get(iaView));
-		if (value != null && !"null".equals(value)) {
-		    switch (field.getName()) {
-		    case "DOCREFERENCE":
-			doc.add(new StringField(field.getName(), value, Store.YES));
-			break;
-		    case "TITLE":
-		    case "DESCRIPTION":
-		    case "CONTEXTDESCRIPTION":
-			doc.add(new TextField(field.getName(), value, Store.YES));
-			break;
-		    default:
-			break;
+		String fieldName = field.getName();
+
+		if (CollectionUtils.contains(Arrays.asList(fieldsToAnalyse).iterator(), fieldName)) {
+		    String value = String.valueOf(field.get(iaView));
+		    if (value != null && !"null".equals(value)) {
+			doc.add(new TextField(fieldName, value, Store.YES));
 		    }
 		}
 	    }
+
 	} catch (IllegalArgumentException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+	    logger.error(".testCategoriseSingle: unexpected error: {}", e.getMessage());
+	    throw new RuntimeException(e);
 	} catch (IllegalAccessException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+	    logger.error(".testCategoriseSingle: unexpected error: {}", e.getMessage());
+	    throw new RuntimeException(e);
 	}
 
 	return runMlt(doc);

@@ -39,7 +39,7 @@ public interface Categoriser {
      * @return
      * @throws IOException
      */
-    Map<String, Float> runMlt(Document document);
+    public Map<String, Float> runMlt(Document document);
 
     /**
      * Preview the categorisation of a document

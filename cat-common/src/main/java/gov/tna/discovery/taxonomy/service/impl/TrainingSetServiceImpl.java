@@ -176,6 +176,8 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	    try {
 		updateTrainingSetForCategory(category, fixedLimitScore);
 	    } catch (TaxonomyException e) {
+		logger.error(".createTrainingSet: error while parsing Category '{}': {}", category.getTtl(),
+			e.toString());
 		continue;
 	    }
 
