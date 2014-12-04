@@ -1,13 +1,11 @@
-package gov.tna.discovery.taxonomy.service.impl;
+package gov.tna.discovery.taxonomy.repository.lucene;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import gov.tna.discovery.taxonomy.ConfigurationTest;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.repository.lucene.IAViewRepository;
 
 import java.util.List;
 
@@ -23,7 +21,7 @@ import org.springframework.expression.spel.ast.Indexer;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = ConfigurationTest.class)
+@SpringApplicationConfiguration(classes = LuceneConfigurationTest.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IAViewRepositoryTest {
 

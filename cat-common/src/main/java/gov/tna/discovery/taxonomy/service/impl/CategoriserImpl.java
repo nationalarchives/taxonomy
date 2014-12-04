@@ -4,17 +4,14 @@ import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.repository.lucene.LuceneHelperTools;
-import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.Categoriser;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -29,7 +26,6 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.queries.mlt.MoreLikeThis;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
@@ -44,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 /**
  * class dedicated to the categorisation of documents<br/>

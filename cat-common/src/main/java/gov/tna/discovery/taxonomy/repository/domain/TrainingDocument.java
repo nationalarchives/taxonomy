@@ -3,10 +3,6 @@ package gov.tna.discovery.taxonomy.repository.domain;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-
 @Document(collection = "trainingset")
 public class TrainingDocument {
     private String _id;

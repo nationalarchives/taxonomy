@@ -4,7 +4,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.either;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import gov.tna.discovery.taxonomy.ConfigurationTest;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.Categoriser;
 import gov.tna.discovery.taxonomy.service.TrainingSetService;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.ReaderManager;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.store.Directory;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -25,7 +23,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = ConfigurationTest.class)
+@SpringApplicationConfiguration(classes = ServiceConfigurationTest.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 // TODO generate memory db with data set for testing
 public class TrainingSetServiceTest {
@@ -43,9 +41,6 @@ public class TrainingSetServiceTest {
 
     @Autowired
     ReaderManager trainingSetReaderManager;
-
-    @Autowired
-    private Directory trainingSetDirectory;
 
     @Test
     @Ignore

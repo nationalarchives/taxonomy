@@ -1,8 +1,6 @@
-package gov.tna.discovery.taxonomy.mongo;
+package gov.tna.discovery.taxonomy.repository.mongo;
 
 import static org.junit.Assert.assertEquals;
-import gov.tna.discovery.taxonomy.MongoConfigurationTest;
-import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 
 import org.junit.Before;
 import org.junit.Test;

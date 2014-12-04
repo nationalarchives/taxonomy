@@ -6,7 +6,6 @@ import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
-import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.Categoriser;
 import gov.tna.discovery.taxonomy.service.TaxonomyWSService;
 import gov.tna.discovery.taxonomy.service.TrainingSetService;

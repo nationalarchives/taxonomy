@@ -3,7 +3,6 @@ package gov.tna.discovery.taxonomy.service;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.Map;
 
 import org.apache.lucene.document.Document;
