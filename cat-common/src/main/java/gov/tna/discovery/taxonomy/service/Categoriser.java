@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
+import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
 
 public interface Categoriser {
@@ -34,15 +35,12 @@ public interface Categoriser {
      * the description of all items of the training set<br/>
      * currently we get a fixed number of the top results
      * 
-     * @param reader
-     *            reader of the document being tested
+     * @param document
+     *            document being tested
      * @return
      * @throws IOException
      */
-    // TODO 1 check and update fields that are being retrieved to create
-    // training set, used for MLT (run MLT on title, context desc and desc at
-    // least. returns results by score not from a fixed number)
-    public Map<String, Float> runMlt(Reader reader);
+    Map<String, Float> runMlt(Document document);
 
     /**
      * Preview the categorisation of a document

@@ -1,16 +1,16 @@
 package gov.tna.discovery.taxonomy.service.impl;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import gov.tna.discovery.taxonomy.ConfigurationTest;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.Categoriser;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -69,6 +69,20 @@ public class CategoriserTest {
 
     }
 
+    @Test
+    public final void testTestCategoriseSingleDocumentWithMoreFields() {
+	InformationAssetView iaView = new InformationAssetView();
+	iaView.setTITLE("UK bilateral aid programme: review by Ministry of Overseas Development working party; papers, minutes and correspondance");
+	iaView.setDESCRIPTION("UK bilateral aid programme: review by Ministry of Overseas Development working party; papers, minutes and correspondence.");
+	iaView.setCONTEXTDESCRIPTION("Board of Trade and successors: Export Policy and Promotion Division and successors: Registered Files (XP Series).");
+	iaView.setCOVERINGDATES("1969");
+
+	Map<String, Float> mapOfCategoriesAndScores = categoriser.testCategoriseSingle(iaView);
+	assertThat(mapOfCategoriesAndScores, is(notNullValue()));
+	assertThat(mapOfCategoriesAndScores.keySet(), is(not(empty())));
+
+    }
+
     /**
      * Used to find document having categories for another test case. Do not
      * activate it
@@ -88,8 +102,7 @@ public class CategoriserTest {
 	    Document doc = this.iaViewIndexReader.document(i);
 
 	    Categoriser categoriser = new CategoriserImpl();
-	    Reader reader = new StringReader(doc.get(InformationAssetViewFields.DESCRIPTION.toString()));
-	    Map<String, Float> result = categoriser.runMlt(reader);
+	    Map<String, Float> result = categoriser.runMlt(doc);
 
 	    logger.debug("DOCUMENT");
 	    logger.debug("------------------------");

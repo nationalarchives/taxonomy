@@ -14,6 +14,9 @@ import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -173,7 +176,7 @@ public class TestTaxonomyController {
     @Test
     public final void testTestCategoriseSingleDocumentWithOnlyDescription() {
 	TestCategoriseSingleRequest request = new TestCategoriseSingleRequest();
-	request.setDescription("Registration Sub-District: Greasley Civil Parish, Township or Place: Annesley Felley RD 429 RS 1 ED 1");
+	request.setDescription("UK bilateral aid programme: review by Ministry of Overseas Development working party; papers, minutes and correspondance");
 	List<Object> categoryRelevancies = restTemplate.postForEntity(WS_URL + WS_PATH_TEST_CATEGORISE_SINGLE, request,
 		List.class).getBody();
 
@@ -182,6 +185,7 @@ public class TestTaxonomyController {
 	LinkedHashMap<String, Object> firstElement = (LinkedHashMap<String, Object>) categoryRelevancies.get(0);
 	String categoryName = (String) firstElement.get("name");
 	assertThat(categoryName, not(isEmptyString()));
+	logger.info(Arrays.toString(categoryRelevancies.toArray()));
 
     }
 

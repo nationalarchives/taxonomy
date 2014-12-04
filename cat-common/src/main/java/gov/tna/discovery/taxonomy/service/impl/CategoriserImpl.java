@@ -12,7 +12,9 @@ import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -23,19 +25,26 @@ import java.util.Map.Entry;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.queries.mlt.MoreLikeThis;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /**
  * class dedicated to the categorisation of documents<br/>
@@ -96,8 +105,7 @@ public class CategoriserImpl implements Categoriser {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	}
 
-	Reader reader = new StringReader(doc.get(InformationAssetViewFields.DESCRIPTION.toString()));
-	Map<String, Float> result = runMlt(reader);
+	Map<String, Float> result = runMlt(doc);
 
 	logger.debug("DOCUMENT");
 	logger.debug("------------------------");
@@ -138,8 +146,7 @@ public class CategoriserImpl implements Categoriser {
 
 	    Document doc = this.iaViewIndexReader.document(i);
 
-	    Reader reader = new StringReader(doc.get(InformationAssetViewFields.DESCRIPTION.toString()));
-	    Map<String, Float> result = runMlt(reader);
+	    Map<String, Float> result = runMlt(doc);
 
 	    logger.debug("DOCUMENT");
 	    logger.debug("------------------------");
@@ -172,7 +179,7 @@ public class CategoriserImpl implements Categoriser {
     // training set, used for MLT (run MLT on title, context desc and desc at
     // least. returns results by score not from a fixed number)
     @Override
-    public Map<String, Float> runMlt(Reader reader) {
+    public Map<String, Float> runMlt(Document document) {
 
 	Map<String, Float> result = null;
 	IndexSearcher searcher = null;
@@ -185,11 +192,25 @@ public class CategoriserImpl implements Categoriser {
 	    moreLikeThis.setMinTermFreq(minTermFreq);
 	    moreLikeThis.setMinDocFreq(minDocFreq);
 	    moreLikeThis.setAnalyzer(analyzer);
-	    moreLikeThis.setFieldNames(new String[] { InformationAssetViewFields.DESCRIPTION.toString() });
+	    String[] fieldsToAnalyse = new String[] { InformationAssetViewFields.DESCRIPTION.toString(),
+		    InformationAssetViewFields.TITLE.toString(),
+		    InformationAssetViewFields.CONTEXTDESCRIPTION.toString(),
+		    InformationAssetViewFields.CORPBODYS.toString(), InformationAssetViewFields.SUBJECTS.toString(),
+		    InformationAssetViewFields.PERSON_FULLNAME.toString(),
+		    InformationAssetViewFields.PLACE_NAME.toString() };
+	    moreLikeThis.setFieldNames(fieldsToAnalyse);
 
-	    Query query = moreLikeThis.like(reader, InformationAssetViewFields.DESCRIPTION.toString());
+	    BooleanQuery fullQuery = new BooleanQuery();
 
-	    TopDocs topDocs = searcher.search(query, this.maximumSimilarElements);
+	    for (String fieldName : fieldsToAnalyse) {
+		String value = document.get(fieldName);
+		if (value != null && !"null".equals(value)) {
+		    Query query = moreLikeThis.like(new StringReader(value), fieldName);
+		    fullQuery.add(query, Occur.SHOULD);
+		}
+	    }
+
+	    TopDocs topDocs = searcher.search(fullQuery, this.maximumSimilarElements);
 	    logger.info(".runMlt: found {} total hits, processed {} hits", topDocs.totalHits,
 		    this.maximumSimilarElements);
 
@@ -268,8 +289,36 @@ public class CategoriserImpl implements Categoriser {
      */
     @Override
     public Map<String, Float> testCategoriseSingle(InformationAssetView iaView) {
-	Reader reader = new StringReader(iaView.getDESCRIPTION());
-	return runMlt(reader);
+
+	Document doc = new Document();
+	try {
+	    for (Field field : iaView.getClass().getDeclaredFields()) {
+		field.setAccessible(true);
+		String value = String.valueOf(field.get(iaView));
+		if (value != null && !"null".equals(value)) {
+		    switch (field.getName()) {
+		    case "DOCREFERENCE":
+			doc.add(new StringField(field.getName(), value, Store.YES));
+			break;
+		    case "TITLE":
+		    case "DESCRIPTION":
+		    case "CONTEXTDESCRIPTION":
+			doc.add(new TextField(field.getName(), value, Store.YES));
+			break;
+		    default:
+			break;
+		    }
+		}
+	    }
+	} catch (IllegalArgumentException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	} catch (IllegalAccessException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+
+	return runMlt(doc);
     }
 
 }

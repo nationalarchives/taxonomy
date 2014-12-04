@@ -109,6 +109,13 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
 	iaView.setCONTEXTDESCRIPTION(testCategoriseSingleRequest.getContextDescription());
 	iaView.setDESCRIPTION(testCategoriseSingleRequest.getDescription());
 	iaView.setTITLE(testCategoriseSingleRequest.getTitle());
+	iaView.setCATDOCREF(testCategoriseSingleRequest.getCatDocRef());
+	iaView.setCORPBODYS(testCategoriseSingleRequest.getCorpBodys());
+	iaView.setCOVERINGDATES(testCategoriseSingleRequest.getCoveringDates());
+	iaView.setDOCREFERENCE(testCategoriseSingleRequest.getDocReference());
+	iaView.setPERSON_FULLNAME(testCategoriseSingleRequest.getPerson_FULLNAME());
+	iaView.setPLACE_NAME(testCategoriseSingleRequest.getPlace_NAME());
+	iaView.setSUBJECTS(testCategoriseSingleRequest.getSubjects());
 	return iaView;
     }
 

@@ -13,6 +13,7 @@ import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 //TODO create Interface for service layer
 @Service
@@ -80,10 +82,16 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 		    TrainingDocument trainingDocument = new TrainingDocument();
 		    trainingDocument.setCategory(category.getTtl());
 		    trainingDocument.setDescription(iaView.getDESCRIPTION());
+		    trainingDocument.setContextDescription(iaView.getCONTEXTDESCRIPTION());
 		    trainingDocument.setTitle(iaView.getTITLE());
 		    trainingDocument.setDocReference(iaView.getDOCREFERENCE());
+		    trainingDocument.setCatDocRef(iaView.getCATDOCREF());
+		    trainingDocument.setCorpBodys(iaView.getCORPBODYS());
+		    trainingDocument.setPersonFullName(iaView.getPERSON_FULLNAME());
+		    trainingDocument.setPlaceName(iaView.getPLACE_NAME());
+		    trainingDocument.setSubjects(iaView.getSUBJECTS());
 		    trainingDocumentRepository.save(trainingDocument);
-		    logger.debug(trainingDocument.getCategory() + ":" + iaView.getCATDOCREF() + " - "
+		    logger.debug(trainingDocument.getCategory() + ":" + iaView.getDOCREFERENCE() + " - "
 			    + trainingDocument.getTitle().replaceAll("\\<.*?>", ""));
 		}
 	    }
@@ -113,18 +121,37 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	// errors occur
 	// TODO 1 bulk insert, this is far too slow to do it unitary!
 	// FIXME why to remove punctuation before indexing? analyser duty
-	trainingDocument.setDescription(trainingDocument.getDescription().replaceAll("\\<.*?>", ""));
-	trainingDocument.setTitle(trainingDocument.getTitle().replaceAll("\\<.*?>", ""));
+	if (!StringUtils.isEmpty(trainingDocument.getDescription())) {
+	    trainingDocument.setDescription(trainingDocument.getDescription().replaceAll("\\<.*?>", ""));
+	}
+	if (!StringUtils.isEmpty(trainingDocument.getContextDescription())) {
+	    trainingDocument.setContextDescription(trainingDocument.getContextDescription().replaceAll("\\<.*?>", ""));
+	}
+	if (!StringUtils.isEmpty(trainingDocument.getTitle())) {
+	    trainingDocument.setTitle(trainingDocument.getTitle().replaceAll("\\<.*?>", ""));
+	}
 
 	Document doc = new Document();
 
 	doc.add(new StringField(InformationAssetViewFields.DOCREFERENCE.toString(), trainingDocument.getDocReference(),
+		Field.Store.YES));
+	doc.add(new StringField(InformationAssetViewFields.CATDOCREF.toString(), trainingDocument.getCatDocRef(),
 		Field.Store.YES));
 	doc.add(new StringField(InformationAssetViewFields.CATEGORY.toString(), trainingDocument.getCategory(),
 		Field.Store.YES));
 	doc.add(new TextField(InformationAssetViewFields.TITLE.toString(), trainingDocument.getTitle(), Field.Store.YES));
 	doc.add(new TextField(InformationAssetViewFields.DESCRIPTION.toString(), trainingDocument.getDescription(),
 		Field.Store.YES));
+	doc.add(new TextField(InformationAssetViewFields.CONTEXTDESCRIPTION.toString(), trainingDocument
+		.getContextDescription(), Field.Store.YES));
+	doc.add(new TextField(InformationAssetViewFields.CORPBODYS.toString(), Arrays.toString(trainingDocument
+		.getCorpBodys()), Field.Store.YES));
+	doc.add(new TextField(InformationAssetViewFields.PERSON_FULLNAME.toString(), Arrays.toString(trainingDocument
+		.getPersonFullName()), Field.Store.YES));
+	doc.add(new TextField(InformationAssetViewFields.PLACE_NAME.toString(), Arrays.toString(trainingDocument
+		.getPlaceName()), Field.Store.YES));
+	doc.add(new TextField(InformationAssetViewFields.SUBJECTS.toString(), Arrays.toString(trainingDocument
+		.getSubjects()), Field.Store.YES));
 	writer.addDocument(doc);
     }
 

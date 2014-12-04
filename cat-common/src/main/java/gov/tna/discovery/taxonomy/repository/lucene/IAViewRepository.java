@@ -91,12 +91,7 @@ public class IAViewRepository {
 		    break;
 		}
 		Document hitDoc = isearcher.doc(scoreDoc.doc);
-		InformationAssetView assetView = new InformationAssetView();
-		assetView.setDoc(scoreDoc.doc);
-		assetView.setShardIndex(scoreDoc.shardIndex);
-		assetView.setDOCREFERENCE(hitDoc.get(InformationAssetViewFields.DOCREFERENCE.toString()));
-		assetView.setTITLE(hitDoc.get(InformationAssetViewFields.TITLE.toString()));
-		assetView.setDESCRIPTION(hitDoc.get(InformationAssetViewFields.DESCRIPTION.toString()));
+		InformationAssetView assetView = LuceneHelperTools.getIAViewFromLuceneDocument(hitDoc);
 		assetView.setScore(scoreDoc.score);
 		docs.add(assetView);
 	    }

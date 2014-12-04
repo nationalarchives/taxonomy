@@ -3,6 +3,10 @@ package gov.tna.discovery.taxonomy.repository.domain;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+
 @Document(collection = "trainingset")
 public class TrainingDocument {
     private String _id;
@@ -16,6 +20,20 @@ public class TrainingDocument {
 
     @Field(value = "DOCREFERENCE")
     private String docReference;
+
+    @Field(value = "CONTEXTDESCRIPTION")
+    private String contextDescription;
+
+    @Field(value = "CATDOCREF")
+    private String catDocRef;
+    @Field(value = "CORPBODYS")
+    private String[] corpBodys;
+    @Field(value = "SUBJECTS")
+    private String[] subjects;
+    @Field(value = "PLACE_NAME")
+    private String[] placeName;
+    @Field(value = "PERSON_FULLNAME")
+    private String[] personFullName;
 
     public String get_id() {
 	return _id;
@@ -55,6 +73,54 @@ public class TrainingDocument {
 
     public void setDocReference(String docReference) {
 	this.docReference = docReference;
+    }
+
+    public String getContextDescription() {
+	return contextDescription;
+    }
+
+    public void setContextDescription(String contextDescription) {
+	this.contextDescription = contextDescription;
+    }
+
+    public String getCatDocRef() {
+	return catDocRef;
+    }
+
+    public void setCatDocRef(String catDocRef) {
+	this.catDocRef = catDocRef;
+    }
+
+    public String[] getCorpBodys() {
+	return corpBodys;
+    }
+
+    public void setCorpBodys(String[] corpBodys) {
+	this.corpBodys = corpBodys;
+    }
+
+    public String[] getSubjects() {
+	return subjects;
+    }
+
+    public void setSubjects(String[] subjects) {
+	this.subjects = subjects;
+    }
+
+    public String[] getPlaceName() {
+	return placeName;
+    }
+
+    public void setPlaceName(String[] placeName) {
+	this.placeName = placeName;
+    }
+
+    public String[] getPersonFullName() {
+	return personFullName;
+    }
+
+    public void setPersonFullName(String[] personFullName) {
+	this.personFullName = personFullName;
     }
 
 }
