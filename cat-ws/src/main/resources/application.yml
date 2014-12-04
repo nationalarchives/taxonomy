@@ -11,7 +11,7 @@ server:
 spring:
  data:
   mongodb:
-   host: ${mongo:localhost}
+   host: localhost
    port: 27017
    database: taxonomy
 

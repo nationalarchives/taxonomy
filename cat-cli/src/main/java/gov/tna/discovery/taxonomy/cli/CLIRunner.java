@@ -7,6 +7,7 @@ import gov.tna.discovery.taxonomy.service.Categoriser;
 import gov.tna.discovery.taxonomy.service.TrainingSetService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -35,6 +37,12 @@ public class CLIRunner implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(CLIApplication.class);
 
+    @Value("${lucene.index.iaviewCollectionPath}")
+    private String iaviewCollectionPath;
+
+    @Value("${spring.data.mongodb.host}")
+    private String host;
+
     @Autowired
     Categoriser categoriser;
 
@@ -47,6 +55,10 @@ public class CLIRunner implements CommandLineRunner {
     public void run(String... args) throws IOException, ParseException, org.apache.commons.cli.ParseException {
 
 	logger.info("Start cat CLI Runner.");
+	logger.info("mongo host: {}", host);
+	logger.info("mongo solr Index path: {}", iaviewCollectionPath);
+
+	final String[] cliArgs = filterInputToGetOnlyCliArguments(args);
 
 	// create Options object
 	Options options = new Options();
@@ -58,12 +70,12 @@ public class CLIRunner implements CommandLineRunner {
 	options.addOption(OPTION_TEST_CATEGORISE_ALL, false, "test the categorisation of the whole IAView Solr index");
 
 	CommandLineParser parser = new BasicParser();
-	CommandLine cmd = parser.parse(options, args);
+	CommandLine cmd = parser.parse(options, cliArgs);
 
-	if (args != null) {
-	    List<String> listOfArgs = Arrays.asList(args);
-	    logger.info("args: {} ", listOfArgs.toString());
-
+	if (cliArgs.length > 0) {
+	    logger.info("args: {} ", Arrays.asList(cliArgs).toString());
+	} else {
+	    logger.warn("no valid argument provided");
 	}
 
 	if (cmd.hasOption(OPTION_UPDATE)) {
@@ -93,5 +105,16 @@ public class CLIRunner implements CommandLineRunner {
 	}
 
 	logger.info("Stop cat CLI Runner.");
+    }
+
+    private String[] filterInputToGetOnlyCliArguments(String[] args) {
+	List<String> listOfArgs = new ArrayList<String>();
+	for (int i = 0; i < args.length; i++) {
+	    String argument = args[i];
+	    if (!argument.startsWith("-D") && !argument.startsWith("--")) {
+		listOfArgs.add(argument);
+	    }
+	}
+	return listOfArgs.toArray(new String[listOfArgs.size()]);
     }
 }
