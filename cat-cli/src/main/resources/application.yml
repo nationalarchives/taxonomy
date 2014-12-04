@@ -1,0 +1,37 @@
+logging:
+ level:
+  gov:
+   tna:
+    discovery:
+     taxonomy: DEBUG
+
+
+spring:
+ data:
+  mongodb:
+   host: localhost
+   port: 27017
+   database: taxonomy
+
+  mongo:
+   repositories:
+    enabled: true
+
+async:
+ executor:
+  corePoolSize: 7
+  maxPoolSize: 42
+  queueCapacity: 11
+
+lucene:
+ mlt:
+  mimimumScoreForMlt: 0.001
+  mimimumGlobalScoreForACategory: 0
+  maximumSimilarElements: 500
+  minTermFreq: 1
+  minDocFreq: 1
+  
+ index:
+  iaviewCollectionPath: /opt/solr/solr/collection1/data/index
+  trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
+  version: LUCENE_47

@@ -32,4 +32,13 @@ public class TaxonomyException extends RuntimeException {
 	this.taxonomyErrorType = taxonomyErrorType;
     }
 
+    @Override
+    public String toString() {
+	StringBuilder builder = new StringBuilder();
+	builder.append("TaxonomyException [taxonomyErrorType=");
+	builder.append(taxonomyErrorType);
+	builder.append("]");
+	return builder.toString();
+    }
+
 }

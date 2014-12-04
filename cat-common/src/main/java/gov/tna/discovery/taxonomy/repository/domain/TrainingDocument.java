@@ -14,6 +14,23 @@ public class TrainingDocument {
     @Field(value = "CATEGORY")
     private String category;
 
+    @Field(value = "DOCREFERENCE")
+    private String docReference;
+
+    @Field(value = "CONTEXTDESCRIPTION")
+    private String contextDescription;
+
+    @Field(value = "CATDOCREF")
+    private String catDocRef;
+    @Field(value = "CORPBODYS")
+    private String[] corpBodys;
+    @Field(value = "SUBJECTS")
+    private String[] subjects;
+    @Field(value = "PLACE_NAME")
+    private String[] placeName;
+    @Field(value = "PERSON_FULLNAME")
+    private String[] personFullName;
+
     public String get_id() {
 	return _id;
     }
@@ -44,6 +61,62 @@ public class TrainingDocument {
 
     public void setCategory(String category) {
 	this.category = category;
+    }
+
+    public String getDocReference() {
+	return docReference;
+    }
+
+    public void setDocReference(String docReference) {
+	this.docReference = docReference;
+    }
+
+    public String getContextDescription() {
+	return contextDescription;
+    }
+
+    public void setContextDescription(String contextDescription) {
+	this.contextDescription = contextDescription;
+    }
+
+    public String getCatDocRef() {
+	return catDocRef;
+    }
+
+    public void setCatDocRef(String catDocRef) {
+	this.catDocRef = catDocRef;
+    }
+
+    public String[] getCorpBodys() {
+	return corpBodys;
+    }
+
+    public void setCorpBodys(String[] corpBodys) {
+	this.corpBodys = corpBodys;
+    }
+
+    public String[] getSubjects() {
+	return subjects;
+    }
+
+    public void setSubjects(String[] subjects) {
+	this.subjects = subjects;
+    }
+
+    public String[] getPlaceName() {
+	return placeName;
+    }
+
+    public void setPlaceName(String[] placeName) {
+	this.placeName = placeName;
+    }
+
+    public String[] getPersonFullName() {
+	return personFullName;
+    }
+
+    public void setPersonFullName(String[] personFullName) {
+	this.personFullName = personFullName;
     }
 
 }

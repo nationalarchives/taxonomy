@@ -11,7 +11,8 @@
 	<packaging>war</packaging>
 
 	<properties>
-		<spring.boot.version>1.1.8.RELEASE</spring.boot.version>
+		<!-- To run cat application with 'mvn springboot:run' and use spring loaded -->
+		<start-class>gov.tna.discovery.taxonomy.WSApplication</start-class>
 	</properties>
 
 	<dependencies>
@@ -19,6 +20,14 @@
 			<groupId>gov.tna.discovery</groupId>
 			<artifactId>taxonomy-common</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.tna.discovery</groupId>
+			<artifactId>taxonomy-common</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -51,6 +60,7 @@
 			<version>1.5.7</version>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 
 	<build>

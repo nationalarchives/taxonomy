@@ -9,9 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
-import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -21,11 +19,14 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 //TODO put timeout on search requests on index: related to wildcard
+//TODO create IAVIewService and put in IAViewRepository only simple execution of queries
 @Component
 public class IAViewRepository {
 
@@ -35,8 +36,7 @@ public class IAViewRepository {
     @Value("${lucene.index.version}")
     private String luceneVersion;
 
-    // private static final Logger logger =
-    // LoggerFactory.getLogger(Searcher.class);
+    private static final Logger logger = LoggerFactory.getLogger(IAViewRepository.class);
 
     public Document getDoc(ScoreDoc scoreDoc) {
 	Document hitDoc = null;
@@ -73,6 +73,8 @@ public class IAViewRepository {
 	    }
 	    TopDocs topDocs;
 	    topDocs = isearcher.search(query, offset + limit);
+	    logger.info(".performSearch: found {} total hits", topDocs.totalHits);
+
 	    int totalNumberOfDocumentsToParse = offset + limit;
 	    if (topDocs.totalHits < offset) {
 		return docs;
@@ -89,17 +91,8 @@ public class IAViewRepository {
 		    break;
 		}
 		Document hitDoc = isearcher.doc(scoreDoc.doc);
-		InformationAssetView assetView = new InformationAssetView();
-		assetView.setDoc(scoreDoc.doc);
-		assetView.setShardIndex(scoreDoc.shardIndex);
-		assetView.set_id(hitDoc.get(InformationAssetViewFields._id.toString()));
-		assetView.setCATDOCREF(hitDoc.get(InformationAssetViewFields.CATDOCREF.toString()));
-		assetView.setTITLE(hitDoc.get(InformationAssetViewFields.TITLE.toString()));
-		assetView.setDESCRIPTION(hitDoc.get(InformationAssetViewFields.DESCRIPTION.toString()));
+		InformationAssetView assetView = LuceneHelperTools.getIAViewFromLuceneDocument(hitDoc);
 		assetView.setScore(scoreDoc.score);
-		String[] iaidArray = hitDoc.get(InformationAssetViewFields.URLPARAMS.toString()).split("/");
-		String iaid = iaidArray[iaidArray.length - 1];
-		assetView.setURLPARAMS(iaid);
 		docs.add(assetView);
 	    }
 	} catch (IOException e) {

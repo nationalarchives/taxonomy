@@ -1,80 +1,45 @@
 package gov.tna.discovery.taxonomy.repository.domain.lucene;
 
-import java.util.List;
+import java.util.Arrays;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class InformationAssetView {
 
-    private String _id;
-    private String URLPARAMS;
+    @JsonProperty(value = "docReference")
+    private String DOCREFERENCE;
+    @JsonProperty(value = "catDocRef")
     private String CATDOCREF;
+    @JsonProperty(value = "title")
     private String TITLE;
+    @JsonProperty(value = "description")
     private String DESCRIPTION;
+    @JsonProperty(value = "corpBodys")
     private String[] CORPBODYS;
+    @JsonProperty(value = "subjects")
     private String[] SUBJECTS;
+    @JsonProperty(value = "placeName")
     private String[] PLACE_NAME;
-    private String[] PLACE_TOWN;
-    private String[] PLACE_COUNTY;
-    private String[] PLACE_REGION;
-    private String[] PLACE_COUNTRY;
+    @JsonProperty(value = "personFullName")
     private String[] PERSON_FULLNAME;
+    @JsonProperty(value = "contextDescription")
     private String CONTEXTDESCRIPTION;
+    @JsonProperty(value = "coveringDates")
+    private String COVERINGDATES;
 
-    // category
-    private List<String> CIAIDS;
+    @JsonProperty(value = "categories")
+    private String[] CATEGORIES;
+    private Float score;
 
-    // search properties
-    private float score;
-
-    public float getScore() {
-	return score;
+    public String getDOCREFERENCE() {
+	return DOCREFERENCE;
     }
 
-    public void setScore(float score) {
-	this.score = score;
-    }
-
-    private Integer shardIndex;
-
-    public Integer getShardIndex() {
-	return shardIndex;
-    }
-
-    public void setShardIndex(Integer shardIndex) {
-	this.shardIndex = shardIndex;
-    }
-
-    private Integer doc;
-
-    public Integer getDoc() {
-	return doc;
-    }
-
-    public void setDoc(Integer doc) {
-	this.doc = doc;
-    }
-
-    public List<String> getCIAIDS() {
-	return CIAIDS;
-    }
-
-    public void setCIAIDS(List<String> cIAID) {
-	CIAIDS = cIAID;
-    }
-
-    public String get_id() {
-	return _id;
-    }
-
-    public void set_id(String _id) {
-	this._id = _id;
-    }
-
-    public String getURLPARAMS() {
-	return URLPARAMS;
-    }
-
-    public void setURLPARAMS(String uRLPARMAS) {
-	URLPARAMS = uRLPARMAS;
+    public void setDOCREFERENCE(String dOCREFERENCE) {
+	DOCREFERENCE = dOCREFERENCE;
     }
 
     public String getCATDOCREF() {
@@ -125,48 +90,12 @@ public class InformationAssetView {
 	PLACE_NAME = pLACE_NAME;
     }
 
-    public String[] getPLACE_TOWN() {
-	return PLACE_TOWN;
-    }
-
-    public void setPLACE_TOWN(String[] pLACE_TOWN) {
-	PLACE_TOWN = pLACE_TOWN;
-    }
-
-    public String[] getPLACE_COUNTY() {
-	return PLACE_COUNTY;
-    }
-
-    public void setPLACE_COUNTY(String[] pLACE_COUNTY) {
-	PLACE_COUNTY = pLACE_COUNTY;
-    }
-
-    public String[] getPLACE_REGION() {
-	return PLACE_REGION;
-    }
-
-    public void setPLACE_REGION(String[] pLACE_REGION) {
-	PLACE_REGION = pLACE_REGION;
-    }
-
-    public String[] getPLACE_COUNTRY() {
-	return PLACE_COUNTRY;
-    }
-
-    public void setPLACE_COUNTRY(String[] pLACE_COUNTRY) {
-	PLACE_COUNTRY = pLACE_COUNTRY;
-    }
-
-    public String[] getPERSON_FNAME() {
+    public String[] getPERSON_FULLNAME() {
 	return PERSON_FULLNAME;
     }
 
     public void setPERSON_FULLNAME(String[] pERSON_FULLNAME) {
 	PERSON_FULLNAME = pERSON_FULLNAME;
-    }
-
-    public String[] getPERSON_FULLNAME() {
-	return PERSON_FULLNAME;
     }
 
     public String getCONTEXTDESCRIPTION() {
@@ -175,6 +104,43 @@ public class InformationAssetView {
 
     public void setCONTEXTDESCRIPTION(String cONTEXTDESCRIPTION) {
 	CONTEXTDESCRIPTION = cONTEXTDESCRIPTION;
+    }
+
+    public String getCOVERINGDATES() {
+	return COVERINGDATES;
+    }
+
+    public void setCOVERINGDATES(String cOVERINGDATES) {
+	COVERINGDATES = cOVERINGDATES;
+    }
+
+    public String[] getCATEGORIES() {
+	return CATEGORIES;
+    }
+
+    public void setCATEGORIES(String[] cATEGORIES) {
+	CATEGORIES = cATEGORIES;
+    }
+
+    public Float getScore() {
+	return score;
+    }
+
+    public void setScore(Float score) {
+	this.score = score;
+    }
+
+    @Override
+    public String toString() {
+	StringBuilder builder = new StringBuilder();
+	builder.append("InformationAssetView [DOCREFERENCE=");
+	builder.append(DOCREFERENCE);
+	builder.append(", TITLE=");
+	builder.append(TITLE);
+	builder.append(", CATEGORIES=");
+	builder.append(Arrays.toString(CATEGORIES));
+	builder.append("]");
+	return builder.toString();
     }
 
 }

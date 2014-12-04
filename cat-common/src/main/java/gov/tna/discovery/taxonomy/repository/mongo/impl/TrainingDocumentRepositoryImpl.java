@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import com.mongodb.WriteResult;
+
 @Repository
 public class TrainingDocumentRepositoryImpl implements TrainingDocumentRepositoryCustom {
 
@@ -16,9 +18,10 @@ public class TrainingDocumentRepositoryImpl implements TrainingDocumentRepositor
     private MongoTemplate mongoTemplate;
 
     @Override
-    public void deleteByCategory(String categoryName) {
+    public int deleteByCategory(String categoryName) {
 	Query query = new Query(Criteria.where("CATEGORY").is(categoryName));
-	mongoTemplate.remove(query, TrainingDocument.class);
+	WriteResult writeResult = mongoTemplate.remove(query, TrainingDocument.class);
+	return writeResult.getN();
     }
 
 }

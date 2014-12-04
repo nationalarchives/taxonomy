@@ -5,37 +5,30 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import gov.tna.discovery.taxonomy.ConfigurationTest;
-import gov.tna.discovery.taxonomy.MongoTestDataSet;
+import gov.tna.discovery.taxonomy.config.ServiceConfigurationTest;
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.repository.mongo.MongoTestDataSet;
 import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.service.Categoriser;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = ConfigurationTest.class)
+@SpringApplicationConfiguration(classes = ServiceConfigurationTest.class)
 public class CategoriserTest {
-    private static final Logger logger = LoggerFactory.getLogger(CategoriserTest.class);
+    // private static final Logger logger =
+    // LoggerFactory.getLogger(CategoriserTest.class);
 
     @Autowired
     Categoriser categoriser;
@@ -44,21 +37,18 @@ public class CategoriserTest {
     TrainingDocumentRepository trainingDocumentRepository;
 
     @Autowired
-    IndexReader iaViewIndexReader;
+    MongoTestDataSet mongoTestDataSet;
 
-    // @Autowired
-    // MongoTestDataSet mongoTestDataSet;
-    //
-    // @Before
-    // public void initDataSet() throws IOException {
-    // mongoTestDataSet.initCategoryCollection();
-    // mongoTestDataSet.initTrainingSetCollection();
-    // }
-    //
-    // @After
-    // public void emptyDataSet() throws IOException {
-    // mongoTestDataSet.dropDatabase();
-    // }
+    @Before
+    public void initDataSet() throws IOException {
+	mongoTestDataSet.initCategoryCollection();
+	mongoTestDataSet.initTrainingSetCollection();
+    }
+
+    @After
+    public void emptyDataSet() throws IOException {
+	mongoTestDataSet.dropDatabase();
+    }
 
     @Test
     // FIXME need to add data set for that method. it changes after every
@@ -76,7 +66,7 @@ public class CategoriserTest {
 	Map<String, Float> mapOfCategoriesAndScores = categoriser.testCategoriseSingle(iaView);
 	assertThat(mapOfCategoriesAndScores, is(notNullValue()));
 	assertThat(mapOfCategoriesAndScores.keySet(), is(not(empty())));
-	assertThat(mapOfCategoriesAndScores.containsKey("Mental illness"), is(true));
+	assertThat(mapOfCategoriesAndScores.containsKey("Resources"), is(true));
 
     }
 
@@ -87,51 +77,20 @@ public class CategoriserTest {
 	Map<String, Float> mapOfCategoriesAndScores = categoriser.testCategoriseSingle(iaView);
 	assertThat(mapOfCategoriesAndScores, is(notNullValue()));
 	assertThat(mapOfCategoriesAndScores.keySet(), is(not(empty())));
-	assertThat(mapOfCategoriesAndScores.containsKey("Mental illness"), is(true));
+	assertThat(mapOfCategoriesAndScores.containsKey("Resources"), is(true));
 
     }
 
-    /**
-     * Used to find document having categories for another test case. Do not
-     * activate it
-     * 
-     * @throws IOException
-     * @throws ParseException
-     */
     @Test
-    @Ignore
-    public void toolFindDocumentWithCategory() throws IOException, ParseException {
-	findDocloop: for (int i = 0; i < 2000; i++) {
-	    if (this.iaViewIndexReader.hasDeletions()) {
-		System.out
-			.println("[ERROR].categoriseDocument: the reader provides deleted elements though it should not");
-	    }
+    public final void testTestCategoriseSingleDocumentWithMoreFields() {
+	InformationAssetView iaView = new InformationAssetView();
+	iaView.setTITLE("UK bilateral aid programme: review by Ministry of Overseas Development working party; papers, minutes and correspondance");
+	iaView.setDESCRIPTION("UK bilateral aid programme: review by Ministry of Overseas Development working party; papers, minutes and correspondence.");
+	iaView.setCONTEXTDESCRIPTION("Board of Trade and successors: Export Policy and Promotion Division and successors: Registered Files (XP Series).");
 
-	    Document doc = this.iaViewIndexReader.document(i);
-
-	    Categoriser categoriser = new CategoriserImpl();
-	    Reader reader = new StringReader(doc.get(InformationAssetViewFields.DESCRIPTION.toString()));
-	    Map<String, Float> result = categoriser.runMlt(reader);
-
-	    logger.debug("DOCUMENT");
-	    logger.debug("------------------------");
-	    logger.debug("TITLE: " + doc.get("TITLE"));
-	    logger.debug("IAID: " + doc.get("CATDOCREF"));
-	    logger.debug("DESCRIPTION: " + doc.get("DESCRIPTION"));
-	    logger.debug("");
-	    for (Entry<String, Float> category : result.entrySet()) {
-		logger.debug("DOC TITLE: {}, IAID: {}, CATEGORY: {}, SCORE: {}", doc.get("TITLE"),
-			doc.get("CATDOCREF"), category.getKey(), category.getValue());
-		break findDocloop;
-	    }
-	    logger.debug("------------------------");
-
-	    logger.debug("");
-
-	}
-
-	logger.debug("Categorisation finished");
-
+	Map<String, Float> mapOfCategoriesAndScores = categoriser.testCategoriseSingle(iaView);
+	assertThat(mapOfCategoriesAndScores, is(notNullValue()));
+	assertThat(mapOfCategoriesAndScores.keySet(), is(not(empty())));
     }
 
 }

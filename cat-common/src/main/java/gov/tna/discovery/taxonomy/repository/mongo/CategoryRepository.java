@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CategoryRepository extends CrudRepository<Category, String> {
 
-    Category findByCiaid(String ciaid);
+    public Category findByCiaid(String ciaid);
 }

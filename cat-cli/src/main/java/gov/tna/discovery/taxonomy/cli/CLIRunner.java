@@ -1,22 +1,47 @@
 package gov.tna.discovery.taxonomy.cli;
 
-import java.io.IOException;
-
 import gov.tna.discovery.taxonomy.CLIApplication;
+import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.service.Categoriser;
 import gov.tna.discovery.taxonomy.service.TrainingSetService;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class CLIRunner implements CommandLineRunner {
 
+    private static final String OPTION_TEST_CATEGORISE_ALL = "testCategoriseAll";
+
+    private static final String OPTION_TEST_CATEGORISE_SINGLE = "testCategoriseSingle";
+
+    private static final String OPTION_INDEX = "index";
+
+    private static final String OPTION_UPDATE = "update";
+
     private static final Logger logger = LoggerFactory.getLogger(CLIApplication.class);
+
+    @Value("${lucene.index.iaviewCollectionPath}")
+    private String iaviewCollectionPath;
+
+    @Value("${spring.data.mongodb.host}")
+    private String host;
 
     @Autowired
     Categoriser categoriser;
@@ -24,18 +49,72 @@ public class CLIRunner implements CommandLineRunner {
     @Autowired
     TrainingSetService trainingSetService;
 
-    public void run(String... args) throws IOException, ParseException {
+    @Autowired
+    CategoryRepository categoryRepository;
+
+    public void run(String... args) throws IOException, ParseException, org.apache.commons.cli.ParseException {
 
 	logger.info("Start cat CLI Runner.");
+	logger.info("mongo host: {}", host);
+	logger.info("mongo solr Index path: {}", iaviewCollectionPath);
 
-	// trainingSetService.createTrainingSet(null);
+	final String[] cliArgs = filterInputToGetOnlyCliArguments(args);
 
-	// trainingSetService.indexTrainingSet();
+	// create Options object
+	Options options = new Options();
 
-	// categoriser.categoriseIAViewSolrDocument("CO 273/632/2");
+	// add t option
+	options.addOption(OPTION_UPDATE, false, "update (create if not existing) training set");
+	options.addOption(OPTION_INDEX, false, "index training set");
+	options.addOption(OPTION_TEST_CATEGORISE_SINGLE, false, "test the categorisation of one IAView Solr element");
+	options.addOption(OPTION_TEST_CATEGORISE_ALL, false, "test the categorisation of the whole IAView Solr index");
 
-	categoriser.testCategoriseIAViewSolrIndex();
+	CommandLineParser parser = new BasicParser();
+	CommandLine cmd = parser.parse(options, cliArgs);
+
+	if (cliArgs.length > 0) {
+	    logger.info("args: {} ", Arrays.asList(cliArgs).toString());
+	} else {
+	    logger.warn("no valid argument provided");
+	}
+
+	if (cmd.hasOption(OPTION_UPDATE)) {
+	    logger.info("update (create if not existing) training set");
+	    String categoryCiaid = cmd.getOptionValue(OPTION_UPDATE);
+	    if (StringUtils.isEmpty(categoryCiaid)) {
+		trainingSetService.createTrainingSet(null);
+	    } else {
+		Category category = categoryRepository.findByCiaid(categoryCiaid);
+		trainingSetService.updateTrainingSetForCategory(category, null);
+	    }
+	}
+
+	if (cmd.hasOption(OPTION_INDEX)) {
+	    logger.info("index training set");
+	    trainingSetService.indexTrainingSet();
+	}
+
+	if (cmd.hasOption(OPTION_TEST_CATEGORISE_SINGLE)) {
+	    logger.info("testCategoriseSingle on document: {} ", "");
+	    categoriser.categoriseIAViewSolrDocument("CO 273/632/2");
+	}
+
+	if (cmd.hasOption(OPTION_TEST_CATEGORISE_ALL)) {
+	    logger.info("test the categorisation of the whole IAView Solr index");
+	    categoriser.testCategoriseIAViewSolrIndex();
+	}
 
 	logger.info("Stop cat CLI Runner.");
+    }
+
+    private String[] filterInputToGetOnlyCliArguments(String[] args) {
+	List<String> listOfArgs = new ArrayList<String>();
+	for (int i = 0; i < args.length; i++) {
+	    String argument = args[i];
+	    if (!argument.startsWith("-D") && !argument.startsWith("--")) {
+		listOfArgs.add(argument);
+	    }
+	}
+	return listOfArgs.toArray(new String[listOfArgs.size()]);
     }
 }
