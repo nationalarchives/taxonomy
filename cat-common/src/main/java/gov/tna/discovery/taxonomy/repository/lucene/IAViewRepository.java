@@ -62,7 +62,7 @@ public class IAViewRepository {
 
     // FIXME 0 return the number of results? > if minimumScore provided,
     // requires to go through the whole collection of topdocs
-    public List<InformationAssetView> performSearch(String queryString, Float mimimumScore, Integer limit,
+    public List<InformationAssetView> performSearch(String queryString, Double mimimumScore, Integer limit,
 	    Integer offset) {
 	List<InformationAssetView> docs = new ArrayList<InformationAssetView>();
 

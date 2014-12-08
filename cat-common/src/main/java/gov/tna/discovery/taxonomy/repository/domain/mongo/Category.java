@@ -13,7 +13,7 @@ public class Category {
     private String qry;
     private String ttl;
     @Field(value = "SC")
-    private Float sc;
+    private Double sc;
     private Boolean lck;
 
     public String get_id() {
@@ -56,11 +56,11 @@ public class Category {
 	this.ciaid = ciaid;
     }
 
-    public Float getSc() {
+    public Double getSc() {
 	return sc;
     }
 
-    public void setSc(Float sc) {
+    public void setSc(Double sc) {
 	this.sc = sc;
     }
 

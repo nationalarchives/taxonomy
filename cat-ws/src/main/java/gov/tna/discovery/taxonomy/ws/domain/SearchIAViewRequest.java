@@ -3,7 +3,7 @@ package gov.tna.discovery.taxonomy.ws.domain;
 public class SearchIAViewRequest {
     private String categoryQuery;
 
-    private Float score;
+    private Double score;
 
     private Integer offset;
 
@@ -17,11 +17,11 @@ public class SearchIAViewRequest {
 	this.categoryQuery = categoryQuery;
     }
 
-    public Float getScore() {
+    public Double getScore() {
 	return score;
     }
 
-    public void setScore(Float score) {
+    public void setScore(Double score) {
 	this.score = score;
     }
 

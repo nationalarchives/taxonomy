@@ -16,7 +16,7 @@ public interface TaxonomyWSService {
 
     public void publishUpdateOnCategory(String ciaid);
 
-    public List<InformationAssetView> performSearch(String categoryQuery, Float score, Integer limit, Integer offset);
+    public List<InformationAssetView> performSearch(String categoryQuery, Double score, Integer limit, Integer offset);
 
     public List<CategoryRelevancy> testCategoriseSingle(TestCategoriseSingleRequest testCategoriseSingleRequest);
 

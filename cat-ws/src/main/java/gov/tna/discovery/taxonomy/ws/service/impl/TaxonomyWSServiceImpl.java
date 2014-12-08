@@ -80,7 +80,7 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
      * (java.lang.String, java.lang.Float, java.lang.Integer, java.lang.Integer)
      */
     @Override
-    public List<InformationAssetView> performSearch(String categoryQuery, Float score, Integer limit, Integer offset) {
+    public List<InformationAssetView> performSearch(String categoryQuery, Double score, Integer limit, Integer offset) {
 	return iaViewRepository.performSearch(categoryQuery, score, limit, offset);
     }
 
