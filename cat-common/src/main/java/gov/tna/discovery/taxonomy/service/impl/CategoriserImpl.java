@@ -80,11 +80,6 @@ public class CategoriserImpl implements Categoriser {
     @Value("${lucene.mlt.minDocFreq}")
     private int minDocFreq;
 
-    private static final String[] fieldsToAnalyse = new String[] { InformationAssetViewFields.DESCRIPTION.toString(),
-	    InformationAssetViewFields.TITLE.toString(), InformationAssetViewFields.CONTEXTDESCRIPTION.toString(),
-	    InformationAssetViewFields.CORPBODYS.toString(), InformationAssetViewFields.SUBJECTS.toString(),
-	    InformationAssetViewFields.PERSON_FULLNAME.toString(), InformationAssetViewFields.PLACE_NAME.toString() };
-
     /*
      * (non-Javadoc)
      * 
@@ -192,11 +187,11 @@ public class CategoriserImpl implements Categoriser {
 	    moreLikeThis.setMinTermFreq(minTermFreq);
 	    moreLikeThis.setMinDocFreq(minDocFreq);
 	    moreLikeThis.setAnalyzer(analyzer);
-	    moreLikeThis.setFieldNames(fieldsToAnalyse);
+	    moreLikeThis.setFieldNames(iaViewRepository.fieldsToAnalyse);
 
 	    BooleanQuery fullQuery = new BooleanQuery();
 
-	    for (String fieldName : fieldsToAnalyse) {
+	    for (String fieldName : iaViewRepository.fieldsToAnalyse) {
 		String value = document.get(fieldName);
 		if (value != null && !"null".equals(value)) {
 		    Query query = moreLikeThis.like(new StringReader(value), fieldName);
@@ -290,7 +285,7 @@ public class CategoriserImpl implements Categoriser {
 		field.setAccessible(true);
 		String fieldName = field.getName();
 
-		if (CollectionUtils.contains(Arrays.asList(fieldsToAnalyse).iterator(), fieldName)) {
+		if (CollectionUtils.contains(Arrays.asList(iaViewRepository.fieldsToAnalyse).iterator(), fieldName)) {
 		    String value = String.valueOf(field.get(iaView));
 		    if (value != null && !"null".equals(value)) {
 			doc.add(new TextField(fieldName, value, Store.YES));

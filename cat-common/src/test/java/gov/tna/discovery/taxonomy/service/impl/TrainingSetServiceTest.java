@@ -56,10 +56,10 @@ public class TrainingSetServiceTest {
     @Test
     public void testCreateTrainingSetWithLimitScore() throws IOException, ParseException {
 	trainingSetService.createTrainingSet(0.1f);
-	assertEquals(141l, trainingDocumentRepository.count());
+	assertEquals(132l, trainingDocumentRepository.count());
     }
 
-    //FIXME this test should not vary
+    // FIXME this test should not vary
     @Test
     public void testIndexTrainingSet() throws IOException, InterruptedException, ParseException {
 	mongoTestDataSet.initTrainingSetCollection();
@@ -67,7 +67,7 @@ public class TrainingSetServiceTest {
 	trainingSetService.indexTrainingSet();
 	DirectoryReader trainingSetIndexReader = trainingSetReaderManager.acquire();
 	Thread.sleep(1000);
-	assertThat(trainingSetIndexReader.maxDoc(), either(equalTo(200)).or(equalTo(217)));
+	assertThat(trainingSetIndexReader.maxDoc(), either(equalTo(220)).or(equalTo(200)));
 	trainingSetReaderManager.release(trainingSetIndexReader);
     }
 }

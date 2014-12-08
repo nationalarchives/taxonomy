@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -38,6 +39,13 @@ public class IAViewRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(IAViewRepository.class);
 
+    // FIXME JCT put that string into yml configuration and inject it with
+    // @Value
+    public static final String[] fieldsToAnalyse = new String[] { InformationAssetViewFields.DESCRIPTION.toString(),
+	    InformationAssetViewFields.TITLE.toString(), InformationAssetViewFields.CONTEXTDESCRIPTION.toString(),
+	    InformationAssetViewFields.CORPBODYS.toString(), InformationAssetViewFields.SUBJECTS.toString(),
+	    InformationAssetViewFields.PERSON_FULLNAME.toString(), InformationAssetViewFields.PLACE_NAME.toString() };
+
     public Document getDoc(ScoreDoc scoreDoc) {
 	Document hitDoc = null;
 	IndexSearcher searcher = null;
@@ -61,9 +69,8 @@ public class IAViewRepository {
 	IndexSearcher isearcher = null;
 	try {
 	    isearcher = iaviewSearcherManager.acquire();
-	    QueryParser parser = new QueryParser(Version.valueOf(luceneVersion),
-		    InformationAssetViewFields.DESCRIPTION.toString(), new WhitespaceAnalyzer(
-			    Version.valueOf(luceneVersion)));
+	    QueryParser parser = new MultiFieldQueryParser(Version.valueOf(luceneVersion), fieldsToAnalyse,
+		    new WhitespaceAnalyzer(Version.valueOf(luceneVersion)));
 	    parser.setAllowLeadingWildcard(true);
 	    Query query;
 	    try {
