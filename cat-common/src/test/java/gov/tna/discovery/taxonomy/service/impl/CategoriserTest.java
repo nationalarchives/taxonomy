@@ -77,7 +77,7 @@ public class CategoriserTest {
 	Map<String, Float> mapOfCategoriesAndScores = categoriser.testCategoriseSingle(iaView);
 	assertThat(mapOfCategoriesAndScores, is(notNullValue()));
 	assertThat(mapOfCategoriesAndScores.keySet(), is(not(empty())));
-	assertThat(mapOfCategoriesAndScores.containsKey("Resources"), is(true));
+	assertThat(mapOfCategoriesAndScores.containsKey("Migration"), is(true));
 
     }
 
