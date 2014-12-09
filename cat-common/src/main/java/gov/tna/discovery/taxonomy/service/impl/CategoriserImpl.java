@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.TextField;
@@ -55,16 +54,19 @@ public class CategoriserImpl implements Categoriser {
     private static final Logger logger = LoggerFactory.getLogger(CategoriserImpl.class);
 
     @Autowired
-    IndexReader iaViewIndexReader;
+    private IndexReader iaViewIndexReader;
 
     @Autowired
-    IndexReader trainingSetIndexReader;
+    private IndexReader trainingSetIndexReader;
 
     @Autowired
-    IAViewRepository iaViewRepository;
+    private IAViewRepository iaViewRepository;
 
     @Autowired
     private SearcherManager trainingSetSearcherManager;
+
+    @Autowired
+    private Analyzer queryAnalyser;
 
     @Value("${lucene.mlt.mimimumScoreForMlt}")
     private float mimimumScoreForMlt;
@@ -72,9 +74,6 @@ public class CategoriserImpl implements Categoriser {
     private float mimimumGlobalScoreForACategory;
     @Value("${lucene.mlt.maximumSimilarElements}")
     private int maximumSimilarElements;
-
-    @Value("${lucene.index.version}")
-    private String luceneVersion;
 
     @Value("${lucene.mlt.minTermFreq}")
     private int minTermFreq;
@@ -184,12 +183,10 @@ public class CategoriserImpl implements Categoriser {
 	try {
 	    searcher = trainingSetSearcherManager.acquire();
 
-	    Analyzer analyzer = new EnglishAnalyzer(Version.valueOf(luceneVersion));
-
 	    MoreLikeThis moreLikeThis = new MoreLikeThis(this.trainingSetIndexReader);
 	    moreLikeThis.setMinTermFreq(minTermFreq);
 	    moreLikeThis.setMinDocFreq(minDocFreq);
-	    moreLikeThis.setAnalyzer(analyzer);
+	    moreLikeThis.setAnalyzer(this.queryAnalyser);
 	    moreLikeThis.setFieldNames(iaViewRepository.fieldsToAnalyse);
 
 	    BooleanQuery fullQuery = new BooleanQuery();

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -32,10 +32,13 @@ import org.springframework.stereotype.Component;
 public class IAViewRepository {
 
     @Autowired
-    SearcherManager iaviewSearcherManager;
+    private SearcherManager iaviewSearcherManager;
 
     @Value("${lucene.index.version}")
     private String luceneVersion;
+
+    @Autowired
+    private Analyzer queryAnalyser;
 
     private static final Logger logger = LoggerFactory.getLogger(IAViewRepository.class);
 
@@ -70,7 +73,7 @@ public class IAViewRepository {
 	try {
 	    isearcher = iaviewSearcherManager.acquire();
 	    QueryParser parser = new MultiFieldQueryParser(Version.valueOf(luceneVersion), fieldsToAnalyse,
-		    new WhitespaceAnalyzer(Version.valueOf(luceneVersion)));
+		    this.queryAnalyser);
 	    parser.setAllowLeadingWildcard(true);
 	    Query query;
 	    try {
@@ -115,8 +118,7 @@ public class IAViewRepository {
 	try {
 	    searcher = iaviewSearcherManager.acquire();
 
-	    QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), field, new WhitespaceAnalyzer(
-		    Version.valueOf(luceneVersion)));
+	    QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), field, this.queryAnalyser);
 
 	    return searcher.search(qp.parse(QueryParser.escape(value)), numHits);
 
@@ -130,8 +132,7 @@ public class IAViewRepository {
     }
 
     public void checkCategoryQueryValidity(String qry) {
-	QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), "CATEGORY", new WhitespaceAnalyzer(
-		Version.valueOf(luceneVersion)));
+	QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), "CATEGORY", this.queryAnalyser);
 	try {
 	    qp.parse(qry);
 	} catch (ParseException e) {

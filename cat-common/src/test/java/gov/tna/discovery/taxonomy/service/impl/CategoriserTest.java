@@ -65,7 +65,7 @@ public class CategoriserTest {
 	List<CategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
-	assertThat(categorisationResults.get(0).getName(), is(equalTo("Resources")));
+	assertThat(categorisationResults.get(0).getName(), is(equalTo("Migration")));
 
     }
 
@@ -76,7 +76,7 @@ public class CategoriserTest {
 	List<CategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
-	assertThat(categorisationResults.get(0).getName(), is(equalTo("Resources")));
+	assertThat(categorisationResults.get(0).getName(), is(equalTo("Migration")));
 
     }
 

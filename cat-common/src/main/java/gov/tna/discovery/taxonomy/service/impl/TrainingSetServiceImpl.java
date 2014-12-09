@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -42,13 +42,16 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     private static final Logger logger = LoggerFactory.getLogger(TrainingSetServiceImpl.class);
 
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
 
     @Autowired
-    TrainingDocumentRepository trainingDocumentRepository;
+    private TrainingDocumentRepository trainingDocumentRepository;
 
     @Autowired
-    IAViewRepository iaViewRepository;
+    private IAViewRepository iaViewRepository;
+
+    @Autowired
+    private Analyzer indexAnalyser;
 
     @Autowired
     private Directory trainingSetDirectory;
@@ -196,8 +199,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     public void deleteAndUpdateTraingSetIndexForCategory(Category category) {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(),
-		    new EnglishAnalyzer(getLuceneVersion())));
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(), indexAnalyser));
 	    writer.deleteDocuments(new Term(InformationAssetViewFields.CATEGORY.toString(), category.getTtl()));
 
 	    List<TrainingDocument> trainingDocuments = trainingDocumentRepository.findByCategory(category.getTtl());
@@ -227,8 +229,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     public void indexTrainingSet() {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(),
-		    new EnglishAnalyzer(getLuceneVersion())));
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(), indexAnalyser));
 
 	    writer.deleteAll();
 

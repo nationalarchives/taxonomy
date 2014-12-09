@@ -1,14 +1,27 @@
 package gov.tna.discovery.taxonomy.config;
 
+import gov.tna.discovery.taxonomy.repository.lucene.analyzer.TaxonomyGeneralIndexAnalyser;
+import gov.tna.discovery.taxonomy.repository.lucene.analyzer.TaxonomyGeneralQueryAnalyser;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.core.StopFilterFactory;
+import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
+import org.apache.lucene.analysis.util.ClasspathResourceLoader;
+import org.apache.lucene.analysis.util.ResourceLoader;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.ReaderManager;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -25,9 +38,15 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "lucene.index")
 @EnableConfigurationProperties
 class LuceneConfiguration {
+    private static final Logger logger = LoggerFactory.getLogger(LuceneConfiguration.class);
+
     private String iaviewCollectionPath;
     private String trainingSetCollectionPath;
     private String version;
+
+    /**
+     ************************* Directories
+     */
 
     public @Bean Directory trainingSetDirectory() throws IOException {
 	File file = new File(trainingSetCollectionPath);
@@ -38,6 +57,10 @@ class LuceneConfiguration {
 	File file = new File(iaviewCollectionPath);
 	return new SimpleFSDirectory(file);
     }
+
+    /**
+     ************************* Readers
+     */
 
     public @Bean IndexReader iaViewIndexReader() throws IOException {
 	return DirectoryReader.open(iaViewDirectory());
@@ -51,6 +74,10 @@ class LuceneConfiguration {
 	return DirectoryReader.open(trainingSetDirectory());
     }
 
+    /**
+     ************************* Searchers
+     */
+
     public @Bean SearcherManager iaviewSearcherManager() throws IOException {
 	// return new SearcherManager(iaviewIndexWriter(), true, lnull);
 	return new SearcherManager(iaViewDirectory(), null);
@@ -62,7 +89,56 @@ class LuceneConfiguration {
     }
 
     /**
-     * Getters and Setters
+     ************************* FilterFactories and Analyzers
+     */
+
+    public @Bean StopFilterFactory stopFilterFactory() {
+	Map<String, String> stopFilterArgs = new HashMap<String, String>();
+	stopFilterArgs.put("words", "stopwords.txt");
+	stopFilterArgs.put("enablePositionIncrements", "true");
+	stopFilterArgs.put("luceneMatchVersion", Version.valueOf(version).toString());
+
+	StopFilterFactory stopFilterFactory = new StopFilterFactory(stopFilterArgs);
+
+	try {
+	    ResourceLoader loader = new ClasspathResourceLoader(getClass());
+	    stopFilterFactory.inform(loader);
+	} catch (IOException e) {
+	    logger.error(".stopFilterFactory: an error occured while creating the stop Filter factory: {}",
+		    e.getMessage());
+	}
+	return stopFilterFactory;
+    }
+
+    public @Bean SynonymFilterFactory synonymFilterFactory() {
+	Map<String, String> synonymFilterArgs = new HashMap<String, String>();
+	synonymFilterArgs.put("synonyms", "synonyms.txt");
+	synonymFilterArgs.put("expand", "true");
+	synonymFilterArgs.put("ignoreCase", "true");
+	synonymFilterArgs.put("luceneMatchVersion", Version.valueOf(version).toString());
+	SynonymFilterFactory synonymFilterFactory = new SynonymFilterFactory(synonymFilterArgs);
+
+	try {
+	    ResourceLoader loader = new ClasspathResourceLoader(getClass());
+	    synonymFilterFactory.inform(loader);
+	} catch (IOException e) {
+	    logger.error(".synonymFilterFactory: an error occured while creating the stop Filter factory: {}",
+		    e.getMessage());
+	}
+	return synonymFilterFactory;
+
+    }
+
+    public @Bean Analyzer indexAnalyser() {
+	return new TaxonomyGeneralIndexAnalyser(Version.valueOf(version), stopFilterFactory());
+    }
+
+    public @Bean Analyzer queryAnalyser() {
+	return new TaxonomyGeneralQueryAnalyser(Version.valueOf(version), stopFilterFactory(), synonymFilterFactory());
+    }
+
+    /**
+     ************************* Getters and Setters
      */
 
     public String getIaviewCollectionPath() {

@@ -56,7 +56,7 @@ public class TrainingSetServiceTest {
     @Test
     public void testCreateTrainingSetWithLimitScore() throws IOException, ParseException {
 	trainingSetService.createTrainingSet(0.1f);
-	assertEquals(132l, trainingDocumentRepository.count());
+	assertEquals(248l, trainingDocumentRepository.count());
     }
 
     // FIXME this test should not vary

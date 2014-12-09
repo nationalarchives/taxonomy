@@ -1,6 +1,5 @@
 package gov.tna.discovery.taxonomy.repository.mongo;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +14,6 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import com.github.fakemongo.Fongo;
-import com.mongodb.Mongo;
 
 //TODO generate memory db with data set for testing
 //FIXME Bug on configuration: MongoConfTest is used only if explicitely requested for testing. otherwise the normal configuration class is used and the local db is used 
