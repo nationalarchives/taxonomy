@@ -1,8 +1,10 @@
 package gov.tna.discovery.taxonomy.service;
 
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.service.domain.CategorisationResult;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.document.Document;
@@ -20,7 +22,7 @@ public interface Categoriser {
      * @throws ParseException
      */
     @Deprecated
-    public Map<String, Float> categoriseIAViewSolrDocument(String catdocref);
+    public List<CategorisationResult> categoriseIAViewSolrDocument(String catdocref);
 
     /**
      * Categorise the whole IA collection
@@ -39,14 +41,14 @@ public interface Categoriser {
      * @return
      * @throws IOException
      */
-    public Map<String, Float> runMlt(Document document);
+    public List<CategorisationResult> runMlt(Document document);
 
     /**
      * Preview the categorisation of a document
      * 
      * @param iaView
-     * @return
+     * @return {@link CategorisationResult}
      */
-    public Map<String, Float> testCategoriseSingle(InformationAssetView iaView);
+    public List<CategorisationResult> testCategoriseSingle(InformationAssetView iaView);
 
 }

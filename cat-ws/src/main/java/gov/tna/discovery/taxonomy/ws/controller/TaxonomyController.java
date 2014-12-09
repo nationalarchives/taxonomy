@@ -1,9 +1,9 @@
 package gov.tna.discovery.taxonomy.ws.controller;
 
 import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.service.domain.CategorisationResult;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
-import gov.tna.discovery.taxonomy.ws.domain.CategoryRelevancy;
 import gov.tna.discovery.taxonomy.ws.domain.PublishRequest;
 import gov.tna.discovery.taxonomy.ws.domain.SearchIAViewRequest;
 import gov.tna.discovery.taxonomy.ws.domain.TestCategoriseSingleRequest;
@@ -76,14 +76,14 @@ public class TaxonomyController {
 
     @RequestMapping(value = "/testCategoriseSingle", method = RequestMethod.POST, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ResponseBody
-    List<CategoryRelevancy> testCategoriseSingle(@RequestBody TestCategoriseSingleRequest testCategoriseSingleRequest) {
+    List<CategorisationResult> testCategoriseSingle(@RequestBody TestCategoriseSingleRequest testCategoriseSingleRequest) {
 	logger.info("/testCategoriseSingle > {}", testCategoriseSingleRequest.toString());
 	if (StringUtils.isEmpty(testCategoriseSingleRequest.getDescription())) {
 	    throw new TaxonomyException(TaxonomyErrorType.INVALID_PARAMETER,
 		    "DESCRIPTION should be provided and not emptyw");
 	}
 
-	List<CategoryRelevancy> listOfCatRelevancies = service.testCategoriseSingle(testCategoriseSingleRequest);
+	List<CategorisationResult> listOfCatRelevancies = service.testCategoriseSingle(testCategoriseSingleRequest);
 
 	logger.info("/testCategoriseSingle < {} categories", listOfCatRelevancies.size());
 

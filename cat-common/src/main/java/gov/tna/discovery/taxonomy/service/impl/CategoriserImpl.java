@@ -5,6 +5,7 @@ import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetViewF
 import gov.tna.discovery.taxonomy.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.repository.lucene.LuceneHelperTools;
 import gov.tna.discovery.taxonomy.service.Categoriser;
+import gov.tna.discovery.taxonomy.service.domain.CategorisationResult;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
 
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -87,7 +89,7 @@ public class CategoriserImpl implements Categoriser {
      * categoriseIAViewSolrDocument(java.lang.String)
      */
     @Override
-    public Map<String, Float> categoriseIAViewSolrDocument(String catdocref) {
+    public List<CategorisationResult> categoriseIAViewSolrDocument(String catdocref) {
 	// TODO 4 CATDOCREF in schema.xml should be stored as string?
 	// and not text_gen: do not need to be tokenized. makes search by
 	// catdocref more complicated that it needs (look for a bunch of terms,
@@ -101,7 +103,7 @@ public class CategoriserImpl implements Categoriser {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	}
 
-	Map<String, Float> result = runMlt(doc);
+	List<CategorisationResult> result = runMlt(doc);
 
 	logger.debug("DOCUMENT");
 	logger.debug("------------------------");
@@ -109,8 +111,9 @@ public class CategoriserImpl implements Categoriser {
 	logger.debug("IAID: {}", doc.get("CATDOCREF"));
 	logger.debug("DESCRIPTION: {}", doc.get("DESCRIPTION"));
 	logger.debug("");
-	for (Entry<String, Float> category : result.entrySet()) {
-	    logger.debug("CATEGORY: {}, score: {}", category.getKey(), category.getValue());
+	for (CategorisationResult categoryResult : result) {
+	    logger.debug("CATEGORY: {}, score: {}, number of found documents: {}", categoryResult.getName(),
+		    categoryResult.getScore(), categoryResult.getNumberOfFoundDocuments());
 	}
 	logger.debug("------------------------");
 
@@ -141,7 +144,7 @@ public class CategoriserImpl implements Categoriser {
 
 	    Document doc = this.iaViewIndexReader.document(i);
 
-	    Map<String, Float> result = runMlt(doc);
+	    List<CategorisationResult> result = runMlt(doc);
 
 	    logger.debug("DOCUMENT");
 	    logger.debug("------------------------");
@@ -149,9 +152,9 @@ public class CategoriserImpl implements Categoriser {
 	    logger.debug("IAID: {}", doc.get("CATDOCREF"));
 	    logger.debug("DESCRIPTION: {}", doc.get("DESCRIPTION"));
 	    logger.debug("");
-	    for (Entry<String, Float> category : result.entrySet()) {
-		logger.info("Document {} has CATEGORY: {}, score: {}", doc.get("CATDOCREF"), category.getKey(),
-			category.getValue());
+	    for (CategorisationResult categoryResult : result) {
+		logger.info("CATEGORY: {}, score: {}, number of found documents: {}", categoryResult.getName(),
+			categoryResult.getScore(), categoryResult.getNumberOfFoundDocuments());
 	    }
 	    logger.debug("------------------------");
 
@@ -174,9 +177,9 @@ public class CategoriserImpl implements Categoriser {
     // training set, used for MLT (run MLT on title, context desc and desc at
     // least. returns results by score not from a fixed number)
     @Override
-    public Map<String, Float> runMlt(Document document) {
+    public List<CategorisationResult> runMlt(Document document) {
 
-	Map<String, Float> result = null;
+	Map<String, CategorisationResult> result = null;
 	IndexSearcher searcher = null;
 	try {
 	    searcher = trainingSetSearcherManager.acquire();
@@ -203,7 +206,7 @@ public class CategoriserImpl implements Categoriser {
 	    logger.info(".runMlt: found {} total hits, processed {} hits", topDocs.totalHits,
 		    this.maximumSimilarElements);
 
-	    result = new LinkedHashMap<String, Float>();
+	    result = new LinkedHashMap<String, CategorisationResult>();
 
 	    int size = 0;
 	    if (topDocs.totalHits <= this.maximumSimilarElements) {
@@ -226,13 +229,15 @@ public class CategoriserImpl implements Categoriser {
 		logger.debug(".runMlt: found doc, category: {}, score: {}, docreference: {}", category, currrentScore,
 			docReference);
 
+		CategorisationResult existingCategorisationResult = result.get(category);
 		Float scoreToSet = currrentScore;
-		Float existingCategoryScore = result.get(category);
+		Integer numberOfFoundDocuments = 1;
 		// k nearest neighbour algorithm
-		if (existingCategoryScore != null) {
-		    scoreToSet += existingCategoryScore;
+		if (existingCategorisationResult != null) {
+		    scoreToSet += existingCategorisationResult.getScore();
+		    numberOfFoundDocuments += existingCategorisationResult.getNumberOfFoundDocuments();
 		}
-		result.put(category, scoreToSet);
+		result.put(category, new CategorisationResult(category, scoreToSet, numberOfFoundDocuments));
 
 	    }
 
@@ -242,28 +247,29 @@ public class CategoriserImpl implements Categoriser {
 	    LuceneHelperTools.releaseSearcherManagerQuietly(trainingSetSearcherManager, searcher);
 	}
 
-	Map<String, Float> sortedResults = sortMapByValueDescAndFilterCategoriesByGlobalScore(result);
+	List<CategorisationResult> sortedResults = sortCategorisationResultsByScoreDescAndFilterByGlobalScore(new ArrayList<CategorisationResult>(
+		result.values()));
 
 	return sortedResults;
     }
 
-    private Map<String, Float> sortMapByValueDescAndFilterCategoriesByGlobalScore(Map<String, Float> result) {
-	// Sort entries by Value in descending Order
-	List<Map.Entry<String, Float>> entries = new ArrayList<Map.Entry<String, Float>>(result.entrySet());
-	Collections.sort(entries, new Comparator<Map.Entry<String, Float>>() {
-	    public int compare(Map.Entry<String, Float> a, Map.Entry<String, Float> b) {
-		return b.getValue().compareTo(a.getValue());
+    private List<CategorisationResult> sortCategorisationResultsByScoreDescAndFilterByGlobalScore(
+	    List<CategorisationResult> categorisationResults) {
+	// Sort results by Score in descending Order
+	Collections.sort(categorisationResults, new Comparator<CategorisationResult>() {
+	    public int compare(CategorisationResult a, CategorisationResult b) {
+		return b.getScore().compareTo(a.getScore());
 	    }
 	});
 
-	// add entries to the map to returned. Do not add entries below the
+	// add entries to the linkedList to return. Do not add entries below the
 	// minimum global score for a category
-	Map<String, Float> sortedResults = new LinkedHashMap<String, Float>();
-	for (Map.Entry<String, Float> entry : entries) {
-	    if (entry.getValue() < this.mimimumGlobalScoreForACategory) {
+	List<CategorisationResult> sortedResults = new LinkedList<CategorisationResult>();
+	for (CategorisationResult entry : categorisationResults) {
+	    if (entry.getScore() < this.mimimumGlobalScoreForACategory) {
 		break;
 	    }
-	    sortedResults.put(entry.getKey(), entry.getValue());
+	    sortedResults.add(entry);
 	}
 	return sortedResults;
     }
@@ -277,7 +283,7 @@ public class CategoriserImpl implements Categoriser {
      * .tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView)
      */
     @Override
-    public Map<String, Float> testCategoriseSingle(InformationAssetView iaView) {
+    public List<CategorisationResult> testCategoriseSingle(InformationAssetView iaView) {
 
 	Document doc = new Document();
 	try {

@@ -110,8 +110,7 @@ public class TestTaxonomyController {
 	SearchIAViewRequest request = new SearchIAViewRequest();
 	request.setCategoryQuery("\"venereal disease\" OR \"tropical disease\" OR \"industrial disease\" OR \"infectious disease\" OR \"bubonic plague\" OR \"yellow fever\" OR \"malaria\" OR \"tuberculosis\" OR \"scurvy\" OR \"rickets\" OR \"measles\" OR \"influenza\" OR \"bronchitis\" OR \"pneumoconiosis\" OR \"emphysema\" OR \"byssinosis\" OR \"polio\" OR \"dengue fever\" OR \"rabies\" OR \"swine fever\" OR \"weils disease\" OR \"cancer\" OR \"asthma\" OR \"syphilis\" OR \"typhoid\" OR \"gonorrhoea\" OR \"smallpox\" OR \"cholera\" OR \"cholera morbus\" OR \"typhus\" OR \"meningitis\" OR \"dysentery\" OR \"scarlatina\" OR \"scarlet fever\" OR \"pneumonia\" OR \"cynanche tonsillaris\" OR \"synocha\" OR \"opthalmia\" OR \"whooping cough\" OR \"HIV\" OR \"asbestosis\" OR \"mesothelioma\" OR \"beri beri\" OR \"multiple sclerosis\" OR \"diabetes\" OR \"leus venerea\" OR \"leprosy\" OR \"poliomyelitis\" OR \"encephalitis\" OR \"Trypanosomiasis\"");
 	request.setLimit(10);
-	List<InformationAssetView> iaViews = restTemplate.postForEntity(WS_URL + WS_PATH_SEARCH, request, List.class)
-		.getBody();
+	List<Object> iaViews = restTemplate.postForObject(WS_URL + WS_PATH_SEARCH, request, List.class);
 	assertThat(iaViews, is(notNullValue()));
 	assertThat(iaViews, is(not(empty())));
     }
@@ -193,15 +192,13 @@ public class TestTaxonomyController {
     public final void testTestCategoriseSingleDocumentWithOnlyDescription() {
 	TestCategoriseSingleRequest request = new TestCategoriseSingleRequest();
 	request.setDescription("UK bilateral aid programme: review by Ministry of Overseas Development working party; papers, minutes and correspondance");
-	List<Object> categoryRelevancies = restTemplate.postForEntity(WS_URL + WS_PATH_TEST_CATEGORISE_SINGLE, request,
-		List.class).getBody();
+	List<LinkedHashMap<String, String>> categorisationResults = restTemplate.postForObject(WS_URL
+		+ WS_PATH_TEST_CATEGORISE_SINGLE, request, List.class);
 
-	assertThat(categoryRelevancies, is(notNullValue()));
-	assertThat(categoryRelevancies, is(not(empty())));
-	LinkedHashMap<String, Object> firstElement = (LinkedHashMap<String, Object>) categoryRelevancies.get(0);
-	String categoryName = (String) firstElement.get("name");
-	assertThat(categoryName, not(isEmptyString()));
-	logger.info(Arrays.toString(categoryRelevancies.toArray()));
+	assertThat(categorisationResults, is(notNullValue()));
+	assertThat(categorisationResults, is(not(empty())));
+	assertThat(categorisationResults.get(0).get("name"), not(isEmptyString()));
+	logger.info(Arrays.toString(categorisationResults.toArray()));
 
     }
 

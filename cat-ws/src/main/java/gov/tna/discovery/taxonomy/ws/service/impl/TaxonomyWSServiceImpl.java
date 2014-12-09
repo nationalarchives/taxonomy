@@ -6,9 +6,9 @@ import gov.tna.discovery.taxonomy.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.service.Categoriser;
 import gov.tna.discovery.taxonomy.service.TrainingSetService;
+import gov.tna.discovery.taxonomy.service.domain.CategorisationResult;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
-import gov.tna.discovery.taxonomy.ws.domain.CategoryRelevancy;
 import gov.tna.discovery.taxonomy.ws.domain.TestCategoriseSingleRequest;
 import gov.tna.discovery.taxonomy.ws.service.TaxonomyWSService;
 import gov.tna.discovery.taxonomy.ws.service.async.AsyncTaskManager;
@@ -85,22 +85,10 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
     }
 
     @Override
-    public List<CategoryRelevancy> testCategoriseSingle(TestCategoriseSingleRequest testCategoriseSingleRequest) {
+    public List<CategorisationResult> testCategoriseSingle(TestCategoriseSingleRequest testCategoriseSingleRequest) {
 	InformationAssetView iaView = getIAviewFromRequest(testCategoriseSingleRequest);
 
-	Map<String, Float> mapOfCategoriesAndScores = categoriser.testCategoriseSingle(iaView);
-
-	List<CategoryRelevancy> categoryRelevancies = getListOfCatRelevancyFromMapOfCatAndScore(mapOfCategoriesAndScores);
-	return categoryRelevancies;
-    }
-
-    private List<CategoryRelevancy> getListOfCatRelevancyFromMapOfCatAndScore(
-	    Map<String, Float> mapOfCategoriesAndScores) {
-	List<CategoryRelevancy> categoryRelevancies = new ArrayList<CategoryRelevancy>();
-	for (Entry<String, Float> element : mapOfCategoriesAndScores.entrySet()) {
-	    categoryRelevancies.add(new CategoryRelevancy(element.getKey(), element.getValue()));
-	}
-	return categoryRelevancies;
+	return categoriser.testCategoriseSingle(iaView);
     }
 
     private InformationAssetView getIAviewFromRequest(TestCategoriseSingleRequest testCategoriseSingleRequest) {
