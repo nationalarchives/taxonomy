@@ -1,36 +1,27 @@
 package gov.tna.discovery.taxonomy.config;
 
-import gov.tna.discovery.taxonomy.repository.lucene.analyzer.TaxonomyGeneralIndexAnalyzer;
-import gov.tna.discovery.taxonomy.repository.lucene.analyzer.TaxonomyGeneralQueryAnalyzer;
+import gov.tna.discovery.taxonomy.repository.lucene.analyzer.TaxonomyGeneralIndexAnalyser;
+import gov.tna.discovery.taxonomy.repository.lucene.analyzer.TaxonomyGeneralQueryAnalyser;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.core.StopFilterFactory;
-import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
-import org.apache.lucene.analysis.synonym.SynonymFilter;
 import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
-import org.apache.lucene.analysis.synonym.SynonymMap;
-import org.apache.lucene.analysis.util.CharArraySet;
+import org.apache.lucene.analysis.util.ClasspathResourceLoader;
+import org.apache.lucene.analysis.util.ResourceLoader;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.ReaderManager;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.BytesRefHash;
 import org.apache.lucene.util.Version;
-import org.apache.lucene.util.fst.FST;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -47,6 +38,8 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "lucene.index")
 @EnableConfigurationProperties
 class LuceneConfiguration {
+    private static final Logger logger = LoggerFactory.getLogger(LuceneConfiguration.class);
+
     private String iaviewCollectionPath;
     private String trainingSetCollectionPath;
     private String version;
@@ -96,15 +89,52 @@ class LuceneConfiguration {
     }
 
     /**
-     ************************* Analyzers
+     ************************* FilterFactories and Analyzers
      */
 
+    public @Bean StopFilterFactory stopFilterFactory() {
+	Map<String, String> stopFilterArgs = new HashMap<String, String>();
+	stopFilterArgs.put("words", "stopwords.txt");
+	stopFilterArgs.put("enablePositionIncrements", "true");
+	stopFilterArgs.put("luceneMatchVersion", Version.valueOf(version).toString());
+
+	StopFilterFactory stopFilterFactory = new StopFilterFactory(stopFilterArgs);
+
+	try {
+	    ResourceLoader loader = new ClasspathResourceLoader(getClass());
+	    stopFilterFactory.inform(loader);
+	} catch (IOException e) {
+	    logger.error(".stopFilterFactory: an error occured while creating the stop Filter factory: {}",
+		    e.getMessage());
+	}
+	return stopFilterFactory;
+    }
+
+    public @Bean SynonymFilterFactory synonymFilterFactory() {
+	Map<String, String> synonymFilterArgs = new HashMap<String, String>();
+	synonymFilterArgs.put("synonyms", "synonyms.txt");
+	synonymFilterArgs.put("expand", "true");
+	synonymFilterArgs.put("ignoreCase", "true");
+	synonymFilterArgs.put("luceneMatchVersion", Version.valueOf(version).toString());
+	SynonymFilterFactory synonymFilterFactory = new SynonymFilterFactory(synonymFilterArgs);
+
+	try {
+	    ResourceLoader loader = new ClasspathResourceLoader(getClass());
+	    synonymFilterFactory.inform(loader);
+	} catch (IOException e) {
+	    logger.error(".synonymFilterFactory: an error occured while creating the stop Filter factory: {}",
+		    e.getMessage());
+	}
+	return synonymFilterFactory;
+
+    }
+
     public @Bean Analyzer indexAnalyser() {
-	return new TaxonomyGeneralIndexAnalyzer(Version.valueOf(version));
+	return new TaxonomyGeneralIndexAnalyser(Version.valueOf(version), stopFilterFactory());
     }
 
     public @Bean Analyzer queryAnalyser() {
-	return new TaxonomyGeneralQueryAnalyzer(Version.valueOf(version));
+	return new TaxonomyGeneralQueryAnalyser(Version.valueOf(version), stopFilterFactory(), synonymFilterFactory());
     }
 
     /**
