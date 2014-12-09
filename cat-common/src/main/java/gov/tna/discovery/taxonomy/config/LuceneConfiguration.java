@@ -1,7 +1,6 @@
 package gov.tna.discovery.taxonomy.config;
 
-import gov.tna.discovery.taxonomy.repository.lucene.analyzer.TaxonomyGeneralIndexAnalyser;
-import gov.tna.discovery.taxonomy.repository.lucene.analyzer.TaxonomyGeneralQueryAnalyser;
+import gov.tna.discovery.taxonomy.repository.lucene.analyzer.TaxonomyTrainingSetAnalyser;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +9,7 @@ import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.StopFilterFactory;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
 import org.apache.lucene.analysis.util.ClasspathResourceLoader;
 import org.apache.lucene.analysis.util.ResourceLoader;
@@ -129,12 +129,24 @@ class LuceneConfiguration {
 
     }
 
-    public @Bean Analyzer indexAnalyser() {
-	return new TaxonomyGeneralIndexAnalyser(Version.valueOf(version), stopFilterFactory());
+    /**
+     * Analyzer dedicated to indexing elements into training set and comparing
+     * them with document to categorise
+     * 
+     * @return
+     */
+    public @Bean Analyzer trainingSetAnalyser() {
+	return new TaxonomyTrainingSetAnalyser(Version.valueOf(version), stopFilterFactory(), synonymFilterFactory());
     }
 
-    public @Bean Analyzer queryAnalyser() {
-	return new TaxonomyGeneralQueryAnalyser(Version.valueOf(version), stopFilterFactory(), synonymFilterFactory());
+    /**
+     * Analyzer dedicated to running the category queries and finding documents
+     * in IAView Index
+     * 
+     * @return
+     */
+    public @Bean Analyzer categoryQueryAnalyser() {
+	return new WhitespaceAnalyzer(Version.valueOf(version));
     }
 
     /**

@@ -29,6 +29,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.expression.spel.ast.Indexer;
 
+/**
+ * Tests dedicated to the analysers<br/>
+ * the helper methods are taken from test classes from lucene
+ * 
+ * @author jcharlet
+ *
+ */
 @SpringApplicationConfiguration(classes = LuceneConfigurationTest.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TaxonomyGeneralAnalyzerTest extends AbstractTaxonomyTestCase {
@@ -38,10 +45,7 @@ public class TaxonomyGeneralAnalyzerTest extends AbstractTaxonomyTestCase {
     private static final Logger logger = LoggerFactory.getLogger(Indexer.class);
 
     @Autowired
-    private Analyzer queryAnalyser;
-
-    @Autowired
-    private Analyzer indexAnalyser;
+    private Analyzer trainingSetAnalyser;
 
     private static final String QUERY_WITH_LEADING_WILDCARD = "\"renewable energy\" OR \"renewable energies\" OR \"renewable electricity\" OR \"alternative energy\" OR \"alternative energies\" OR \"renewable fuel\" OR \"renewable fuels\" OR \"biogas\" OR \"biomass\" OR \"biofuel\" OR \"hydroelectric\" OR \"hydroelectricity\" OR \"hydropower\" OR (\"wind energy\"~5) OR \"wind farm\" OR \"wind farms\" OR \"wind power\" OR \"wind turbine\" OR \"wind turbines\" OR (\"solar power\"~5) OR (\"solar energy\"~5) OR \"solar panel\" OR \"solar panels\" OR \"landfill gas\" OR \"landfill gases\" OR \"geothermal\" OR \"photovoltaic\" OR \"tidal energy\" OR \"tidal energies\" OR \"tidal power\" OR \"wave farm\" OR \"wave farms\" OR (\"ocean energy\"~5) OR (\"kinetic energy\"~5) OR (\"kinetic energies\"~5) OR (*thermal AND energy) OR (*thermal AND energies) OR \"Renewables Advisory Board\" OR \"Renewable Energy Agency\" OR \"Geothermal Association\" OR \"Energy Saving Trust\" OR \"Non-Fossil Fuel Obligation\" OR \"Renewables Obligation\" OR \"Renewables Directive\" OR \"green energy\" OR \"green energies\" OR (\"energy conservation\"~2)";
 
@@ -49,7 +53,7 @@ public class TaxonomyGeneralAnalyzerTest extends AbstractTaxonomyTestCase {
     public void testQueryAnalyserWithStopWords() throws IOException {
 	StringReader reader = new StringReader("archives OR melody");
 
-	TokenStream stream = queryAnalyser.tokenStream("test", reader);
+	TokenStream stream = trainingSetAnalyser.tokenStream("test", reader);
 
 	assertNotNull(stream);
 	assertTokenStreamContents(stream, new String[] { "archives", "melody" }, null, null, null, null, null, null,
@@ -60,7 +64,7 @@ public class TaxonomyGeneralAnalyzerTest extends AbstractTaxonomyTestCase {
     public void testQueryAnalyserWithSynonyms() throws IOException {
 	Reader reader = new StringReader("agonise");
 
-	TokenStream stream = queryAnalyser.tokenStream("test", reader);
+	TokenStream stream = trainingSetAnalyser.tokenStream("test", reader);
 
 	assertTokenStreamContents(stream, new String[] { "agonise", "agonize" }, null, null, null, new int[] { 1, 0 },
 		null, null, null, null, true);
@@ -70,39 +74,7 @@ public class TaxonomyGeneralAnalyzerTest extends AbstractTaxonomyTestCase {
     public void testQueryAnalyserWithCapitalLetters() throws IOException {
 	StringReader reader = new StringReader("archiveS tEst MELODY");
 
-	TokenStream stream = queryAnalyser.tokenStream("test", reader);
-
-	assertNotNull(stream);
-	assertTokenStreamContents(stream, new String[] { "archives", "test", "melody" }, null, null, null, null, null,
-		null, null, null, true);
-    }
-
-    @Test
-    public void testIndexAnalyserWithStopWords() throws IOException {
-	StringReader reader = new StringReader("archives OR melody");
-
-	TokenStream stream = indexAnalyser.tokenStream("test", reader);
-
-	assertNotNull(stream);
-	assertTokenStreamContents(stream, new String[] { "archives", "melody" }, null, null, null, null, null, null,
-		null, null, true);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void testIndexAnalyserWithSynonyms() throws IOException {
-	Reader reader = new StringReader("agonise");
-
-	TokenStream stream = indexAnalyser.tokenStream("test", reader);
-
-	assertTokenStreamContents(stream, new String[] { "agonise", "agonize" }, null, null, null, new int[] { 1, 0 },
-		null, null, null, null, true);
-    }
-
-    @Test
-    public void testIndexAnalyserWithCapitalLetters() throws IOException {
-	StringReader reader = new StringReader("archiveS tEst MELODY");
-
-	TokenStream stream = indexAnalyser.tokenStream("test", reader);
+	TokenStream stream = trainingSetAnalyser.tokenStream("test", reader);
 
 	assertNotNull(stream);
 	assertTokenStreamContents(stream, new String[] { "archives", "test", "melody" }, null, null, null, null, null,

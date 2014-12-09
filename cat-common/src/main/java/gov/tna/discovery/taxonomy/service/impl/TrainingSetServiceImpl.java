@@ -51,7 +51,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     private IAViewRepository iaViewRepository;
 
     @Autowired
-    private Analyzer indexAnalyser;
+    private Analyzer trainingSetAnalyser;
 
     @Autowired
     private Directory trainingSetDirectory;
@@ -199,7 +199,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     public void deleteAndUpdateTraingSetIndexForCategory(Category category) {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(), indexAnalyser));
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(), trainingSetAnalyser));
 	    writer.deleteDocuments(new Term(InformationAssetViewFields.CATEGORY.toString(), category.getTtl()));
 
 	    List<TrainingDocument> trainingDocuments = trainingDocumentRepository.findByCategory(category.getTtl());
@@ -229,7 +229,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     public void indexTrainingSet() {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(), indexAnalyser));
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(), trainingSetAnalyser));
 
 	    writer.deleteAll();
 

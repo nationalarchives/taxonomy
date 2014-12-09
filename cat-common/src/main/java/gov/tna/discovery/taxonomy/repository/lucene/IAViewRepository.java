@@ -38,7 +38,7 @@ public class IAViewRepository {
     private String luceneVersion;
 
     @Autowired
-    private Analyzer queryAnalyser;
+    private Analyzer categoryQueryAnalyser;
 
     private static final Logger logger = LoggerFactory.getLogger(IAViewRepository.class);
 
@@ -73,7 +73,7 @@ public class IAViewRepository {
 	try {
 	    isearcher = iaviewSearcherManager.acquire();
 	    QueryParser parser = new MultiFieldQueryParser(Version.valueOf(luceneVersion), fieldsToAnalyse,
-		    this.queryAnalyser);
+		    this.categoryQueryAnalyser);
 	    parser.setAllowLeadingWildcard(true);
 	    Query query;
 	    try {
@@ -118,7 +118,7 @@ public class IAViewRepository {
 	try {
 	    searcher = iaviewSearcherManager.acquire();
 
-	    QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), field, this.queryAnalyser);
+	    QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), field, this.categoryQueryAnalyser);
 
 	    return searcher.search(qp.parse(QueryParser.escape(value)), numHits);
 
@@ -132,7 +132,7 @@ public class IAViewRepository {
     }
 
     public void checkCategoryQueryValidity(String qry) {
-	QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), "CATEGORY", this.queryAnalyser);
+	QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), "CATEGORY", this.categoryQueryAnalyser);
 	try {
 	    qp.parse(qry);
 	} catch (ParseException e) {

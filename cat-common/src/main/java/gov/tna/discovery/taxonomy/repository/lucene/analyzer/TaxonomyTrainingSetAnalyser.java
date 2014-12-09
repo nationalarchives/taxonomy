@@ -8,30 +8,30 @@ import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
+import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
 import org.apache.lucene.util.Version;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Text General Analyser dedicated to indexing from Solr configuration for
+ * Text General Analyser dedicated to querying from Solr configuration for
  * IAViews<br/>
  * Applies the following tokenizers and filters:
  * <ul>
  * <li>WhitespaceTokenizer</li>
  * <li>StopFilter</li>
  * <li>LowerCaseFilter</li>
+ * <li>SynonymFilter</li>
  * </ul>
  * 
  * @author jcharlet
  *
  */
-public final class TaxonomyGeneralIndexAnalyser extends Analyzer {
-
-    private static final Logger logger = LoggerFactory.getLogger(TaxonomyGeneralIndexAnalyser.class);
+public final class TaxonomyTrainingSetAnalyser extends Analyzer {
 
     private final Version matchVersion;
 
     private final StopFilterFactory stopFilterFactory;
+
+    private final SynonymFilterFactory synonymFilterFactory;
 
     /**
      * Creates a new tokenizer
@@ -40,18 +40,22 @@ public final class TaxonomyGeneralIndexAnalyser extends Analyzer {
      *            Lucene version to match See
      *            {@link <a href="#version">above</a>}
      */
-    public TaxonomyGeneralIndexAnalyser(Version matchVersion, StopFilterFactory stopFilterFactory) {
+    public TaxonomyTrainingSetAnalyser(Version matchVersion, StopFilterFactory stopFilterFactory,
+	    SynonymFilterFactory synonymFilterFactory) {
 	this.matchVersion = matchVersion;
 	this.stopFilterFactory = stopFilterFactory;
+	this.synonymFilterFactory = synonymFilterFactory;
     }
 
     @Override
     protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
-	Tokenizer source = new WhitespaceTokenizer(matchVersion, reader);
+	Tokenizer source = new WhitespaceTokenizer(this.matchVersion, reader);
 
-	TokenStream result = stopFilterFactory.create(source);
+	TokenStream result = new LowerCaseFilter(this.matchVersion, source);
 
-	result = new LowerCaseFilter(matchVersion, result);
+	result = this.stopFilterFactory.create(result);
+
+	result = this.synonymFilterFactory.create(result);
 
 	return new TokenStreamComponents(source, result);
     }

@@ -66,7 +66,7 @@ public class CategoriserImpl implements Categoriser {
     private SearcherManager trainingSetSearcherManager;
 
     @Autowired
-    private Analyzer queryAnalyser;
+    private Analyzer trainingSetAnalyser;
 
     @Value("${lucene.mlt.mimimumScoreForMlt}")
     private float mimimumScoreForMlt;
@@ -186,7 +186,7 @@ public class CategoriserImpl implements Categoriser {
 	    MoreLikeThis moreLikeThis = new MoreLikeThis(this.trainingSetIndexReader);
 	    moreLikeThis.setMinTermFreq(minTermFreq);
 	    moreLikeThis.setMinDocFreq(minDocFreq);
-	    moreLikeThis.setAnalyzer(this.queryAnalyser);
+	    moreLikeThis.setAnalyzer(this.trainingSetAnalyser);
 	    moreLikeThis.setFieldNames(iaViewRepository.fieldsToAnalyse);
 
 	    BooleanQuery fullQuery = new BooleanQuery();
