@@ -55,11 +55,14 @@ public class TrainingSetServiceTest {
 
     @Test
     public void testCreateTrainingSetWithLimitScore() throws IOException, ParseException {
-	trainingSetService.createTrainingSet(0.1f);
-	assertEquals(132l, trainingDocumentRepository.count());
+	trainingSetService.createTrainingSet(0.001f);
+	assertEquals(17l, trainingDocumentRepository.count());
     }
 
     // FIXME this test should not vary
+    // FIXME LUCENE IN MEMORY the trainingset lucene files should be initiated
+    // from scratch (and a few documents should be inserted into it)
+    // because here, the writer fails to add documents
     @Test
     public void testIndexTrainingSet() throws IOException, InterruptedException, ParseException {
 	mongoTestDataSet.initTrainingSetCollection();

@@ -30,6 +30,6 @@ lucene:
   minTermFreq: 1
   minDocFreq: 1
  index:
-  iaviewCollectionPath: /opt/solr/solr/collection1/data/index
-  trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
+  iaviewCollectionPath: /home/jcharlet/_workspace/cat/cat-common/src/test/resources/dataset/lucene/iaviews
+  trainingSetCollectionPath: /home/jcharlet/_workspace/cat/cat-common/src/test/resources/dataset/lucene/trainingset
   version: LUCENE_47

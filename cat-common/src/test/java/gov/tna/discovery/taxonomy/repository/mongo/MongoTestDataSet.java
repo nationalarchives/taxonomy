@@ -52,7 +52,7 @@ public class MongoTestDataSet {
     }
 
     public void initCategoryCollection() throws IOException {
-	URL url = Thread.currentThread().getContextClassLoader().getResource("dataset/taxonomy.json");
+	URL url = Thread.currentThread().getContextClassLoader().getResource("dataset/mongo/taxonomy.json");
 	File file = new File(url.getPath());
 	FileInputStream fileIs = new FileInputStream(file);
 	InputStreamReader isReader = new InputStreamReader(fileIs);
@@ -68,7 +68,7 @@ public class MongoTestDataSet {
     }
 
     public void initTrainingSetCollection() throws IOException {
-	URL url = Thread.currentThread().getContextClassLoader().getResource("dataset/trainingset.json");
+	URL url = Thread.currentThread().getContextClassLoader().getResource("dataset/mongo/trainingset.json");
 	File file = new File(url.getPath());
 	FileInputStream fileIs = new FileInputStream(file);
 	InputStreamReader isReader = new InputStreamReader(fileIs);
