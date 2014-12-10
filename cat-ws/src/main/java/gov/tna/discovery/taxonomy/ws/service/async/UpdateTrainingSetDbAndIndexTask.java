@@ -3,10 +3,10 @@
  */
 package gov.tna.discovery.taxonomy.ws.service.async;
 
-import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
-import gov.tna.discovery.taxonomy.service.TrainingSetService;
-import gov.tna.discovery.taxonomy.service.impl.TrainingSetServiceImpl;
+import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
+import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
+import gov.tna.discovery.taxonomy.common.service.impl.TrainingSetServiceImpl;
 
 import java.util.List;
 

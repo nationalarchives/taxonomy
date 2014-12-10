@@ -1,22 +1,19 @@
 package gov.tna.discovery.taxonomy.ws.service.impl;
 
-import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.repository.lucene.IAViewRepository;
-import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
-import gov.tna.discovery.taxonomy.service.Categoriser;
-import gov.tna.discovery.taxonomy.service.TrainingSetService;
-import gov.tna.discovery.taxonomy.service.domain.CategorisationResult;
-import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
-import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
+import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
+import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
+import gov.tna.discovery.taxonomy.common.service.CategoriserService;
+import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
+import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
+import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
+import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 import gov.tna.discovery.taxonomy.ws.domain.TestCategoriseSingleRequest;
 import gov.tna.discovery.taxonomy.ws.service.TaxonomyWSService;
 import gov.tna.discovery.taxonomy.ws.service.async.AsyncTaskManager;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +37,7 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
     AsyncTaskManager asyncExecutor;
 
     @Autowired
-    Categoriser categoriser;
+    CategoriserService categoriser;
 
     /*
      * (non-Javadoc)

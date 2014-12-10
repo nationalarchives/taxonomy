@@ -1,9 +1,9 @@
 package gov.tna.discovery.taxonomy.ws.controller;
 
-import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.service.domain.CategorisationResult;
-import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
-import gov.tna.discovery.taxonomy.service.exception.TaxonomyException;
+import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
+import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
+import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 import gov.tna.discovery.taxonomy.ws.domain.PublishRequest;
 import gov.tna.discovery.taxonomy.ws.domain.SearchIAViewRequest;
 import gov.tna.discovery.taxonomy.ws.domain.TestCategoriseSingleRequest;

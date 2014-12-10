@@ -1,7 +1,7 @@
 package gov.tna.discovery.taxonomy.ws.service;
 
-import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.service.domain.CategorisationResult;
+import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 import gov.tna.discovery.taxonomy.ws.domain.TestCategoriseSingleRequest;
 
 import java.util.List;

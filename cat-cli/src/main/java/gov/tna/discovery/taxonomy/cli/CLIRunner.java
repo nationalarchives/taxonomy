@@ -1,10 +1,10 @@
 package gov.tna.discovery.taxonomy.cli;
 
 import gov.tna.discovery.taxonomy.CLIApplication;
-import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
-import gov.tna.discovery.taxonomy.service.Categoriser;
-import gov.tna.discovery.taxonomy.service.TrainingSetService;
+import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
+import gov.tna.discovery.taxonomy.common.service.CategoriserService;
+import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class CLIRunner implements CommandLineRunner {
 
     private static final String OPTION_UPDATE = "update";
 
-    private static final Logger logger = LoggerFactory.getLogger(CLIApplication.class);
+    private static final Logger logger = LoggerFactory.getLogger(CLIRunner.class);
 
     @Value("${lucene.index.iaviewCollectionPath}")
     private String iaviewCollectionPath;
@@ -44,7 +44,7 @@ public class CLIRunner implements CommandLineRunner {
     private String host;
 
     @Autowired
-    Categoriser categoriser;
+    CategoriserService categoriser;
 
     @Autowired
     TrainingSetService trainingSetService;

@@ -1,7 +1,7 @@
 package gov.tna.discovery.taxonomy.ws.controller;
 
-import gov.tna.discovery.taxonomy.config.AsyncConfiguration;
-import gov.tna.discovery.taxonomy.config.ServiceConfigurationTest;
+import gov.tna.discovery.taxonomy.common.config.AsyncConfiguration;
+import gov.tna.discovery.taxonomy.common.config.ServiceConfigurationTest;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

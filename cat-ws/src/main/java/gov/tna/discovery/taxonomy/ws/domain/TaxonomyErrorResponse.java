@@ -1,6 +1,6 @@
 package gov.tna.discovery.taxonomy.ws.domain;
 
-import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
+import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 
 public class TaxonomyErrorResponse {
     private TaxonomyErrorType error;
