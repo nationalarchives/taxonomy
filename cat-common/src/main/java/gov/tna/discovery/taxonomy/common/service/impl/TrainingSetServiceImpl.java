@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 //TODO create Interface for service layer
@@ -124,46 +125,70 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	// errors occur
 	// TODO 1 bulk insert, this is far too slow to do it unitary!
 	// FIXME why to remove punctuation before indexing? analyser duty
-	if (!StringUtils.isEmpty(trainingDocument.getDescription())) {
-	    trainingDocument.setDescription(trainingDocument.getDescription().replaceAll("\\<.*?>", ""));
-	}
-	if (!StringUtils.isEmpty(trainingDocument.getContextDescription())) {
-	    trainingDocument.setContextDescription(trainingDocument.getContextDescription().replaceAll("\\<.*?>", ""));
-	}
-	if (!StringUtils.isEmpty(trainingDocument.getTitle())) {
-	    trainingDocument.setTitle(trainingDocument.getTitle().replaceAll("\\<.*?>", ""));
-	}
 
-	Document doc = new Document();
+	try {
+	    if (!StringUtils.isEmpty(trainingDocument.getDescription())) {
+		trainingDocument.setDescription(trainingDocument.getDescription().replaceAll("\\<.*?>", ""));
+	    }
+	    if (!StringUtils.isEmpty(trainingDocument.getContextDescription())) {
+		trainingDocument.setContextDescription(trainingDocument.getContextDescription().replaceAll("\\<.*?>",
+			""));
+	    }
+	    if (!StringUtils.isEmpty(trainingDocument.getTitle())) {
+		trainingDocument.setTitle(trainingDocument.getTitle().replaceAll("\\<.*?>", ""));
+	    }
+	    Document doc = new Document();
 
-	doc.add(new StringField(InformationAssetViewFields.DOCREFERENCE.toString(), trainingDocument.getDocReference(),
-		Field.Store.YES));
-	doc.add(new StringField(InformationAssetViewFields.CATDOCREF.toString(), trainingDocument.getCatDocRef(),
-		Field.Store.YES));
-	doc.add(new StringField(InformationAssetViewFields.CATEGORY.toString(), trainingDocument.getCategory(),
-		Field.Store.YES));
-	doc.add(new TextField(InformationAssetViewFields.TITLE.toString(), trainingDocument.getTitle(), Field.Store.YES));
-	doc.add(new TextField(InformationAssetViewFields.DESCRIPTION.toString(), trainingDocument.getDescription(),
-		Field.Store.YES));
-	doc.add(new TextField(InformationAssetViewFields.CONTEXTDESCRIPTION.toString(), trainingDocument
-		.getContextDescription(), Field.Store.YES));
-	doc.add(new TextField(InformationAssetViewFields.CORPBODYS.toString(), Arrays.toString(trainingDocument
-		.getCorpBodys()), Field.Store.YES));
-	doc.add(new TextField(InformationAssetViewFields.PERSON_FULLNAME.toString(), Arrays.toString(trainingDocument
-		.getPersonFullName()), Field.Store.YES));
-	doc.add(new TextField(InformationAssetViewFields.PLACE_NAME.toString(), Arrays.toString(trainingDocument
-		.getPlaceName()), Field.Store.YES));
-	doc.add(new TextField(InformationAssetViewFields.SUBJECTS.toString(), Arrays.toString(trainingDocument
-		.getSubjects()), Field.Store.YES));
-	writer.addDocument(doc);
+	    doc.add(new StringField(InformationAssetViewFields.DOCREFERENCE.toString(), trainingDocument
+		    .getDocReference(), Field.Store.YES));
+
+	    doc.add(new TextField(InformationAssetViewFields.DESCRIPTION.toString(), trainingDocument.getDescription(),
+		    Field.Store.YES));
+
+	    if (!StringUtils.isEmpty(trainingDocument.getCatDocRef())) {
+		doc.add(new StringField(InformationAssetViewFields.CATDOCREF.toString(), trainingDocument
+			.getCatDocRef(), Field.Store.YES));
+	    }
+	    if (!StringUtils.isEmpty(trainingDocument.getCategory())) {
+		doc.add(new StringField(InformationAssetViewFields.CATEGORY.toString(), trainingDocument.getCategory(),
+			Field.Store.YES));
+	    }
+	    if (!StringUtils.isEmpty(trainingDocument.getTitle())) {
+		doc.add(new TextField(InformationAssetViewFields.TITLE.toString(), trainingDocument.getTitle(),
+			Field.Store.YES));
+	    }
+	    if (!StringUtils.isEmpty(trainingDocument.getTitle())) {
+		doc.add(new TextField(InformationAssetViewFields.CONTEXTDESCRIPTION.toString(), trainingDocument
+			.getContextDescription(), Field.Store.YES));
+	    }
+	    if (trainingDocument.getCorpBodys() != null) {
+		doc.add(new TextField(InformationAssetViewFields.CORPBODYS.toString(), Arrays.toString(trainingDocument
+			.getCorpBodys()), Field.Store.YES));
+	    }
+	    if (trainingDocument.getPersonFullName() != null) {
+		doc.add(new TextField(InformationAssetViewFields.PERSON_FULLNAME.toString(), Arrays
+			.toString(trainingDocument.getPersonFullName()), Field.Store.YES));
+	    }
+	    if (trainingDocument.getPlaceName() != null) {
+		doc.add(new TextField(InformationAssetViewFields.PLACE_NAME.toString(), Arrays
+			.toString(trainingDocument.getPlaceName()), Field.Store.YES));
+	    }
+	    if (trainingDocument.getSubjects() != null) {
+		doc.add(new TextField(InformationAssetViewFields.SUBJECTS.toString(), Arrays.toString(trainingDocument
+			.getSubjects()), Field.Store.YES));
+	    }
+	    writer.addDocument(doc);
+	} catch (Exception e) {
+	    logger.error(".indexTrainingSetDocument: an error occured on document: '{}', message: {}",
+		    trainingDocument.getDocReference(), e.getMessage());
+	}
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * gov.tna.discovery.taxonomy.common.service.impl.TrainingSetService#createTrainingSet
-     * (java.lang.Float)
+     * @see gov.tna.discovery.taxonomy.common.service.impl.TrainingSetService#
+     * createTrainingSet (java.lang.Float)
      */
     @Override
     public void createTrainingSet(Float fixedLimitScore) throws IOException, ParseException {
@@ -199,7 +224,8 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     public void deleteAndUpdateTraingSetIndexForCategory(Category category) {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(), trainingSetAnalyser));
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(),
+		    trainingSetAnalyser));
 	    writer.deleteDocuments(new Term(InformationAssetViewFields.CATEGORY.toString(), category.getTtl()));
 
 	    List<TrainingDocument> trainingDocuments = trainingDocumentRepository.findByCategory(category.getTtl());
@@ -221,15 +247,15 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * gov.tna.discovery.taxonomy.common.service.impl.TrainingSetService#indexTrainingSet
-     * ()
+     * @see gov.tna.discovery.taxonomy.common.service.impl.TrainingSetService#
+     * indexTrainingSet ()
      */
     @Override
     public void indexTrainingSet() {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(), trainingSetAnalyser));
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(),
+		    trainingSetAnalyser));
 
 	    writer.deleteAll();
 
