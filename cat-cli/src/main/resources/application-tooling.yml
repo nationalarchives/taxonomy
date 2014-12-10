@@ -32,6 +32,6 @@ lucene:
   minDocFreq: 1
   
  index:
-  iaviewCollectionPath: ***REMOVED***solr/collection4/data/index
+  iaviewCollectionPath: ***REMOVED***solr/collection3/data/index
   trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
   version: LUCENE_47

@@ -3,8 +3,10 @@ logging:
   gov:
    tna:
     discovery:
-     taxonomy: DEBUG
+     taxonomy: INFO
 
+server:
+ port: 9001 
 
 spring:
  data:
@@ -30,8 +32,8 @@ lucene:
   maximumSimilarElements: 500
   minTermFreq: 1
   minDocFreq: 1
-  
+
  index:
-  iaviewCollectionPath: ***REMOVED***solr/collection4/data/index
+  iaviewCollectionPath: ***REMOVED***solr/collection3/data/index
   trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
   version: LUCENE_47
