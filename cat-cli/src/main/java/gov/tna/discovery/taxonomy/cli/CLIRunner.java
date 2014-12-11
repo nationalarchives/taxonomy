@@ -1,10 +1,10 @@
 package gov.tna.discovery.taxonomy.cli;
 
 import gov.tna.discovery.taxonomy.CLIApplication;
-import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
-import gov.tna.discovery.taxonomy.service.Categoriser;
-import gov.tna.discovery.taxonomy.service.TrainingSetService;
+import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
+import gov.tna.discovery.taxonomy.common.service.CategoriserService;
+import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +35,9 @@ public class CLIRunner implements CommandLineRunner {
 
     private static final String OPTION_UPDATE = "update";
 
-    private static final Logger logger = LoggerFactory.getLogger(CLIApplication.class);
+    private static final String OPTION_FIXED_SIZE = "fixedSize";
+
+    private static final Logger logger = LoggerFactory.getLogger(CLIRunner.class);
 
     @Value("${lucene.index.iaviewCollectionPath}")
     private String iaviewCollectionPath;
@@ -44,7 +46,7 @@ public class CLIRunner implements CommandLineRunner {
     private String host;
 
     @Autowired
-    Categoriser categoriser;
+    CategoriserService categoriser;
 
     @Autowired
     TrainingSetService trainingSetService;
@@ -68,6 +70,10 @@ public class CLIRunner implements CommandLineRunner {
 	options.addOption(OPTION_INDEX, false, "index training set");
 	options.addOption(OPTION_TEST_CATEGORISE_SINGLE, false, "test the categorisation of one IAView Solr element");
 	options.addOption(OPTION_TEST_CATEGORISE_ALL, false, "test the categorisation of the whole IAView Solr index");
+	options.addOption(
+		OPTION_FIXED_SIZE,
+		false,
+		"allows to filter the records to add to the training set for a category by max number of elements INSTEAD OF by score. Specify in argument the number");
 
 	CommandLineParser parser = new BasicParser();
 	CommandLine cmd = parser.parse(options, cliArgs);
@@ -81,11 +87,22 @@ public class CLIRunner implements CommandLineRunner {
 	if (cmd.hasOption(OPTION_UPDATE)) {
 	    logger.info("update (create if not existing) training set");
 	    String categoryCiaid = cmd.getOptionValue(OPTION_UPDATE);
-	    if (StringUtils.isEmpty(categoryCiaid)) {
-		trainingSetService.createTrainingSet(null);
+	    // FIXME refactor if conditions with design pattern
+	    if (cmd.hasOption(OPTION_FIXED_SIZE)) {
+		Integer fixedLimitSize = Integer.valueOf(cmd.getOptionValue(OPTION_FIXED_SIZE));
+		if (StringUtils.isEmpty(categoryCiaid)) {
+		    trainingSetService.createTrainingSet(null, fixedLimitSize);
+		} else {
+		    Category category = categoryRepository.findByCiaid(categoryCiaid);
+		    trainingSetService.updateTrainingSetForCategory(category, null, fixedLimitSize);
+		}
 	    } else {
-		Category category = categoryRepository.findByCiaid(categoryCiaid);
-		trainingSetService.updateTrainingSetForCategory(category, null);
+		if (StringUtils.isEmpty(categoryCiaid)) {
+		    trainingSetService.createTrainingSet(null, null);
+		} else {
+		    Category category = categoryRepository.findByCiaid(categoryCiaid);
+		    trainingSetService.updateTrainingSetForCategory(category, null, null);
+		}
 	    }
 	}
 

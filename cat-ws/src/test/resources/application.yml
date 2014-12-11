@@ -37,3 +37,4 @@ lucene:
   iaviewCollectionPath: /home/jcharlet/_workspace/cat/cat-common/src/test/resources/dataset/lucene/iaviews
   trainingSetCollectionPath: /home/jcharlet/_workspace/cat/cat-common/src/test/resources/dataset/lucene/trainingset
   version: LUCENE_47
+  maxTrainingDocsPerCategory: 100

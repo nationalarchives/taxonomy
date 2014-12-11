@@ -1,0 +1,41 @@
+logging:
+ config: classpath:log4j-tooling.properties
+ level:
+  gov:
+   tna:
+    discovery:
+     taxonomy: INFO
+
+server:
+ port: 9001 
+
+spring:
+ data:
+  mongodb:
+   host: ***REMOVED***.***REMOVED***
+   port: 27017
+   database: taxonomy
+
+  mongo:
+   repositories:
+    enabled: true
+
+async:
+ executor:
+  corePoolSize: 7
+  maxPoolSize: 42
+  queueCapacity: 11
+
+lucene:
+ mlt:
+  mimimumScoreForMlt: 0.001
+  mimimumGlobalScoreForACategory: 0
+  maximumSimilarElements: 3000
+  minTermFreq: 1
+  minDocFreq: 1
+
+ index:
+  iaviewCollectionPath: ***REMOVED***solr/collection3/data/index
+  trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
+  version: LUCENE_47
+  maxTrainingDocsPerCategory: 5000

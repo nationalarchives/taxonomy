@@ -1,21 +1,16 @@
 package gov.tna.discovery.taxonomy.ws.controller;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import gov.tna.discovery.taxonomy.repository.domain.TrainingDocument;
-import gov.tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.repository.lucene.IAViewRepository;
-import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
-import gov.tna.discovery.taxonomy.repository.mongo.MongoTestDataSet;
-import gov.tna.discovery.taxonomy.repository.mongo.TrainingDocumentRepository;
-import gov.tna.discovery.taxonomy.service.exception.TaxonomyErrorType;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
+import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
+import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
+import gov.tna.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
+import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
+import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
+import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.ws.domain.PublishRequest;
 import gov.tna.discovery.taxonomy.ws.domain.SearchIAViewRequest;
 import gov.tna.discovery.taxonomy.ws.domain.TaxonomyErrorResponse;
@@ -110,9 +105,10 @@ public class TestTaxonomyController {
 	SearchIAViewRequest request = new SearchIAViewRequest();
 	request.setCategoryQuery("*record*");
 	request.setLimit(10);
-	List<Object> iaViews = restTemplate.postForObject(WS_URL + WS_PATH_SEARCH, request, List.class);
+	PaginatedList iaViews = restTemplate.postForObject(WS_URL + WS_PATH_SEARCH, request, PaginatedList.class);
 	assertThat(iaViews, is(notNullValue()));
-	assertThat(iaViews, is(not(empty())));
+	assertThat(iaViews.getResults(), is(notNullValue()));
+	assertThat(iaViews.size(), is(not(equalTo(0))));
     }
 
     @Test
@@ -139,10 +135,11 @@ public class TestTaxonomyController {
 	assertThat(trainingDocs, is(not(empty())));
 	assertThat(trainingDocs.size(), equalTo(20));
 
-	List<InformationAssetView> IAViewResults = iaViewRepository.performSearch(category.getQry(),
+	PaginatedList<InformationAssetView> IAViewResults = iaViewRepository.performSearch(category.getQry(),
 		(category.getSc()), 1000, 0);
 	assertThat(IAViewResults, is(notNullValue()));
-	assertThat(IAViewResults, is(not(empty())));
+	assertThat(IAViewResults.getResults(), is(notNullValue()));
+	assertThat(IAViewResults.getResults(), is(not(empty())));
 	assertThat(IAViewResults.size(), equalTo(20));
 
 	logger.debug("Publication succeeded");

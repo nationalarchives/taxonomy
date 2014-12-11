@@ -1,8 +1,8 @@
 package gov.tna.discovery.taxonomy.ws.service.async;
 
-import gov.tna.discovery.taxonomy.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.repository.mongo.CategoryRepository;
-import gov.tna.discovery.taxonomy.service.TrainingSetService;
+import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
+import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
 
 import java.util.Arrays;
 import java.util.concurrent.Executor;
