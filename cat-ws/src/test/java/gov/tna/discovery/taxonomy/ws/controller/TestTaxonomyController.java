@@ -9,6 +9,7 @@ import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
+import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.ws.domain.PublishRequest;
 import gov.tna.discovery.taxonomy.ws.domain.SearchIAViewRequest;
@@ -104,9 +105,10 @@ public class TestTaxonomyController {
 	SearchIAViewRequest request = new SearchIAViewRequest();
 	request.setCategoryQuery("\"venereal disease\" OR \"tropical disease\" OR \"industrial disease\" OR \"infectious disease\" OR \"bubonic plague\" OR \"yellow fever\" OR \"malaria\" OR \"tuberculosis\" OR \"scurvy\" OR \"rickets\" OR \"measles\" OR \"influenza\" OR \"bronchitis\" OR \"pneumoconiosis\" OR \"emphysema\" OR \"byssinosis\" OR \"polio\" OR \"dengue fever\" OR \"rabies\" OR \"swine fever\" OR \"weils disease\" OR \"cancer\" OR \"asthma\" OR \"syphilis\" OR \"typhoid\" OR \"gonorrhoea\" OR \"smallpox\" OR \"cholera\" OR \"cholera morbus\" OR \"typhus\" OR \"meningitis\" OR \"dysentery\" OR \"scarlatina\" OR \"scarlet fever\" OR \"pneumonia\" OR \"cynanche tonsillaris\" OR \"synocha\" OR \"opthalmia\" OR \"whooping cough\" OR \"HIV\" OR \"asbestosis\" OR \"mesothelioma\" OR \"beri beri\" OR \"multiple sclerosis\" OR \"diabetes\" OR \"leus venerea\" OR \"leprosy\" OR \"poliomyelitis\" OR \"encephalitis\" OR \"Trypanosomiasis\"");
 	request.setLimit(10);
-	List<Object> iaViews = restTemplate.postForObject(WS_URL + WS_PATH_SEARCH, request, List.class);
+	PaginatedList iaViews = restTemplate.postForObject(WS_URL + WS_PATH_SEARCH, request, PaginatedList.class);
 	assertThat(iaViews, is(notNullValue()));
-	assertThat(iaViews, is(not(empty())));
+	assertThat(iaViews.getResults(), is(notNullValue()));
+	assertThat(iaViews.size(), is(not(equalTo(0))));
     }
 
     @Test
@@ -133,10 +135,11 @@ public class TestTaxonomyController {
 	assertThat(trainingDocs, is(not(empty())));
 	assertThat(trainingDocs.size(), equalTo(20));
 
-	List<InformationAssetView> IAViewResults = iaViewRepository.performSearch(category.getQry(),
+	PaginatedList<InformationAssetView> IAViewResults = iaViewRepository.performSearch(category.getQry(),
 		(category.getSc()), 1000, 0);
 	assertThat(IAViewResults, is(notNullValue()));
-	assertThat(IAViewResults, is(not(empty())));
+	assertThat(IAViewResults.getResults(), is(notNullValue()));
+	assertThat(IAViewResults.getResults(), is(not(empty())));
 	assertThat(IAViewResults.size(), equalTo(20));
 
 	logger.debug("Publication succeeded");

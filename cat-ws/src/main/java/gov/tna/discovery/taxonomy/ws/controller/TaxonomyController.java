@@ -2,6 +2,7 @@ package gov.tna.discovery.taxonomy.ws.controller;
 
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
+import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 import gov.tna.discovery.taxonomy.ws.domain.PublishRequest;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +39,7 @@ public class TaxonomyController {
 
     @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ResponseBody
-    List<InformationAssetView> searchIAView(@RequestBody SearchIAViewRequest searchRequest) throws Exception {
+    PaginatedList<InformationAssetView> searchIAView(@RequestBody SearchIAViewRequest searchRequest) throws Exception {
 
 	logger.info("/search > {}", searchRequest.toString());
 
@@ -52,12 +54,12 @@ public class TaxonomyController {
 	    searchRequest.setOffset(0);
 	}
 
-	List<InformationAssetView> listOfIAViews = service.performSearch(searchRequest.getCategoryQuery(),
+	PaginatedList<InformationAssetView> listOfIAViews = service.performSearch(searchRequest.getCategoryQuery(),
 		searchRequest.getScore(), searchRequest.getLimit(), searchRequest.getOffset());
 
 	logger.info("/search < {} IAViews", listOfIAViews.size());
-	if (!listOfIAViews.isEmpty()) {
-	    logger.info("/search < first element: {}", listOfIAViews.get(0).toString());
+	if (!CollectionUtils.isEmpty(listOfIAViews.getResults())) {
+	    logger.info("/search < first element: {}", listOfIAViews.getResults().get(0).toString());
 	}
 
 	return listOfIAViews;

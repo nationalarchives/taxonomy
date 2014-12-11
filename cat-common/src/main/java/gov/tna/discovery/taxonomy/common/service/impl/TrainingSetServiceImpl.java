@@ -9,6 +9,7 @@ import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneHelperTools;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
+import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
@@ -73,7 +74,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
      */
     @Override
     public void updateTrainingSetForCategory(Category category, Float fixedLimitScore) {
-	List<InformationAssetView> IAViewResults;
+	PaginatedList<InformationAssetView> IAViewResults;
 	try {
 	    // FIXME JCT Iterate instead of taking only 100 elements
 	    IAViewResults = iaViewRepository.performSearch(category.getQry(),
@@ -82,7 +83,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 		    + IAViewResults.size() + " result(s)");
 	    if (IAViewResults.size() > 0) {
 
-		for (InformationAssetView iaView : IAViewResults) {
+		for (InformationAssetView iaView : IAViewResults.getResults()) {
 		    TrainingDocument trainingDocument = new TrainingDocument();
 		    trainingDocument.setCategory(category.getTtl());
 		    trainingDocument.setDescription(iaView.getDESCRIPTION());

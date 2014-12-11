@@ -7,6 +7,7 @@ import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
+import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 import gov.tna.discovery.taxonomy.ws.domain.TestCategoriseSingleRequest;
@@ -77,7 +78,8 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
      * (java.lang.String, java.lang.Float, java.lang.Integer, java.lang.Integer)
      */
     @Override
-    public List<InformationAssetView> performSearch(String categoryQuery, Double score, Integer limit, Integer offset) {
+    public PaginatedList<InformationAssetView> performSearch(String categoryQuery, Double score, Integer limit,
+	    Integer offset) {
 	return iaViewRepository.performSearch(categoryQuery, score, limit, offset);
     }
 

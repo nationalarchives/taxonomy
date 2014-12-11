@@ -1,7 +1,6 @@
 package gov.tna.discovery.taxonomy.common.repository.analyzer.lucene;
 
 import static org.junit.Assert.*;
-import gov.tna.discovery.taxonomy.common.config.AbstractTaxonomyTestCase;
 import gov.tna.discovery.taxonomy.common.config.LuceneConfigurationTest;
 
 import java.io.IOException;
@@ -22,12 +21,14 @@ import org.apache.lucene.util.Attribute;
 import org.apache.lucene.util.AttributeImpl;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.expression.spel.ast.Indexer;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Tests dedicated to the analysers<br/>
@@ -36,9 +37,10 @@ import org.springframework.expression.spel.ast.Indexer;
  * @author jcharlet
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = LuceneConfigurationTest.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class TaxonomyGeneralAnalyzerTest extends AbstractTaxonomyTestCase {
+public class TaxonomyGeneralAnalyzerTest {
 
     private static final String QUERY_WITHOUT_WILDCARD = "\"venereal disease\" OR \"tropical disease\" OR \"industrial disease\" OR \"infectious disease\" OR \"bubonic plague\" OR \"yellow fever\" OR \"malaria\" OR \"tuberculosis\" OR \"scurvy\" OR \"rickets\" OR \"measles\" OR \"influenza\" OR \"bronchitis\" OR \"pneumoconiosis\" OR \"emphysema\" OR \"byssinosis\" OR \"polio\" OR \"dengue fever\" OR \"rabies\" OR \"swine fever\" OR \"weils disease\" OR \"cancer\" OR \"asthma\" OR \"syphilis\" OR \"typhoid\" OR \"gonorrhoea\" OR \"smallpox\" OR \"cholera\" OR \"cholera morbus\" OR \"typhus\" OR \"meningitis\" OR \"dysentery\" OR \"scarlatina\" OR \"scarlet fever\" OR \"pneumonia\" OR \"cynanche tonsillaris\" OR \"synocha\" OR \"opthalmia\" OR \"whooping cough\" OR \"HIV\" OR \"asbestosis\" OR \"mesothelioma\" OR \"beri beri\" OR \"multiple sclerosis\" OR \"diabetes\" OR \"leus venerea\" OR \"leprosy\" OR \"poliomyelitis\" OR \"encephalitis\" OR \"Trypanosomiasis\"";
 

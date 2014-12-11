@@ -2,6 +2,7 @@ package gov.tna.discovery.taxonomy.common.repository.lucene;
 
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
@@ -65,13 +66,16 @@ public class IAViewRepository {
 
     // FIXME 0 return the number of results? > if minimumScore provided,
     // requires to go through the whole collection of topdocs
-    public List<InformationAssetView> performSearch(String queryString, Double mimimumScore, Integer limit,
+    public PaginatedList<InformationAssetView> performSearch(String queryString, Double mimimumScore, Integer limit,
 	    Integer offset) {
+	PaginatedList<InformationAssetView> paginatedListOfIAViews = new PaginatedList<InformationAssetView>(limit,
+		offset, mimimumScore);
 	List<InformationAssetView> docs = new ArrayList<InformationAssetView>();
 
 	IndexSearcher isearcher = null;
 	try {
 	    isearcher = iaviewSearcherManager.acquire();
+
 	    QueryParser parser = new MultiFieldQueryParser(Version.valueOf(luceneVersion), fieldsToAnalyse,
 		    this.categoryQueryAnalyser);
 	    parser.setAllowLeadingWildcard(true);
@@ -81,13 +85,21 @@ public class IAViewRepository {
 	    } catch (ParseException e) {
 		throw new TaxonomyException(TaxonomyErrorType.INVALID_CATEGORY_QUERY, e);
 	    }
-	    TopDocs topDocs;
-	    topDocs = isearcher.search(query, offset + limit);
+
+	    if (mimimumScore != null) {
+		Integer nbOfElementsAboveScore = getNbOfElementsAboveScore(mimimumScore, isearcher, query);
+		paginatedListOfIAViews.setNumberOfResults(nbOfElementsAboveScore);
+		logger.info(".performSearch: found {} hits for that minimum score {}",
+			paginatedListOfIAViews.getNumberOfResults(), paginatedListOfIAViews.getMinimumScore());
+	    }
+
+	    TopDocs topDocs = isearcher.search(query, offset + limit);
 	    logger.info(".performSearch: found {} total hits", topDocs.totalHits);
 
 	    int totalNumberOfDocumentsToParse = offset + limit;
 	    if (topDocs.totalHits < offset) {
-		return docs;
+		paginatedListOfIAViews.setResults(docs);
+		return paginatedListOfIAViews;
 	    } else if (topDocs.totalHits < totalNumberOfDocumentsToParse) {
 		totalNumberOfDocumentsToParse = topDocs.totalHits;
 	    }
@@ -110,7 +122,37 @@ public class IAViewRepository {
 	} finally {
 	    LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager, isearcher);
 	}
-	return docs;
+	paginatedListOfIAViews.setResults(docs);
+	return paginatedListOfIAViews;
+    }
+
+    // FIXME pay attention to memory leak
+    private Integer getNbOfElementsAboveScore(Double mimimumScore, IndexSearcher isearcher, Query query)
+	    throws IOException {
+	boolean minimumScoreNotReached = true;
+	Integer nbOfElementsAboveScore = 0;
+	while (minimumScoreNotReached) {
+	    TopDocs topDocs = isearcher.search(query, 1000 + nbOfElementsAboveScore);
+	    if (topDocs.totalHits == 0) {
+		break;
+	    }
+	    if (mimimumScore == 0) {
+		nbOfElementsAboveScore = topDocs.totalHits;
+		break;
+	    }
+	    for (ScoreDoc document : topDocs.scoreDocs) {
+		if (document.score < mimimumScore) {
+		    minimumScoreNotReached = false;
+		    break;
+		} else {
+		    nbOfElementsAboveScore++;
+		}
+	    }
+	    if (nbOfElementsAboveScore.equals(topDocs.totalHits)) {
+		break;
+	    }
+	}
+	return nbOfElementsAboveScore;
     }
 
     public TopDocs searchIAViewIndexByFieldAndPhrase(String field, String value, int numHits) {

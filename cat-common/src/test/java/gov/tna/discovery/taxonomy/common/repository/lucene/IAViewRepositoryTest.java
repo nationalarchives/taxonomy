@@ -2,23 +2,29 @@ package gov.tna.discovery.taxonomy.common.repository.lucene;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import gov.tna.discovery.taxonomy.common.config.AbstractTaxonomyTestCase;
 import gov.tna.discovery.taxonomy.common.config.LuceneConfigurationTest;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-
-import java.util.List;
+import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.expression.spel.ast.Indexer;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = LuceneConfigurationTest.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class IAViewRepositoryTest extends AbstractTaxonomyTestCase {
+public class IAViewRepositoryTest {
 
     private static final String QUERY_WITHOUT_WILDCARD = "\"venereal disease\" OR \"tropical disease\" OR \"industrial disease\" OR \"infectious disease\" OR \"bubonic plague\" OR \"yellow fever\" OR \"malaria\" OR \"tuberculosis\" OR \"scurvy\" OR \"rickets\" OR \"measles\" OR \"influenza\" OR \"bronchitis\" OR \"pneumoconiosis\" OR \"emphysema\" OR \"byssinosis\" OR \"polio\" OR \"dengue fever\" OR \"rabies\" OR \"swine fever\" OR \"weils disease\" OR \"cancer\" OR \"asthma\" OR \"syphilis\" OR \"typhoid\" OR \"gonorrhoea\" OR \"smallpox\" OR \"cholera\" OR \"cholera morbus\" OR \"typhus\" OR \"meningitis\" OR \"dysentery\" OR \"scarlatina\" OR \"scarlet fever\" OR \"pneumonia\" OR \"cynanche tonsillaris\" OR \"synocha\" OR \"opthalmia\" OR \"whooping cough\" OR \"HIV\" OR \"asbestosis\" OR \"mesothelioma\" OR \"beri beri\" OR \"multiple sclerosis\" OR \"diabetes\" OR \"leus venerea\" OR \"leprosy\" OR \"poliomyelitis\" OR \"encephalitis\" OR \"Trypanosomiasis\"";
+
+    public static final Logger logger = LoggerFactory.getLogger(Indexer.class);
 
     @Autowired
     IAViewRepository iaViewRepository;
@@ -27,17 +33,34 @@ public class IAViewRepositoryTest extends AbstractTaxonomyTestCase {
 
     @Test
     public void testPerformSearchWithLeadingWildcard() {
-	List<InformationAssetView> results = iaViewRepository.performSearch(QUERY_WITH_LEADING_WILDCARD, null, 100, 0);
+	PaginatedList<InformationAssetView> results = iaViewRepository.performSearch(QUERY_WITH_LEADING_WILDCARD, null,
+		100, 0);
 	assertThat(results, is(notNullValue()));
-	assertThat(results, is(not(empty())));
+	assertThat(results.getResults(), is(notNullValue()));
+	assertThat(results.getResults(), is(not(empty())));
 	logger.debug(".testPerformSearchWithLeadingWildcard: Found {} results", results.size());
     }
 
     @Test
     public void testPerformSearchWithQueryWithoutWildCard() {
-	List<InformationAssetView> results = iaViewRepository.performSearch(QUERY_WITHOUT_WILDCARD, null, 100, 0);
+	PaginatedList<InformationAssetView> results = iaViewRepository.performSearch(QUERY_WITHOUT_WILDCARD, null, 100,
+		0);
 	assertThat(results, is(notNullValue()));
-	assertThat(results, is(not(empty())));
-	logger.debug(".testPerformSearchWithSimpleQuery: Found {} results", results.size());
+	assertThat(results.getResults(), is(notNullValue()));
+	assertThat(results.getResults(), is(not(empty())));
+	logger.debug(".testPerformSearchWithQueryWithoutWildCard: Found {} results", results.size());
+    }
+
+    @Test
+    public void testPerformSearchWithQueryWithMinimumScore() {
+	PaginatedList<InformationAssetView> results = iaViewRepository.performSearch(QUERY_WITHOUT_WILDCARD, 0.005, 5,
+		0);
+	assertThat(results, is(notNullValue()));
+	assertThat(results.getResults(), is(notNullValue()));
+	assertThat(results.getResults(), is(not(empty())));
+	assertThat(results.size(), is(equalTo(5)));
+	assertThat(results.getNumberOfResults(), is(equalTo(9)));
+	logger.debug(".testPerformSearchWithQueryWithMinimumScore: Returned {} results and found {} results in total",
+		results.size(), results.getNumberOfResults());
     }
 }
