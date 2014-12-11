@@ -17,6 +17,7 @@ import org.apache.lucene.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
@@ -25,8 +26,14 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
 @Component
-// @ConditionalOnMissingBean(name = "fongo")
 public class MongoTestDataSet {
+
+    // FIXME cannot inject value for some reason
+    // @Value("${lucene.index.testDataSet.mongo.trainingset}")
+    private String trainingSetDatasetFilePath = "src/test/resources/dataset/mongo/trainingset.json";
+
+    // @Value("${lucene.index.test.testDataSet.mongo.categories}")
+    private String categoriesDatasetFilePath = "src/test/resources/dataset/mongo/taxonomy.json";
 
     private static final Logger logger = LoggerFactory.getLogger(LuceneTestDataSet.class);
 
@@ -60,8 +67,7 @@ public class MongoTestDataSet {
 
     public void initCategoryCollection() throws IOException {
 	logger.info(".initCategoryCollection");
-	URL url = Thread.currentThread().getContextClassLoader().getResource("dataset/mongo/taxonomy.json");
-	File file = new File(url.getPath());
+	File file = new File(categoriesDatasetFilePath);
 	FileInputStream fileIs = new FileInputStream(file);
 	InputStreamReader isReader = new InputStreamReader(fileIs);
 	BufferedReader bufReader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
@@ -77,8 +83,7 @@ public class MongoTestDataSet {
 
     public void initTrainingSetCollection() throws IOException {
 	logger.info(".initTrainingSetCollection");
-	URL url = Thread.currentThread().getContextClassLoader().getResource("dataset/mongo/trainingset.json");
-	File file = new File(url.getPath());
+	File file = new File(trainingSetDatasetFilePath);
 	FileInputStream fileIs = new FileInputStream(file);
 	InputStreamReader isReader = new InputStreamReader(fileIs);
 	BufferedReader bufReader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
