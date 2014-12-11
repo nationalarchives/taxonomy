@@ -34,7 +34,7 @@ lucene:
   minDocFreq: 1
 
  index:
-  iaviewCollectionPath: /home/jcharlet/_workspace/cat/cat-common/src/test/resources/dataset/lucene/iaviews
-  trainingSetCollectionPath: /home/jcharlet/_workspace/cat/cat-common/src/test/resources/dataset/lucene/trainingset
+  iaviewCollectionPath: ../cat-common/src/test/resources/dataset/lucene/iaviews
+  trainingSetCollectionPath: ../cat-common/src/test/resources/dataset/lucene/trainingset
   version: LUCENE_47
   maxTrainingDocsPerCategory: 100
