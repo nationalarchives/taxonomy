@@ -28,13 +28,13 @@ import org.springframework.context.annotation.Import;
 @ConfigurationProperties(prefix = "lucene.index")
 @EnableConfigurationProperties
 @ComponentScan(basePackages = "gov.tna.discovery.taxonomy.common.repository.lucene")
-@Import({PropertiesConfiguration.class,LuceneConfiguration.class})
+@Import({ PropertiesConfiguration.class, LuceneConfiguration.class })
 public class LuceneConfigurationTest {
 
     private String trainingSetCollectionPath;
 
     public @Bean Directory trainingSetDirectory() throws IOException {
-	File file = new File("/home/jcharlet/_workspace/cat/cat-common/src/test/resources/dataset/lucene/trainingset");
+	File file = new File(trainingSetCollectionPath);
 	Directory directory = new SimpleFSDirectory(file);
 	return new RAMDirectory(directory, new IOContext(Context.DEFAULT));
     }
