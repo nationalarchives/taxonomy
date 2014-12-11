@@ -37,11 +37,12 @@ import org.springframework.context.annotation.Import;
 @Import({ PropertiesConfiguration.class, LuceneConfiguration.class })
 public class LuceneConfigurationTest {
 
-    private String trainingSetCollectionPath;
-
-    public @Bean Directory trainingSetDirectory() throws IOException {
-	File file = new File("/home/jcharlet/_workspace/cat/cat-common/src/test/resources/dataset/lucene/trainingset");
-	Directory directory = new SimpleFSDirectory(file);
-	return new RAMDirectory(directory, new IOContext());
-    }
+    // private String trainingSetCollectionPath;
+    //
+    // public @Bean Directory trainingSetDirectory() throws IOException {
+    // File file = new
+    // File("/home/jcharlet/_workspace/cat/cat-common/src/test/resources/dataset/lucene/trainingset");
+    // Directory directory = new SimpleFSDirectory(file);
+    // return new RAMDirectory(directory, new IOContext());
+    // }
 }

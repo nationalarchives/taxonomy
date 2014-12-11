@@ -44,7 +44,7 @@ public class CategoryRepositoryTest {
     public void testCollectionContainsFullCollection() throws IOException {
 	mongoTestDataSet.initCategoryCollection();
 
-	assertThat(repository.count(), is(equalTo(136l)));
+	assertThat(repository.count(), is(equalTo(19l)));
     }
 
 }

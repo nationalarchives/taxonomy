@@ -89,10 +89,6 @@ public class CategoriserImpl implements Categoriser {
      */
     @Override
     public List<CategorisationResult> categoriseIAViewSolrDocument(String catdocref) {
-	// TODO 4 CATDOCREF in schema.xml should be stored as string?
-	// and not text_gen: do not need to be tokenized. makes search by
-	// catdocref more complicated that it needs (look for a bunch of terms,
-	// what if they are provided in the wrong order? have to check it also
 	TopDocs results = iaViewRepository.searchIAViewIndexByFieldAndPhrase("CATDOCREF", catdocref, 1);
 
 	Document doc;
