@@ -132,9 +132,10 @@ public class IAViewRepository {
     }
 
     public void checkCategoryQueryValidity(String qry) {
-	QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), "CATEGORY", this.categoryQueryAnalyser);
+	QueryParser parser = new QueryParser(Version.valueOf(luceneVersion), "CATEGORY", this.categoryQueryAnalyser);
+	parser.setAllowLeadingWildcard(true);
 	try {
-	    qp.parse(qry);
+	    parser.parse(qry);
 	} catch (ParseException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.INVALID_CATEGORY_QUERY, e);
 	}
