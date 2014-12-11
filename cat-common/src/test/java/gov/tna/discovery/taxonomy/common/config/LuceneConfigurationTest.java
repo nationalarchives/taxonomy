@@ -10,6 +10,7 @@ import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IOContext.Context;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.store.SimpleFSDirectory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -25,12 +26,12 @@ import org.springframework.context.annotation.Import;
  *
  */
 @Configuration
-@ConfigurationProperties(prefix = "lucene.index")
 @EnableConfigurationProperties
 @ComponentScan(basePackages = "gov.tna.discovery.taxonomy.common.repository.lucene")
 @Import({ PropertiesConfiguration.class, LuceneConfiguration.class })
 public class LuceneConfigurationTest {
 
+    @Value("${lucene.index.trainingSetCollectionPath}")
     private String trainingSetCollectionPath;
 
     public @Bean Directory trainingSetDirectory() throws IOException {
