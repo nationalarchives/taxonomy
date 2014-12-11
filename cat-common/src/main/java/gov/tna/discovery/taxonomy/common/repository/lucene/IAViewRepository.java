@@ -127,31 +127,26 @@ public class IAViewRepository {
     }
 
     // FIXME pay attention to memory leak
-    private Integer getNbOfElementsAboveScore(Double mimimumScore, IndexSearcher isearcher, Query query)
+    public Integer getNbOfElementsAboveScore(Double mimimumScore, IndexSearcher isearcher, Query query)
 	    throws IOException {
-	boolean minimumScoreNotReached = true;
-	Integer nbOfElementsAboveScore = 0;
-	while (minimumScoreNotReached) {
-	    TopDocs topDocs = isearcher.search(query, 1000 + nbOfElementsAboveScore);
-	    if (topDocs.totalHits == 0) {
-		break;
-	    }
-	    if (mimimumScore == 0) {
-		nbOfElementsAboveScore = topDocs.totalHits;
-		break;
-	    }
-	    for (ScoreDoc document : topDocs.scoreDocs) {
-		if (document.score < mimimumScore) {
-		    minimumScoreNotReached = false;
-		    break;
-		} else {
-		    nbOfElementsAboveScore++;
-		}
-	    }
-	    if (nbOfElementsAboveScore.equals(topDocs.totalHits)) {
-		break;
-	    }
+
+	TopDocs topDocs = isearcher.search(query, 1);
+	Integer totalHits = topDocs.totalHits;
+
+	if (mimimumScore == 0) {
+	    return totalHits;
 	}
+
+	topDocs = isearcher.search(query, totalHits);
+	Integer nbOfElementsAboveScore = 0;
+	for (ScoreDoc searchResult : topDocs.scoreDocs) {
+	    if (searchResult.score > mimimumScore) {
+		nbOfElementsAboveScore++;
+		continue;
+	    }
+	    break;
+	}
+
 	return nbOfElementsAboveScore;
     }
 
