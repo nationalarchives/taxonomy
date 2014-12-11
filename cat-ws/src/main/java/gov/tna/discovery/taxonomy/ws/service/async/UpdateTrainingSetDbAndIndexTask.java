@@ -47,7 +47,7 @@ public class UpdateTrainingSetDbAndIndexTask implements Runnable {
 
 	try {
 	    trainingSetService.deleteMongoTrainingDocumentByCategory(category.getTtl());
-	    trainingSetService.updateTrainingSetForCategory(category, null);
+	    trainingSetService.updateTrainingSetForCategory(category, null, null);
 	    trainingSetService.deleteAndUpdateTraingSetIndexForCategory(category);
 	} finally {
 	    releasePublicationOnCategory(category);

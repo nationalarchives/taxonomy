@@ -1,11 +1,9 @@
 package gov.tna.discovery.taxonomy.common.service;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 
 import java.io.IOException;
 
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.queryparser.classic.ParseException;
 
 public interface TrainingSetService {
@@ -19,16 +17,18 @@ public interface TrainingSetService {
      * 
      * @param category
      * @param fixedLimitScore
+     * @param fixedLimitSize
      */
-    public void updateTrainingSetForCategory(Category category, Float fixedLimitScore);
+    public void updateTrainingSetForCategory(Category category, Float fixedLimitScore, Integer fixedLimitSize);
 
     /**
      * 
      * @param fixedLimitScore
      * @throws IOException
      * @throws ParseException
+     * @param fixedLimitSize
      */
-    public void createTrainingSet(Float fixedLimitScore) throws IOException, ParseException;
+    public void createTrainingSet(Float fixedLimitScore, Integer fixedLimitSize) throws IOException, ParseException;
 
     /**
      * index training Set mongo db for a category<br/>

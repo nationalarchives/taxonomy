@@ -43,25 +43,30 @@ public class TrainingSetServiceTest {
     @Autowired
     MongoTestDataSet mongoTestDataSet;
 
-    @Before
-    public void initDataSet() throws IOException {
+    @Test
+    public void testCreateTrainingSetWithLimitScore() throws IOException, ParseException {
 	mongoTestDataSet.initCategoryCollection();
-    }
 
-    @After
-    public void emptyDataSet() throws IOException {
+	trainingSetService.createTrainingSet(0.1f, null);
+	assertEquals(132l, trainingDocumentRepository.count());
+
 	mongoTestDataSet.dropDatabase();
     }
 
     @Test
-    public void testCreateTrainingSetWithLimitScore() throws IOException, ParseException {
-	trainingSetService.createTrainingSet(0.1f);
-	assertEquals(132l, trainingDocumentRepository.count());
+    public void testCreateTrainingSetWithLimitSize() throws IOException, ParseException {
+	mongoTestDataSet.initCategoryCollection();
+
+	trainingSetService.createTrainingSet(null, 1);
+	assertEquals(120l, trainingDocumentRepository.count());
+
+	mongoTestDataSet.dropDatabase();
     }
 
     // FIXME this test should not vary
     @Test
     public void testIndexTrainingSet() throws IOException, InterruptedException, ParseException {
+	mongoTestDataSet.initCategoryCollection();
 	mongoTestDataSet.initTrainingSetCollection();
 
 	trainingSetService.indexTrainingSet();
@@ -69,5 +74,7 @@ public class TrainingSetServiceTest {
 	Thread.sleep(1000);
 	assertThat(trainingSetIndexReader.maxDoc(), either(equalTo(220)).or(equalTo(200)));
 	trainingSetReaderManager.release(trainingSetIndexReader);
+
+	mongoTestDataSet.dropDatabase();
     }
 }

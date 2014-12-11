@@ -61,6 +61,9 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     @Value("${lucene.index.version}")
     private String luceneVersion;
 
+    @Value("${lucene.index.maxTrainingDocsPerCategory}")
+    private Integer maxTrainingDocsPerCategory;
+
     /*
      * (non-Javadoc)
      * 
@@ -70,12 +73,21 @@ public class TrainingSetServiceImpl implements TrainingSetService {
      * java.lang.Float)
      */
     @Override
-    public void updateTrainingSetForCategory(Category category, Float fixedLimitScore) {
+    public void updateTrainingSetForCategory(Category category, Float fixedLimitScore, Integer fixedLimitSize) {
+
+	if (fixedLimitScore != null && fixedLimitSize != null) {
+	    throw new TaxonomyException(TaxonomyErrorType.INVALID_PARAMETER);
+	}
+
 	PaginatedList<InformationAssetView> IAViewResults;
 	try {
 	    // FIXME JCT Iterate instead of taking only 100 elements
-	    IAViewResults = iaViewRepository.performSearch(category.getQry(),
-		    (fixedLimitScore != null ? fixedLimitScore : category.getSc()), 1000, 0);
+	    if (fixedLimitSize != null) {
+		IAViewResults = iaViewRepository.performSearch(category.getQry(), null, fixedLimitSize, 0);
+	    } else {
+		IAViewResults = iaViewRepository.performSearch(category.getQry(),
+			(fixedLimitScore != null ? fixedLimitScore : category.getSc()), maxTrainingDocsPerCategory, 0);
+	    }
 	    logger.info(".updateTrainingSetForCategory: Category=" + category.getTtl() + ", found "
 		    + IAViewResults.size() + " result(s). Updating Mongo DB");
 	    if (IAViewResults.size() > 0) {
@@ -107,7 +119,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	    logger.error(".updateTrainingSetForCategory< Error message: " + e.getMessage());
 	    throw e;
 	}
-	logger.info(".updateTrainingSetForCategory: Process completed");
+	logger.info(".updateTrainingSetForCategory: Process completed for category {}", category.getTtl());
     }
 
     /*
@@ -117,7 +129,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
      * createTrainingSet (java.lang.Float)
      */
     @Override
-    public void createTrainingSet(Float fixedLimitScore) throws IOException, ParseException {
+    public void createTrainingSet(Float fixedLimitScore, Integer fixedLimitSize) throws IOException, ParseException {
 	logger.debug(".createTrainingSet : START");
 
 	Iterator<Category> categoryIterator = categoryRepository.findAll().iterator();
@@ -128,7 +140,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	while (categoryIterator.hasNext()) {
 	    Category category = categoryIterator.next();
 	    try {
-		updateTrainingSetForCategory(category, fixedLimitScore);
+		updateTrainingSetForCategory(category, fixedLimitScore, fixedLimitSize);
 	    } catch (TaxonomyException e) {
 		logger.error(".createTrainingSet: error while parsing Category '{}': {}", category.getTtl(),
 			e.toString());

@@ -129,11 +129,12 @@ public class IAViewRepository {
     // FIXME pay attention to memory leak
     public Integer getNbOfElementsAboveScore(Double mimimumScore, IndexSearcher isearcher, Query query)
 	    throws IOException {
+<<<<<<< Updated upstream
 
 	TopDocs topDocs = isearcher.search(query, 1);
 	Integer totalHits = topDocs.totalHits;
 
-	if (mimimumScore == 0 || totalHits == 0) {
+	if (mimimumScore == 0) {
 	    return totalHits;
 	}
 
@@ -143,9 +144,31 @@ public class IAViewRepository {
 	    if (searchResult.score > mimimumScore) {
 		nbOfElementsAboveScore++;
 		continue;
+=======
+	Integer nbOfElementsAboveScore = 0;
+	luceneLoop: while (nbOfElementsAboveScore < 100000) {
+	    TopDocs topDocs = isearcher.search(query, 1000 + nbOfElementsAboveScore);
+	    if (topDocs.totalHits == 0) {
+		break luceneLoop;
+	    }
+	    if (mimimumScore == 0) {
+		nbOfElementsAboveScore = topDocs.totalHits;
+		break luceneLoop;
+	    }
+	    for (ScoreDoc document : topDocs.scoreDocs) {
+		if (document.score < mimimumScore) {
+		    break luceneLoop;
+		} else {
+		    nbOfElementsAboveScore++;
+		}
+	    }
+	    if (nbOfElementsAboveScore.equals(topDocs.totalHits)) {
+		break luceneLoop;
+>>>>>>> Stashed changes
 	    }
 	    break;
 	}
+
 	return nbOfElementsAboveScore;
     }
 
