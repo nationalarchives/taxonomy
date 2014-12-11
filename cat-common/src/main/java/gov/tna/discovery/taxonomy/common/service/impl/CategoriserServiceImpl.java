@@ -125,9 +125,8 @@ public class CategoriserServiceImpl implements CategoriserService {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * gov.tna.discovery.taxonomy.common.service.impl.Categoriser#categoriseIAViewSolrIndex
-     * ()
+     * @see gov.tna.discovery.taxonomy.common.service.impl.Categoriser#
+     * categoriseIAViewSolrIndex ()
      */
     @Override
     public void testCategoriseIAViewSolrIndex() throws IOException {
@@ -169,8 +168,8 @@ public class CategoriserServiceImpl implements CategoriserService {
      * (non-Javadoc)
      * 
      * @see
-     * gov.tna.discovery.taxonomy.common.service.impl.Categoriser#runMlt(java.io.Reader
-     * )
+     * gov.tna.discovery.taxonomy.common.service.impl.Categoriser#runMlt(java
+     * .io.Reader )
      */
     // TODO 1 check and update fields that are being retrieved to create
     // training set, used for MLT (run MLT on title, context desc and desc at
@@ -181,6 +180,11 @@ public class CategoriserServiceImpl implements CategoriserService {
 	Map<String, CategorisationResult> result = null;
 	IndexSearcher searcher = null;
 	try {
+	    trainingSetSearcherManager.maybeRefresh();
+	    // Boolean wasRefreshed = trainingSetSearcherManager.maybeRefresh();
+	    // if (wasRefreshed) {
+	    // logger.debug(".runMlt: training set searcher had to be refreshed");
+	    // }
 	    searcher = trainingSetSearcherManager.acquire();
 
 	    MoreLikeThis moreLikeThis = new MoreLikeThis(this.trainingSetIndexReader);
@@ -274,9 +278,8 @@ public class CategoriserServiceImpl implements CategoriserService {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * gov.tna.discovery.taxonomy.common.service.impl.Categoriser#testCategoriseSingle
-     * (gov
+     * @see gov.tna.discovery.taxonomy.common.service.impl.Categoriser#
+     * testCategoriseSingle (gov
      * .tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView)
      */
     @Override

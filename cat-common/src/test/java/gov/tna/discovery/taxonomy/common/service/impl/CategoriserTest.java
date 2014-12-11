@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import gov.tna.discovery.taxonomy.common.config.ServiceConfigurationTest;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
@@ -11,15 +12,18 @@ import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.store.Directory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -38,13 +42,33 @@ public class CategoriserTest {
     @Autowired
     MongoTestDataSet mongoTestDataSet;
 
-    @Before
+    private static final String TEST_DOCREF = "TEST_DOCREF";
+
+    private static final String TEST_CATEGORY = "TEST_CATEGORY";
+    private static final String TEST_DESC = "TEST DESC";
+
+    @Autowired
+    private SearcherManager trainingSetSearcherManager;
+
+    @Autowired
+    private Analyzer trainingSetAnalyser;
+
+    @Autowired
+    private Directory trainingSetDirectory;
+
+    @Value("${lucene.index.version}")
+    private String luceneVersion;
+
+    @Autowired
+    private LuceneTestDataSet luceneTestDataSet;
+
+    // @Before
     public void initDataSet() throws IOException {
 	mongoTestDataSet.initCategoryCollection();
 	mongoTestDataSet.initTrainingSetCollection();
     }
 
-    @After
+    // @After
     public void emptyDataSet() throws IOException {
 	mongoTestDataSet.dropDatabase();
     }
@@ -77,7 +101,6 @@ public class CategoriserTest {
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
 	assertThat(categorisationResults.get(0).getName(), is(equalTo("Migration")));
-
     }
 
     @Test
@@ -90,6 +113,42 @@ public class CategoriserTest {
 	List<CategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
+    }
+
+    // FIXME to fix
+    @Test
+    @Ignore
+    public void testCategorisationTakesIntoAccountLatestAddsToIndex() throws IOException {
+	try {
+
+	    checkCategorisationOnTestDocumentDoesNotFindTestCategory();
+
+	    luceneTestDataSet.updateTrainingSetForTestCategory();
+	    trainingSetSearcherManager.maybeRefreshBlocking();
+
+	    checkCategorisationOnTestDocumentFindsTestCategory();
+	} finally {
+	    luceneTestDataSet.deleteTrainingSetForTestCategory();
+	}
+    }
+
+    private void checkCategorisationOnTestDocumentDoesNotFindTestCategory() {
+	InformationAssetView iaView = new InformationAssetView();
+	iaView.setDESCRIPTION(LuceneTestDataSet.TEST_DESC);
+	iaView.setDOCREFERENCE(LuceneTestDataSet.TEST_DOCREF);
+	List<CategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
+	assertThat(categorisationResults, is(notNullValue()));
+	assertThat(categorisationResults, is(empty()));
+    }
+
+    private void checkCategorisationOnTestDocumentFindsTestCategory() {
+	InformationAssetView iaView = new InformationAssetView();
+	iaView.setDESCRIPTION(LuceneTestDataSet.TEST_DESC);
+	iaView.setDOCREFERENCE(LuceneTestDataSet.TEST_DOCREF);
+	List<CategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
+	assertThat(categorisationResults, is(notNullValue()));
+	assertThat(categorisationResults, is(not(empty())));
+	assertThat(categorisationResults.get(0).getName(), is(equalTo(LuceneTestDataSet.TEST_CATEGORY)));
     }
 
 }

@@ -23,15 +23,6 @@ public interface TrainingSetService {
     public void updateTrainingSetForCategory(Category category, Float fixedLimitScore);
 
     /**
-     * Create a lucene document from an trainingDocument object and add it to
-     * the TrainingIndex index
-     * 
-     * @param trainingDocument
-     * @throws IOException
-     */
-    public void indexTrainingSetDocument(TrainingDocument trainingDocument, IndexWriter writer) throws IOException;
-
-    /**
      * 
      * @param fixedLimitScore
      * @throws IOException

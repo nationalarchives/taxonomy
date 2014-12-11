@@ -2,6 +2,7 @@ package gov.tna.discovery.taxonomy.common.repository.mongo;
 
 import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
 
@@ -13,6 +14,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 import org.apache.lucene.util.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
@@ -25,6 +28,8 @@ import com.mongodb.util.JSON;
 // @ConditionalOnMissingBean(name = "fongo")
 public class MongoTestDataSet {
 
+    private static final Logger logger = LoggerFactory.getLogger(LuceneTestDataSet.class);
+
     @Autowired
     CategoryRepository categoryRepository;
 
@@ -35,6 +40,7 @@ public class MongoTestDataSet {
     private MongoTemplate mongoTemplate;
 
     public void initCategoryCollectionWith1element() {
+	logger.info(".initCategoryCollectionWith1element");
 	Category category = new Category();
 	category.setCiaid("C10032");
 	category.setTtl("Disease");
@@ -45,6 +51,7 @@ public class MongoTestDataSet {
     }
 
     public void createTrainingSetDocument() {
+	logger.info(".createTrainingSetDocument");
 	TrainingDocument trainingDocument = new TrainingDocument();
 	trainingDocument.setDescription("Cloth planning and the clothes ration 1944-1947.");
 	trainingDocument.setTitle("Rationing");
@@ -52,6 +59,7 @@ public class MongoTestDataSet {
     }
 
     public void initCategoryCollection() throws IOException {
+	logger.info(".initCategoryCollection");
 	URL url = Thread.currentThread().getContextClassLoader().getResource("dataset/taxonomy.json");
 	File file = new File(url.getPath());
 	FileInputStream fileIs = new FileInputStream(file);
@@ -68,6 +76,7 @@ public class MongoTestDataSet {
     }
 
     public void initTrainingSetCollection() throws IOException {
+	logger.info(".initTrainingSetCollection");
 	URL url = Thread.currentThread().getContextClassLoader().getResource("dataset/trainingset.json");
 	File file = new File(url.getPath());
 	FileInputStream fileIs = new FileInputStream(file);
@@ -84,6 +93,7 @@ public class MongoTestDataSet {
     }
 
     public void dropDatabase() {
+	logger.info(".dropDatabase");
 	mongoTemplate.dropCollection(Category.class);
 	mongoTemplate.dropCollection(TrainingDocument.class);
     }

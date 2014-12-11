@@ -6,6 +6,7 @@ import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAss
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneHelperTools;
+import gov.tna.discovery.taxonomy.common.repository.lucene.TrainingSetRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
@@ -14,15 +15,10 @@ import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
@@ -34,8 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 //TODO create Interface for service layer
 @Service
@@ -51,6 +45,9 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 
     @Autowired
     private IAViewRepository iaViewRepository;
+
+    @Autowired
+    private TrainingSetRepository trainingSetRepository;
 
     @Autowired
     private Analyzer trainingSetAnalyser;
@@ -79,8 +76,8 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	    // FIXME JCT Iterate instead of taking only 100 elements
 	    IAViewResults = iaViewRepository.performSearch(category.getQry(),
 		    (fixedLimitScore != null ? fixedLimitScore : category.getSc()), 1000, 0);
-	    logger.debug(".updateTrainingSetForCategory: Category=" + category.getTtl() + ", found "
-		    + IAViewResults.size() + " result(s)");
+	    logger.info(".updateTrainingSetForCategory: Category=" + category.getTtl() + ", found "
+		    + IAViewResults.size() + " result(s). Updating Mongo DB");
 	    if (IAViewResults.size() > 0) {
 
 		for (InformationAssetView iaView : IAViewResults.getResults()) {
@@ -110,79 +107,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	    logger.error(".updateTrainingSetForCategory< Error message: " + e.getMessage());
 	    throw e;
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see gov.tna.discovery.taxonomy.common.service.impl.TrainingSetService#
-     * indexTrainingSetDocument
-     * (gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument,
-     * org.apache.lucene.index.IndexWriter)
-     */
-    @Override
-    public void indexTrainingSetDocument(TrainingDocument trainingDocument, IndexWriter writer) throws IOException {
-	// TODO 4 handle exceptions, do not stop the process unless several
-	// errors occur
-	// TODO 1 bulk insert, this is far too slow to do it unitary!
-	// FIXME why to remove punctuation before indexing? analyser duty
-
-	try {
-	    if (!StringUtils.isEmpty(trainingDocument.getDescription())) {
-		trainingDocument.setDescription(trainingDocument.getDescription().replaceAll("\\<.*?>", ""));
-	    }
-	    if (!StringUtils.isEmpty(trainingDocument.getContextDescription())) {
-		trainingDocument.setContextDescription(trainingDocument.getContextDescription().replaceAll("\\<.*?>",
-			""));
-	    }
-	    if (!StringUtils.isEmpty(trainingDocument.getTitle())) {
-		trainingDocument.setTitle(trainingDocument.getTitle().replaceAll("\\<.*?>", ""));
-	    }
-	    Document doc = new Document();
-
-	    doc.add(new StringField(InformationAssetViewFields.DOCREFERENCE.toString(), trainingDocument
-		    .getDocReference(), Field.Store.YES));
-
-	    doc.add(new TextField(InformationAssetViewFields.DESCRIPTION.toString(), trainingDocument.getDescription(),
-		    Field.Store.YES));
-
-	    if (!StringUtils.isEmpty(trainingDocument.getCatDocRef())) {
-		doc.add(new StringField(InformationAssetViewFields.CATDOCREF.toString(), trainingDocument
-			.getCatDocRef(), Field.Store.YES));
-	    }
-	    if (!StringUtils.isEmpty(trainingDocument.getCategory())) {
-		doc.add(new StringField(InformationAssetViewFields.CATEGORY.toString(), trainingDocument.getCategory(),
-			Field.Store.YES));
-	    }
-	    if (!StringUtils.isEmpty(trainingDocument.getTitle())) {
-		doc.add(new TextField(InformationAssetViewFields.TITLE.toString(), trainingDocument.getTitle(),
-			Field.Store.YES));
-	    }
-	    if (!StringUtils.isEmpty(trainingDocument.getTitle())) {
-		doc.add(new TextField(InformationAssetViewFields.CONTEXTDESCRIPTION.toString(), trainingDocument
-			.getContextDescription(), Field.Store.YES));
-	    }
-	    if (trainingDocument.getCorpBodys() != null) {
-		doc.add(new TextField(InformationAssetViewFields.CORPBODYS.toString(), Arrays.toString(trainingDocument
-			.getCorpBodys()), Field.Store.YES));
-	    }
-	    if (trainingDocument.getPersonFullName() != null) {
-		doc.add(new TextField(InformationAssetViewFields.PERSON_FULLNAME.toString(), Arrays
-			.toString(trainingDocument.getPersonFullName()), Field.Store.YES));
-	    }
-	    if (trainingDocument.getPlaceName() != null) {
-		doc.add(new TextField(InformationAssetViewFields.PLACE_NAME.toString(), Arrays
-			.toString(trainingDocument.getPlaceName()), Field.Store.YES));
-	    }
-	    if (trainingDocument.getSubjects() != null) {
-		doc.add(new TextField(InformationAssetViewFields.SUBJECTS.toString(), Arrays.toString(trainingDocument
-			.getSubjects()), Field.Store.YES));
-	    }
-	    writer.addDocument(doc);
-	} catch (Exception e) {
-	    logger.error(".indexTrainingSetDocument: an error occured on document: '{}', message: {}",
-		    trainingDocument.getDocReference(), e.getMessage());
-	}
+	logger.info(".updateTrainingSetForCategory: Process completed");
     }
 
     /*
@@ -225,24 +150,22 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     public void deleteAndUpdateTraingSetIndexForCategory(Category category) {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(),
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
 		    trainingSetAnalyser));
-	    writer.deleteDocuments(new Term(InformationAssetViewFields.CATEGORY.toString(), category.getTtl()));
+
+	    trainingSetRepository.deleteTrainingDocumentsForCategory(writer, category);
 
 	    List<TrainingDocument> trainingDocuments = trainingDocumentRepository.findByCategory(category.getTtl());
 	    logger.info(".deleteAndUpdateTraingSetIndexForCategory: indexing {} elements", trainingDocuments.size());
-	    for (TrainingDocument trainingDocument : trainingDocuments) {
-		indexTrainingSetDocument(trainingDocument, writer);
-	    }
+
+	    trainingSetRepository.indexTrainingDocuments(writer, trainingDocuments);
 	} catch (IOException e) {
+	    logger.error(".deleteAndUpdateTraingSetIndexForCategory: an exception occured {}", e.getMessage());
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	} finally {
 	    LuceneHelperTools.closeIndexWriterQuietly(writer);
 	}
-    }
-
-    private Version getLuceneVersion() {
-	return Version.valueOf(luceneVersion);
+	logger.info(".deleteAndUpdateTraingSetIndexForCategory: operation completed");
     }
 
     /*
@@ -255,7 +178,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     public void indexTrainingSet() {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(getLuceneVersion(),
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
 		    trainingSetAnalyser));
 
 	    writer.deleteAll();
@@ -264,9 +187,10 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 
 	    while (trainingDocumentIterator.hasNext()) {
 		TrainingDocument trainingDocument = trainingDocumentIterator.next();
-		indexTrainingSetDocument(trainingDocument, writer);
+		trainingSetRepository.indexTrainingSetDocument(trainingDocument, writer);
 
 	    }
+	    writer.commit();
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	} finally {

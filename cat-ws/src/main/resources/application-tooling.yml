@@ -30,7 +30,7 @@ lucene:
  mlt:
   mimimumScoreForMlt: 0.001
   mimimumGlobalScoreForACategory: 0
-  maximumSimilarElements: 500
+  maximumSimilarElements: 3000
   minTermFreq: 1
   minDocFreq: 1
 
