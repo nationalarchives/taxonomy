@@ -57,10 +57,6 @@ public class TrainingSetServiceTest {
 	mongoTestDataSet.dropDatabase();
     }
 
-    // FIXME this test should not vary
-    // FIXME LUCENE IN MEMORY the trainingset lucene files should be initiated
-    // from scratch (and a few documents should be inserted into it)
-    // because here, the writer fails to add documents
     @Test
     public void testIndexTrainingSet() throws IOException, InterruptedException, ParseException {
 	mongoTestDataSet.initCategoryCollection();

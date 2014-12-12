@@ -67,8 +67,6 @@ public class CategoriserTest {
     }
 
     @Test
-    // FIXME need to add data set for that method. it changes after every
-    // training set index update
     public void testCategoriseIAViewSolrDocument() throws IOException, ParseException {
 	List<CategorisationResult> categorisationResults = categoriser.categoriseIAViewSolrDocument("CO 273/630/9");
 	assertThat(categorisationResults, is(notNullValue()));

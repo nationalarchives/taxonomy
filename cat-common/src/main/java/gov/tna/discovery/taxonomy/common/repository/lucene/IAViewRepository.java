@@ -64,8 +64,6 @@ public class IAViewRepository {
 	return hitDoc;
     }
 
-    // FIXME 0 return the number of results? > if minimumScore provided,
-    // requires to go through the whole collection of topdocs
     public PaginatedList<InformationAssetView> performSearch(String queryString, Double mimimumScore, Integer limit,
 	    Integer offset) {
 	PaginatedList<InformationAssetView> paginatedListOfIAViews = new PaginatedList<InformationAssetView>(limit,

@@ -41,7 +41,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
 	@Override
 	public void afterCompletion(WebRequest request, Exception ex) throws Exception {
-	    // TODO Auto-generated method stub
 
 	}
 

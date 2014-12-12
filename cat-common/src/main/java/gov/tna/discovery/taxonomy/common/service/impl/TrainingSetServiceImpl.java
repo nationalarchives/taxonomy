@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-//TODO create Interface for service layer
 @Service
 public class TrainingSetServiceImpl implements TrainingSetService {
 
@@ -79,7 +78,8 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 
 	PaginatedList<InformationAssetView> IAViewResults;
 	try {
-	    // FIXME JCT Iterate instead of taking only 100 elements
+	    // FIXME JCT Iterate instead of taking only
+	    // maxTrainingDocsPerCategory (could be 5000) elements
 	    if (fixedLimitSize != null) {
 		IAViewResults = iaViewRepository.performSearch(category.getQry(), null, fixedLimitSize, 0);
 	    } else {

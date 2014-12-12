@@ -40,9 +40,9 @@ import org.springframework.web.client.RestTemplate;
 @SpringApplicationConfiguration(classes = WSApplicationTest.class)
 @WebAppConfiguration
 @IntegrationTest({ "server.port=8085", "management.port=8085" })
-public class TestTaxonomyController {
+public class TaxonomyControllerTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestTaxonomyController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TaxonomyControllerTest.class);
 
     private static final String WS_URL = "http://localhost:8085/";
 
