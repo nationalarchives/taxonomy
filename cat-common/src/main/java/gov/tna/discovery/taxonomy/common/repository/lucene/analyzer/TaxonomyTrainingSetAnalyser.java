@@ -1,5 +1,7 @@
 package gov.tna.discovery.taxonomy.common.repository.lucene.analyzer;
 
+import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneHelperTools;
+
 import java.io.Reader;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -40,6 +42,8 @@ public final class TaxonomyTrainingSetAnalyser extends Analyzer {
 
     private Integer maxShingleSize;
 
+    private TokenStream result;
+
     /**
      * Creates a new tokenizer
      * 
@@ -59,7 +63,7 @@ public final class TaxonomyTrainingSetAnalyser extends Analyzer {
     protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
 	Tokenizer source = new WhitespaceTokenizer(this.matchVersion, reader);
 
-	TokenStream result = new LowerCaseFilter(this.matchVersion, source);
+	result = new LowerCaseFilter(this.matchVersion, source);
 
 	if (stopFilterFactory != null) {
 	    result = this.stopFilterFactory.create(result);
@@ -80,6 +84,12 @@ public final class TaxonomyTrainingSetAnalyser extends Analyzer {
 	}
 
 	return new TokenStreamComponents(source, result);
+    }
+
+    @Override
+    public void close() {
+	LuceneHelperTools.closeTokenStreamQuietly(result);
+	super.close();
     }
 
 }

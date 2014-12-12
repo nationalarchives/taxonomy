@@ -5,6 +5,7 @@ import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAss
 
 import java.io.IOException;
 
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
@@ -46,6 +47,22 @@ public class LuceneHelperTools {
 	    }
 	} catch (IOException ioe) {
 	    logger.error("closeWriterQuietly failed", ioe);
+	}
+    }
+
+    /**
+     * Close a tokenStream without throwing any error<br/>
+     * log if any error occurs
+     * 
+     * @param tokenStream
+     */
+    public static void closeTokenStreamQuietly(TokenStream tokenStream) {
+	try {
+	    if (tokenStream != null) {
+		tokenStream.close();
+	    }
+	} catch (IOException e) {
+	    logger.error("closeWriterQuietly failed", e);
 	}
     }
 

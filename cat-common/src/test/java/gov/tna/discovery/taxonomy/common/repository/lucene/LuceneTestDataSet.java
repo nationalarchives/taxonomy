@@ -1,28 +1,11 @@
 package gov.tna.discovery.taxonomy.common.repository.lucene;
 
 import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
-import gov.tna.discovery.taxonomy.common.service.impl.CategoriserServiceImpl;
-
-import java.io.IOException;
 import java.util.Arrays;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.util.Version;
-import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

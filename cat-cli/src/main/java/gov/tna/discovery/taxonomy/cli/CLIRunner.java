@@ -1,6 +1,5 @@
 package gov.tna.discovery.taxonomy.cli;
 
-import gov.tna.discovery.taxonomy.CLIApplication;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;

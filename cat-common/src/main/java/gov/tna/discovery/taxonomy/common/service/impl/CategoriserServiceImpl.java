@@ -20,8 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
@@ -35,7 +33,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,48 +118,6 @@ public class CategoriserServiceImpl implements CategoriserService {
     /*
      * (non-Javadoc)
      * 
-     * @see gov.tna.discovery.taxonomy.common.service.impl.Categoriser#
-     * categoriseIAViewSolrIndex ()
-     */
-    @Override
-    public void testCategoriseIAViewSolrIndex() throws IOException {
-
-	// TODO 1 insert results in a new database/index
-
-	for (int i = 0; i < this.iaViewIndexReader.maxDoc(); i++) {
-	    // TODO 2 Add concurrency: categorize several documents at the same
-	    // time
-	    if (this.iaViewIndexReader.hasDeletions()) {
-		logger.error(".testCategoriseIAViewSolrIndex: the reader provides deleted elements though it should not");
-	    }
-
-	    Document doc = this.iaViewIndexReader.document(i);
-
-	    List<CategorisationResult> result = runMlt(doc);
-
-	    logger.debug("DOCUMENT");
-	    logger.debug("------------------------");
-	    logger.debug("TITLE: {}", doc.get("TITLE"));
-	    logger.debug("IAID: {}", doc.get("CATDOCREF"));
-	    logger.debug("DESCRIPTION: {}", doc.get("DESCRIPTION"));
-	    logger.debug("");
-	    for (CategorisationResult categoryResult : result) {
-		logger.info("CATEGORY: {}, score: {}, number of found documents: {}", categoryResult.getName(),
-			categoryResult.getScore(), categoryResult.getNumberOfFoundDocuments());
-	    }
-	    logger.debug("------------------------");
-
-	    logger.debug("");
-
-	}
-
-	logger.debug("Categorisation finished");
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see
      * gov.tna.discovery.taxonomy.common.service.impl.Categoriser#runMlt(java
      * .io.Reader )
@@ -187,11 +142,11 @@ public class CategoriserServiceImpl implements CategoriserService {
 	    moreLikeThis.setMinTermFreq(minTermFreq);
 	    moreLikeThis.setMinDocFreq(minDocFreq);
 	    moreLikeThis.setAnalyzer(this.trainingSetAnalyser);
-	    moreLikeThis.setFieldNames(iaViewRepository.fieldsToAnalyse);
+	    moreLikeThis.setFieldNames(IAViewRepository.fieldsToAnalyse);
 
 	    BooleanQuery fullQuery = new BooleanQuery();
 
-	    for (String fieldName : iaViewRepository.fieldsToAnalyse) {
+	    for (String fieldName : IAViewRepository.fieldsToAnalyse) {
 		String value = document.get(fieldName);
 		if (value != null && !"null".equals(value)) {
 		    Query query = moreLikeThis.like(new StringReader(value), fieldName);
@@ -287,7 +242,7 @@ public class CategoriserServiceImpl implements CategoriserService {
 		field.setAccessible(true);
 		String fieldName = field.getName();
 
-		if (CollectionUtils.contains(Arrays.asList(iaViewRepository.fieldsToAnalyse).iterator(), fieldName)) {
+		if (CollectionUtils.contains(Arrays.asList(IAViewRepository.fieldsToAnalyse).iterator(), fieldName)) {
 		    String value = String.valueOf(field.get(iaView));
 		    if (value != null && !"null".equals(value)) {
 			doc.add(new TextField(fieldName, value, Store.YES));
@@ -306,4 +261,45 @@ public class CategoriserServiceImpl implements CategoriserService {
 	return runMlt(doc);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gov.tna.discovery.taxonomy.common.service.impl.Categoriser#
+     * categoriseIAViewSolrIndex ()
+     */
+    @Override
+    public void testCategoriseIAViewSolrIndex() throws IOException {
+
+	// TODO 1 insert results in a new database/index
+
+	for (int i = 0; i < this.iaViewIndexReader.maxDoc(); i++) {
+	    // TODO 2 Add concurrency: categorize several documents at the same
+	    // time
+	    if (this.iaViewIndexReader.hasDeletions()) {
+		logger.error(".testCategoriseIAViewSolrIndex: the reader provides deleted elements though it should not");
+	    }
+
+	    Document doc = this.iaViewIndexReader.document(i);
+
+	    List<CategorisationResult> result = runMlt(doc);
+
+	    logger.debug("DOCUMENT");
+	    logger.debug("------------------------");
+	    logger.debug("TITLE: {}", doc.get("TITLE"));
+	    logger.debug("IAID: {}", doc.get("CATDOCREF"));
+	    logger.debug("DESCRIPTION: {}", doc.get("DESCRIPTION"));
+	    logger.debug("");
+	    for (CategorisationResult categoryResult : result) {
+		logger.info("CATEGORY: {}, score: {}, number of found documents: {}", categoryResult.getName(),
+			categoryResult.getScore(), categoryResult.getNumberOfFoundDocuments());
+	    }
+	    logger.debug("------------------------");
+
+	    logger.debug("");
+
+	}
+
+	logger.debug("Categorisation finished");
+
+    }
 }

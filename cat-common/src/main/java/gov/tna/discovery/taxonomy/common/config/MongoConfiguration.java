@@ -4,15 +4,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
-import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
-import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
-import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 
 @Configuration
 @EnableMongoRepositories
@@ -49,19 +44,7 @@ public class MongoConfiguration {
 	this.database = database;
     }
 
-    public @Bean MongoDbFactory mongoDbFactory() throws Exception {
-	return new SimpleMongoDbFactory(new Mongo(host, port), database);
-    }
-
     public @Bean MongoTemplate mongoTemplate() throws Exception {
-
-	// remove _class
-	MappingMongoConverter converter = new MappingMongoConverter(mongoDbFactory(), new MongoMappingContext());
-	converter.setTypeMapper(new DefaultMongoTypeMapper(null));
-
-	MongoTemplate mongoTemplate = new MongoTemplate(mongoDbFactory(), converter);
-
-	return mongoTemplate;
-
+	return new MongoTemplate(new MongoClient(host, port), database);
     }
 }

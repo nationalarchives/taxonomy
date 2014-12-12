@@ -5,8 +5,6 @@ import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
 

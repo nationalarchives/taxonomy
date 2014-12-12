@@ -1,7 +1,6 @@
 package gov.tna.discovery.taxonomy.common.service.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.either;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import gov.tna.discovery.taxonomy.common.config.ServiceConfigurationTest;
@@ -14,12 +13,8 @@ import java.io.IOException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.ReaderManager;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

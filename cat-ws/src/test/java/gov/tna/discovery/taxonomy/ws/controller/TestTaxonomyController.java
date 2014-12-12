@@ -99,7 +99,6 @@ public class TestTaxonomyController {
 	assertThat(responseBody, containsString("UP"));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public final void testSearchIaView() {
 	SearchIAViewRequest request = new SearchIAViewRequest();
@@ -125,7 +124,7 @@ public class TestTaxonomyController {
     public final void testPublicationWasSuccesful() throws InterruptedException {
 	Category category = catRepo.findByCiaid(TEST_CATEGORY_CIAID);
 
-	ResponseEntity<String> response = doPublishPostRequestOnWS(category);
+	doPublishPostRequestOnWS(category);
 
 	// Thread.sleep(5000);
 	waitForAsyncPublicationToBeCompleted();

@@ -2,7 +2,6 @@ package gov.tna.discovery.taxonomy.common.service.impl;
 
 import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneHelperTools;
@@ -21,7 +20,6 @@ import java.util.List;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;

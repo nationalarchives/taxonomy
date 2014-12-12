@@ -17,8 +17,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,11 +39,6 @@ public class CategoriserTest {
 
     @Autowired
     MongoTestDataSet mongoTestDataSet;
-
-    private static final String TEST_DOCREF = "TEST_DOCREF";
-
-    private static final String TEST_CATEGORY = "TEST_CATEGORY";
-    private static final String TEST_DESC = "TEST DESC";
 
     @Autowired
     private SearcherManager trainingSetSearcherManager;
