@@ -28,7 +28,7 @@ async:
 
 lucene:
  mlt:
-  mimimumScoreForMlt: 0.001
+  mimimumScoreForMlt: 0
   mimimumGlobalScoreForACategory: 0
   maximumSimilarElements: 3000
   minTermFreq: 1

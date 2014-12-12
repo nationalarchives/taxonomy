@@ -77,7 +77,7 @@ public final class TaxonomyTrainingSetAnalyser extends Analyzer {
 	    logger.warn(".createComponents: synonymFilter disabled");
 	}
 
-	if (maxShingleSize != null) {
+	if (maxShingleSize != null && maxShingleSize >= 2) {
 	    result = new ShingleFilter(result, this.maxShingleSize);
 	} else {
 	    logger.warn(".createComponents: shingleFilter disabled");
