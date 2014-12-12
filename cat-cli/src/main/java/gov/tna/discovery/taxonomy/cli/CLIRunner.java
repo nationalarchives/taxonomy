@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.slf4j.Logger;
@@ -25,6 +26,10 @@ import org.springframework.util.StringUtils;
 
 @Component
 public class CLIRunner implements CommandLineRunner {
+
+    private static final String OPTION_HELP = "help";
+
+    private static final String OPTION_CIAID = "ciaid";
 
     private static final String OPTION_TEST_CATEGORISE_ALL = "testCategoriseAll";
 
@@ -67,12 +72,16 @@ public class CLIRunner implements CommandLineRunner {
 	// add t option
 	options.addOption(OPTION_UPDATE, false, "update (create if not existing) training set");
 	options.addOption(OPTION_INDEX, false, "index training set");
-	options.addOption(OPTION_TEST_CATEGORISE_SINGLE, false, "test the categorisation of one IAView Solr element");
+	options.addOption(OPTION_TEST_CATEGORISE_SINGLE, true,
+		"test the categorisation of one IAView Solr element. Provide cat doc ref as argument");
 	options.addOption(OPTION_TEST_CATEGORISE_ALL, false, "test the categorisation of the whole IAView Solr index");
 	options.addOption(
 		OPTION_FIXED_SIZE,
-		false,
-		"allows to filter the records to add to the training set for a category by max number of elements INSTEAD OF by score. Specify in argument the number");
+		true,
+		"when using -update command, allows to filter the records to add to the training set for a category by max number of elements INSTEAD OF by score. Specify in argument the number");
+	options.addOption(OPTION_CIAID, true, "id of the category to work on");
+	options.addOption(OPTION_CIAID, true, "id of the category to work on");
+	options.addOption(OPTION_HELP, false, "print help");
 
 	CommandLineParser parser = new BasicParser();
 	CommandLine cmd = parser.parse(options, cliArgs);
@@ -83,41 +92,46 @@ public class CLIRunner implements CommandLineRunner {
 	    logger.warn("no valid argument provided");
 	}
 
+	String categoryCiaid = null;
+	if (cmd.hasOption(OPTION_CIAID)) {
+	    categoryCiaid = cmd.getOptionValue(OPTION_CIAID);
+	}
+	Integer fixedLimitSize = null;
+	if (cmd.hasOption(OPTION_FIXED_SIZE)) {
+	    fixedLimitSize = Integer.valueOf(cmd.getOptionValue(OPTION_FIXED_SIZE));
+	}
+
 	if (cmd.hasOption(OPTION_UPDATE)) {
 	    logger.info("update (create if not existing) training set");
-	    String categoryCiaid = cmd.getOptionValue(OPTION_UPDATE);
-	    // FIXME refactor if conditions with design pattern
-	    if (cmd.hasOption(OPTION_FIXED_SIZE)) {
-		Integer fixedLimitSize = Integer.valueOf(cmd.getOptionValue(OPTION_FIXED_SIZE));
-		if (StringUtils.isEmpty(categoryCiaid)) {
-		    trainingSetService.createTrainingSet(null, fixedLimitSize);
-		} else {
-		    Category category = categoryRepository.findByCiaid(categoryCiaid);
-		    trainingSetService.updateTrainingSetForCategory(category, null, fixedLimitSize);
-		}
+
+	    if (StringUtils.isEmpty(categoryCiaid)) {
+		trainingSetService.createTrainingSet(null, fixedLimitSize);
 	    } else {
-		if (StringUtils.isEmpty(categoryCiaid)) {
-		    trainingSetService.createTrainingSet(null, null);
-		} else {
-		    Category category = categoryRepository.findByCiaid(categoryCiaid);
-		    trainingSetService.updateTrainingSetForCategory(category, null, null);
-		}
+		Category category = categoryRepository.findByCiaid(categoryCiaid);
+		trainingSetService.updateTrainingSetForCategory(category, null, fixedLimitSize);
 	    }
 	}
 
 	if (cmd.hasOption(OPTION_INDEX)) {
-	    logger.info("index training set");
 	    trainingSetService.indexTrainingSet();
 	}
 
 	if (cmd.hasOption(OPTION_TEST_CATEGORISE_SINGLE)) {
-	    logger.info("testCategoriseSingle on document: {} ", "");
-	    categoriser.categoriseIAViewSolrDocument("CO 273/632/2");
+	    String catDocRef = cmd.getOptionValue(OPTION_FIXED_SIZE);
+	    if (StringUtils.isEmpty(catDocRef)) {
+		catDocRef = "CO 273/632/2";
+	    }
+
+	    categoriser.categoriseIAViewSolrDocument(catDocRef);
 	}
 
 	if (cmd.hasOption(OPTION_TEST_CATEGORISE_ALL)) {
-	    logger.info("test the categorisation of the whole IAView Solr index");
 	    categoriser.testCategoriseIAViewSolrIndex();
+	}
+
+	if (cmd.hasOption(OPTION_HELP)) {
+	    HelpFormatter formatter = new HelpFormatter();
+	    formatter.printHelp("help", options);
 	}
 
 	logger.info("Stop cat CLI Runner.");

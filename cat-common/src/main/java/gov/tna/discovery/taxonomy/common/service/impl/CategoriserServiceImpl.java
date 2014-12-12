@@ -86,6 +86,7 @@ public class CategoriserServiceImpl implements CategoriserService {
      */
     @Override
     public List<CategorisationResult> categoriseIAViewSolrDocument(String catdocref) {
+	logger.info("testCategoriseSingle on document: {} ", catdocref);
 	TopDocs results = iaViewRepository.searchIAViewIndexByFieldAndPhrase("CATDOCREF", catdocref, 1);
 
 	Document doc;
@@ -270,6 +271,7 @@ public class CategoriserServiceImpl implements CategoriserService {
     @Override
     public void testCategoriseIAViewSolrIndex() throws IOException {
 
+	logger.info("test the categorisation of the whole IAView Solr index");
 	// TODO 1 insert results in a new database/index
 
 	for (int i = 0; i < this.iaViewIndexReader.maxDoc(); i++) {
@@ -299,7 +301,7 @@ public class CategoriserServiceImpl implements CategoriserService {
 
 	}
 
-	logger.debug("Categorisation finished");
+	logger.info("test Categorisation finished");
 
     }
 }

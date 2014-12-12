@@ -186,6 +186,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
      */
     @Override
     public void indexTrainingSet() {
+	logger.info("index training set");
 	IndexWriter writer = null;
 	try {
 	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
@@ -206,6 +207,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	} finally {
 	    LuceneHelperTools.closeIndexWriterQuietly(writer);
 	}
+	logger.info("index training set ended");
 
     }
 
