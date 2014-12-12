@@ -22,6 +22,7 @@ import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +44,9 @@ class LuceneConfiguration {
     private String iaviewCollectionPath;
     private String trainingSetCollectionPath;
     private String version;
+
+    @Value("${lucene.index.maxShingleSize}")
+    private String maxShingleSize;
 
     /**
      ************************* Directories
@@ -136,7 +140,8 @@ class LuceneConfiguration {
      * @return
      */
     public @Bean Analyzer trainingSetAnalyser() {
-	return new TaxonomyTrainingSetAnalyser(Version.valueOf(version), stopFilterFactory(), synonymFilterFactory());
+	return new TaxonomyTrainingSetAnalyser(Version.valueOf(version), stopFilterFactory(), synonymFilterFactory(),
+		Integer.valueOf(maxShingleSize));
     }
 
     /**

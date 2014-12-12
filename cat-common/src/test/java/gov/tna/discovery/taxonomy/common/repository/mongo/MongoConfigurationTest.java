@@ -1,10 +1,15 @@
 package gov.tna.discovery.taxonomy.common.repository.mongo;
 
+import gov.tna.discovery.taxonomy.common.config.PropertiesConfiguration;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
@@ -15,13 +20,12 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 import com.github.fakemongo.Fongo;
 
-//TODO generate memory db with data set for testing
-//FIXME Bug on configuration: MongoConfTest is used only if explicitely requested for testing. otherwise the normal configuration class is used and the local db is used 
 @Configuration
 @ComponentScan("gov.tna.discovery.taxonomy.common.repository.mongo")
 @EnableMongoRepositories
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 @EnableConfigurationProperties
+@Import(value = PropertiesConfiguration.class)
 public class MongoConfigurationTest {
 
     private String host;

@@ -15,6 +15,9 @@ spring:
   mongo:
    repositories:
     enabled: true
+   testdataset:
+    trainingset: src/test/resources/dataset/mongo/trainingset.json
+    categories: src/test/resources/dataset/mongo/taxonomy.json
 
 async:
  executor:
@@ -33,4 +36,5 @@ lucene:
   iaviewCollectionPath: src/test/resources/dataset/lucene/iaviews
   trainingSetCollectionPath: src/test/resources/dataset/lucene/trainingset
   version: LUCENE_47
+  maxShingleSize: 3
   maxTrainingDocsPerCategory: 100

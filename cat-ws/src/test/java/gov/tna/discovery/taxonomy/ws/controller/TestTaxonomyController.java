@@ -133,14 +133,14 @@ public class TestTaxonomyController {
 	List<TrainingDocument> trainingDocs = trainingDocRepo.findByCategory(category.getTtl());
 	assertThat(trainingDocs, is(notNullValue()));
 	assertThat(trainingDocs, is(not(empty())));
-	assertThat(trainingDocs.size(), equalTo(20));
+	assertThat(trainingDocs.size(), equalTo(4));
 
 	PaginatedList<InformationAssetView> IAViewResults = iaViewRepository.performSearch(category.getQry(),
 		(category.getSc()), 1000, 0);
 	assertThat(IAViewResults, is(notNullValue()));
 	assertThat(IAViewResults.getResults(), is(notNullValue()));
 	assertThat(IAViewResults.getResults(), is(not(empty())));
-	assertThat(IAViewResults.size(), equalTo(20));
+	assertThat(IAViewResults.size(), equalTo(4));
 
 	logger.debug("Publication succeeded");
 

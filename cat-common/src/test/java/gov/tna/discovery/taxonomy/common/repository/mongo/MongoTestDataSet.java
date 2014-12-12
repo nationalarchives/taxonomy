@@ -28,12 +28,11 @@ import com.mongodb.util.JSON;
 @Component
 public class MongoTestDataSet {
 
-    // FIXME cannot inject value for some reason
-    // @Value("${lucene.index.testDataSet.mongo.trainingset}")
-    private String trainingSetDatasetFilePath = "src/test/resources/dataset/mongo/trainingset.json";
+    @Value("${spring.data.mongo.testdataset.trainingset}")
+    private String trainingSetDatasetFilePath;
 
-    // @Value("${lucene.index.test.testDataSet.mongo.categories}")
-    private String categoriesDatasetFilePath = "src/test/resources/dataset/mongo/taxonomy.json";
+    @Value("${spring.data.mongo.testdataset.categories}")
+    private String categoriesDatasetFilePath;
 
     private static final Logger logger = LoggerFactory.getLogger(LuceneTestDataSet.class);
 

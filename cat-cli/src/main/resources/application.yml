@@ -36,3 +36,4 @@ lucene:
   trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
   version: LUCENE_47
   maxTrainingDocsPerCategory: 100
+  maxShingleSize: 3

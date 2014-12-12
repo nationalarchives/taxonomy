@@ -1,7 +1,5 @@
 package gov.tna.discovery.taxonomy.common.config;
 
-import gov.tna.discovery.taxonomy.common.config.PropertiesConfiguration;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -11,7 +9,6 @@ import org.apache.lucene.store.IOContext.Context;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

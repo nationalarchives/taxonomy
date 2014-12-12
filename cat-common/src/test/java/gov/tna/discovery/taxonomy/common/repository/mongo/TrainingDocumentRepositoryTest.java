@@ -37,7 +37,6 @@ public class TrainingDocumentRepositoryTest {
 
     @Test
     public void testCollectionCount() {
-	// mongoTestDataSet.createTrainingSetDocument();
 
 	Iterable<TrainingDocument> iterable = repository.findAll();
 	assertThat(iterable, is(notNullValue()));

@@ -1,4 +1,4 @@
-package gov.tna.discovery.taxonomy.common.repository.analyzer.lucene;
+package gov.tna.discovery.taxonomy.common.repository.lucene.analyzer;
 
 import static org.junit.Assert.*;
 import gov.tna.discovery.taxonomy.common.config.LuceneConfigurationTest;
@@ -11,6 +11,8 @@ import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.core.StopFilterFactory;
+import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.KeywordAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
@@ -19,6 +21,8 @@ import org.apache.lucene.analysis.tokenattributes.PositionLengthAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.Attribute;
 import org.apache.lucene.util.AttributeImpl;
+import org.apache.lucene.util.Version;
+import org.junit.After;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +30,7 @@ import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.expression.spel.ast.Indexer;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -46,13 +51,28 @@ public class TaxonomyGeneralAnalyzerTest {
 
     private static final Logger logger = LoggerFactory.getLogger(Indexer.class);
 
+    @Value("${lucene.index.version}")
+    private String luceneVersion;
+
     @Autowired
-    private Analyzer trainingSetAnalyser;
+    private StopFilterFactory stopFilterFactory;
+
+    @Autowired
+    private SynonymFilterFactory synonymFilterFactory;
 
     private static final String QUERY_WITH_LEADING_WILDCARD = "\"renewable energy\" OR \"renewable energies\" OR \"renewable electricity\" OR \"alternative energy\" OR \"alternative energies\" OR \"renewable fuel\" OR \"renewable fuels\" OR \"biogas\" OR \"biomass\" OR \"biofuel\" OR \"hydroelectric\" OR \"hydroelectricity\" OR \"hydropower\" OR (\"wind energy\"~5) OR \"wind farm\" OR \"wind farms\" OR \"wind power\" OR \"wind turbine\" OR \"wind turbines\" OR (\"solar power\"~5) OR (\"solar energy\"~5) OR \"solar panel\" OR \"solar panels\" OR \"landfill gas\" OR \"landfill gases\" OR \"geothermal\" OR \"photovoltaic\" OR \"tidal energy\" OR \"tidal energies\" OR \"tidal power\" OR \"wave farm\" OR \"wave farms\" OR (\"ocean energy\"~5) OR (\"kinetic energy\"~5) OR (\"kinetic energies\"~5) OR (*thermal AND energy) OR (*thermal AND energies) OR \"Renewables Advisory Board\" OR \"Renewable Energy Agency\" OR \"Geothermal Association\" OR \"Energy Saving Trust\" OR \"Non-Fossil Fuel Obligation\" OR \"Renewables Obligation\" OR \"Renewables Directive\" OR \"green energy\" OR \"green energies\" OR (\"energy conservation\"~2)";
 
+    Analyzer trainingSetAnalyser;
+
+    @After
+    public void closeAnalyser() {
+	trainingSetAnalyser.close();
+    }
+
     @Test
     public void testQueryAnalyserWithStopWords() throws IOException {
+	trainingSetAnalyser = new TaxonomyTrainingSetAnalyser(Version.valueOf(luceneVersion), stopFilterFactory, null,
+		null);
 	StringReader reader = new StringReader("archives OR melody");
 
 	TokenStream stream = trainingSetAnalyser.tokenStream("test", reader);
@@ -64,6 +84,8 @@ public class TaxonomyGeneralAnalyzerTest {
 
     @Test
     public void testQueryAnalyserWithSynonyms() throws IOException {
+	trainingSetAnalyser = new TaxonomyTrainingSetAnalyser(Version.valueOf(luceneVersion), null,
+		synonymFilterFactory, null);
 	Reader reader = new StringReader("agonise");
 
 	TokenStream stream = trainingSetAnalyser.tokenStream("test", reader);
@@ -74,6 +96,7 @@ public class TaxonomyGeneralAnalyzerTest {
 
     @Test
     public void testQueryAnalyserWithCapitalLetters() throws IOException {
+	trainingSetAnalyser = new TaxonomyTrainingSetAnalyser(Version.valueOf(luceneVersion), null, null, null);
 	StringReader reader = new StringReader("archiveS tEst MELODY");
 
 	TokenStream stream = trainingSetAnalyser.tokenStream("test", reader);
@@ -81,6 +104,18 @@ public class TaxonomyGeneralAnalyzerTest {
 	assertNotNull(stream);
 	assertTokenStreamContents(stream, new String[] { "archives", "test", "melody" }, null, null, null, null, null,
 		null, null, null, true);
+    }
+
+    @Test
+    public void testQueryAnalyserWithShingleFilter() throws IOException {
+	trainingSetAnalyser = new TaxonomyTrainingSetAnalyser(Version.valueOf(luceneVersion), null, null, 2);
+	StringReader reader = new StringReader("archiveS tEst");
+
+	TokenStream stream = trainingSetAnalyser.tokenStream("test", reader);
+
+	assertNotNull(stream);
+	assertTokenStreamContents(stream, new String[] { "archives", "archives test", "test" }, null, null, null, null,
+		null, null, null, null, true);
     }
 
     /**

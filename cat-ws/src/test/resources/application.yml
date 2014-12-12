@@ -3,7 +3,7 @@ logging:
   gov:
    tna:
     discovery:
-     taxonomy: DEBUG
+     taxonomy: INFO
 
 server:
  port: 8085
@@ -18,6 +18,9 @@ spring:
   mongo:
    repositories:
     enabled: true
+   testdataset:
+    trainingset: ../cat-common/src/test/resources/dataset/mongo/trainingset.json
+    categories: ../cat-common/src/test/resources/dataset/mongo/taxonomy.json
 
 async:
  executor:
@@ -38,3 +41,4 @@ lucene:
   trainingSetCollectionPath: ../cat-common/src/test/resources/dataset/lucene/trainingset
   version: LUCENE_47
   maxTrainingDocsPerCategory: 100
+  maxShingleSize: 3

@@ -8,8 +8,11 @@ import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
+import org.apache.lucene.analysis.shingle.ShingleFilter;
 import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
 import org.apache.lucene.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Text General Analyser dedicated to querying from Solr configuration for
@@ -27,11 +30,15 @@ import org.apache.lucene.util.Version;
  */
 public final class TaxonomyTrainingSetAnalyser extends Analyzer {
 
+    private static final Logger logger = LoggerFactory.getLogger(TaxonomyTrainingSetAnalyser.class);
+
     private final Version matchVersion;
 
     private final StopFilterFactory stopFilterFactory;
 
     private final SynonymFilterFactory synonymFilterFactory;
+
+    private Integer maxShingleSize;
 
     /**
      * Creates a new tokenizer
@@ -41,10 +48,11 @@ public final class TaxonomyTrainingSetAnalyser extends Analyzer {
      *            {@link <a href="#version">above</a>}
      */
     public TaxonomyTrainingSetAnalyser(Version matchVersion, StopFilterFactory stopFilterFactory,
-	    SynonymFilterFactory synonymFilterFactory) {
+	    SynonymFilterFactory synonymFilterFactory, Integer maxShingleSize) {
 	this.matchVersion = matchVersion;
 	this.stopFilterFactory = stopFilterFactory;
 	this.synonymFilterFactory = synonymFilterFactory;
+	this.maxShingleSize = maxShingleSize;
     }
 
     @Override
@@ -53,9 +61,23 @@ public final class TaxonomyTrainingSetAnalyser extends Analyzer {
 
 	TokenStream result = new LowerCaseFilter(this.matchVersion, source);
 
-	result = this.stopFilterFactory.create(result);
+	if (stopFilterFactory != null) {
+	    result = this.stopFilterFactory.create(result);
+	} else {
+	    logger.warn(".createComponents: stopFilter disabled");
+	}
 
-	result = this.synonymFilterFactory.create(result);
+	if (synonymFilterFactory != null) {
+	    result = this.synonymFilterFactory.create(result);
+	} else {
+	    logger.warn(".createComponents: synonymFilter disabled");
+	}
+
+	if (maxShingleSize != null) {
+	    result = new ShingleFilter(result, this.maxShingleSize);
+	} else {
+	    logger.warn(".createComponents: shingleFilter disabled");
+	}
 
 	return new TokenStreamComponents(source, result);
     }
