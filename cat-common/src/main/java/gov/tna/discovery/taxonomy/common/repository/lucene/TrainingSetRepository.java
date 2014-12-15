@@ -112,16 +112,26 @@ public class TrainingSetRepository {
 
     public void indexTrainingDocuments(IndexWriter writer, List<TrainingDocument> trainingDocuments) {
 	try {
-	    if (writer == null) {
-		writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
-			trainingSetAnalyser));
-	    }
 	    for (TrainingDocument trainingDocument : trainingDocuments) {
 		indexTrainingSetDocument(trainingDocument, writer);
 	    }
 	    writer.commit();
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	}
+    }
+
+    public void indexTrainingDocuments(List<TrainingDocument> trainingDocuments) {
+	IndexWriter writer = null;
+	try {
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
+		    trainingSetAnalyser));
+
+	    indexTrainingDocuments(writer, trainingDocuments);
+	} catch (IOException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	} catch (TaxonomyException e) {
+	    throw e;
 	} finally {
 	    LuceneHelperTools.closeIndexWriterQuietly(writer);
 	}
@@ -129,19 +139,27 @@ public class TrainingSetRepository {
 
     public void deleteTrainingDocumentsForCategory(IndexWriter writer, Category category) {
 	try {
-	    if (writer == null) {
-		writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
-			trainingSetAnalyser));
-	    }
-
 	    logger.info(".deleteAndUpdateTraingSetIndexForCategory: removed elements for category: {}",
 		    category.getTtl());
 	    writer.deleteDocuments(new Term(InformationAssetViewFields.CATEGORY.toString(), category.getTtl()));
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	}
+    }
+
+    public void deleteTrainingDocumentsForCategory(Category category) {
+	IndexWriter writer = null;
+	try {
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
+		    trainingSetAnalyser));
+
+	    deleteTrainingDocumentsForCategory(writer, category);
+	} catch (IOException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	} catch (TaxonomyException e) {
+	    throw e;
 	} finally {
 	    LuceneHelperTools.closeIndexWriterQuietly(writer);
 	}
     }
-
 }

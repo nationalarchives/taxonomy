@@ -3,20 +3,26 @@ package gov.tna.discovery.taxonomy.common.service.impl;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import gov.tna.discovery.taxonomy.common.config.ServiceConfigurationTest;
+import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneTestDataSet;
+import gov.tna.discovery.taxonomy.common.repository.lucene.TrainingSetRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.ReaderManager;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +44,9 @@ public class CategoriserTest {
     TrainingDocumentRepository trainingDocumentRepository;
 
     @Autowired
+    private TrainingSetRepository trainingSetRepository;
+
+    @Autowired
     MongoTestDataSet mongoTestDataSet;
 
     @Autowired
@@ -55,15 +64,18 @@ public class CategoriserTest {
     @Autowired
     private LuceneTestDataSet luceneTestDataSet;
 
-    // @Before
+    @Before
     public void initDataSet() throws IOException {
-	mongoTestDataSet.initCategoryCollection();
 	mongoTestDataSet.initTrainingSetCollection();
+	for (TrainingDocument trainingDocument : trainingDocumentRepository.findAll()) {
+	    trainingSetRepository.indexTrainingDocuments(Arrays.asList(trainingDocument));
+	}
     }
 
-    // @After
+    @After
     public void emptyDataSet() throws IOException {
 	mongoTestDataSet.dropDatabase();
+	luceneTestDataSet.deleteTrainingSetIndex();
     }
 
     @Test
