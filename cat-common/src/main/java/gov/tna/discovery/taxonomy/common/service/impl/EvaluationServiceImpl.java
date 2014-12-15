@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class EvaluationServiceImpl implements EvaluationService {
 
     private static final Logger logger = LoggerFactory.getLogger(EvaluationServiceImpl.class);
+
     @Autowired
     private CategoryRepository categoryRepository;
 
@@ -35,8 +36,11 @@ public class EvaluationServiceImpl implements EvaluationService {
 
     private Integer minNbOfElementsPerCat = 10;
 
-    /* (non-Javadoc)
-     * @see gov.tna.discovery.taxonomy.common.service.impl.EvaluationService#createEvaluationTestDataset()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gov.tna.discovery.taxonomy.common.service.impl.EvaluationService#
+     * createEvaluationTestDataset()
      */
     @Override
     public void createEvaluationTestDataset() {
@@ -86,16 +90,22 @@ public class EvaluationServiceImpl implements EvaluationService {
 	return testDocument;
     }
 
-    /* (non-Javadoc)
-     * @see gov.tna.discovery.taxonomy.common.service.impl.EvaluationService#evaluateCategorisation()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gov.tna.discovery.taxonomy.common.service.impl.EvaluationService#
+     * evaluateCategorisation()
      */
     @Override
-    public void evaluateCategorisation() {
+    public void runCategorisationOnTestDataSet() {
 
     }
 
-    /* (non-Javadoc)
-     * @see gov.tna.discovery.taxonomy.common.service.impl.EvaluationService#getEvaluationReport()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gov.tna.discovery.taxonomy.common.service.impl.EvaluationService#
+     * getEvaluationReport()
      */
     @Override
     public String getEvaluationReport() {
@@ -112,6 +122,10 @@ public class EvaluationServiceImpl implements EvaluationService {
 
     public void setTestDocumentRepository(TestDocumentRepository testDocumentRepository) {
 	this.testDocumentRepository = testDocumentRepository;
+    }
+
+    public void setCategoryRepository(CategoryRepository categoryRepository) {
+	this.categoryRepository = categoryRepository;
     }
 
 }

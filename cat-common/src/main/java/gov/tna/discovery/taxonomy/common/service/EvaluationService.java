@@ -1,9 +1,7 @@
 package gov.tna.discovery.taxonomy.common.service;
 
 /**
- * Service dedicated to the evaluation of the current categorisation system
- * against the legacy system
- * 
+ * Service dedicated to the evaluation of the current categorisation system against the legacy system
  * @author jcharlet
  *
  */
@@ -14,7 +12,7 @@ public interface EvaluationService {
      */
     public void createEvaluationTestDataset();
 
-    public void evaluateCategorisation();
+    public void runCategorisationOnTestDataSet();
 
     public String getEvaluationReport();
 

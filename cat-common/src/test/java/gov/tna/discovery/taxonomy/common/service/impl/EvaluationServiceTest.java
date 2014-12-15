@@ -2,11 +2,14 @@ package gov.tna.discovery.taxonomy.common.service.impl;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import gov.tna.discovery.taxonomy.common.config.ServiceConfigurationLightTest;
 import gov.tna.discovery.taxonomy.common.config.ServiceConfigurationTest;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.TestDocument;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneTestDataSet;
+import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
+import gov.tna.discovery.taxonomy.common.repository.mongo.MongoConfigurationTest;
 import gov.tna.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TestDocumentRepository;
 import gov.tna.discovery.taxonomy.common.service.LegacySystemService;
@@ -28,12 +31,11 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = ServiceConfigurationTest.class)
+@SpringApplicationConfiguration(classes = ServiceConfigurationLightTest.class)
 public class EvaluationServiceTest {
     // private static final Logger logger =
     // LoggerFactory.getLogger(CategoriserTest.class);
 
-    @Autowired
     public EvaluationServiceImpl evaluationService;
 
     @Autowired
@@ -45,8 +47,13 @@ public class EvaluationServiceTest {
     @Autowired
     private LuceneTestDataSet luceneTestDataSet;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     @Before
     public void initMocks() throws IOException {
+	evaluationService = new EvaluationServiceImpl();
+
 	LegacySystemService legacySystemServiceMock = Mockito.mock(LegacySystemService.class);
 	Mockito.when(legacySystemServiceMock.getLegacyCategoriesForCatDocRef(Mockito.anyString())).thenReturn(
 		new String[] { "Labour", });
@@ -67,6 +74,9 @@ public class EvaluationServiceTest {
 		iaViewRepositoryMock.performSearch(Mockito.anyString(), Mockito.anyDouble(), Mockito.anyInt(),
 			Mockito.anyInt())).thenReturn(searchResult);
 	evaluationService.setIaviewRepository(iaViewRepositoryMock);
+
+	evaluationService.setCategoryRepository(categoryRepository);
+	evaluationService.setTestDocumentRepository(testDocumentRepository);
 
     }
 
