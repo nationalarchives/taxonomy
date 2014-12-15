@@ -1,8 +1,7 @@
 package gov.tna.discovery.taxonomy.common.service.impl;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 import gov.tna.discovery.taxonomy.common.config.ServiceConfigurationTest;
 import gov.tna.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
@@ -13,6 +12,7 @@ import java.io.IOException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.ReaderManager;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +37,19 @@ public class TrainingSetServiceTest {
     @Autowired
     MongoTestDataSet mongoTestDataSet;
 
+    @After
+    public void dropDatabse() {
+	mongoTestDataSet.dropDatabase();
+
+    }
+
     @Test
     public void testCreateTrainingSetWithLimitScore() throws IOException, ParseException {
 	mongoTestDataSet.initCategoryCollection();
 
 	trainingSetService.createTrainingSet(0.001f, null);
-	assertEquals(17l, trainingDocumentRepository.count());
+	assertThat(trainingDocumentRepository.count(), is(equalTo((17l))));
 
-	mongoTestDataSet.dropDatabase();
     }
 
     @Test
@@ -52,9 +57,7 @@ public class TrainingSetServiceTest {
 	mongoTestDataSet.initCategoryCollection();
 
 	trainingSetService.createTrainingSet(null, 1);
-	assertEquals(10l, trainingDocumentRepository.count());
-
-	mongoTestDataSet.dropDatabase();
+	assertThat(trainingDocumentRepository.count(), is(equalTo((10l))));
     }
 
     @Test
@@ -67,7 +70,5 @@ public class TrainingSetServiceTest {
 	Thread.sleep(1000);
 	assertThat(trainingSetIndexReader.maxDoc(), equalTo(200));
 	trainingSetReaderManager.release(trainingSetIndexReader);
-
-	mongoTestDataSet.dropDatabase();
     }
 }
