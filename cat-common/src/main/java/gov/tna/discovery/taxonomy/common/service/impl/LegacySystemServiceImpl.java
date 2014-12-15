@@ -40,8 +40,11 @@ public class LegacySystemServiceImpl implements LegacySystemService {
     private String elementEndIndexString = "</span>";
     private CharSequence referenceLineToFind = "<span>Reference:</span>";
 
-    /* (non-Javadoc)
-     * @see gov.tna.discovery.taxonomy.common.service.impl.LegacySystemService#getLegacyCategoriesForCatDocRef(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gov.tna.discovery.taxonomy.common.service.impl.LegacySystemService#
+     * getLegacyCategoriesForCatDocRef(java.lang.String)
      */
     @Override
     public String[] getLegacyCategoriesForCatDocRef(String catdocref) {

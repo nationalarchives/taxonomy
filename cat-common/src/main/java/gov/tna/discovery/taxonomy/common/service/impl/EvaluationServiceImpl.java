@@ -3,9 +3,12 @@ package gov.tna.discovery.taxonomy.common.service.impl;
 import gov.tna.discovery.taxonomy.common.mapper.TaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.common.repository.domain.mongo.CategoryEvaluationResult;
+import gov.tna.discovery.taxonomy.common.repository.domain.mongo.EvaluationReport;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.TestDocument;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
+import gov.tna.discovery.taxonomy.common.repository.mongo.EvaluationReportRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TestDocumentRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.EvaluationService;
@@ -13,13 +16,19 @@ import gov.tna.discovery.taxonomy.common.service.LegacySystemService;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Service
 public class EvaluationServiceImpl implements EvaluationService {
@@ -34,6 +43,9 @@ public class EvaluationServiceImpl implements EvaluationService {
 
     @Autowired
     private TestDocumentRepository testDocumentRepository;
+
+    @Autowired
+    private EvaluationReportRepository evaluationReportRepository;
 
     @Autowired
     private LegacySystemService legacySystemService;
@@ -115,9 +127,55 @@ public class EvaluationServiceImpl implements EvaluationService {
      * @see gov.tna.discovery.taxonomy.common.service.impl.EvaluationService#
      * getEvaluationReport()
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public String getEvaluationReport() {
-	return null;
+    public EvaluationReport getEvaluationReport(String comments) {
+	Map<String, Integer> mapOfTruePositivesPerCat = new HashMap<String, Integer>();
+	Map<String, Integer> mapOfFalsePositivesPerCat = new HashMap<String, Integer>();
+	Map<String, Integer> mapOfFalseNegativesPerCat = new HashMap<String, Integer>();
+	long numberOfDocuments = testDocumentRepository.count();
+	for (TestDocument testDocument : testDocumentRepository.findAll()) {
+	    List<String> categories = CollectionUtils.arrayToList(testDocument.getCategories());
+	    List<String> legacyCategories = CollectionUtils.arrayToList(testDocument.getLegacyCategories());
+
+	    for (String category : categories) {
+		if (CollectionUtils.containsInstance(legacyCategories, category)) {
+		    incrementMapValueForCategory(mapOfTruePositivesPerCat, category);
+		} else {
+		    incrementMapValueForCategory(mapOfFalsePositivesPerCat, category);
+		}
+	    }
+
+	    for (String legacyCategory : legacyCategories) {
+		if (!CollectionUtils.containsInstance(categories, legacyCategory)) {
+		    incrementMapValueForCategory(mapOfFalseNegativesPerCat, legacyCategory);
+		}
+	    }
+
+	}
+
+	Set<String> setOfCategories = new HashSet<String>();
+	setOfCategories.addAll(mapOfTruePositivesPerCat.keySet());
+	setOfCategories.addAll(mapOfFalsePositivesPerCat.keySet());
+	setOfCategories.addAll(mapOfFalseNegativesPerCat.keySet());
+
+	List<CategoryEvaluationResult> listOfEvaluationResults = new ArrayList<CategoryEvaluationResult>();
+	for (String category : setOfCategories) {
+	    Integer tp = mapOfTruePositivesPerCat.get(category);
+	    Integer fp = mapOfFalsePositivesPerCat.get(category);
+	    Integer fn = mapOfFalseNegativesPerCat.get(category);
+	    listOfEvaluationResults.add(new CategoryEvaluationResult(category, tp != null ? tp : 0,
+		    fp != null ? fp : 0, fn != null ? fn : 0));
+	}
+
+	EvaluationReport report = new EvaluationReport(comments, listOfEvaluationResults, (int) numberOfDocuments);
+	evaluationReportRepository.save(report);
+	return report;
+    }
+
+    private void incrementMapValueForCategory(Map<String, Integer> mapOfOccurencesPerCat, String category) {
+	Integer existingCounter = mapOfOccurencesPerCat.get(category);
+	mapOfOccurencesPerCat.put(category, (existingCounter != null) ? (existingCounter + 1) : 1);
     }
 
     public void setLegacySystemService(LegacySystemService legacySystemService) {
@@ -138,6 +196,10 @@ public class EvaluationServiceImpl implements EvaluationService {
 
     public void setCategoriserService(CategoriserService categoriserService) {
 	this.categoriserService = categoriserService;
+    }
+
+    public void setEvaluationReportRepository(EvaluationReportRepository evaluationReportRepository) {
+	this.evaluationReportRepository = evaluationReportRepository;
     }
 
 }

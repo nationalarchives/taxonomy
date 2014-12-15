@@ -1,7 +1,11 @@
 package gov.tna.discovery.taxonomy.common.service;
 
+import gov.tna.discovery.taxonomy.common.repository.domain.mongo.EvaluationReport;
+
 /**
- * Service dedicated to the evaluation of the current categorisation system against the legacy system
+ * Service dedicated to the evaluation of the current categorisation system
+ * against the legacy system
+ * 
  * @author jcharlet
  *
  */
@@ -14,6 +18,15 @@ public interface EvaluationService {
 
     public void runCategorisationOnTestDataSet();
 
-    public String getEvaluationReport();
+    /**
+     * Create a report on the accuracy and recall for all categories on the
+     * current categorisation system.
+     * 
+     * @param comments
+     *            the comments to save in the database for that report
+     *            (configuration used, for example)
+     * @return
+     */
+    EvaluationReport getEvaluationReport(String comments);
 
 }

@@ -90,19 +90,17 @@
 			<scope>test</scope>
 		</dependency>
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.apache.lucene</groupId> -->
-<!-- 			<artifactId>lucene-test-framework</artifactId> -->
-<!-- 			<version>${lucene.version}</version> -->
-<!-- 			<scope>test</scope> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.apache.lucene</groupId> -->
+		<!-- <artifactId>lucene-test-framework</artifactId> -->
+		<!-- <version>${lucene.version}</version> -->
+		<!-- <scope>test</scope> -->
+		<!-- </dependency> -->
 
-<dependency>
-	<groupId>org.apache.httpcomponents</groupId>
-	<artifactId>httpclient</artifactId>
-	<version>4.3.6</version>
-</dependency>
-
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
 
 	</dependencies>
 
