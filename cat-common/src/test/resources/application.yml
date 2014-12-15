@@ -34,6 +34,8 @@ lucene:
   minDocFreq: 1
 
  index:
+#  iaviewCollectionPath: /opt/solr/solr/collection1/data/index
+#  trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
   iaviewCollectionPath: src/test/resources/dataset/lucene/iaviews
   trainingSetCollectionPath: src/test/resources/dataset/lucene/trainingset
   version: LUCENE_47

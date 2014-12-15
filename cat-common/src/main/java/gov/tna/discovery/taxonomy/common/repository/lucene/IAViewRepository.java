@@ -84,15 +84,17 @@ public class IAViewRepository {
 		throw new TaxonomyException(TaxonomyErrorType.INVALID_CATEGORY_QUERY, e);
 	    }
 
+	    TopDocs topDocs = isearcher.search(query, offset + limit);
+	    logger.info(".performSearch: found {} total hits", topDocs.totalHits);
+
 	    if (mimimumScore != null) {
 		Integer nbOfElementsAboveScore = getNbOfElementsAboveScore(mimimumScore, isearcher, query);
 		paginatedListOfIAViews.setNumberOfResults(nbOfElementsAboveScore);
 		logger.info(".performSearch: found {} hits for that minimum score {}",
 			paginatedListOfIAViews.getNumberOfResults(), paginatedListOfIAViews.getMinimumScore());
+	    } else {
+		paginatedListOfIAViews.setNumberOfResults(topDocs.totalHits);
 	    }
-
-	    TopDocs topDocs = isearcher.search(query, offset + limit);
-	    logger.info(".performSearch: found {} total hits", topDocs.totalHits);
 
 	    int totalNumberOfDocumentsToParse = offset + limit;
 	    if (topDocs.totalHits < offset) {
