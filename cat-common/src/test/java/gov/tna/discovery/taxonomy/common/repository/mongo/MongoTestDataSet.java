@@ -1,7 +1,9 @@
 package gov.tna.discovery.taxonomy.common.repository.mongo;
 
 import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
+import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.common.repository.domain.mongo.TestDocument;
 import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
@@ -11,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
 import org.apache.lucene.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,5 +101,17 @@ public class MongoTestDataSet {
 	logger.info(".dropDatabase");
 	mongoTemplate.dropCollection(Category.class);
 	mongoTemplate.dropCollection(TrainingDocument.class);
+	mongoTemplate.dropCollection(TestDocument.class);
+    }
+
+    public static InformationAssetView getIAViewSample() {
+	InformationAssetView iaView = new InformationAssetView();
+	iaView.setCATDOCREF("HLG 102/182");
+	iaView.setCONTEXTDESCRIPTION("Ministry of Health and successors: Miscellaneous Registered Files (99,000 Series). Building and Civil Engineering: National Programme.");
+	iaView.setCOVERINGDATES("1952");
+	iaView.setTITLE("Labour requirements for the housing programme.");
+	iaView.setDESCRIPTION("Labour requirements for the housing programme.");
+	iaView.setDOCREFERENCE("C1330010");
+	return iaView;
     }
 }

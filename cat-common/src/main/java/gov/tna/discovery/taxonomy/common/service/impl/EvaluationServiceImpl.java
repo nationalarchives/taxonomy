@@ -1,16 +1,20 @@
 package gov.tna.discovery.taxonomy.common.service.impl;
 
+import gov.tna.discovery.taxonomy.common.mapper.TaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.TestDocument;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TestDocumentRepository;
+import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.EvaluationService;
 import gov.tna.discovery.taxonomy.common.service.LegacySystemService;
+import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +38,9 @@ public class EvaluationServiceImpl implements EvaluationService {
     @Autowired
     private LegacySystemService legacySystemService;
 
+    @Autowired
+    private CategoriserService categoriserService;
+
     private Integer minNbOfElementsPerCat = 10;
 
     /*
@@ -55,7 +62,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 			    .getCATDOCREF());
 		    if (legacyCategories != null && Arrays.asList(legacyCategories).contains(category.getTtl())) {
 			TestDocument testDocument = new TestDocument();
-			testDocument = getTestDocumentFromIAView(iaview);
+			testDocument = TaxonomyMapper.getTestDocumentFromIAView(iaview);
 			testDocument.setLegacyCategories(legacyCategories);
 			testDocumentRepository.save(testDocument);
 			nbOfMatchedElementsWithLegacySystem++;
@@ -76,20 +83,6 @@ public class EvaluationServiceImpl implements EvaluationService {
 	}
     }
 
-    private TestDocument getTestDocumentFromIAView(InformationAssetView iaView) {
-	TestDocument testDocument = new TestDocument();
-	testDocument.setDescription(iaView.getDESCRIPTION());
-	testDocument.setContextDescription(iaView.getCONTEXTDESCRIPTION());
-	testDocument.setTitle(iaView.getTITLE());
-	testDocument.setDocReference(iaView.getDOCREFERENCE());
-	testDocument.setCatDocRef(iaView.getCATDOCREF());
-	testDocument.setCorpBodys(iaView.getCORPBODYS());
-	testDocument.setPersonFullName(iaView.getPERSON_FULLNAME());
-	testDocument.setPlaceName(iaView.getPLACE_NAME());
-	testDocument.setSubjects(iaView.getSUBJECTS());
-	return testDocument;
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -98,7 +91,22 @@ public class EvaluationServiceImpl implements EvaluationService {
      */
     @Override
     public void runCategorisationOnTestDataSet() {
+	for (TestDocument testDocument : testDocumentRepository.findAll()) {
+	    InformationAssetView iaView = TaxonomyMapper.getIAViewFromTestDocument(testDocument);
+	    List<CategorisationResult> categorisationResults = categoriserService.testCategoriseSingle(iaView);
+	    String[] categories = new String[testDocument.getLegacyCategories().length];
+	    for (int i = 0; i < categorisationResults.size(); i++) {
+		if (i >= testDocument.getLegacyCategories().length) {
+		    break;
+		}
 
+		CategorisationResult categorisationResult = categorisationResults.get(i);
+		categories[i] = categorisationResult.getName();
+
+	    }
+	    testDocument.setCategories(categories);
+	    testDocumentRepository.save(testDocument);
+	}
     }
 
     /*
@@ -126,6 +134,10 @@ public class EvaluationServiceImpl implements EvaluationService {
 
     public void setCategoryRepository(CategoryRepository categoryRepository) {
 	this.categoryRepository = categoryRepository;
+    }
+
+    public void setCategoriserService(CategoriserService categoriserService) {
+	this.categoriserService = categoriserService;
     }
 
 }
