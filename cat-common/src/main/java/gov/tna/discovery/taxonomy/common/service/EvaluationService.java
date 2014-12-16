@@ -16,6 +16,10 @@ public interface EvaluationService {
      */
     public void createEvaluationTestDataset();
 
+    /**
+     * run categorisation on Test Documents and populate their category fields
+     * with found categories
+     */
     public void runCategorisationOnTestDataSet();
 
     /**
