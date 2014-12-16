@@ -15,6 +15,7 @@ import gov.tna.discovery.taxonomy.common.service.EvaluationService;
 import gov.tna.discovery.taxonomy.common.service.LegacySystemService;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
+import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,13 +63,24 @@ public class EvaluationServiceImpl implements EvaluationService {
      * createEvaluationTestDataset()
      */
     @Override
-    public void createEvaluationTestDataset() {
+    public void createEvaluationTestDataset(Integer pMinNbOfElementsPerCat) {
+	if (pMinNbOfElementsPerCat == null) {
+	    pMinNbOfElementsPerCat = this.minNbOfElementsPerCat;
+	}
+	logger.info(".createEvaluationTestDataset> going to retrieve {} documents per category at least",
+		pMinNbOfElementsPerCat);
 	for (Category category : categoryRepository.findAll()) {
+	    logger.info(".createEvaluationTestDataset: processing category: {}", category.getTtl());
 	    Integer nbOfMatchedElementsWithLegacySystem = 0;
 	    Integer offset = 0;
-	    while (nbOfMatchedElementsWithLegacySystem < minNbOfElementsPerCat) {
-		PaginatedList<InformationAssetView> iaviews = iaviewRepository.performSearch(category.getQry(), null,
-			10, offset);
+	    while (nbOfMatchedElementsWithLegacySystem < pMinNbOfElementsPerCat) {
+		PaginatedList<InformationAssetView> iaviews = null;
+		try {
+		    iaviews = iaviewRepository.performSearch(category.getQry(), null, 10, offset);
+		} catch (TaxonomyException e) {
+		    logger.error(".createEvaluationTestDataset: an error occured while performing search", e);
+		    continue;
+		}
 		for (InformationAssetView iaview : iaviews.getResults()) {
 		    String[] legacyCategories = legacySystemService.getLegacyCategoriesForCatDocRef(iaview
 			    .getCATDOCREF());
@@ -79,20 +91,24 @@ public class EvaluationServiceImpl implements EvaluationService {
 			testDocumentRepository.save(testDocument);
 			nbOfMatchedElementsWithLegacySystem++;
 		    }
-		    if (nbOfMatchedElementsWithLegacySystem == minNbOfElementsPerCat) {
+		    if (nbOfMatchedElementsWithLegacySystem == pMinNbOfElementsPerCat) {
 			break;
 		    }
 		}
 		offset += 10;
 		if (nbOfMatchedElementsWithLegacySystem == 0) {
-		    logger.warn(".createTestDataset: giving up, no results found for category: {}", category.getTtl());
+		    logger.warn(
+			    ".createTestDataset: giving up, no results found among 10 last previous attempts for category: {}",
+			    category.getTtl());
 		    break;
 		}
 		if (offset >= iaviews.getNumberOfResults()) {
 		    break;
 		}
 	    }
+
 	}
+	logger.info(".createEvaluationTestDataset < END");
     }
 
     /*
@@ -103,6 +119,9 @@ public class EvaluationServiceImpl implements EvaluationService {
      */
     @Override
     public void runCategorisationOnTestDataSet() {
+	logger.info(".runCategorisationOnTestDataSet> START");
+	logger.info(".runCategorisationOnTestDataSet: processing {} documents",
+		String.valueOf(testDocumentRepository.count()));
 	for (TestDocument testDocument : testDocumentRepository.findAll()) {
 	    InformationAssetView iaView = TaxonomyMapper.getIAViewFromTestDocument(testDocument);
 	    List<CategorisationResult> categorisationResults = categoriserService.testCategoriseSingle(iaView);
@@ -119,6 +138,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 	    testDocument.setCategories(categories);
 	    testDocumentRepository.save(testDocument);
 	}
+	logger.info(".runCategorisationOnTestDataSet < END");
     }
 
     /*
@@ -130,6 +150,7 @@ public class EvaluationServiceImpl implements EvaluationService {
     @SuppressWarnings("unchecked")
     @Override
     public EvaluationReport getEvaluationReport(String comments) {
+	logger.info(".getEvaluationReport > START");
 	Map<String, Integer> mapOfTruePositivesPerCat = new HashMap<String, Integer>();
 	Map<String, Integer> mapOfFalsePositivesPerCat = new HashMap<String, Integer>();
 	Map<String, Integer> mapOfFalseNegativesPerCat = new HashMap<String, Integer>();
@@ -139,7 +160,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 	    List<String> legacyCategories = CollectionUtils.arrayToList(testDocument.getLegacyCategories());
 
 	    for (String category : categories) {
-		if (CollectionUtils.containsInstance(legacyCategories, category)) {
+		if (legacyCategories.contains(category)) {
 		    incrementMapValueForCategory(mapOfTruePositivesPerCat, category);
 		} else {
 		    incrementMapValueForCategory(mapOfFalsePositivesPerCat, category);
@@ -147,7 +168,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 	    }
 
 	    for (String legacyCategory : legacyCategories) {
-		if (!CollectionUtils.containsInstance(categories, legacyCategory)) {
+		if (!categories.contains(legacyCategory)) {
 		    incrementMapValueForCategory(mapOfFalseNegativesPerCat, legacyCategory);
 		}
 	    }
@@ -167,9 +188,16 @@ public class EvaluationServiceImpl implements EvaluationService {
 	    listOfEvaluationResults.add(new CategoryEvaluationResult(category, tp != null ? tp : 0,
 		    fp != null ? fp : 0, fn != null ? fn : 0));
 	}
+	for (Category category : categoryRepository.findAll()) {
+	    String categoryName = category.getTtl();
+	    if (!setOfCategories.contains(categoryName)) {
+		listOfEvaluationResults.add(new CategoryEvaluationResult(categoryName, true, false, false));
+	    }
+	}
 
 	EvaluationReport report = new EvaluationReport(comments, listOfEvaluationResults, (int) numberOfDocuments);
 	evaluationReportRepository.save(report);
+	logger.info(".getEvaluationReport < END");
 	return report;
     }
 

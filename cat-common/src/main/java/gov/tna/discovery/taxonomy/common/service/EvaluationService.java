@@ -13,8 +13,11 @@ public interface EvaluationService {
 
     /**
      * Create test data set from legacy system
+     * 
+     * @param pMinNbOfElementsPerCat
+     *            minimum number of documents to retrieve per category
      */
-    public void createEvaluationTestDataset();
+    public void createEvaluationTestDataset(Integer pMinNbOfElementsPerCat);
 
     /**
      * run categorisation on Test Documents and populate their category fields
