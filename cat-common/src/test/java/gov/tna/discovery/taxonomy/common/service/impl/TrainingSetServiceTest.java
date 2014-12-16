@@ -3,11 +3,15 @@ package gov.tna.discovery.taxonomy.common.service.impl;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import gov.tna.discovery.taxonomy.common.config.ServiceConfigurationTest;
+import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
+import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 
 import java.io.IOException;
 
@@ -15,8 +19,11 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.ReaderManager;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,8 +31,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ServiceConfigurationTest.class)
 public class TrainingSetServiceTest {
-    // private static final Logger logger =
-    // LoggerFactory.getLogger(Indexer.class);
+    private static final Logger logger = LoggerFactory.getLogger(TrainingSetServiceTest.class);
 
     @Autowired
     TrainingSetService trainingSetService;
@@ -41,6 +47,9 @@ public class TrainingSetServiceTest {
 
     @Autowired
     CategoryRepository categoryRepository;
+
+    @Autowired
+    IAViewRepository iaViewRepository;
 
     @Autowired
     LuceneTestDataSet luceneTestDataSet;
@@ -90,5 +99,23 @@ public class TrainingSetServiceTest {
 
 	DirectoryReader trainingSetIndexReader = trainingSetReaderManager.acquire();
 	assertThat(trainingSetIndexReader.numDocs(), is(not(equalTo(0))));
+    }
+
+    @Test
+    @Ignore
+    public void testUpdateCategoriesScores() throws IOException {
+	mongoTestDataSet.initCategoryCollection();
+	for (Category category : categoryRepository.findAll()) {
+	    logger.debug("{} : {}", category.getTtl(), category.getSc());
+	}
+
+	trainingSetService.updateCategoriesScores(2, 10);
+	for (Category category : categoryRepository.findAll()) {
+	    PaginatedList<InformationAssetView> response = iaViewRepository.performSearch(category.getQry(),
+		    category.getSc(), 1, 0);
+	    logger.debug("{} : {} results, for min score {}", category.getTtl(), response.getNumberOfResults(),
+		    category.getSc());
+
+	}
     }
 }

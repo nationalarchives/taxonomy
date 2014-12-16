@@ -217,4 +217,74 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	logger.info(".deleteMongoTrainingDocumentByCategory < removed {} elements", numberOfRemovedElements);
     }
 
+    @Override
+    public void updateCategoriesScores(int minNumber, int maxNumber) {
+	logger.info(".updateCategoriesScores> START");
+	int maxHitsForAllCategories = getMaximumNumberOfResultsForACategory();
+	logger.info(".updateCategoriesScores: maxHitsForAllCategories: {} ", maxHitsForAllCategories);
+
+	for (Category category : categoryRepository.findAll()) {
+	    PaginatedList<InformationAssetView> searchResponse;
+	    try {
+		searchResponse = iaViewRepository.performSearch(category.getQry(), null, 1, 0);
+	    } catch (TaxonomyException e) {
+		logger.error(".updateCategoriesScores: an error occured", e);
+		category.setSc(0d);
+		categoryRepository.save(category);
+		continue;
+	    }
+	    Integer numberOfResults = searchResponse.getNumberOfResults();
+
+	    if (numberOfResults == 0) {
+		logger.error(".updateCategoriesScores: category '{}' has no result", category.getTtl());
+		category.setSc(0d);
+		categoryRepository.save(category);
+		continue;
+	    }
+
+	    int numberToIncrement = (int) getScaledNumberWithLogFunction(numberOfResults,
+		    1.0d * (maxNumber - minNumber), 1.0d * maxHitsForAllCategories);
+
+	    int lastElementToRetrieveOffset;
+	    if (numberToIncrement + minNumber < numberOfResults) {
+		lastElementToRetrieveOffset = numberToIncrement + minNumber;
+	    } else {
+		lastElementToRetrieveOffset = numberOfResults;
+	    }
+
+	    searchResponse = iaViewRepository
+		    .performSearch(category.getQry(), null, 1, lastElementToRetrieveOffset - 1);
+
+	    category.setSc(1.0d * searchResponse.getResults().get(0).getScore());
+	    categoryRepository.save(category);
+	}
+
+	logger.info(".updateCategoriesScores> END");
+    }
+
+    private int getMaximumNumberOfResultsForACategory() {
+	int maxHits = 0;
+	for (Category category : categoryRepository.findAll()) {
+
+	    PaginatedList<InformationAssetView> searchResponse;
+	    try {
+		searchResponse = iaViewRepository.performSearch(category.getQry(), null, 1, 0);
+	    } catch (TaxonomyException e) {
+		logger.error(".getMaximumNumberOfResultsForACategory: an error occured", e);
+		continue;
+	    }
+	    Integer numberOfResults = searchResponse.getNumberOfResults();
+	    if (numberOfResults > maxHits) {
+		maxHits = numberOfResults;
+	    }
+	}
+	return maxHits;
+    }
+
+    private long getScaledNumberWithLogFunction(Integer valueToScale, Double maximumValueExpected,
+	    Double maximumValueObserved) {
+	// return long to round down to lower element
+	return (long) (maximumValueExpected * Math.log(1.0d * (valueToScale + 1)) / Math.log(maximumValueObserved));
+    }
+
 }

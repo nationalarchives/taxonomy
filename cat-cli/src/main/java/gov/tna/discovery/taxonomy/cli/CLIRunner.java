@@ -43,6 +43,10 @@ public class CLIRunner implements CommandLineRunner {
     private static final String OPTION_CIAID = "TSETciaid";
     private static final String OPTION_FIXED_SIZE = "TSETfixedSize";
 
+    private static final String ACTION_UPDATE_CATEGORIES_SCORES = "TSETupdateCategoriesScores";
+    private static final String OPTION_MIN_ELEMENTS_PER_CAT = "TSETminElements";
+    private static final String OPTION_MAX_ELEMENTS_PER_CAT = "TSETmaxElements";
+
     private static final String ACTION_TEST_CATEGORISE_ALL = "CATtestCategoriseAll";
 
     private static final String ACTION_TEST_CATEGORISE_SINGLE = "CATtestCategoriseSingle";
@@ -100,6 +104,13 @@ public class CLIRunner implements CommandLineRunner {
 	/**
 	 * Management of training Set
 	 */
+
+	if (cmd.hasOption(ACTION_UPDATE_CATEGORIES_SCORES)) {
+	    logger.info("update categories scores ");
+	    String minNumber = cmd.getOptionValue(OPTION_MIN_ELEMENTS_PER_CAT);
+	    String maxNumber = cmd.getOptionValue(OPTION_MAX_ELEMENTS_PER_CAT);
+	    trainingSetService.updateCategoriesScores(Integer.valueOf(minNumber), Integer.valueOf(maxNumber));
+	}
 
 	if (cmd.hasOption(ACTION_UPDATE)) {
 	    logger.info("update (create if not existing) training set");
@@ -240,6 +251,13 @@ public class CLIRunner implements CommandLineRunner {
 		"get evaluation report from current evaluation data set containing categories from legacy and current system");
 	options.addOption(OPTION_EVALUATION_REPORT_COMMENTS, true, "on -" + ACTION_GET_EVALUATION_REPORT
 		+ ": provide comments for evaluation report (describe configuration used, etc)");
+
+	options.addOption(ACTION_UPDATE_CATEGORIES_SCORES, false,
+		"Set the score for every category so it represents the best the whole index (using log function)");
+	options.addOption(OPTION_MIN_ELEMENTS_PER_CAT, true, "on -" + ACTION_UPDATE_CATEGORIES_SCORES
+		+ " Minimum number of elements to retrieve for categories");
+	options.addOption(OPTION_MAX_ELEMENTS_PER_CAT, true, "on -" + ACTION_UPDATE_CATEGORIES_SCORES
+		+ " Maximum number of elements to retrieve for categories");
 
 	options.addOption(ACTION_HELP, false, "print help");
 	return options;

@@ -55,4 +55,6 @@ public interface TrainingSetService {
      */
     public void deleteMongoTrainingDocumentByCategory(String category);
 
+    void updateCategoriesScores(int minNumber, int maxNumber);
+
 }

@@ -85,12 +85,12 @@ public class IAViewRepository {
 	    }
 
 	    TopDocs topDocs = isearcher.search(query, offset + limit);
-	    logger.info(".performSearch: found {} total hits", topDocs.totalHits);
+	    logger.debug(".performSearch: found {} total hits", topDocs.totalHits);
 
 	    if (mimimumScore != null) {
 		Integer nbOfElementsAboveScore = getNbOfElementsAboveScore(mimimumScore, isearcher, query);
 		paginatedListOfIAViews.setNumberOfResults(nbOfElementsAboveScore);
-		logger.info(".performSearch: found {} hits for that minimum score {}",
+		logger.debug(".performSearch: found {} hits for that minimum score {}",
 			paginatedListOfIAViews.getNumberOfResults(), paginatedListOfIAViews.getMinimumScore());
 	    } else {
 		paginatedListOfIAViews.setNumberOfResults(topDocs.totalHits);
