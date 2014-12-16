@@ -1,25 +1,37 @@
 package gov.tna.discovery.taxonomy.common.service.impl;
 
 import gov.tna.discovery.taxonomy.common.service.LegacySystemService;
+import gov.tna.discovery.taxonomy.common.service.domain.legacy.LegacySearchResponse;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+import java.net.SocketAddress;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.HttpInetSocketAddress;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Service dedicated to querying the legacy Autonomy system<br/>
@@ -32,13 +44,9 @@ import org.springframework.util.StringUtils;
 public class LegacySystemServiceImpl implements LegacySystemService {
     private static final Logger logger = LoggerFactory.getLogger(EvaluationServiceImpl.class);
 
-    private String legacySystemUrl = "http://test.legacy.discovery.nationalarchives.gov.uk/SearchUI/s/res?_q=";
+    private String legacySystemUrl = "http://test.legacy.discovery.nationalarchives.gov.uk/DiscoveryAPI/json/search/1/exact={catdocref}";
     private int proxyPort = 8080;
     private String proxyUrl = "***REMOVED***.***REMOVED***";
-    private CharSequence categoriesLineToFind = "<span>Subjects:</span>";
-    private String elementBeginIndexString = "<span class=\"itemContent\">";
-    private String elementEndIndexString = "</span>";
-    private CharSequence referenceLineToFind = "<span>Reference:</span>";
 
     /*
      * (non-Javadoc)
@@ -47,63 +55,60 @@ public class LegacySystemServiceImpl implements LegacySystemService {
      * getLegacyCategoriesForCatDocRef(java.lang.String)
      */
     @Override
-    public String[] getLegacyCategoriesForCatDocRef(String catdocref) {
-	String[] legacyCategories = null;
-	CloseableHttpClient httpclient = HttpClients.createDefault();
+    public String[] getLegacyCategoriesForCatDocRef(String pCatdocref) {
+	logger.debug(".getLegacyCategoriesForCatDocRef> processing catDocRef: {}", pCatdocref);
+
+	String catdocref = pCatdocref.replaceAll("\\<.*?>", " ");
+	catdocref = catdocref.replace("/", " ");
+	if (StringUtils.isEmpty(StringUtils.trimAllWhitespace(catdocref))) {
+	    logger.error(".getLegacyCategoriesForCatDocRef : once cleaned, the parameter is an empty string",
+		    pCatdocref);
+	    return null;
+	}
+
+	SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+	requestFactory.setProxy(new Proxy(Type.HTTP, new InetSocketAddress(proxyUrl, proxyPort)));
+
+	ResponseEntity<LegacySearchResponse> entityResponse;
 	try {
-	    String url = legacySystemUrl + URLEncoder.encode(catdocref, "UTF-8");
-	    logger.debug(".getLegacyCategoriesForCatDocRef: url: {}", url);
-
-	    HttpGet target = new HttpGet(url);
-	    HttpHost proxy = new HttpHost(proxyUrl, proxyPort, "http");
-
-	    RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
-	    target.setConfig(config);
-
-	    logger.debug("Executing request " + target.getRequestLine() + " to " + target + " via " + proxy);
-
-	    CloseableHttpResponse response = httpclient.execute(target);
-	    try {
-		BufferedReader in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-		String inputLine;
-
-		while ((inputLine = in.readLine()) != null) {
-		    if (inputLine.contains(referenceLineToFind)) {
-			int referenceBeginIndex = inputLine.lastIndexOf(elementBeginIndexString)
-				+ elementBeginIndexString.length();
-			int referenceEndIndex = inputLine.indexOf(elementEndIndexString, referenceBeginIndex);
-			String reference = inputLine.substring(referenceBeginIndex, referenceEndIndex);
-			logger.debug("for doc {}, found reference: {}", catdocref, reference);
-		    }
-		    if (inputLine.contains(categoriesLineToFind)) {
-			legacyCategories = getCategoriesFromHtmlInputLine(inputLine);
-			logger.debug("for doc {}, found legacy cats: {}", catdocref, Arrays.toString(legacyCategories));
-			break;
-		    }
-		}
-	    } finally {
-		response.close();
-	    }
+	    RestTemplate restTemplate = new RestTemplate(requestFactory);
+	    entityResponse = restTemplate.getForEntity(legacySystemUrl, LegacySearchResponse.class, catdocref);
 	} catch (Exception e) {
-	    logger.error(".getLegacyCategoriesForCatDocRef exception thrown", e);
-	    throw new TaxonomyException(TaxonomyErrorType.HTTPCLIENT_ERROR, e);
-	} finally {
-	    try {
-		httpclient.close();
-	    } catch (IOException e) {
-		throw new TaxonomyException(TaxonomyErrorType.HTTPCLIENT_ERROR, e);
-	    }
+	    logger.error(".getLegacyCategoriesForCatDocRef : exception occured", e);
+	    return null;
+	}
+
+	if (hasErrors(entityResponse)) {
+	    return null;
+	}
+
+	return getLegacyCategoriesFromResponse(entityResponse);
+    }
+
+    private String[] getLegacyCategoriesFromResponse(ResponseEntity<LegacySearchResponse> entityResponse) {
+	LegacySearchResponse searchResponse = entityResponse.getBody();
+	List<String> subjects = searchResponse.getSearchResult().getSearchResultList().get(0).getSubjects();
+	String[] legacyCategories = new String[subjects.size()];
+	for (int i = 0; i < subjects.size(); i++) {
+	    legacyCategories[i] = subjects.get(i).substring(7);
+
 	}
 	return legacyCategories;
     }
 
-    private String[] getCategoriesFromHtmlInputLine(String inputLine) {
-	String[] legacyCategories;
-	int categoriesBeginIndex = inputLine.lastIndexOf(elementBeginIndexString) + elementBeginIndexString.length();
-	int categoriesEndIndex = inputLine.indexOf(elementEndIndexString, categoriesBeginIndex);
-	String categoriesString = inputLine.substring(categoriesBeginIndex, categoriesEndIndex);
-	legacyCategories = StringUtils.delimitedListToStringArray(categoriesString, " |  ");
-	return legacyCategories;
+    private boolean hasErrors(ResponseEntity<LegacySearchResponse> entityResponse) {
+	if (!HttpStatus.OK.equals(entityResponse.getStatusCode())) {
+	    logger.error(".getLegacyCategoriesForCatDocRef : response from legacy system != 200: {}",
+		    entityResponse.getStatusCode());
+	    return true;
+	}
+	LegacySearchResponse searchResponse = entityResponse.getBody();
+	if ((searchResponse.getSearchResult().getTotalResults() == null)
+		|| searchResponse.getSearchResult().getTotalResults() == 0) {
+	    logger.error(".getLegacyCategoriesForCatDocRef : no element found");
+	    return true;
+	}
+	return false;
     }
 
 }

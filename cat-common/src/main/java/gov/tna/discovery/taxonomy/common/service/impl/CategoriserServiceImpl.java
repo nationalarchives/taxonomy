@@ -156,7 +156,7 @@ public class CategoriserServiceImpl implements CategoriserService {
 	    }
 
 	    TopDocs topDocs = searcher.search(fullQuery, this.maximumSimilarElements);
-	    logger.info(".runMlt: found {} total hits, processed {} hits", topDocs.totalHits,
+	    logger.debug(".runMlt: found {} total hits, processed at maximum {} hits", topDocs.totalHits,
 		    this.maximumSimilarElements);
 
 	    result = new LinkedHashMap<String, CategorisationResult>();
@@ -237,6 +237,8 @@ public class CategoriserServiceImpl implements CategoriserService {
     @Override
     public List<CategorisationResult> testCategoriseSingle(InformationAssetView iaView) {
 
+	logger.info(".testCategoriseSingle: catdocref:{}, docreference:{} ", iaView.getCATDOCREF(),
+		iaView.getDOCREFERENCE());
 	Document doc = new Document();
 	try {
 	    for (Field field : iaView.getClass().getDeclaredFields()) {

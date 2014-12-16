@@ -67,8 +67,12 @@ public class EvaluationServiceImpl implements EvaluationService {
 	if (pMinNbOfElementsPerCat == null) {
 	    pMinNbOfElementsPerCat = this.minNbOfElementsPerCat;
 	}
+	logger.info(".createEvaluationTestDataset> empty testDocument collection");
+	testDocumentRepository.deleteAll();
+
 	logger.info(".createEvaluationTestDataset> going to retrieve {} documents per category at least",
 		pMinNbOfElementsPerCat);
+
 	for (Category category : categoryRepository.findAll()) {
 	    logger.info(".createEvaluationTestDataset: processing category: {}", category.getTtl());
 	    Integer nbOfMatchedElementsWithLegacySystem = 0;
@@ -79,8 +83,9 @@ public class EvaluationServiceImpl implements EvaluationService {
 		    iaviews = iaviewRepository.performSearch(category.getQry(), null, 10, offset);
 		} catch (TaxonomyException e) {
 		    logger.error(".createEvaluationTestDataset: an error occured while performing search", e);
-		    continue;
+		    break;
 		}
+		int currentSuccessfulAttempts = 0;
 		for (InformationAssetView iaview : iaviews.getResults()) {
 		    String[] legacyCategories = legacySystemService.getLegacyCategoriesForCatDocRef(iaview
 			    .getCATDOCREF());
@@ -90,13 +95,14 @@ public class EvaluationServiceImpl implements EvaluationService {
 			testDocument.setLegacyCategories(legacyCategories);
 			testDocumentRepository.save(testDocument);
 			nbOfMatchedElementsWithLegacySystem++;
+			currentSuccessfulAttempts++;
 		    }
 		    if (nbOfMatchedElementsWithLegacySystem == pMinNbOfElementsPerCat) {
 			break;
 		    }
 		}
 		offset += 10;
-		if (nbOfMatchedElementsWithLegacySystem == 0) {
+		if (currentSuccessfulAttempts == 0) {
 		    logger.warn(
 			    ".createTestDataset: giving up, no results found among 10 last previous attempts for category: {}",
 			    category.getTtl());

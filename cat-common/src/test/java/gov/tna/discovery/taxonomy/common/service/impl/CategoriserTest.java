@@ -88,6 +88,7 @@ public class CategoriserTest {
     @Test
     public void testTestCategoriseSingle() {
 	InformationAssetView iaView = new InformationAssetView();
+	iaView.setCATDOCREF("TEST");
 	iaView.setDESCRIPTION("Singapore Harbour Board: indemnity against any damage caused by explosives on board HM ships in harbour area.");
 	List<CategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));

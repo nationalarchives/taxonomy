@@ -26,7 +26,6 @@ public class LegacySystemServiceTest {
      * legacy system service
      */
     @Test
-    @Ignore
     public void testGetLegacyCategoriesForCatDocRef() {
 
 	String[] legacyCategoriesForCatDocRef = legacySystemService.getLegacyCategoriesForCatDocRef("HLG 102/182");
