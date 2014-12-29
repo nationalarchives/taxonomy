@@ -139,6 +139,10 @@ public class InformationAssetView {
 	builder.append(TITLE);
 	builder.append(", CATEGORIES=");
 	builder.append(Arrays.toString(CATEGORIES));
+	if (score != null) {
+	    builder.append(", SCORE=");
+	    builder.append(score);
+	}
 	builder.append("]");
 	return builder.toString();
     }

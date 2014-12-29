@@ -103,19 +103,35 @@ public class TrainingSetServiceTest {
 
     @Test
     @Ignore
-    public void testUpdateCategoriesScores() throws IOException {
+    public void testUpdateCategoriesScoresAndTrainingSet() throws IOException {
 	mongoTestDataSet.initCategoryCollection();
 	for (Category category : categoryRepository.findAll()) {
 	    logger.debug("{} : {}", category.getTtl(), category.getSc());
 	}
 
-	trainingSetService.updateCategoriesScores(2, 10);
+	int maxNumber = 20;
+	int minNumber = 10;
+	trainingSetService.updateCategoriesScores(minNumber, maxNumber);
 	for (Category category : categoryRepository.findAll()) {
 	    PaginatedList<InformationAssetView> response = iaViewRepository.performSearch(category.getQry(),
-		    category.getSc(), 1, 0);
-	    logger.debug("{} : {} results, for min score {}", category.getTtl(), response.getNumberOfResults(),
+		    category.getSc(), 100, 0);
+	    logger.info("{} : {} results, for min score {}", category.getTtl(), response.getNumberOfResults(),
 		    category.getSc());
-
+	    assertThat(response.getNumberOfResults(), is(equalTo(response.getResults().size())));
+	    assertThat(response.getNumberOfResults(), is(lessThanOrEqualTo(maxNumber)));
+	    assertThat(response.getNumberOfResults(), is(greaterThanOrEqualTo(0)));
 	}
+
+	// for (Category category : categoryRepository.findAll()) {
+	// List<TrainingDocument> trainingDocuments =
+	// trainingDocumentRepository.findByCategory(category.getTtl());
+	// logger.info("found {} documents for category {}",
+	// trainingDocuments.size(), category.getTtl());
+	// assertThat(trainingDocuments.size(), is(lessThanOrEqualTo(10)));
+	// if (trainingDocuments.size() != 0) {
+	// assertThat(trainingDocuments.size(), is(greaterThanOrEqualTo(2)));
+	// }
+	// }
     }
+
 }

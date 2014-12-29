@@ -106,7 +106,7 @@ public class IAViewRepository {
 	    for (int i = offset; i < totalNumberOfDocumentsToParse; i++) {
 
 		ScoreDoc scoreDoc = topDocs.scoreDocs[i];
-		if (mimimumScore != null && scoreDoc.score < mimimumScore) {
+		if (mimimumScore != null && (double) scoreDoc.score < mimimumScore) {
 		    // FIXME JCT use HitCollector instead? to return the
 		    // total
 		    // number of results later
@@ -140,7 +140,7 @@ public class IAViewRepository {
 	topDocs = isearcher.search(query, totalHits);
 	Integer nbOfElementsAboveScore = 0;
 	for (ScoreDoc searchResult : topDocs.scoreDocs) {
-	    if (searchResult.score > mimimumScore) {
+	    if ((double) searchResult.score >= mimimumScore) {
 		nbOfElementsAboveScore++;
 		continue;
 	    }

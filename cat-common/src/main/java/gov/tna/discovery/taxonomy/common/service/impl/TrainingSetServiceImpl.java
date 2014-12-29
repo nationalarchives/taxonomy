@@ -117,7 +117,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	    logger.error(".updateTrainingSetForCategory< Error message: " + e.getMessage());
 	    throw e;
 	}
-	logger.info(".updateTrainingSetForCategory: Process completed for category {}", category.getTtl());
+	logger.debug(".updateTrainingSetForCategory: Process completed for category {}", category.getTtl());
     }
 
     /*
@@ -255,11 +255,23 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	    searchResponse = iaViewRepository
 		    .performSearch(category.getQry(), null, 1, lastElementToRetrieveOffset - 1);
 
-	    category.setSc(1.0d * searchResponse.getResults().get(0).getScore());
+	    category.setSc(getUpperDoubleValue(1.0d * searchResponse.getResults().get(0).getScore()));
 	    categoryRepository.save(category);
+	    logger.info(".updateCategoriesScores : score {} was set for category {}", category.getSc(),
+		    category.getTtl());
 	}
 
 	logger.info(".updateCategoriesScores> END");
+    }
+
+    /**
+     * to avoid retrieving too many records on the score boundary
+     * 
+     * @param number
+     * @return
+     */
+    private Double getUpperDoubleValue(Double number) {
+	return Math.nextUp(number);
     }
 
     private int getMaximumNumberOfResultsForACategory() {
@@ -278,6 +290,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 		maxHits = numberOfResults;
 	    }
 	}
+	logger.info(".getMaximumNumberOfResultsForACategory < {}", maxHits);
 	return maxHits;
     }
 

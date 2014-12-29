@@ -31,7 +31,7 @@ public class IAViewRepositoryTest {
 
     private static final String QUERY_WITHOUT_WILDCARD = "\"church\"";
 
-    public static final Logger logger = LoggerFactory.getLogger(Indexer.class);
+    public static final Logger logger = LoggerFactory.getLogger(IAViewRepositoryTest.class);
 
     @Autowired
     private IAViewRepository iaViewRepository;
@@ -62,7 +62,7 @@ public class IAViewRepositoryTest {
     }
 
     @Test
-    public void testPerformSearchWithQueryWithMinimumScore() {
+    public void testPerformSearchWithQueryWithMinimumScoreWithLimit() {
 	PaginatedList<InformationAssetView> results = iaViewRepository.performSearch(QUERY_WITHOUT_WILDCARD, 0.005, 2,
 		0);
 	assertThat(results, is(notNullValue()));
@@ -70,6 +70,19 @@ public class IAViewRepositoryTest {
 	assertThat(results.getResults(), is(not(empty())));
 	assertThat(results.size(), is(equalTo(2)));
 	assertThat(results.getNumberOfResults(), is(equalTo(3)));
+	logger.debug(".testPerformSearchWithQueryWithMinimumScore: Returned {} results and found {} results in total",
+		results.size(), results.getNumberOfResults());
+    }
+
+    @Test
+    public void testPerformSearchWithQueryWithMinimumScoreWithHighLimit() {
+	PaginatedList<InformationAssetView> results = iaViewRepository.performSearch(QUERY_WITHOUT_WILDCARD, 0.2, 100,
+		0);
+	assertThat(results, is(notNullValue()));
+	assertThat(results.getResults(), is(notNullValue()));
+	assertThat(results.getResults(), is(not(empty())));
+	assertThat(results.size(), is(equalTo(1)));
+	assertThat(results.getNumberOfResults(), is(equalTo(1)));
 	logger.debug(".testPerformSearchWithQueryWithMinimumScore: Returned {} results and found {} results in total",
 		results.size(), results.getNumberOfResults());
     }

@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringApplicationConfiguration(classes = ServiceConfigurationTest.class)
 public class LegacySystemServiceTest {
     // private static final Logger logger =
-    // LoggerFactory.getLogger(CategoriserTest.class);
+    // LoggerFactory.getLogger(LegacySystemServiceTest.class);
 
     @Autowired
     public LegacySystemService legacySystemService;

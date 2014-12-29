@@ -40,7 +40,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringApplicationConfiguration(classes = ServiceConfigurationTest.class)
 public class EvaluationServiceTest {
     // private static final Logger logger =
-    // LoggerFactory.getLogger(CategoriserTest.class);
+    // LoggerFactory.getLogger(EvaluationServiceTest.class);
 
     public EvaluationServiceImpl evaluationService;
 
