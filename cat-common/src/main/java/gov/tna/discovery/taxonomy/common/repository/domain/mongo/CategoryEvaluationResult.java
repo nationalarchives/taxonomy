@@ -11,12 +11,13 @@ public class CategoryEvaluationResult {
     private boolean foundInTDocCat = false;
     private boolean foundInTDocLegacyCat = false;
 
-    public CategoryEvaluationResult(String category, int tp, int fp, int fn) {
+    public CategoryEvaluationResult(String category, int tp, int fp, int fn, boolean foundInCatRepo) {
 	super();
 	this.category = category;
 	this.tp = tp;
 	this.fp = fp;
 	this.fn = fn;
+	this.foundInCatRepo = foundInCatRepo;
 
 	if (tp != 0) {
 	    this.recall = 1.0d * tp / (fn + tp);
@@ -27,13 +28,11 @@ public class CategoryEvaluationResult {
 	}
 
 	if (tp > 0) {
-	    this.foundInCatRepo = true;
 	    this.foundInTDocCat = true;
 	    this.foundInTDocLegacyCat = true;
 	    return;
 	}
 	if (fp > 0) {
-	    this.foundInCatRepo = true;
 	    this.foundInTDocCat = true;
 	}
 	if (fn > 0) {

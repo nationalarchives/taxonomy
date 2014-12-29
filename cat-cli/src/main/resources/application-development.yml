@@ -1,9 +1,12 @@
 logging:
+ config: classpath:log4j-tooling.properties
  level:
   gov:
    tna:
     discovery:
-     taxonomy: DEBUG
+     taxonomy: INFO
+
+
 
 
 spring:
@@ -25,15 +28,17 @@ async:
 
 lucene:
  mlt:
-  mimimumScoreForMlt: 0.001
+  mimimumScoreForMlt: 0
   mimimumGlobalScoreForACategory: 0
-  maximumSimilarElements: 500
+  maximumSimilarElements: 2000
   minTermFreq: 1
-  minDocFreq: 1
+  minDocFreq: 2
   
  index:
   iaviewCollectionPath: ***REMOVED***solr/collection4/data/index
   trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
   version: LUCENE_47
   maxTrainingDocsPerCategory: 5000
-  maxShingleSize: 3
+  maxShingleSize: 0
+  useStopFilter: false
+  useSynonymFilter: false

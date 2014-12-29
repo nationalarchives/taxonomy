@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface CategoryRepository extends CrudRepository<Category, String> {
 
     public Category findByCiaid(String ciaid);
+
+    public Category findByTtl(String ttl);
 }

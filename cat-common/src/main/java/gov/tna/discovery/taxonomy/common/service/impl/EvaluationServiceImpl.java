@@ -192,7 +192,8 @@ public class EvaluationServiceImpl implements EvaluationService {
 	    Integer fp = mapOfFalsePositivesPerCat.get(category);
 	    Integer fn = mapOfFalseNegativesPerCat.get(category);
 	    listOfEvaluationResults.add(new CategoryEvaluationResult(category, tp != null ? tp : 0,
-		    fp != null ? fp : 0, fn != null ? fn : 0));
+		    fp != null ? fp : 0, fn != null ? fn : 0, categoryRepository.findByTtl(category) != null ? true
+			    : false));
 	}
 	for (Category category : categoryRepository.findAll()) {
 	    String categoryName = category.getTtl();

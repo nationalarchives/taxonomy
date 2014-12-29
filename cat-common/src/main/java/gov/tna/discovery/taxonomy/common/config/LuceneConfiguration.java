@@ -48,6 +48,12 @@ class LuceneConfiguration {
     @Value("${lucene.index.maxShingleSize}")
     private String maxShingleSize;
 
+    @Value("${lucene.index.useStopFilter}")
+    private Boolean useStopFilter;
+
+    @Value("${lucene.index.useSynonymFilter}")
+    private Boolean useSynonymFilter;
+
     /**
      ************************* Directories
      */
@@ -140,7 +146,15 @@ class LuceneConfiguration {
      * @return
      */
     public @Bean Analyzer trainingSetAnalyser() {
-	return new TaxonomyTrainingSetAnalyser(Version.valueOf(version), stopFilterFactory(), synonymFilterFactory(),
+	StopFilterFactory stopFilterFactory = null;
+	if (useStopFilter) {
+	    stopFilterFactory = stopFilterFactory();
+	}
+	SynonymFilterFactory synonymFilterFactory = null;
+	if (useSynonymFilter) {
+	    synonymFilterFactory = synonymFilterFactory();
+	}
+	return new TaxonomyTrainingSetAnalyser(Version.valueOf(version), stopFilterFactory, synonymFilterFactory,
 		Integer.valueOf(maxShingleSize));
     }
 

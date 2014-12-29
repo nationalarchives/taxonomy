@@ -41,3 +41,5 @@ lucene:
   version: LUCENE_47
   maxTrainingDocsPerCategory: 100
   maxShingleSize: 3
+  useStopFilter: true
+  useSynonymFilter: true
