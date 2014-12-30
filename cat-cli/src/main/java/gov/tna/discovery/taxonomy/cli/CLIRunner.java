@@ -11,7 +11,6 @@ import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.cli.BasicParser;
@@ -26,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -160,11 +158,15 @@ public class CLIRunner implements CommandLineRunner {
 	}
 
 	if (cmd.hasOption(ACTION_GET_EVALUATION_REPORT)) {
-	    String comments = null;
+	    String userComments = null;
 	    if (cmd.hasOption(OPTION_EVALUATION_REPORT_COMMENTS)) {
-		comments = cmd.getOptionValue(OPTION_EVALUATION_REPORT_COMMENTS);
+		userComments = cmd.getOptionValue(OPTION_EVALUATION_REPORT_COMMENTS);
 	    }
-	    getEvaluationReport(comments);
+
+	    String aggregatedComments = aggregateCommentsWithArguments(userComments, args);
+
+	    getEvaluationReport(aggregatedComments);
+
 	}
 
 	/**
@@ -178,6 +180,24 @@ public class CLIRunner implements CommandLineRunner {
 	}
 
 	logger.info("Stop cat CLI Runner.");
+    }
+
+    private String aggregateCommentsWithArguments(String userComments, String... args) {
+	StringBuilder stringBuilder = new StringBuilder();
+	if (userComments != null) {
+	    stringBuilder.append("USER COMMENTS \n");
+	    stringBuilder.append(userComments);
+	    stringBuilder.append("\n");
+	    stringBuilder.append("\n");
+	}
+
+	stringBuilder.append("USER ARGUMENTS \n");
+	for (String arg : args) {
+	    stringBuilder.append(arg).append(" ");
+	}
+
+	String aggregatedComments = stringBuilder.toString();
+	return aggregatedComments;
     }
 
     private void getEvaluationReport(String comments) throws JsonProcessingException {
