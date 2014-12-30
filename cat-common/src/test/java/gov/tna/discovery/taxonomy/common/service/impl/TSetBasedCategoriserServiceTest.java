@@ -33,7 +33,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ServiceConfigurationTest.class)
-public class CategoriserTest {
+public class TSetBasedCategoriserServiceTest {
     // private static final Logger logger =
     // LoggerFactory.getLogger(CategoriserTest.class);
 

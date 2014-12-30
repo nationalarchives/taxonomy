@@ -29,6 +29,9 @@ async:
   queueCapacity: 11
 
 lucene:
+ categoriser:
+  useTSetBasedCategoriser: true
+  useQueryBasedCategoriser: false
  mlt:
   mimimumScoreForMlt: 0.001
   mimimumGlobalScoreForACategory: 0
