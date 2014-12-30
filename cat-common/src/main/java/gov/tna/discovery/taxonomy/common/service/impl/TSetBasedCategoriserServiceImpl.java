@@ -260,10 +260,8 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 	    }
 
 	} catch (IllegalArgumentException e) {
-	    logger.error(".testCategoriseSingle: unexpected error: {}", e.getMessage());
 	    throw new RuntimeException(e);
 	} catch (IllegalAccessException e) {
-	    logger.error(".testCategoriseSingle: unexpected error: {}", e.getMessage());
 	    throw new RuntimeException(e);
 	}
 

@@ -70,6 +70,8 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
     @Override
     public List<CategorisationResult> testCategoriseSingle(InformationAssetView iaView) {
+	logger.info(".testCategoriseSingle: catdocref:{}, docreference:{} ", iaView.getCATDOCREF(),
+		iaView.getDOCREFERENCE());
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
 	SearcherManager searcherManager = null;
 	IndexSearcher searcher = null;
@@ -86,22 +88,27 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
 	    for (Category category : categoryRepository.findAll()) {
 		String queryString = category.getQry();
-		Query query = parser.parse(queryString);
-		TopDocs topDocs = searcher.search(query, 1);
+		Query query;
+		try {
+		    query = parser.parse(queryString);
+		    TopDocs topDocs = searcher.search(query, 1);
 
-		if (topDocs.totalHits != 0) {
-		    listOfCategoryResults.add(new CategorisationResult(category.getTtl(), topDocs.scoreDocs[0].score));
-		    logger.debug(".testCategoriseSingle: found category {} with score {}", category.getTtl(),
-			    topDocs.scoreDocs[0].score);
-		} else {
-		    logger.debug(".testCategoriseSingle: category {} not found", category.getTtl());
+		    if (topDocs.totalHits != 0) {
+			listOfCategoryResults.add(new CategorisationResult(category.getTtl(),
+				topDocs.scoreDocs[0].score));
+			logger.debug(".testCategoriseSingle: found category {} with score {}", category.getTtl(),
+				topDocs.scoreDocs[0].score);
+		    } else {
+			logger.debug(".testCategoriseSingle: category {} not found", category.getTtl());
+		    }
+		} catch (ParseException e) {
+		    logger.debug(".testCategoriseSingle: an exception occured while parsing category query for {}",
+			    category.getTtl());
 		}
 	    }
 
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
-	} catch (ParseException e) {
-	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
 	    LuceneHelperTools.releaseSearcherManagerQuietly(searcherManager, searcher);
 	}

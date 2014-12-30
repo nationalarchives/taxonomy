@@ -73,6 +73,7 @@ public class QueryBasedCategoriserServiceTest {
     }
 
     @Test
+    @Ignore
     public void testTestCategoriseSingle() {
 	InformationAssetView iaView = new InformationAssetView();
 	iaView.setCATDOCREF("CO 847");
