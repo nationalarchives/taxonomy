@@ -10,7 +10,7 @@ import gov.tna.discovery.taxonomy.common.repository.lucene.TrainingSetRepository
 import gov.tna.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
-import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
+import gov.tna.discovery.taxonomy.common.service.domain.TSetBasedCategorisationResult;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -80,7 +80,7 @@ public class TSetBasedCategoriserServiceTest {
 
     @Test
     public void testCategoriseIAViewSolrDocument() throws IOException, ParseException {
-	List<CategorisationResult> categorisationResults = categoriser.categoriseIAViewSolrDocument("CO 273/630/9");
+	List<TSetBasedCategorisationResult> categorisationResults = categoriser.categoriseIAViewSolrDocument("CO 273/630/9");
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
     }
@@ -90,7 +90,7 @@ public class TSetBasedCategoriserServiceTest {
 	InformationAssetView iaView = new InformationAssetView();
 	iaView.setCATDOCREF("TEST");
 	iaView.setDESCRIPTION("Singapore Harbour Board: indemnity against any damage caused by explosives on board HM ships in harbour area.");
-	List<CategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
+	List<TSetBasedCategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
 	assertThat(categorisationResults.get(0).getName(), is(equalTo("Resources")));
@@ -101,7 +101,7 @@ public class TSetBasedCategoriserServiceTest {
     public void testTestCategoriseSingleWithIncompleteDescription() {
 	InformationAssetView iaView = new InformationAssetView();
 	iaView.setDESCRIPTION("Singapore Harbour Board: indemnity against any damage caused by explosives");
-	List<CategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
+	List<TSetBasedCategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
 	assertThat(categorisationResults.get(0).getName(), is(equalTo("Migration")));
@@ -114,7 +114,7 @@ public class TSetBasedCategoriserServiceTest {
 	iaView.setDESCRIPTION("UK bilateral aid programme: review by Ministry of Overseas Development working party; papers, minutes and correspondence.");
 	iaView.setCONTEXTDESCRIPTION("Board of Trade and successors: Export Policy and Promotion Division and successors: Registered Files (XP Series).");
 
-	List<CategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
+	List<TSetBasedCategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
     }
@@ -140,7 +140,7 @@ public class TSetBasedCategoriserServiceTest {
 	InformationAssetView iaView = new InformationAssetView();
 	iaView.setDESCRIPTION(LuceneTestDataSet.TEST_DESC);
 	iaView.setDOCREFERENCE(LuceneTestDataSet.TEST_DOCREF);
-	List<CategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
+	List<TSetBasedCategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(empty()));
     }
@@ -149,7 +149,7 @@ public class TSetBasedCategoriserServiceTest {
 	InformationAssetView iaView = new InformationAssetView();
 	iaView.setDESCRIPTION(LuceneTestDataSet.TEST_DESC);
 	iaView.setDOCREFERENCE(LuceneTestDataSet.TEST_DOCREF);
-	List<CategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
+	List<TSetBasedCategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
 	assertThat(categorisationResults.get(0).getName(), is(equalTo(LuceneTestDataSet.TEST_CATEGORY)));

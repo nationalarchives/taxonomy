@@ -13,7 +13,7 @@ import gov.tna.discovery.taxonomy.common.repository.mongo.TestDocumentRepository
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.EvaluationService;
 import gov.tna.discovery.taxonomy.common.service.LegacySystemService;
-import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
+import gov.tna.discovery.taxonomy.common.service.domain.TSetBasedCategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
@@ -130,14 +130,14 @@ public class EvaluationServiceImpl implements EvaluationService {
 		String.valueOf(testDocumentRepository.count()));
 	for (TestDocument testDocument : testDocumentRepository.findAll()) {
 	    InformationAssetView iaView = TaxonomyMapper.getIAViewFromTestDocument(testDocument);
-	    List<CategorisationResult> categorisationResults = categoriserService.testCategoriseSingle(iaView);
+	    List<TSetBasedCategorisationResult> categorisationResults = categoriserService.testCategoriseSingle(iaView);
 	    String[] categories = new String[testDocument.getLegacyCategories().length];
 	    for (int i = 0; i < categorisationResults.size(); i++) {
 		if (i >= testDocument.getLegacyCategories().length) {
 		    break;
 		}
 
-		CategorisationResult categorisationResult = categorisationResults.get(i);
+		TSetBasedCategorisationResult categorisationResult = categorisationResults.get(i);
 		categories[i] = categorisationResult.getName();
 
 	    }

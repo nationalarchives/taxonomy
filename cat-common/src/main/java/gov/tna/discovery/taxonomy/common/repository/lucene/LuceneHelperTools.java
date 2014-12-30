@@ -87,4 +87,8 @@ public class LuceneHelperTools {
 	return assetView;
     }
 
+    public static String removePunctuation(String string) {
+	return string.replaceAll("[^a-zA-Z ]", "");
+    }
+
 }

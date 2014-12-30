@@ -1,11 +1,12 @@
 package gov.tna.discovery.taxonomy.common.service.impl;
 
+import gov.tna.discovery.taxonomy.common.config.LuceneConfiguration;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneHelperTools;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
-import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
+import gov.tna.discovery.taxonomy.common.service.domain.TSetBasedCategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
@@ -49,7 +50,7 @@ import org.springframework.util.CollectionUtils;
  */
 @Service
 @ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useTSetBasedCategoriser")
-public class TSetBasedCategoriserServiceImpl implements CategoriserService {
+public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetBasedCategorisationResult> {
 
     private static final Logger logger = LoggerFactory.getLogger(TSetBasedCategoriserServiceImpl.class);
 
@@ -88,7 +89,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService {
      * categoriseIAViewSolrDocument(java.lang.String)
      */
     @Override
-    public List<CategorisationResult> categoriseIAViewSolrDocument(String catdocref) {
+    public List<TSetBasedCategorisationResult> categoriseIAViewSolrDocument(String catdocref) {
 	logger.info("testCategoriseSingle on document: {} ", catdocref);
 	TopDocs results = iaViewRepository.searchIAViewIndexByFieldAndPhrase("CATDOCREF", catdocref, 1);
 
@@ -99,7 +100,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	}
 
-	List<CategorisationResult> result = runMlt(doc);
+	List<TSetBasedCategorisationResult> result = runMlt(doc);
 
 	logger.debug("DOCUMENT");
 	logger.debug("------------------------");
@@ -107,7 +108,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService {
 	logger.debug("IAID: {}", doc.get("CATDOCREF"));
 	logger.debug("DESCRIPTION: {}", doc.get("DESCRIPTION"));
 	logger.debug("");
-	for (CategorisationResult categoryResult : result) {
+	for (TSetBasedCategorisationResult categoryResult : result) {
 	    logger.debug("CATEGORY: {}, score: {}, number of found documents: {}", categoryResult.getName(),
 		    categoryResult.getScore(), categoryResult.getNumberOfFoundDocuments());
 	}
@@ -119,20 +120,22 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService {
 
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * run More Like This process on a document by comparing its description to
+     * the description of all items of the training set<br/>
+     * currently we get a fixed number of the top results
      * 
-     * @see
-     * gov.tna.discovery.taxonomy.common.service.impl.Categoriser#runMlt(java
-     * .io.Reader )
+     * @param document
+     *            document being tested
+     * @return
+     * @throws IOException
      */
     // TODO 1 check and update fields that are being retrieved to create
     // training set, used for MLT (run MLT on title, context desc and desc at
     // least. returns results by score not from a fixed number)
-    @Override
-    public List<CategorisationResult> runMlt(Document document) {
+    public List<TSetBasedCategorisationResult> runMlt(Document document) {
 
-	Map<String, CategorisationResult> result = null;
+	Map<String, TSetBasedCategorisationResult> result = null;
 	IndexSearcher searcher = null;
 	try {
 	    trainingSetSearcherManager.maybeRefresh();
@@ -146,11 +149,11 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService {
 	    moreLikeThis.setMinTermFreq(minTermFreq);
 	    moreLikeThis.setMinDocFreq(minDocFreq);
 	    moreLikeThis.setAnalyzer(this.trainingSetAnalyser);
-	    moreLikeThis.setFieldNames(IAViewRepository.fieldsToAnalyse);
+	    moreLikeThis.setFieldNames(LuceneConfiguration.fieldsToAnalyse);
 
 	    BooleanQuery fullQuery = new BooleanQuery();
 
-	    for (String fieldName : IAViewRepository.fieldsToAnalyse) {
+	    for (String fieldName : LuceneConfiguration.fieldsToAnalyse) {
 		String value = document.get(fieldName);
 		if (value != null && !"null".equals(value)) {
 		    Query query = moreLikeThis.like(new StringReader(value), fieldName);
@@ -162,7 +165,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService {
 	    logger.debug(".runMlt: found {} total hits, processed at maximum {} hits", topDocs.totalHits,
 		    this.maximumSimilarElements);
 
-	    result = new LinkedHashMap<String, CategorisationResult>();
+	    result = new LinkedHashMap<String, TSetBasedCategorisationResult>();
 
 	    int size = 0;
 	    if (topDocs.totalHits <= this.maximumSimilarElements) {
@@ -185,7 +188,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService {
 		logger.debug(".runMlt: found doc, category: {}, score: {}, docreference: {}", category, currrentScore,
 			docReference);
 
-		CategorisationResult existingCategorisationResult = result.get(category);
+		TSetBasedCategorisationResult existingCategorisationResult = result.get(category);
 		Float scoreToSet = currrentScore;
 		Integer numberOfFoundDocuments = 1;
 		// k nearest neighbour algorithm
@@ -193,7 +196,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService {
 		    scoreToSet += existingCategorisationResult.getScore();
 		    numberOfFoundDocuments += existingCategorisationResult.getNumberOfFoundDocuments();
 		}
-		result.put(category, new CategorisationResult(category, scoreToSet, numberOfFoundDocuments));
+		result.put(category, new TSetBasedCategorisationResult(category, scoreToSet, numberOfFoundDocuments));
 
 	    }
 
@@ -203,25 +206,25 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService {
 	    LuceneHelperTools.releaseSearcherManagerQuietly(trainingSetSearcherManager, searcher);
 	}
 
-	List<CategorisationResult> sortedResults = sortCategorisationResultsByScoreDescAndFilterByGlobalScore(new ArrayList<CategorisationResult>(
+	List<TSetBasedCategorisationResult> sortedResults = sortCategorisationResultsByScoreDescAndFilterByGlobalScore(new ArrayList<TSetBasedCategorisationResult>(
 		result.values()));
 
 	return sortedResults;
     }
 
-    private List<CategorisationResult> sortCategorisationResultsByScoreDescAndFilterByGlobalScore(
-	    List<CategorisationResult> categorisationResults) {
+    private List<TSetBasedCategorisationResult> sortCategorisationResultsByScoreDescAndFilterByGlobalScore(
+	    List<TSetBasedCategorisationResult> categorisationResults) {
 	// Sort results by Score in descending Order
-	Collections.sort(categorisationResults, new Comparator<CategorisationResult>() {
-	    public int compare(CategorisationResult a, CategorisationResult b) {
+	Collections.sort(categorisationResults, new Comparator<TSetBasedCategorisationResult>() {
+	    public int compare(TSetBasedCategorisationResult a, TSetBasedCategorisationResult b) {
 		return b.getScore().compareTo(a.getScore());
 	    }
 	});
 
 	// add entries to the linkedList to return. Do not add entries below the
 	// minimum global score for a category
-	List<CategorisationResult> sortedResults = new LinkedList<CategorisationResult>();
-	for (CategorisationResult entry : categorisationResults) {
+	List<TSetBasedCategorisationResult> sortedResults = new LinkedList<TSetBasedCategorisationResult>();
+	for (TSetBasedCategorisationResult entry : categorisationResults) {
 	    if (entry.getScore() < this.mimimumGlobalScoreForACategory) {
 		break;
 	    }
@@ -238,7 +241,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService {
      * .tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView)
      */
     @Override
-    public List<CategorisationResult> testCategoriseSingle(InformationAssetView iaView) {
+    public List<TSetBasedCategorisationResult> testCategoriseSingle(InformationAssetView iaView) {
 
 	logger.info(".testCategoriseSingle: catdocref:{}, docreference:{} ", iaView.getCATDOCREF(),
 		iaView.getDOCREFERENCE());
@@ -248,7 +251,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService {
 		field.setAccessible(true);
 		String fieldName = field.getName();
 
-		if (CollectionUtils.contains(Arrays.asList(IAViewRepository.fieldsToAnalyse).iterator(), fieldName)) {
+		if (CollectionUtils.contains(Arrays.asList(LuceneConfiguration.fieldsToAnalyse).iterator(), fieldName)) {
 		    String value = String.valueOf(field.get(iaView));
 		    if (value != null && !"null".equals(value)) {
 			doc.add(new TextField(fieldName, value, Store.YES));
@@ -288,7 +291,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService {
 
 	    Document doc = this.iaViewIndexReader.document(i);
 
-	    List<CategorisationResult> result = runMlt(doc);
+	    List<TSetBasedCategorisationResult> result = runMlt(doc);
 
 	    logger.debug("DOCUMENT");
 	    logger.debug("------------------------");
@@ -296,7 +299,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService {
 	    logger.debug("IAID: {}", doc.get("CATDOCREF"));
 	    logger.debug("DESCRIPTION: {}", doc.get("DESCRIPTION"));
 	    logger.debug("");
-	    for (CategorisationResult categoryResult : result) {
+	    for (TSetBasedCategorisationResult categoryResult : result) {
 		logger.info("CATEGORY: {}, score: {}, number of found documents: {}", categoryResult.getName(),
 			categoryResult.getScore(), categoryResult.getNumberOfFoundDocuments());
 	    }

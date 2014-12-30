@@ -5,6 +5,7 @@ import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAss
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -55,14 +56,14 @@ public class TrainingSetRepository {
 
 	try {
 	    if (!StringUtils.isEmpty(trainingDocument.getDescription())) {
-		trainingDocument.setDescription(trainingDocument.getDescription().replaceAll("\\<.*?>", ""));
+		trainingDocument.setDescription(LuceneHelperTools.removePunctuation(trainingDocument.getDescription()));
 	    }
 	    if (!StringUtils.isEmpty(trainingDocument.getContextDescription())) {
-		trainingDocument.setContextDescription(trainingDocument.getContextDescription().replaceAll("\\<.*?>",
-			""));
+		trainingDocument.setContextDescription(LuceneHelperTools.removePunctuation(trainingDocument
+			.getContextDescription()));
 	    }
 	    if (!StringUtils.isEmpty(trainingDocument.getTitle())) {
-		trainingDocument.setTitle(trainingDocument.getTitle().replaceAll("\\<.*?>", ""));
+		trainingDocument.setTitle(LuceneHelperTools.removePunctuation(trainingDocument.getTitle()));
 	    }
 	    Document doc = new Document();
 
@@ -83,7 +84,7 @@ public class TrainingSetRepository {
 		doc.add(new TextField(InformationAssetViewFields.TITLE.toString(), trainingDocument.getTitle(),
 			Field.Store.YES));
 	    }
-	    if (!StringUtils.isEmpty(trainingDocument.getTitle())) {
+	    if (!StringUtils.isEmpty(trainingDocument.getContextDescription())) {
 		doc.add(new TextField(InformationAssetViewFields.CONTEXTDESCRIPTION.toString(), trainingDocument
 			.getContextDescription(), Field.Store.YES));
 	    }

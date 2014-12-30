@@ -1,7 +1,7 @@
 package gov.tna.discovery.taxonomy.common.repository.lucene;
 
+import gov.tna.discovery.taxonomy.common.config.LuceneConfiguration;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
@@ -43,13 +43,6 @@ public class IAViewRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(IAViewRepository.class);
 
-    // FIXME JCT put that string into yml configuration and inject it with
-    // @Value
-    public static final String[] fieldsToAnalyse = new String[] { InformationAssetViewFields.DESCRIPTION.toString(),
-	    InformationAssetViewFields.TITLE.toString(), InformationAssetViewFields.CONTEXTDESCRIPTION.toString(),
-	    InformationAssetViewFields.CORPBODYS.toString(), InformationAssetViewFields.SUBJECTS.toString(),
-	    InformationAssetViewFields.PERSON_FULLNAME.toString(), InformationAssetViewFields.PLACE_NAME.toString() };
-
     public Document getDoc(ScoreDoc scoreDoc) {
 	Document hitDoc = null;
 	IndexSearcher searcher = null;
@@ -74,8 +67,8 @@ public class IAViewRepository {
 	try {
 	    isearcher = iaviewSearcherManager.acquire();
 
-	    QueryParser parser = new MultiFieldQueryParser(Version.valueOf(luceneVersion), fieldsToAnalyse,
-		    this.categoryQueryAnalyser);
+	    QueryParser parser = new MultiFieldQueryParser(Version.valueOf(luceneVersion),
+		    LuceneConfiguration.fieldsToAnalyse, this.categoryQueryAnalyser);
 	    parser.setAllowLeadingWildcard(true);
 	    Query query;
 	    try {

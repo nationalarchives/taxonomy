@@ -1,5 +1,6 @@
 package gov.tna.discovery.taxonomy.common.config;
 
+import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.TaxonomyTrainingSetAnalyser;
 
 import java.io.File;
@@ -38,7 +39,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "lucene.index")
 @EnableConfigurationProperties
-class LuceneConfiguration {
+public class LuceneConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(LuceneConfiguration.class);
 
     private String iaviewCollectionPath;
@@ -53,6 +54,13 @@ class LuceneConfiguration {
 
     @Value("${lucene.index.useSynonymFilter}")
     private Boolean useSynonymFilter;
+
+    // FIXME JCT put that string into yml configuration and inject it with
+    // @Value
+    public static final String[] fieldsToAnalyse = new String[] { InformationAssetViewFields.DESCRIPTION.toString(),
+	    InformationAssetViewFields.TITLE.toString(), InformationAssetViewFields.CONTEXTDESCRIPTION.toString(),
+	    InformationAssetViewFields.CORPBODYS.toString(), InformationAssetViewFields.SUBJECTS.toString(),
+	    InformationAssetViewFields.PERSON_FULLNAME.toString(), InformationAssetViewFields.PLACE_NAME.toString() };
 
     /**
      ************************* Directories

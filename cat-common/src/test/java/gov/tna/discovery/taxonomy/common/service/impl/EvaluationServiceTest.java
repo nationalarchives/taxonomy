@@ -17,7 +17,7 @@ import gov.tna.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TestDocumentRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.LegacySystemService;
-import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
+import gov.tna.discovery.taxonomy.common.service.domain.TSetBasedCategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 
 import java.io.IOException;
@@ -236,9 +236,9 @@ public class EvaluationServiceTest {
 
     private CategoriserService getCategoriserServiceMock() {
 	CategoriserService categoriserService = Mockito.mock(CategoriserService.class);
-	List<CategorisationResult> categorisationResults = new ArrayList<CategorisationResult>();
-	categorisationResults.addAll(Arrays.asList(new CategorisationResult("Labour", 1.12f, 10),
-		new CategorisationResult("Forestry", 1.02f, 15), new CategorisationResult("Forestry", 0.12f, 2)));
+	List<TSetBasedCategorisationResult> categorisationResults = new ArrayList<TSetBasedCategorisationResult>();
+	categorisationResults.addAll(Arrays.asList(new TSetBasedCategorisationResult("Labour", 1.12f, 10),
+		new TSetBasedCategorisationResult("Forestry", 1.02f, 15), new TSetBasedCategorisationResult("Forestry", 0.12f, 2)));
 	Mockito.when(categoriserService.testCategoriseSingle(Mockito.any(InformationAssetView.class))).thenReturn(
 		categorisationResults);
 

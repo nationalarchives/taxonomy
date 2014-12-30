@@ -1,7 +1,7 @@
 package gov.tna.discovery.taxonomy.ws.service;
 
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
+import gov.tna.discovery.taxonomy.common.service.domain.TSetBasedCategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.ws.domain.TestCategoriseSingleRequest;
 
@@ -20,6 +20,6 @@ public interface TaxonomyWSService {
     public PaginatedList<InformationAssetView> performSearch(String categoryQuery, Double score, Integer limit,
 	    Integer offset);
 
-    public List<CategorisationResult> testCategoriseSingle(TestCategoriseSingleRequest testCategoriseSingleRequest);
+    public List<TSetBasedCategorisationResult> testCategoriseSingle(TestCategoriseSingleRequest testCategoriseSingleRequest);
 
 }

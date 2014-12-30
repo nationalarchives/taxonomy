@@ -5,12 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 
 /**
- * Details on one result of categorisation<br/>
+ * Details on one result of categorisation based on category queries<br/>
  * returns
  * <ul>
  * <li>name of a category found</li>
  * <li>total score for that category</li>
- * <li>number of documents taken into account for that category</li>
  * </ul>
  * 
  * @author jcharlet
@@ -19,17 +18,18 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class CategorisationResult {
     @JsonProperty
-    private String name;
+    protected String name;
     @JsonProperty
-    private Float score;
-    @JsonProperty
-    private Integer numberOfFoundDocuments;
+    protected Float score;
 
-    public CategorisationResult(String name, Float score, Integer numberOfFoundDocuments) {
+    public CategorisationResult() {
+	super();
+    }
+
+    public CategorisationResult(String name, Float score) {
 	super();
 	this.name = name;
 	this.score = score;
-	this.numberOfFoundDocuments = numberOfFoundDocuments;
     }
 
     public String getName() {
@@ -47,26 +47,4 @@ public class CategorisationResult {
     public void setScore(Float score) {
 	this.score = score;
     }
-
-    public Integer getNumberOfFoundDocuments() {
-	return numberOfFoundDocuments;
-    }
-
-    public void setNumberOfFoundDocuments(Integer numberOfFoundDocuments) {
-	this.numberOfFoundDocuments = numberOfFoundDocuments;
-    }
-
-    @Override
-    public String toString() {
-	StringBuilder builder = new StringBuilder();
-	builder.append("CategorisationResult [name=");
-	builder.append(name);
-	builder.append(", score=");
-	builder.append(score);
-	builder.append(", numberOfFoundDocuments=");
-	builder.append(numberOfFoundDocuments);
-	builder.append("]");
-	return builder.toString();
-    }
-
 }
