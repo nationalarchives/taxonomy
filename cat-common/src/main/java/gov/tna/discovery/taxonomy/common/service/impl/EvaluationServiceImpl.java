@@ -131,17 +131,17 @@ public class EvaluationServiceImpl implements EvaluationService {
 	for (TestDocument testDocument : testDocumentRepository.findAll()) {
 	    InformationAssetView iaView = TaxonomyMapper.getIAViewFromTestDocument(testDocument);
 	    List<CategorisationResult> categorisationResults = categoriserService.testCategoriseSingle(iaView);
-	    String[] categories = new String[testDocument.getLegacyCategories().length];
+	    List<String> categories = new ArrayList<String>();
 	    for (int i = 0; i < categorisationResults.size(); i++) {
 		if (i >= testDocument.getLegacyCategories().length) {
 		    break;
 		}
 
 		CategorisationResult categorisationResult = categorisationResults.get(i);
-		categories[i] = categorisationResult.getName();
+		categories.add(categorisationResult.getName());
 
 	    }
-	    testDocument.setCategories(categories);
+	    testDocument.setCategories(categories.toArray(new String[0]));
 	    testDocumentRepository.save(testDocument);
 	}
 	logger.info(".runCategorisationOnTestDataSet < END");
