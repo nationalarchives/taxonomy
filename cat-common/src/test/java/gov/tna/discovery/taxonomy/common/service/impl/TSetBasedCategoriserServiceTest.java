@@ -80,7 +80,8 @@ public class TSetBasedCategoriserServiceTest {
 
     @Test
     public void testCategoriseIAViewSolrDocument() throws IOException, ParseException {
-	List<TSetBasedCategorisationResult> categorisationResults = categoriser.categoriseIAViewSolrDocument("CO 273/630/9");
+	List<TSetBasedCategorisationResult> categorisationResults = categoriser
+		.categoriseIAViewSolrDocument("CO 273/630/9");
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
     }
@@ -88,23 +89,12 @@ public class TSetBasedCategoriserServiceTest {
     @Test
     public void testTestCategoriseSingle() {
 	InformationAssetView iaView = new InformationAssetView();
-	iaView.setCATDOCREF("TEST");
 	iaView.setDESCRIPTION("Singapore Harbour Board: indemnity against any damage caused by explosives on board HM ships in harbour area.");
 	List<TSetBasedCategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
-	assertThat(categorisationResults.get(0).getName(), is(equalTo("Resources")));
-
-    }
-
-    @Test
-    public void testTestCategoriseSingleWithIncompleteDescription() {
-	InformationAssetView iaView = new InformationAssetView();
-	iaView.setDESCRIPTION("Singapore Harbour Board: indemnity against any damage caused by explosives");
-	List<TSetBasedCategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
-	assertThat(categorisationResults, is(notNullValue()));
-	assertThat(categorisationResults, is(not(empty())));
 	assertThat(categorisationResults.get(0).getName(), is(equalTo("Migration")));
+
     }
 
     @Test

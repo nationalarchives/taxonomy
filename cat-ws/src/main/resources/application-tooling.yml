@@ -36,6 +36,9 @@ lucene:
   maximumSimilarElements: 2000
   minTermFreq: 1
   minDocFreq: 2
+  titleBoostingFactor: 2
+  descBoostingFactor: 2
+  contextDescBoostingFactor: 0.5
   
  index:
   iaviewCollectionPath: ***REMOVED***solr/collection3/data/index

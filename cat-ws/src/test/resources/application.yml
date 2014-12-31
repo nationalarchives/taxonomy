@@ -38,6 +38,9 @@ lucene:
   maximumSimilarElements: 500
   minTermFreq: 1
   minDocFreq: 1
+  titleBoostingFactor: 2
+  descBoostingFactor: 2
+  contextDescBoostingFactor: 0.5
 
  index:
   iaviewCollectionPath: ../cat-common/src/test/resources/dataset/lucene/iaviews

@@ -82,6 +82,15 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     @Value("${lucene.mlt.minDocFreq}")
     private int minDocFreq;
 
+    @Value("${lucene.mlt.descBoostingFactor}")
+    private float descBoostingFactor;
+
+    @Value("${lucene.mlt.contextDescBoostingFactor}")
+    private float contextDescBoostingFactor;
+
+    @Value("${lucene.mlt.titleBoostingFactor}")
+    private float titleBoostingFactor;
+
     /*
      * (non-Javadoc)
      * 
@@ -150,12 +159,32 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 	    moreLikeThis.setMinDocFreq(minDocFreq);
 	    moreLikeThis.setAnalyzer(this.trainingSetAnalyser);
 	    moreLikeThis.setFieldNames(LuceneConfiguration.fieldsToAnalyse);
+	    moreLikeThis.setBoost(true);
 
 	    BooleanQuery fullQuery = new BooleanQuery();
 
 	    for (String fieldName : LuceneConfiguration.fieldsToAnalyse) {
 		String value = document.get(fieldName);
 		if (value != null && !"null".equals(value)) {
+
+		    switch (InformationAssetViewFields.valueOf(fieldName)) {
+		    case DESCRIPTION:
+			moreLikeThis.setBoostFactor(descBoostingFactor);
+			break;
+		    case TITLE:
+			moreLikeThis.setBoostFactor(titleBoostingFactor);
+			break;
+		    case CONTEXTDESCRIPTION:
+			moreLikeThis.setBoostFactor(contextDescBoostingFactor);
+			break;
+		    default:
+		    case SUBJECTS:
+		    case CORPBODYS:
+		    case PERSON_FULLNAME:
+		    case PLACE_NAME:
+			moreLikeThis.setBoostFactor(1);
+			break;
+		    }
 		    Query query = moreLikeThis.like(new StringReader(value), fieldName);
 		    fullQuery.add(query, Occur.SHOULD);
 		}
