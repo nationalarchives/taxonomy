@@ -1,7 +1,9 @@
 package gov.tna.discovery.taxonomy.common.service.impl;
 
+import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.mapper.TaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.CategoryEvaluationResult;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.EvaluationReport;
@@ -14,17 +16,16 @@ import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.EvaluationService;
 import gov.tna.discovery.taxonomy.common.service.LegacySystemService;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
-import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.search.TopDocs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,40 +76,44 @@ public class EvaluationServiceImpl implements EvaluationService {
 
 	for (Category category : categoryRepository.findAll()) {
 	    logger.info(".createEvaluationTestDataset: processing category: {}", category.getTtl());
+
 	    Integer nbOfMatchedElementsWithLegacySystem = 0;
-	    Integer offset = 0;
+	    Integer page = 1;
 	    while (nbOfMatchedElementsWithLegacySystem < pMinNbOfElementsPerCat) {
-		PaginatedList<InformationAssetView> iaviews = null;
-		try {
-		    iaviews = iaviewRepository.performSearch(category.getQry(), null, 10, offset);
-		} catch (TaxonomyException e) {
-		    logger.error(".createEvaluationTestDataset: an error occured while performing search", e);
+		Map<String, String[]> mapOfLegacyDocuments = legacySystemService.findLegacyDocumentsByCategory(
+			category.getTtl(), page);
+		int currentSuccessfulAttempts = 0;
+
+		if (mapOfLegacyDocuments == null || mapOfLegacyDocuments.size() == 0) {
+		    logger.warn(
+			    ".createTestDataset: giving up, no results found on legacy system or no document found in IAView repo for category: {}",
+			    category.getTtl());
 		    break;
 		}
-		int currentSuccessfulAttempts = 0;
-		for (InformationAssetView iaview : iaviews.getResults()) {
-		    String[] legacyCategories = legacySystemService.getLegacyCategoriesForCatDocRef(iaview
-			    .getCATDOCREF());
-		    if (legacyCategories != null && Arrays.asList(legacyCategories).contains(category.getTtl())) {
+
+		for (String iaid : mapOfLegacyDocuments.keySet()) {
+		    TopDocs topDocs = iaviewRepository.searchIAViewIndexByFieldAndPhrase(
+			    InformationAssetViewFields.DOCREFERENCE.toString(), iaid, 1);
+
+		    if (topDocs.totalHits != 0) {
+			Document doc = iaviewRepository.getDoc(topDocs.scoreDocs[0]);
 			TestDocument testDocument = new TestDocument();
-			testDocument = TaxonomyMapper.getTestDocumentFromIAView(iaview);
-			testDocument.setLegacyCategories(legacyCategories);
+			testDocument = LuceneTaxonomyMapper.getTestDocumentFromLuceneDocument(doc);
+			testDocument.setLegacyCategories(mapOfLegacyDocuments.get(iaid));
 			testDocumentRepository.save(testDocument);
 			nbOfMatchedElementsWithLegacySystem++;
 			currentSuccessfulAttempts++;
 		    }
+
 		    if (nbOfMatchedElementsWithLegacySystem == pMinNbOfElementsPerCat) {
 			break;
 		    }
 		}
-		offset += 10;
+		page += 1;
 		if (currentSuccessfulAttempts == 0) {
 		    logger.warn(
-			    ".createTestDataset: giving up, no results found among 10 last previous attempts for category: {}",
+			    ".createTestDataset: giving up, no results found on legacy system or no document found in IAView repo among 15 last previous attempts for category: {}",
 			    category.getTtl());
-		    break;
-		}
-		if (offset >= iaviews.getNumberOfResults()) {
 		    break;
 		}
 	    }

@@ -3,6 +3,7 @@ package gov.tna.discovery.taxonomy.common.service.impl;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import gov.tna.discovery.taxonomy.common.config.ServiceConfigurationTest;
+import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.mapper.TaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
@@ -24,8 +25,11 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -238,7 +242,8 @@ public class EvaluationServiceTest {
 	CategoriserService categoriserService = Mockito.mock(CategoriserService.class);
 	List<TSetBasedCategorisationResult> categorisationResults = new ArrayList<TSetBasedCategorisationResult>();
 	categorisationResults.addAll(Arrays.asList(new TSetBasedCategorisationResult("Labour", 1.12f, 10),
-		new TSetBasedCategorisationResult("Forestry", 1.02f, 15), new TSetBasedCategorisationResult("Forestry", 0.12f, 2)));
+		new TSetBasedCategorisationResult("Forestry", 1.02f, 15), new TSetBasedCategorisationResult("Forestry",
+			0.12f, 2)));
 	Mockito.when(categoriserService.testCategoriseSingle(Mockito.any(InformationAssetView.class))).thenReturn(
 		categorisationResults);
 
@@ -253,13 +258,22 @@ public class EvaluationServiceTest {
 	Mockito.when(
 		iaViewRepositoryMock.performSearch(Mockito.anyString(), Mockito.anyDouble(), Mockito.anyInt(),
 			Mockito.anyInt())).thenReturn(searchResult);
+
+	Mockito.when(
+		iaViewRepositoryMock.searchIAViewIndexByFieldAndPhrase(Mockito.anyString(), Mockito.anyString(),
+			Mockito.anyInt())).thenReturn(new TopDocs(1, new ScoreDoc[] { new ScoreDoc(0, 1f) }, 1f));
+
+	Mockito.when(iaViewRepositoryMock.getDoc(Mockito.any(ScoreDoc.class))).thenReturn(
+		LuceneTaxonomyMapper.getLuceneDocumentFromIAView(MongoTestDataSet.getIAViewSample()));
 	return iaViewRepositoryMock;
     }
 
     private LegacySystemService getLegacySystemServiceMock() {
 	LegacySystemService legacySystemServiceMock = Mockito.mock(LegacySystemService.class);
-	Mockito.when(legacySystemServiceMock.getLegacyCategoriesForCatDocRef(Mockito.anyString())).thenReturn(
-		legacyCategories);
+	HashMap<String, String[]> mapOfLegacyDocuments = new HashMap<String, String[]>();
+	mapOfLegacyDocuments.put("C465432", new String[] { "Air Force", "Medals" });
+	Mockito.when(legacySystemServiceMock.findLegacyDocumentsByCategory(Mockito.anyString(), Mockito.anyInt()))
+		.thenReturn(mapOfLegacyDocuments);
 	return legacySystemServiceMock;
     }
 

@@ -1,5 +1,7 @@
 package gov.tna.discovery.taxonomy.common.service;
 
+import java.util.Map;
+
 public interface LegacySystemService {
 
     /**
@@ -12,6 +14,15 @@ public interface LegacySystemService {
      * @param catdocref
      * @return
      */
-    public abstract String[] getLegacyCategoriesForCatDocRef(String catdocref);
+    public String[] getLegacyCategoriesForCatDocRef(String catdocref);
+
+    /**
+     * find legacy documents by query
+     * 
+     * @param qry
+     * @param page
+     * @return a map of iaids with their related subjets
+     */
+    public Map<String, String[]> findLegacyDocumentsByCategory(String qry, Integer page);
 
 }

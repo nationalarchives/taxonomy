@@ -1,6 +1,7 @@
 package gov.tna.discovery.taxonomy.common.repository.lucene;
 
 import gov.tna.discovery.taxonomy.common.config.LuceneConfiguration;
+import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
@@ -100,13 +101,10 @@ public class IAViewRepository {
 
 		ScoreDoc scoreDoc = topDocs.scoreDocs[i];
 		if (mimimumScore != null && (double) scoreDoc.score < mimimumScore) {
-		    // FIXME JCT use HitCollector instead? to return the
-		    // total
-		    // number of results later
 		    break;
 		}
 		Document hitDoc = isearcher.doc(scoreDoc.doc);
-		InformationAssetView assetView = LuceneHelperTools.getIAViewFromLuceneDocument(hitDoc);
+		InformationAssetView assetView = LuceneTaxonomyMapper.getIAViewFromLuceneDocument(hitDoc);
 		assetView.setScore(scoreDoc.score);
 		docs.add(assetView);
 	    }

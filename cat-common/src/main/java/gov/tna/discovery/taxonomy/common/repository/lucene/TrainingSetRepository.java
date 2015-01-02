@@ -1,5 +1,6 @@
 package gov.tna.discovery.taxonomy.common.repository.lucene;
 
+import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
@@ -52,7 +53,6 @@ public class TrainingSetRepository {
 	// TODO 4 handle exceptions, do not stop the process unless several
 	// errors occur
 	// TODO 1 bulk insert, this is far too slow to do it unitary!
-	// FIXME why to remove punctuation before indexing? analyser duty
 
 	try {
 	    if (!StringUtils.isEmpty(trainingDocument.getDescription())) {
@@ -65,45 +65,7 @@ public class TrainingSetRepository {
 	    if (!StringUtils.isEmpty(trainingDocument.getTitle())) {
 		trainingDocument.setTitle(LuceneHelperTools.removePunctuation(trainingDocument.getTitle()));
 	    }
-	    Document doc = new Document();
-
-	    doc.add(new StringField(InformationAssetViewFields.DOCREFERENCE.toString(), trainingDocument
-		    .getDocReference(), Field.Store.YES));
-
-	    doc.add(new TextField(InformationAssetViewFields.DESCRIPTION.toString(), trainingDocument.getDescription(),
-		    Field.Store.YES));
-
-	    doc.add(new StringField(InformationAssetViewFields.CATEGORY.toString(), trainingDocument.getCategory(),
-		    Field.Store.YES));
-
-	    if (!StringUtils.isEmpty(trainingDocument.getCatDocRef())) {
-		doc.add(new StringField(InformationAssetViewFields.CATDOCREF.toString(), trainingDocument
-			.getCatDocRef(), Field.Store.YES));
-	    }
-	    if (!StringUtils.isEmpty(trainingDocument.getTitle())) {
-		doc.add(new TextField(InformationAssetViewFields.TITLE.toString(), trainingDocument.getTitle(),
-			Field.Store.YES));
-	    }
-	    if (!StringUtils.isEmpty(trainingDocument.getContextDescription())) {
-		doc.add(new TextField(InformationAssetViewFields.CONTEXTDESCRIPTION.toString(), trainingDocument
-			.getContextDescription(), Field.Store.YES));
-	    }
-	    if (trainingDocument.getCorpBodys() != null) {
-		doc.add(new TextField(InformationAssetViewFields.CORPBODYS.toString(), Arrays.toString(trainingDocument
-			.getCorpBodys()), Field.Store.YES));
-	    }
-	    if (trainingDocument.getPersonFullName() != null) {
-		doc.add(new TextField(InformationAssetViewFields.PERSON_FULLNAME.toString(), Arrays
-			.toString(trainingDocument.getPersonFullName()), Field.Store.YES));
-	    }
-	    if (trainingDocument.getPlaceName() != null) {
-		doc.add(new TextField(InformationAssetViewFields.PLACE_NAME.toString(), Arrays
-			.toString(trainingDocument.getPlaceName()), Field.Store.YES));
-	    }
-	    if (trainingDocument.getSubjects() != null) {
-		doc.add(new TextField(InformationAssetViewFields.SUBJECTS.toString(), Arrays.toString(trainingDocument
-			.getSubjects()), Field.Store.YES));
-	    }
+	    Document doc = LuceneTaxonomyMapper.getLuceneDocumentFromTrainingDocument(trainingDocument);
 	    writer.addDocument(doc);
 	} catch (Exception e) {
 	    logger.error(".indexTrainingSetDocument: an error occured on document: '{}', message: {}",

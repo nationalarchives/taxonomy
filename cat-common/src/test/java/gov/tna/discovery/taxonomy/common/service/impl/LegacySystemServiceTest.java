@@ -2,6 +2,9 @@ package gov.tna.discovery.taxonomy.common.service.impl;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+
+import java.util.Map;
+
 import gov.tna.discovery.taxonomy.common.config.ServiceConfigurationTest;
 import gov.tna.discovery.taxonomy.common.service.LegacySystemService;
 
@@ -22,10 +25,10 @@ public class LegacySystemServiceTest {
     public LegacySystemService legacySystemService;
 
     /**
-     * To keep ignored not to contact external service: test connection to
-     * legacy system service
+     * To keep ignored not to contact external service
      */
     @Test
+    @Ignore
     public void testGetLegacyCategoriesForCatDocRef() {
 
 	String[] legacyCategoriesForCatDocRef = legacySystemService.getLegacyCategoriesForCatDocRef("HLG 102/182");
@@ -33,5 +36,19 @@ public class LegacySystemServiceTest {
 	assertThat(legacyCategoriesForCatDocRef, is(notNullValue()));
 	assertThat(legacyCategoriesForCatDocRef, is(not(emptyArray())));
 	assertThat(legacyCategoriesForCatDocRef, is(equalTo(new String[] { "Construction industries", "Labour" })));
+    }
+
+    /**
+     * To keep ignored not to contact external service
+     */
+    @Test
+    @Ignore
+    public void testFindLegacyDocumentsByQuery() {
+
+	Map<String, String[]> mapOfDocumentIaidsAndCategories = legacySystemService.findLegacyDocumentsByCategory(
+		"Labour", 1);
+
+	assertThat(mapOfDocumentIaidsAndCategories, is(notNullValue()));
+	assertThat(mapOfDocumentIaidsAndCategories.entrySet(), is(not(emptyIterable())));
     }
 }

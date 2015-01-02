@@ -2,32 +2,20 @@ package gov.tna.discovery.taxonomy.common.service.impl;
 
 import gov.tna.discovery.taxonomy.common.service.LegacySystemService;
 import gov.tna.discovery.taxonomy.common.service.domain.legacy.LegacySearchResponse;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
+import gov.tna.discovery.taxonomy.common.service.domain.legacy.SearchResultList;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
-import java.net.SocketAddress;
-import java.net.URLEncoder;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.http.HttpHost;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.HttpInetSocketAddress;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -44,7 +32,9 @@ import org.springframework.web.client.RestTemplate;
 public class LegacySystemServiceImpl implements LegacySystemService {
     private static final Logger logger = LoggerFactory.getLogger(EvaluationServiceImpl.class);
 
-    private String legacySystemUrl = "http://test.legacy.discovery.nationalarchives.gov.uk/DiscoveryAPI/json/search/1/exact={catdocref}";
+    private String legacySystemHostUrl = "http://test.legacy.discovery.nationalarchives.gov.uk/DiscoveryAPI/json/";
+    private String legacySystemSearchExactUrl = "search/{page}/exact={catdocref}";
+    private String legacySystemSearchQueryUrl = "search/{page}/query={queryValue}";
     private int proxyPort = 8080;
     private String proxyUrl = "***REMOVED***.***REMOVED***";
 
@@ -66,23 +56,28 @@ public class LegacySystemServiceImpl implements LegacySystemService {
 	    return null;
 	}
 
-	SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-	requestFactory.setProxy(new Proxy(Type.HTTP, new InetSocketAddress(proxyUrl, proxyPort)));
+	ResponseEntity<LegacySearchResponse> entityResponse = submitSearchRequest(legacySystemSearchExactUrl,
+		catdocref, 1);
 
-	ResponseEntity<LegacySearchResponse> entityResponse;
-	try {
-	    RestTemplate restTemplate = new RestTemplate(requestFactory);
-	    entityResponse = restTemplate.getForEntity(legacySystemUrl, LegacySearchResponse.class, catdocref);
-	} catch (Exception e) {
-	    logger.error(".getLegacyCategoriesForCatDocRef : exception occured", e);
-	    return null;
-	}
-
-	if (hasErrors(entityResponse)) {
+	if (isLegacySystemResponseValid(entityResponse)) {
 	    return null;
 	}
 
 	return getLegacyCategoriesFromResponse(entityResponse);
+    }
+
+    private ResponseEntity<LegacySearchResponse> submitSearchRequest(String url, String parameterValue, int page) {
+	SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+	requestFactory.setProxy(new Proxy(Type.HTTP, new InetSocketAddress(proxyUrl, proxyPort)));
+	try {
+	    RestTemplate restTemplate = new RestTemplate(requestFactory);
+	    ResponseEntity<LegacySearchResponse> entityResponse = restTemplate.getForEntity(legacySystemHostUrl + url,
+		    LegacySearchResponse.class, page, parameterValue);
+	    return entityResponse;
+	} catch (Exception e) {
+	    logger.error(".getLegacyCategoriesForCatDocRef : exception occured", e);
+	    return null;
+	}
     }
 
     private String[] getLegacyCategoriesFromResponse(ResponseEntity<LegacySearchResponse> entityResponse) {
@@ -96,7 +91,7 @@ public class LegacySystemServiceImpl implements LegacySystemService {
 	return legacyCategories;
     }
 
-    private boolean hasErrors(ResponseEntity<LegacySearchResponse> entityResponse) {
+    private boolean isLegacySystemResponseValid(ResponseEntity<LegacySearchResponse> entityResponse) {
 	if (!HttpStatus.OK.equals(entityResponse.getStatusCode())) {
 	    logger.error(".getLegacyCategoriesForCatDocRef : response from legacy system != 200: {}",
 		    entityResponse.getStatusCode());
@@ -105,10 +100,42 @@ public class LegacySystemServiceImpl implements LegacySystemService {
 	LegacySearchResponse searchResponse = entityResponse.getBody();
 	if ((searchResponse.getSearchResult().getTotalResults() == null)
 		|| searchResponse.getSearchResult().getTotalResults() == 0) {
-	    logger.error(".getLegacyCategoriesForCatDocRef : no element found");
+	    logger.info(".getLegacyCategoriesForCatDocRef : no element found");
 	    return true;
 	}
 	return false;
     }
 
+    @Override
+    public Map<String, String[]> findLegacyDocumentsByCategory(String category, Integer page) {
+	ResponseEntity<LegacySearchResponse> entityResponse = submitSearchRequest(legacySystemSearchQueryUrl, category,
+		page);
+
+	if (isLegacySystemResponseValid(entityResponse)) {
+	    return null;
+	}
+
+	return getMapOfDocumentIaidsWithCategoriesFromResponse(entityResponse);
+    }
+
+    private Map<String, String[]> getMapOfDocumentIaidsWithCategoriesFromResponse(
+	    ResponseEntity<LegacySearchResponse> entityResponse) {
+	Map<String, String[]> mapOfDocumentIaidsWithCategories = new HashMap<String, String[]>();
+
+	LegacySearchResponse searchResponse = entityResponse.getBody();
+	for (SearchResultList searchResultList : searchResponse.getSearchResult().getSearchResultList()) {
+	    String[] categories = getFormattedSubjects(searchResultList.getSubjects());
+	    mapOfDocumentIaidsWithCategories.put(searchResultList.getIAID(), categories);
+	}
+
+	return mapOfDocumentIaidsWithCategories;
+    }
+
+    private String[] getFormattedSubjects(List<String> subjects) {
+	List<String> categories = new ArrayList<String>();
+	for (String subject : subjects) {
+	    categories.add(subject.substring(7));
+	}
+	return categories.toArray(new String[0]);
+    }
 }
