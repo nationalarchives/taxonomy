@@ -1,6 +1,7 @@
 package gov.tna.discovery.taxonomy.ws.controller;
 
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.domain.TSetBasedCategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
@@ -78,14 +79,14 @@ public class TaxonomyController {
 
     @RequestMapping(value = "/testCategoriseSingle", method = RequestMethod.POST, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ResponseBody
-    List<TSetBasedCategorisationResult> testCategoriseSingle(@RequestBody TestCategoriseSingleRequest testCategoriseSingleRequest) {
+    List<CategorisationResult> testCategoriseSingle(@RequestBody TestCategoriseSingleRequest testCategoriseSingleRequest) {
 	logger.info("/testCategoriseSingle > {}", testCategoriseSingleRequest.toString());
 	if (StringUtils.isEmpty(testCategoriseSingleRequest.getDescription())) {
 	    throw new TaxonomyException(TaxonomyErrorType.INVALID_PARAMETER,
 		    "DESCRIPTION should be provided and not emptyw");
 	}
 
-	List<TSetBasedCategorisationResult> listOfCatRelevancies = service.testCategoriseSingle(testCategoriseSingleRequest);
+	List<CategorisationResult> listOfCatRelevancies = service.testCategoriseSingle(testCategoriseSingleRequest);
 
 	logger.info("/testCategoriseSingle < {} categories", listOfCatRelevancies.size());
 

@@ -29,6 +29,7 @@ public interface CategoriserService<T extends CategorisationResult> {
      * 
      * @throws IOException
      */
+    @Deprecated
     public void testCategoriseIAViewSolrIndex() throws IOException;
 
     /**
