@@ -60,7 +60,8 @@ public class LuceneConfiguration {
     public static final String[] fieldsToAnalyse = new String[] { InformationAssetViewFields.DESCRIPTION.toString(),
 	    InformationAssetViewFields.TITLE.toString(), InformationAssetViewFields.CONTEXTDESCRIPTION.toString(),
 	    InformationAssetViewFields.CORPBODYS.toString(), InformationAssetViewFields.SUBJECTS.toString(),
-	    InformationAssetViewFields.PERSON_FULLNAME.toString(), InformationAssetViewFields.PLACE_NAME.toString() };
+	    InformationAssetViewFields.PERSON_FULLNAME.toString(), InformationAssetViewFields.PLACE_NAME.toString(),
+	    InformationAssetViewFields.CATDOCREF.toString() };
 
     /**
      ************************* Directories
