@@ -1,6 +1,5 @@
 package gov.tna.discovery.taxonomy.common.service.impl;
 
-import gov.tna.discovery.taxonomy.common.config.LuceneConfiguration;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
@@ -53,6 +52,9 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     @Value("${lucene.index.version}")
     private String luceneVersion;
 
+    @Value("${lucene.categoriser.fieldsToAnalyse}")
+    private String fieldsToAnalyse;
+
     @Autowired
     private Analyzer categoryQueryAnalyser;
 
@@ -82,8 +84,8 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
 	    searcher = searcherManager.acquire();
 
-	    QueryParser parser = new MultiFieldQueryParser(Version.valueOf(luceneVersion),
-		    LuceneConfiguration.fieldsToAnalyse, this.categoryQueryAnalyser);
+	    QueryParser parser = new MultiFieldQueryParser(Version.valueOf(luceneVersion), fieldsToAnalyse.split(","),
+		    this.categoryQueryAnalyser);
 	    parser.setAllowLeadingWildcard(true);
 
 	    for (Category category : categoryRepository.findAll()) {

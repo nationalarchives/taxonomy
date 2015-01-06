@@ -91,6 +91,9 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     @Value("${lucene.mlt.titleBoostingFactor}")
     private float titleBoostingFactor;
 
+    @Value("${lucene.categoriser.fieldsToAnalyse}")
+    private String fieldsToAnalyse;
+
     /*
      * (non-Javadoc)
      * 
@@ -158,12 +161,12 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 	    moreLikeThis.setMinTermFreq(minTermFreq);
 	    moreLikeThis.setMinDocFreq(minDocFreq);
 	    moreLikeThis.setAnalyzer(this.trainingSetAnalyser);
-	    moreLikeThis.setFieldNames(LuceneConfiguration.fieldsToAnalyse);
+	    moreLikeThis.setFieldNames(fieldsToAnalyse.split(","));
 	    moreLikeThis.setBoost(true);
 
 	    BooleanQuery fullQuery = new BooleanQuery();
 
-	    for (String fieldName : LuceneConfiguration.fieldsToAnalyse) {
+	    for (String fieldName : fieldsToAnalyse.split(",")) {
 		String value = document.get(fieldName);
 		if (value != null && !"null".equals(value)) {
 
@@ -280,7 +283,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 		field.setAccessible(true);
 		String fieldName = field.getName();
 
-		if (CollectionUtils.contains(Arrays.asList(LuceneConfiguration.fieldsToAnalyse).iterator(), fieldName)) {
+		if (CollectionUtils.contains(Arrays.asList(fieldsToAnalyse.split(",")).iterator(), fieldName)) {
 		    String value = String.valueOf(field.get(iaView));
 		    if (value != null && !"null".equals(value)) {
 			doc.add(new TextField(fieldName, value, Store.YES));

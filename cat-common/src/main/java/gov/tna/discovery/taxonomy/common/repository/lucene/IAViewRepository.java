@@ -1,6 +1,5 @@
 package gov.tna.discovery.taxonomy.common.repository.lucene;
 
-import gov.tna.discovery.taxonomy.common.config.LuceneConfiguration;
 import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
@@ -39,6 +38,9 @@ public class IAViewRepository {
     @Value("${lucene.index.version}")
     private String luceneVersion;
 
+    @Value("${lucene.categoriser.fieldsToAnalyse}")
+    private String fieldsToAnalyse;
+
     @Autowired
     private Analyzer categoryQueryAnalyser;
 
@@ -68,8 +70,8 @@ public class IAViewRepository {
 	try {
 	    isearcher = iaviewSearcherManager.acquire();
 
-	    QueryParser parser = new MultiFieldQueryParser(Version.valueOf(luceneVersion),
-		    LuceneConfiguration.fieldsToAnalyse, this.categoryQueryAnalyser);
+	    QueryParser parser = new MultiFieldQueryParser(Version.valueOf(luceneVersion), fieldsToAnalyse.split(","),
+		    this.categoryQueryAnalyser);
 	    parser.setAllowLeadingWildcard(true);
 	    Query query;
 	    try {

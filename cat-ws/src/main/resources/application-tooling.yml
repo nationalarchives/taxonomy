@@ -30,6 +30,7 @@ lucene:
  categoriser:
   useTSetBasedCategoriser: true
   useQueryBasedCategoriser: false
+  fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
  mlt:
   mimimumScoreForMlt: 0
   mimimumGlobalScoreForACategory: 0
