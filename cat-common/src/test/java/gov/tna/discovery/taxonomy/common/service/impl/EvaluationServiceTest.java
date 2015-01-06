@@ -99,7 +99,7 @@ public class EvaluationServiceTest {
 	mongoTestDataSet.initCategoryCollectionWith1element();
 	assertThatTestDocDbIsEmpty();
 
-	evaluationService.createEvaluationTestDataset(null);
+	evaluationService.createEvaluationTestDataset(10);
 
 	assertThatTestDocDbContainsDocsWithLegacyCategories();
     }
@@ -126,7 +126,7 @@ public class EvaluationServiceTest {
 	initTestDocumentRepositoryWithOneElementWithLegacyCategories();
 	evaluationService.setCategoriserService(getCategoriserServiceMock());
 
-	evaluationService.runCategorisationOnTestDataSet();
+	evaluationService.runCategorisationOnTestDataSet(true);
 
 	assertThatTestDocumentContainsCurrentSystemCategories();
     }

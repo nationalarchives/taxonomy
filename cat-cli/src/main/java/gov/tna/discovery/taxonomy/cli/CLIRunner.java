@@ -54,6 +54,7 @@ public class CLIRunner implements CommandLineRunner {
     private static final String OPTION_MINIMUM_SIZE_PER_CATEGORY = "EVALminimumSizePerCat";
 
     private static final String ACTION_CATEGORISE_EVALUATION_DATA_SET = "EVALcategoriseEvalDataSet";
+    private static final String OPTION_MATCH_NB_OF_RETURNED_CATEGORIES = "EVALmatchNbOfReturnedCategories";
 
     private static final String ACTION_GET_EVALUATION_REPORT = "EVALgetEvaluationReport";
     private static final String OPTION_EVALUATION_REPORT_COMMENTS = "EVALcomments";
@@ -146,7 +147,7 @@ public class CLIRunner implements CommandLineRunner {
 	 */
 
 	if (cmd.hasOption(ACTION_CREATE_EVALUATION_DATA_SET)) {
-	    Integer minimumSizePerCat = null;
+	    Integer minimumSizePerCat = 10;
 	    if (cmd.hasOption(OPTION_MINIMUM_SIZE_PER_CATEGORY)) {
 		minimumSizePerCat = Integer.valueOf(cmd.getOptionValue(OPTION_MINIMUM_SIZE_PER_CATEGORY));
 	    }
@@ -154,7 +155,11 @@ public class CLIRunner implements CommandLineRunner {
 	}
 
 	if (cmd.hasOption(ACTION_CATEGORISE_EVALUATION_DATA_SET)) {
-	    evaluationService.runCategorisationOnTestDataSet();
+	    Boolean matchNbOfReturnedCategories = false;
+	    if (cmd.hasOption(OPTION_MINIMUM_SIZE_PER_CATEGORY)) {
+		matchNbOfReturnedCategories = Boolean.valueOf(cmd.getOptionValue(OPTION_MINIMUM_SIZE_PER_CATEGORY));
+	    }
+	    evaluationService.runCategorisationOnTestDataSet(matchNbOfReturnedCategories);
 	}
 
 	if (cmd.hasOption(ACTION_GET_EVALUATION_REPORT)) {
@@ -266,6 +271,12 @@ public class CLIRunner implements CommandLineRunner {
 
 	options.addOption(ACTION_CATEGORISE_EVALUATION_DATA_SET, false,
 		"categorise the evaluation data set with current system");
+	options.addOption(
+		OPTION_MATCH_NB_OF_RETURNED_CATEGORIES,
+		true,
+		"on -"
+			+ ACTION_CATEGORISE_EVALUATION_DATA_SET
+			+ ": if equals to yes, for each document, return at maximum the number of legacy categories. Used with training set based categorisation while there is no system to limit the number of categories returned");
 
 	options.addOption(ACTION_GET_EVALUATION_REPORT, false,
 		"get evaluation report from current evaluation data set containing categories from legacy and current system");

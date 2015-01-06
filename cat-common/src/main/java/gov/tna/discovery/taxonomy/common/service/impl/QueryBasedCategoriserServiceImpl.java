@@ -93,7 +93,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 		    query = parser.parse(queryString);
 		    TopDocs topDocs = searcher.search(query, 1);
 
-		    if (topDocs.totalHits != 0) {
+		    if (topDocs.totalHits != 0 && topDocs.scoreDocs[0].score > category.getSc()) {
 			listOfCategoryResults.add(new CategorisationResult(category.getTtl(),
 				topDocs.scoreDocs[0].score));
 			logger.debug(".testCategoriseSingle: found category {} with score {}", category.getTtl(),

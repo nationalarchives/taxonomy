@@ -29,6 +29,7 @@ import org.apache.lucene.search.TopDocs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -55,8 +56,6 @@ public class EvaluationServiceImpl implements EvaluationService {
     @Autowired
     private CategoriserService categoriserService;
 
-    private Integer minNbOfElementsPerCat = 10;
-
     /*
      * (non-Javadoc)
      * 
@@ -65,9 +64,6 @@ public class EvaluationServiceImpl implements EvaluationService {
      */
     @Override
     public void createEvaluationTestDataset(Integer pMinNbOfElementsPerCat) {
-	if (pMinNbOfElementsPerCat == null) {
-	    pMinNbOfElementsPerCat = this.minNbOfElementsPerCat;
-	}
 	logger.info(".createEvaluationTestDataset> empty testDocument collection");
 	testDocumentRepository.deleteAll();
 
@@ -129,7 +125,7 @@ public class EvaluationServiceImpl implements EvaluationService {
      * evaluateCategorisation()
      */
     @Override
-    public void runCategorisationOnTestDataSet() {
+    public void runCategorisationOnTestDataSet(Boolean matchNbOfReturnedCategories) {
 	logger.info(".runCategorisationOnTestDataSet> START");
 	logger.info(".runCategorisationOnTestDataSet: processing {} documents",
 		String.valueOf(testDocumentRepository.count()));
@@ -138,7 +134,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 	    List<CategorisationResult> categorisationResults = categoriserService.testCategoriseSingle(iaView);
 	    List<String> categories = new ArrayList<String>();
 	    for (int i = 0; i < categorisationResults.size(); i++) {
-		if (i >= testDocument.getLegacyCategories().length) {
+		if (matchNbOfReturnedCategories && i >= testDocument.getLegacyCategories().length) {
 		    break;
 		}
 

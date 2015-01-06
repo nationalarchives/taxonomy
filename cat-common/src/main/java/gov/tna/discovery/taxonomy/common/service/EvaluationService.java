@@ -22,8 +22,14 @@ public interface EvaluationService {
     /**
      * run categorisation on Test Documents and populate their category fields
      * with found categories
+     *
+     * @param matchNbOfReturnedCategories
+     *            if equals to yes, for each document, return at maximum the
+     *            number of legacy categories. Used with training set based
+     *            categorisation while there is no system to limit the number of
+     *            categories returned
      */
-    public void runCategorisationOnTestDataSet();
+    void runCategorisationOnTestDataSet(Boolean matchNbOfReturnedCategories);
 
     /**
      * Create a report on the accuracy and recall for all categories on the
