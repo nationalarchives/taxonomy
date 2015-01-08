@@ -153,13 +153,13 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
      */
     public Document getLuceneDocumentFromIaVIew(InformationAssetView iaView) throws IOException {
 	if (!StringUtils.isEmpty(iaView.getDESCRIPTION())) {
-	    iaView.setDESCRIPTION(LuceneHelperTools.removePunctuation(iaView.getDESCRIPTION()));
+	    iaView.setDESCRIPTION(iaView.getDESCRIPTION());
 	}
 	if (!StringUtils.isEmpty(iaView.getCONTEXTDESCRIPTION())) {
-	    iaView.setCONTEXTDESCRIPTION(LuceneHelperTools.removePunctuation(iaView.getCONTEXTDESCRIPTION()));
+	    iaView.setCONTEXTDESCRIPTION(iaView.getCONTEXTDESCRIPTION());
 	}
 	if (!StringUtils.isEmpty(iaView.getTITLE())) {
-	    iaView.setTITLE(LuceneHelperTools.removePunctuation(iaView.getTITLE()));
+	    iaView.setTITLE(iaView.getTITLE());
 	}
 	Document doc = new Document();
 
