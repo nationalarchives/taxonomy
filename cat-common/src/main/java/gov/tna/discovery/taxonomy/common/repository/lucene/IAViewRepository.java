@@ -169,4 +169,8 @@ public class IAViewRepository {
 	    throw new TaxonomyException(TaxonomyErrorType.INVALID_CATEGORY_QUERY, e);
 	}
     }
+
+    public void setIaviewSearcherManager(SearcherManager iaviewSearcherManager) {
+	this.iaviewSearcherManager = iaviewSearcherManager;
+    }
 }

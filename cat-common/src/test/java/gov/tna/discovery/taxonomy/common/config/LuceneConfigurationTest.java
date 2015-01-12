@@ -31,8 +31,17 @@ public class LuceneConfigurationTest {
     @Value("${lucene.index.trainingSetCollectionPath}")
     private String trainingSetCollectionPath;
 
+    @Value("${lucene.index.iaviewCollectionPath}")
+    private String iaviewCollectionPath;
+
     public @Bean Directory trainingSetDirectory() throws IOException {
 	File file = new File(trainingSetCollectionPath);
+	Directory directory = new SimpleFSDirectory(file);
+	return new RAMDirectory(directory, new IOContext(Context.DEFAULT));
+    }
+
+    public @Bean Directory iaViewDirectory() throws IOException {
+	File file = new File(iaviewCollectionPath);
 	Directory directory = new SimpleFSDirectory(file);
 	return new RAMDirectory(directory, new IOContext(Context.DEFAULT));
     }
