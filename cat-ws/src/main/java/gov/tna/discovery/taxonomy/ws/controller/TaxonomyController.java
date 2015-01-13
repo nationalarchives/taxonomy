@@ -58,7 +58,8 @@ public class TaxonomyController {
 	PaginatedList<InformationAssetView> listOfIAViews = service.performSearch(searchRequest.getCategoryQuery(),
 		searchRequest.getScore(), searchRequest.getLimit(), searchRequest.getOffset());
 
-	logger.info("/search < {} IAViews", listOfIAViews.size());
+	logger.info("/search < {} IAViews returned, {} IAViews found", listOfIAViews.size(),
+		listOfIAViews.getNumberOfResults());
 	if (!CollectionUtils.isEmpty(listOfIAViews.getResults())) {
 	    logger.info("/search < first element: {}", listOfIAViews.getResults().get(0).toString());
 	}

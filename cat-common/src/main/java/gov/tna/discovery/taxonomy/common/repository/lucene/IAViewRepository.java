@@ -2,6 +2,7 @@ package gov.tna.discovery.taxonomy.common.repository.lucene;
 
 import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
@@ -12,13 +13,20 @@ import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.NumericRangeFilter;
+import org.apache.lucene.search.NumericRangeQuery;
+import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
@@ -26,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 //TODO put timeout on search requests on index: related to wildcard
 //TODO create IAVIewService and put in IAViewRepository only simple execution of queries
@@ -38,8 +47,11 @@ public class IAViewRepository {
     @Value("${lucene.index.version}")
     private String luceneVersion;
 
-    @Value("${lucene.categoriser.fieldsToAnalyse}")
+    @Value("${lucene.index.fieldsToSearch}")
     private String fieldsToAnalyse;
+
+    @Value("${lucene.index.queryFilterSourceValue}")
+    private String queryFilterSourceValue;
 
     @Autowired
     private Analyzer categoryQueryAnalyser;
@@ -73,18 +85,39 @@ public class IAViewRepository {
 	    QueryParser parser = new MultiFieldQueryParser(Version.valueOf(luceneVersion), fieldsToAnalyse.split(","),
 		    this.categoryQueryAnalyser);
 	    parser.setAllowLeadingWildcard(true);
-	    Query query;
+	    Query searchQuery;
 	    try {
-		query = parser.parse(queryString);
+		searchQuery = parser.parse(queryString);
 	    } catch (ParseException e) {
 		throw new TaxonomyException(TaxonomyErrorType.INVALID_CATEGORY_QUERY, e);
 	    }
 
-	    TopDocs topDocs = isearcher.search(query, offset + limit);
+	    Query finalQuery;
+	    if (StringUtils.isEmpty(queryFilterSourceValue)) {
+		finalQuery = searchQuery;
+	    } else {
+		finalQuery = new BooleanQuery();
+		((BooleanQuery) finalQuery).add(searchQuery, Occur.MUST);
+		// ((BooleanQuery) finalQuery).add(new TermQuery(new
+		// Term(InformationAssetViewFields.SOURCE.toString(),
+		// queryFilterSourceValue)), Occur.MUST);
+		// FIXME JCT why termQuery does not work on SOURCE integer
+		// field?
+		// FIXME JCT consider using filterQuery is more efficient if
+		// cached
+		Integer intSourceValue = Integer.valueOf(queryFilterSourceValue);
+		((BooleanQuery) finalQuery).add(NumericRangeQuery.newIntRange(
+			InformationAssetViewFields.SOURCE.toString(), intSourceValue, intSourceValue, true, true),
+			Occur.MUST);
+		// NumericRangeFilter.newIntRange("SOURCE", 100, 100, true,
+		// true);
+	    }
+
+	    TopDocs topDocs = isearcher.search(finalQuery, offset + limit);
 	    logger.debug(".performSearch: found {} total hits", topDocs.totalHits);
 
 	    if (mimimumScore != null) {
-		Integer nbOfElementsAboveScore = getNbOfElementsAboveScore(mimimumScore, isearcher, query);
+		Integer nbOfElementsAboveScore = getNbOfElementsAboveScore(mimimumScore, isearcher, finalQuery);
 		paginatedListOfIAViews.setNumberOfResults(nbOfElementsAboveScore);
 		logger.debug(".performSearch: found {} hits for that minimum score {}",
 			paginatedListOfIAViews.getNumberOfResults(), paginatedListOfIAViews.getMinimumScore());

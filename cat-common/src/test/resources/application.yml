@@ -50,3 +50,5 @@ lucene:
   maxShingleSize: 3
   useStopFilter: true
   useSynonymFilter: true
+  queryFilterSourceValue: 
+  fieldsToSearch: texttax,CATDOCREF

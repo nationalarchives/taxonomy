@@ -28,8 +28,8 @@ async:
 
 lucene:
  categoriser:
-  useTSetBasedCategoriser: true
-  useQueryBasedCategoriser: false
+  useTSetBasedCategoriser: false
+  useQueryBasedCategoriser: true
   fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
  mlt:
   mimimumScoreForMlt: 0
@@ -42,10 +42,12 @@ lucene:
   contextDescBoostingFactor: 0.75
   
  index:
-  iaviewCollectionPath: /opt/solr/solr/collection1/data/index
+  iaviewCollectionPath: /mnt/share/lucene/index_20150112
   trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
   version: LUCENE_47
   maxTrainingDocsPerCategory: 5000
   maxShingleSize: 0
   useStopFilter: false
   useSynonymFilter: false
+  queryFilterSourceValue: 100
+  fieldsToSearch: texttax,CATDOCREF

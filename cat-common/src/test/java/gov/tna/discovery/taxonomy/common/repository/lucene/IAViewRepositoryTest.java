@@ -69,7 +69,7 @@ public class IAViewRepositoryTest {
     @Value("${lucene.index.version}")
     private String luceneVersion;
 
-    @Value("${lucene.categoriser.fieldsToAnalyse}")
+    @Value("${lucene.index.fieldsToSearch}")
     private String fieldsToAnalyse;
 
     private static final String QUERY_WITH_LEADING_WILDCARD = "*Church";
