@@ -23,7 +23,6 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -51,9 +50,6 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
     @Value("${lucene.index.version}")
     private String luceneVersion;
-
-    @Value("${lucene.categoriser.fieldsToAnalyse}")
-    private String fieldsToAnalyse;
 
     @Autowired
     private Analyzer categoryQueryAnalyser;
@@ -84,8 +80,8 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
 	    searcher = searcherManager.acquire();
 
-	    QueryParser parser = new MultiFieldQueryParser(Version.valueOf(luceneVersion), fieldsToAnalyse.split(","),
-		    this.categoryQueryAnalyser);
+	    QueryParser parser = new QueryParser(Version.valueOf(luceneVersion),
+		    InformationAssetViewFields.texttax.toString(), this.categoryQueryAnalyser);
 	    parser.setAllowLeadingWildcard(true);
 
 	    for (Category category : categoryRepository.findAll()) {
@@ -152,44 +148,37 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
      * @throws IOException
      */
     public Document getLuceneDocumentFromIaVIew(InformationAssetView iaView) throws IOException {
-	if (!StringUtils.isEmpty(iaView.getDESCRIPTION())) {
-	    iaView.setDESCRIPTION(iaView.getDESCRIPTION());
-	}
-	if (!StringUtils.isEmpty(iaView.getCONTEXTDESCRIPTION())) {
-	    iaView.setCONTEXTDESCRIPTION(iaView.getCONTEXTDESCRIPTION());
-	}
-	if (!StringUtils.isEmpty(iaView.getTITLE())) {
-	    iaView.setTITLE(iaView.getTITLE());
-	}
+
 	Document doc = new Document();
 
-	doc.add(new TextField(InformationAssetViewFields.DESCRIPTION.toString(), iaView.getDESCRIPTION(),
-		Field.Store.YES));
+	doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getDESCRIPTION(), Field.Store.YES));
 
 	if (!StringUtils.isEmpty(iaView.getTITLE())) {
-	    doc.add(new TextField(InformationAssetViewFields.TITLE.toString(), iaView.getTITLE(), Field.Store.YES));
+	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getTITLE(), Field.Store.NO));
 	}
 	if (!StringUtils.isEmpty(iaView.getCONTEXTDESCRIPTION())) {
-	    doc.add(new TextField(InformationAssetViewFields.CONTEXTDESCRIPTION.toString(), iaView
-		    .getCONTEXTDESCRIPTION(), Field.Store.YES));
+	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getCONTEXTDESCRIPTION(),
+		    Field.Store.NO));
 	}
 	if (iaView.getCORPBODYS() != null) {
-	    doc.add(new TextField(InformationAssetViewFields.CORPBODYS.toString(), Arrays.toString(iaView
-		    .getCORPBODYS()), Field.Store.YES));
-	}
-	if (iaView.getPERSON_FULLNAME() != null) {
-	    doc.add(new TextField(InformationAssetViewFields.PERSON_FULLNAME.toString(), Arrays.toString(iaView
-		    .getPERSON_FULLNAME()), Field.Store.YES));
-	}
-	if (iaView.getPLACE_NAME() != null) {
-	    doc.add(new TextField(InformationAssetViewFields.PLACE_NAME.toString(), Arrays.toString(iaView
-		    .getPLACE_NAME()), Field.Store.YES));
+	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(),
+		    Arrays.toString(iaView.getCORPBODYS()), Field.Store.NO));
 	}
 	if (iaView.getSUBJECTS() != null) {
-	    doc.add(new TextField(InformationAssetViewFields.SUBJECTS.toString(),
-		    Arrays.toString(iaView.getSUBJECTS()), Field.Store.YES));
+	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), Arrays.toString(iaView.getSUBJECTS()),
+		    Field.Store.NO));
+	}
+	if (iaView.getPERSON_FULLNAME() != null) {
+	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), Arrays.toString(iaView
+		    .getPERSON_FULLNAME()), Field.Store.NO));
+	}
+	if (iaView.getPLACE_NAME() != null) {
+	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(),
+		    Arrays.toString(iaView.getPLACE_NAME()), Field.Store.NO));
+	}
+	if (iaView.getCATDOCREF() != null) {
+	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getCATDOCREF(), Field.Store.NO));
 	}
 	return doc;
     }
-
 }
