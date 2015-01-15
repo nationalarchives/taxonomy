@@ -1,6 +1,6 @@
 package gov.tna.discovery.taxonomy.common.config;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.IAViewSearchAnalyser;
 import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.TaxonomyTrainingSetAnalyser;
 
 import java.io.File;
@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.miscellaneous.WordDelimiterFilterFactory;
 import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
 import org.apache.lucene.analysis.util.ClasspathResourceLoader;
 import org.apache.lucene.analysis.util.ResourceLoader;
@@ -115,8 +116,7 @@ public class LuceneConfiguration {
 	    ResourceLoader loader = new ClasspathResourceLoader(getClass());
 	    stopFilterFactory.inform(loader);
 	} catch (IOException e) {
-	    logger.error(".stopFilterFactory: an error occured while creating the stop Filter factory: {}",
-		    e.getMessage());
+	    logger.error(".stopFilterFactory: an error occured while creating the Filter factory: {}", e.getMessage());
 	}
 	return stopFilterFactory;
     }
@@ -133,10 +133,28 @@ public class LuceneConfiguration {
 	    ResourceLoader loader = new ClasspathResourceLoader(getClass());
 	    synonymFilterFactory.inform(loader);
 	} catch (IOException e) {
-	    logger.error(".synonymFilterFactory: an error occured while creating the stop Filter factory: {}",
+	    logger.error(".synonymFilterFactory: an error occured while creating the Filter factory: {}",
 		    e.getMessage());
 	}
 	return synonymFilterFactory;
+
+    }
+
+    public @Bean WordDelimiterFilterFactory wordDelimiterFilterFactory() {
+	Map<String, String> wordDelimiterFilterArgs = new HashMap<String, String>();
+	wordDelimiterFilterArgs.put("preserveOriginal", "1");
+	wordDelimiterFilterArgs.put("generateWordParts", "1");
+	wordDelimiterFilterArgs.put("catenateWords", "1");
+	WordDelimiterFilterFactory wordDelimiterFilterFactory = new WordDelimiterFilterFactory(wordDelimiterFilterArgs);
+
+	try {
+	    ResourceLoader loader = new ClasspathResourceLoader(getClass());
+	    wordDelimiterFilterFactory.inform(loader);
+	} catch (IOException e) {
+	    logger.error(".wordDelimiterFilterFactory: an error occured while creating the Filter factory: {}",
+		    e.getMessage());
+	}
+	return wordDelimiterFilterFactory;
 
     }
 
@@ -165,8 +183,10 @@ public class LuceneConfiguration {
      * 
      * @return
      */
-    public @Bean Analyzer categoryQueryAnalyser() {
-	return new WhitespaceAnalyzer(Version.valueOf(version));
+    public @Bean Analyzer iaViewSearchAnalyser() {
+	IAViewSearchAnalyser iaViewSearchAnalyser = new IAViewSearchAnalyser(Version.valueOf(version));
+	iaViewSearchAnalyser.setPositionIncrementGap(100);
+	return iaViewSearchAnalyser;
     }
 
     /**

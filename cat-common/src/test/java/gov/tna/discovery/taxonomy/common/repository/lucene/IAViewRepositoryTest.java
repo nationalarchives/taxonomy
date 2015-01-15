@@ -64,7 +64,7 @@ public class IAViewRepositoryTest {
     private Directory iaViewDirectory;
 
     @Autowired
-    private Analyzer categoryQueryAnalyser;
+    private Analyzer iaViewSearchAnalyser;
 
     @Value("${lucene.index.version}")
     private String luceneVersion;
@@ -160,7 +160,7 @@ public class IAViewRepositoryTest {
 	try {
 	    String[] queryStrings = { "\"British National: B.B.C WO100.\"", "\"B.B.C\"", "\"WO100.\"",
 		    "\"British National:\"", "B.B.C" };
-	    writer = updateIAViewDirectoryWithOnePunctuatedDocument(this.categoryQueryAnalyser);
+	    writer = updateIAViewDirectoryWithOnePunctuatedDocument(this.iaViewSearchAnalyser);
 	    for (String queryString : Arrays.asList(queryStrings)) {
 		logger.info(queryString);
 		PaginatedList<InformationAssetView> results = iaViewRepository.performSearch(queryString, 0d, 100, 0);
@@ -187,7 +187,7 @@ public class IAViewRepositoryTest {
     public void ensureThatPunctuationIsIndexed() throws IOException {
 	IndexWriter writer = null;
 	try {
-	    TokenStream tokenStream = this.categoryQueryAnalyser.tokenStream("TITLE", new StringReader(
+	    TokenStream tokenStream = this.iaViewSearchAnalyser.tokenStream("TITLE", new StringReader(
 		    "B.B.C: Labour requirements for the housing programme."));
 	    OffsetAttribute offsetAttribute = tokenStream.addAttribute(OffsetAttribute.class);
 	    CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);

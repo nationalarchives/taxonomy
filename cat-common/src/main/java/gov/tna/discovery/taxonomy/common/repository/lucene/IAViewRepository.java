@@ -17,13 +17,17 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.xml.builders.NumericRangeFilterBuilder;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.FilteredQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.NumericRangeFilter;
 import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TermQuery;
@@ -54,7 +58,7 @@ public class IAViewRepository {
     private String queryFilterSourceValue;
 
     @Autowired
-    private Analyzer categoryQueryAnalyser;
+    private Analyzer iaViewSearchAnalyser;
 
     private static final Logger logger = LoggerFactory.getLogger(IAViewRepository.class);
 
@@ -99,7 +103,7 @@ public class IAViewRepository {
 	}
 	return hitDoc;
     }
-    
+
     public PaginatedList<InformationAssetView> performSearch(String queryString, Double mimimumScore, Integer limit,
 	    Integer offset) {
 	PaginatedList<InformationAssetView> paginatedListOfIAViews = new PaginatedList<InformationAssetView>(limit,
@@ -110,36 +114,7 @@ public class IAViewRepository {
 	try {
 	    isearcher = iaviewSearcherManager.acquire();
 
-	    QueryParser parser = new MultiFieldQueryParser(Version.valueOf(luceneVersion), fieldsToAnalyse.split(","),
-		    this.categoryQueryAnalyser);
-	    parser.setAllowLeadingWildcard(true);
-	    Query searchQuery;
-	    try {
-		searchQuery = parser.parse(queryString);
-	    } catch (ParseException e) {
-		throw new TaxonomyException(TaxonomyErrorType.INVALID_CATEGORY_QUERY, e);
-	    }
-
-	    Query finalQuery;
-	    if (StringUtils.isEmpty(queryFilterSourceValue)) {
-		finalQuery = searchQuery;
-	    } else {
-		finalQuery = new BooleanQuery();
-		((BooleanQuery) finalQuery).add(searchQuery, Occur.MUST);
-		// ((BooleanQuery) finalQuery).add(new TermQuery(new
-		// Term(InformationAssetViewFields.SOURCE.toString(),
-		// queryFilterSourceValue)), Occur.MUST);
-		// FIXME JCT why termQuery does not work on SOURCE integer
-		// field?
-		// FIXME JCT consider using filterQuery is more efficient if
-		// cached
-		Integer intSourceValue = Integer.valueOf(queryFilterSourceValue);
-		((BooleanQuery) finalQuery).add(NumericRangeQuery.newIntRange(
-			InformationAssetViewFields.SOURCE.toString(), intSourceValue, intSourceValue, true, true),
-			Occur.MUST);
-		// NumericRangeFilter.newIntRange("SOURCE", 100, 100, true,
-		// true);
-	    }
+	    Query finalQuery = buildSearchQueryWithFiltersIfNecessary(queryString);
 
 	    TopDocs topDocs = isearcher.search(finalQuery, offset + limit);
 	    logger.debug(".performSearch: found {} total hits", topDocs.totalHits);
@@ -180,6 +155,47 @@ public class IAViewRepository {
 	return paginatedListOfIAViews;
     }
 
+    public Query buildSearchQueryWithFiltersIfNecessary(String queryString) {
+	Query searchQuery = buildSearchQuery(queryString);
+
+	Filter filter = getCatalogueFilter();
+
+	Query finalQuery;
+	if (filter != null) {
+	    finalQuery = new FilteredQuery(searchQuery, filter);
+	} else {
+	    finalQuery = searchQuery;
+	}
+	return finalQuery;
+    }
+
+    public Filter getCatalogueFilter() {
+	Filter filter = null;
+	if (!StringUtils.isEmpty(queryFilterSourceValue)) {
+	    Integer intCatalogueSourceValue = Integer.valueOf(queryFilterSourceValue);
+	    filter = NumericRangeFilter.newIntRange(InformationAssetViewFields.SOURCE.toString(),
+		    intCatalogueSourceValue, intCatalogueSourceValue, true, true);
+	}
+	return filter;
+    }
+
+    public Query buildSearchQuery(String queryString) {
+	// QueryParser parser = new
+	// MultiFieldQueryParser(Version.valueOf(luceneVersion),
+	// fieldsToAnalyse.split(","),
+	// this.iaViewSearchAnalyser);
+	QueryParser parser = new QueryParser(Version.valueOf(luceneVersion),
+		InformationAssetViewFields.texttax.toString(), this.iaViewSearchAnalyser);
+	parser.setAllowLeadingWildcard(true);
+	Query searchQuery;
+	try {
+	    searchQuery = parser.parse(queryString);
+	} catch (ParseException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.INVALID_CATEGORY_QUERY, e);
+	}
+	return searchQuery;
+    }
+
     // FIXME pay attention to memory leak
     public Integer getNbOfElementsAboveScore(Double mimimumScore, IndexSearcher isearcher, Query query)
 	    throws IOException {
@@ -208,7 +224,7 @@ public class IAViewRepository {
 	try {
 	    searcher = iaviewSearcherManager.acquire();
 
-	    QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), field, this.categoryQueryAnalyser);
+	    QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), field, this.iaViewSearchAnalyser);
 
 	    return searcher.search(qp.parse(QueryParser.escape(value)), numHits);
 
@@ -222,7 +238,7 @@ public class IAViewRepository {
     }
 
     public void checkCategoryQueryValidity(String qry) {
-	QueryParser parser = new QueryParser(Version.valueOf(luceneVersion), "CATEGORY", this.categoryQueryAnalyser);
+	QueryParser parser = new QueryParser(Version.valueOf(luceneVersion), "CATEGORY", this.iaViewSearchAnalyser);
 	parser.setAllowLeadingWildcard(true);
 	try {
 	    parser.parse(qry);

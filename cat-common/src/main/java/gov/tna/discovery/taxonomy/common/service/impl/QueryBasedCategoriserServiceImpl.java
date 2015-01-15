@@ -1,12 +1,12 @@
 package gov.tna.discovery.taxonomy.common.service.impl;
 
 import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
-import gov.tna.discovery.taxonomy.common.mapper.TaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneHelperTools;
+import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.IAViewIndexAnalyser;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
@@ -18,16 +18,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.miscellaneous.WordDelimiterFilterFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SearcherManager;
@@ -55,10 +57,13 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     private String luceneVersion;
 
     @Autowired
-    private Analyzer categoryQueryAnalyser;
+    private Analyzer iaViewSearchAnalyser;
 
     @Autowired
     private IAViewRepository iaViewRepository;
+
+    @Autowired
+    private WordDelimiterFilterFactory wordDelimiterFilterFactory;
 
     @Override
     public void testCategoriseIAViewSolrIndex() throws IOException {
@@ -80,15 +85,10 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
 	    searcher = searcherManager.acquire();
 
-	    QueryParser parser = new QueryParser(Version.valueOf(luceneVersion),
-		    InformationAssetViewFields.texttax.toString(), this.categoryQueryAnalyser);
-	    parser.setAllowLeadingWildcard(true);
-
 	    for (Category category : categoryRepository.findAll()) {
 		String queryString = category.getQry();
-		Query query;
 		try {
-		    query = parser.parse(queryString);
+		    Query query = iaViewRepository.buildSearchQuery(queryString);
 		    TopDocs topDocs = searcher.search(query, 1);
 
 		    if (topDocs.totalHits != 0 && topDocs.scoreDocs[0].score > category.getSc()) {
@@ -97,9 +97,10 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 			logger.debug(".testCategoriseSingle: found category {} with score {}", category.getTtl(),
 				topDocs.scoreDocs[0].score);
 		    }
-		} catch (ParseException e) {
-		    logger.debug(".testCategoriseSingle: an exception occured while parsing category query for {}",
-			    category.getTtl());
+		} catch (TaxonomyException e) {
+		    logger.debug(
+			    ".testCategoriseSingle: an exception occured while parsing category query for category: {}, title: ",
+			    category.getTtl(), e.getMessage());
 		}
 	    }
 
@@ -124,8 +125,16 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	RAMDirectory ramDirectory = new RAMDirectory();
 
 	// Make an writer to create the index
+
+	Map<String, Analyzer> analyzerPerField = new HashMap<String, Analyzer>();
+	IAViewIndexAnalyser indexAnalyser = new IAViewIndexAnalyser(Version.valueOf(luceneVersion),
+		this.wordDelimiterFilterFactory);
+	indexAnalyser.setPositionIncrementGap(100);
+	analyzerPerField.put("CATDOCREF", indexAnalyser);
+	PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(this.iaViewSearchAnalyser, analyzerPerField);
+
 	IndexWriter writer = new IndexWriter(ramDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
-		categoryQueryAnalyser));
+		analyzer));
 
 	// Add some Document objects containing quotes
 	writer.addDocument(getLuceneDocumentFromIaVIew(iaView));
@@ -156,10 +165,10 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
 	Document doc = new Document();
 
-	doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getDESCRIPTION(), Field.Store.YES));
-
-	if (!StringUtils.isEmpty(iaView.getTITLE())) {
-	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getTITLE(), Field.Store.NO));
+	if (iaView.getCATDOCREF() != null) {
+	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getCATDOCREF(), Field.Store.NO));
+	    doc.add(new TextField(InformationAssetViewFields.CATDOCREF.toString(), iaView.getCATDOCREF(),
+		    Field.Store.NO));
 	}
 	if (!StringUtils.isEmpty(iaView.getCONTEXTDESCRIPTION())) {
 	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getCONTEXTDESCRIPTION(),
@@ -169,10 +178,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(),
 		    Arrays.toString(iaView.getCORPBODYS()), Field.Store.NO));
 	}
-	if (iaView.getSUBJECTS() != null) {
-	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), Arrays.toString(iaView.getSUBJECTS()),
-		    Field.Store.NO));
-	}
+	doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getDESCRIPTION(), Field.Store.YES));
 	if (iaView.getPERSON_FULLNAME() != null) {
 	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), Arrays.toString(iaView
 		    .getPERSON_FULLNAME()), Field.Store.NO));
@@ -181,9 +187,14 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(),
 		    Arrays.toString(iaView.getPLACE_NAME()), Field.Store.NO));
 	}
-	if (iaView.getCATDOCREF() != null) {
-	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getCATDOCREF(), Field.Store.NO));
+	if (iaView.getSUBJECTS() != null) {
+	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), Arrays.toString(iaView.getSUBJECTS()),
+		    Field.Store.NO));
+	}
+	if (!StringUtils.isEmpty(iaView.getTITLE())) {
+	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getTITLE(), Field.Store.NO));
 	}
 	return doc;
     }
+
 }
