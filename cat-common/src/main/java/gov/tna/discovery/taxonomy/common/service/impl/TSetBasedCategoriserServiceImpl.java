@@ -6,6 +6,7 @@ import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAss
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneHelperTools;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
+import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.domain.TSetBasedCategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
@@ -341,5 +342,11 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 
 	logger.info("test Categorisation finished");
 
+    }
+
+    @Override
+    public List<TSetBasedCategorisationResult> testCategoriseSingle(String catDocRef) {
+	// TODO Auto-generated method stub
+	return null;
     }
 }

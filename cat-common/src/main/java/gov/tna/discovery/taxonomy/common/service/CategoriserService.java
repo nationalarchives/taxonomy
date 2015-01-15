@@ -36,8 +36,16 @@ public interface CategoriserService<T extends CategorisationResult> {
      * Preview the categorisation of a document
      * 
      * @param iaView
-     * @return {@link TSetBasedCategorisationResult}
+     * @return {@link CategorisationResult}
      */
     public List<T> testCategoriseSingle(InformationAssetView iaView);
+
+    /**
+     * Preview the categorisation of a document
+     * 
+     * @param catDocRef
+     * @return {@link CategorisationResult}
+     */
+    public List<T> testCategoriseSingle(String catDocRef);
 
 }

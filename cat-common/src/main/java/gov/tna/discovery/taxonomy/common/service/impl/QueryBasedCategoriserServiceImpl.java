@@ -1,8 +1,11 @@
 package gov.tna.discovery.taxonomy.common.service.impl;
 
+import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
+import gov.tna.discovery.taxonomy.common.mapper.TaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneHelperTools;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
@@ -54,6 +57,9 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     @Autowired
     private Analyzer categoryQueryAnalyser;
 
+    @Autowired
+    private IAViewRepository iaViewRepository;
+
     @Override
     public List<CategorisationResult> categoriseIAViewSolrDocument(String catdocref) {
 	// TODO Auto-generated method stub
@@ -96,8 +102,6 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 				topDocs.scoreDocs[0].score));
 			logger.debug(".testCategoriseSingle: found category {} with score {}", category.getTtl(),
 				topDocs.scoreDocs[0].score);
-		    } else {
-			logger.debug(".testCategoriseSingle: category {} not found", category.getTtl());
 		    }
 		} catch (ParseException e) {
 		    logger.debug(".testCategoriseSingle: an exception occured while parsing category query for {}",
@@ -113,6 +117,13 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
 	sortCategorisationResultsByScoreDesc(listOfCategoryResults);
 	return listOfCategoryResults;
+    }
+
+    @Override
+    public List<CategorisationResult> testCategoriseSingle(String docReference) {
+	return testCategoriseSingle(LuceneTaxonomyMapper.getIAViewFromLuceneDocument(iaViewRepository
+		.searchDocByDocReference(docReference)));
+
     }
 
     private RAMDirectory createRamDirectoryForDocument(InformationAssetView iaView) throws IOException {

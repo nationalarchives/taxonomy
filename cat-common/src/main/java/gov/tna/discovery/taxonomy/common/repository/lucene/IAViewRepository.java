@@ -72,6 +72,34 @@ public class IAViewRepository {
 	return hitDoc;
     }
 
+    /**
+     * get doc by DocReference (unique field of IAView)
+     * 
+     * @param docReference
+     * @return
+     */
+    public Document searchDocByDocReference(String docReference) {
+	Document hitDoc = null;
+	IndexSearcher searcher = null;
+	try {
+	    searcher = iaviewSearcherManager.acquire();
+	    TopDocs results = searcher.search(new TermQuery(new Term(
+		    InformationAssetViewFields.DOCREFERENCE.toString(), docReference)), 1);
+	    if (results.totalHits != 1) {
+		throw new TaxonomyException(TaxonomyErrorType.INVALID_PARAMETER, "searchDocByDocReference: there were "
+			+ results.totalHits + " results for DOCREFERENCE: " + docReference
+			+ " though it should have found only 1 doc");
+	    }
+	    hitDoc = searcher.doc(results.scoreDocs[0].doc);
+
+	} catch (IOException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	} finally {
+	    LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager, searcher);
+	}
+	return hitDoc;
+    }
+    
     public PaginatedList<InformationAssetView> performSearch(String queryString, Double mimimumScore, Integer limit,
 	    Integer offset) {
 	PaginatedList<InformationAssetView> paginatedListOfIAViews = new PaginatedList<InformationAssetView>(limit,
