@@ -170,10 +170,9 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
 	Document doc = new Document();
 
-	if (iaView.getCATDOCREF() != null) {
-	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getCATDOCREF(), Field.Store.NO));
-	    doc.add(new TextField(InformationAssetViewFields.CATDOCREF.toString(), iaView.getCATDOCREF(),
-		    Field.Store.NO));
+	doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getDESCRIPTION(), Field.Store.YES));
+	if (!StringUtils.isEmpty(iaView.getTITLE())) {
+	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getTITLE(), Field.Store.NO));
 	}
 	if (!StringUtils.isEmpty(iaView.getCONTEXTDESCRIPTION())) {
 	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getCONTEXTDESCRIPTION(),
@@ -184,7 +183,11 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 		doc.add(new TextField(InformationAssetViewFields.texttax.toString(), corpBody, Field.Store.NO));
 	    }
 	}
-	doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getDESCRIPTION(), Field.Store.YES));
+	if (iaView.getSUBJECTS() != null) {
+	    for (String subject : iaView.getSUBJECTS()) {
+		doc.add(new TextField(InformationAssetViewFields.texttax.toString(), subject, Field.Store.NO));
+	    }
+	}
 
 	if (iaView.getPERSON_FULLNAME() != null) {
 	    for (String person : iaView.getPERSON_FULLNAME()) {
@@ -196,13 +199,10 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 		doc.add(new TextField(InformationAssetViewFields.texttax.toString(), place, Field.Store.NO));
 	    }
 	}
-	if (iaView.getSUBJECTS() != null) {
-	    for (String subject : iaView.getSUBJECTS()) {
-		doc.add(new TextField(InformationAssetViewFields.texttax.toString(), subject, Field.Store.NO));
-	    }
-	}
-	if (!StringUtils.isEmpty(iaView.getTITLE())) {
-	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getTITLE(), Field.Store.NO));
+	if (iaView.getCATDOCREF() != null) {
+	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getCATDOCREF(), Field.Store.NO));
+	    doc.add(new TextField(InformationAssetViewFields.CATDOCREF.toString(), iaView.getCATDOCREF(),
+		    Field.Store.NO));
 	}
 	return doc;
     }
