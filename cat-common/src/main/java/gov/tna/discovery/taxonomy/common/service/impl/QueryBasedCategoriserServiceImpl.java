@@ -61,12 +61,6 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     private IAViewRepository iaViewRepository;
 
     @Override
-    public List<CategorisationResult> categoriseIAViewSolrDocument(String catdocref) {
-	// TODO Auto-generated method stub
-	return null;
-    }
-
-    @Override
     public void testCategoriseIAViewSolrIndex() throws IOException {
 	// TODO Auto-generated method stub
 

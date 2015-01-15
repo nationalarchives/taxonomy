@@ -13,18 +13,6 @@ import org.apache.lucene.queryparser.classic.ParseException;
 public interface CategoriserService<T extends CategorisationResult> {
 
     /**
-     * categorise a document by running the MLT process against the training set<br/>
-     * deprecated, use testCategoriseSingle instead
-     * 
-     * @param catdocref
-     *            IAID
-     * @throws IOException
-     * @throws ParseException
-     */
-    @Deprecated
-    public List<T> categoriseIAViewSolrDocument(String catdocref);
-
-    /**
      * Categorise the whole IA collection
      * 
      * @throws IOException

@@ -79,14 +79,6 @@ public class TSetBasedCategoriserServiceTest {
     }
 
     @Test
-    public void testCategoriseIAViewSolrDocument() throws IOException, ParseException {
-	List<TSetBasedCategorisationResult> categorisationResults = categoriser
-		.categoriseIAViewSolrDocument("CO 273/630/9");
-	assertThat(categorisationResults, is(notNullValue()));
-	assertThat(categorisationResults, is(not(empty())));
-    }
-
-    @Test
     public void testTestCategoriseSingle() {
 	InformationAssetView iaView = new InformationAssetView();
 	iaView.setDESCRIPTION("Singapore Harbour Board: indemnity against any damage caused by explosives on board HM ships in harbour area.");

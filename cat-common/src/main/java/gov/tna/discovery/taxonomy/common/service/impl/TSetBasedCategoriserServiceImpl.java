@@ -95,44 +95,6 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     @Value("${lucene.categoriser.fieldsToAnalyse}")
     private String fieldsToAnalyse;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see gov.tna.discovery.taxonomy.common.service.impl.Categoriser#
-     * categoriseIAViewSolrDocument(java.lang.String)
-     */
-    @Override
-    public List<TSetBasedCategorisationResult> categoriseIAViewSolrDocument(String catdocref) {
-	logger.info("testCategoriseSingle on document: {} ", catdocref);
-	TopDocs results = iaViewRepository.searchIAViewIndexByFieldAndPhrase("CATDOCREF", catdocref, 1);
-
-	Document doc;
-	try {
-	    doc = this.iaViewIndexReader.document(results.scoreDocs[0].doc);
-	} catch (IOException e) {
-	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
-	}
-
-	List<TSetBasedCategorisationResult> result = runMlt(doc);
-
-	logger.debug("DOCUMENT");
-	logger.debug("------------------------");
-	logger.debug("TITLE: {}", doc.get("TITLE"));
-	logger.debug("IAID: {}", doc.get("CATDOCREF"));
-	logger.debug("DESCRIPTION: {}", doc.get("DESCRIPTION"));
-	logger.debug("");
-	for (TSetBasedCategorisationResult categoryResult : result) {
-	    logger.debug("CATEGORY: {}, score: {}, number of found documents: {}", categoryResult.getName(),
-		    categoryResult.getScore(), categoryResult.getNumberOfFoundDocuments());
-	}
-	logger.debug("------------------------");
-
-	logger.debug("");
-
-	return result;
-
-    }
-
     /**
      * run More Like This process on a document by comparing its description to
      * the description of all items of the training set<br/>
