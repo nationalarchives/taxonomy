@@ -13,7 +13,7 @@ import org.apache.lucene.analysis.miscellaneous.WordDelimiterFilterFactory;
 import org.apache.lucene.analysis.standard.ClassicTokenizer;
 import org.apache.lucene.util.Version;
 
-public final class IAViewIndexAnalyser extends Analyzer {
+public final class IAViewTextRefAnalyser extends Analyzer {
 
     private final Version matchVersion;
 
@@ -29,7 +29,7 @@ public final class IAViewIndexAnalyser extends Analyzer {
      *            Lucene version to match See
      *            {@link <a href="#version">above</a>}
      */
-    public IAViewIndexAnalyser(Version matchVersion, WordDelimiterFilterFactory wordDelimiterFilterFactory) {
+    public IAViewTextRefAnalyser(Version matchVersion, WordDelimiterFilterFactory wordDelimiterFilterFactory) {
 	this.matchVersion = matchVersion;
 	this.wordDelimiterFilterFactory = wordDelimiterFilterFactory;
     }

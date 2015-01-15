@@ -6,7 +6,7 @@ import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAss
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneHelperTools;
-import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.IAViewIndexAnalyser;
+import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextRefAnalyser;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
@@ -15,7 +15,6 @@ import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -126,15 +125,10 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
 	// Make an writer to create the index
 
-	Map<String, Analyzer> analyzerPerField = new HashMap<String, Analyzer>();
-	IAViewIndexAnalyser indexAnalyser = new IAViewIndexAnalyser(Version.valueOf(luceneVersion),
-		this.wordDelimiterFilterFactory);
-	indexAnalyser.setPositionIncrementGap(100);
-	analyzerPerField.put("CATDOCREF", indexAnalyser);
-	PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(this.iaViewSearchAnalyser, analyzerPerField);
+	PerFieldAnalyzerWrapper iaViewIndexAnalyser = createIAViewIndexAnalyser();
 
 	IndexWriter writer = new IndexWriter(ramDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
-		analyzer));
+		iaViewIndexAnalyser));
 
 	// Add some Document objects containing quotes
 	writer.addDocument(getLuceneDocumentFromIaVIew(iaView));
@@ -143,6 +137,17 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	writer.close();
 	return ramDirectory;
 
+    }
+
+    private PerFieldAnalyzerWrapper createIAViewIndexAnalyser() {
+	Map<String, Analyzer> analyzerPerField = new HashMap<String, Analyzer>();
+	IAViewTextRefAnalyser textRefAnalyser = new IAViewTextRefAnalyser(Version.valueOf(luceneVersion),
+		this.wordDelimiterFilterFactory);
+	textRefAnalyser.setPositionIncrementGap(100);
+	analyzerPerField.put("CATDOCREF", textRefAnalyser);
+	PerFieldAnalyzerWrapper iaViewIndexAnalyser = new PerFieldAnalyzerWrapper(this.iaViewSearchAnalyser,
+		analyzerPerField);
+	return iaViewIndexAnalyser;
     }
 
     private void sortCategorisationResultsByScoreDesc(List<CategorisationResult> categorisationResults) {
@@ -175,21 +180,26 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 		    Field.Store.NO));
 	}
 	if (iaView.getCORPBODYS() != null) {
-	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(),
-		    Arrays.toString(iaView.getCORPBODYS()), Field.Store.NO));
+	    for (String corpBody : iaView.getCORPBODYS()) {
+		doc.add(new TextField(InformationAssetViewFields.texttax.toString(), corpBody, Field.Store.NO));
+	    }
 	}
 	doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getDESCRIPTION(), Field.Store.YES));
+
 	if (iaView.getPERSON_FULLNAME() != null) {
-	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), Arrays.toString(iaView
-		    .getPERSON_FULLNAME()), Field.Store.NO));
+	    for (String person : iaView.getPERSON_FULLNAME()) {
+		doc.add(new TextField(InformationAssetViewFields.texttax.toString(), person, Field.Store.NO));
+	    }
 	}
 	if (iaView.getPLACE_NAME() != null) {
-	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(),
-		    Arrays.toString(iaView.getPLACE_NAME()), Field.Store.NO));
+	    for (String place : iaView.getPLACE_NAME()) {
+		doc.add(new TextField(InformationAssetViewFields.texttax.toString(), place, Field.Store.NO));
+	    }
 	}
 	if (iaView.getSUBJECTS() != null) {
-	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), Arrays.toString(iaView.getSUBJECTS()),
-		    Field.Store.NO));
+	    for (String subject : iaView.getSUBJECTS()) {
+		doc.add(new TextField(InformationAssetViewFields.texttax.toString(), subject, Field.Store.NO));
+	    }
 	}
 	if (!StringUtils.isEmpty(iaView.getTITLE())) {
 	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getTITLE(), Field.Store.NO));
