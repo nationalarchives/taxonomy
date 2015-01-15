@@ -42,7 +42,7 @@ lucene:
   contextDescBoostingFactor: 0.75
 
  index:
-  iaviewCollectionPath: /mnt/share/lucene/index_20150112
+  iaviewCollectionPath: /mnt/share/lucene/index_20150112/data/index
   trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
   version: LUCENE_47
   maxTrainingDocsPerCategory: 5000
