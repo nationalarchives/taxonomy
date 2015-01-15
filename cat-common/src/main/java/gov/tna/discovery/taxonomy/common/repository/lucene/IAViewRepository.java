@@ -14,20 +14,13 @@ import java.util.List;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.queryparser.xml.builders.NumericRangeFilterBuilder;
-import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.FilteredQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.NumericRangeFilter;
-import org.apache.lucene.search.NumericRangeQuery;
-import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TermQuery;
@@ -180,10 +173,6 @@ public class IAViewRepository {
     }
 
     public Query buildSearchQuery(String queryString) {
-	// QueryParser parser = new
-	// MultiFieldQueryParser(Version.valueOf(luceneVersion),
-	// fieldsToAnalyse.split(","),
-	// this.iaViewSearchAnalyser);
 	QueryParser parser = new QueryParser(Version.valueOf(luceneVersion),
 		InformationAssetViewFields.texttax.toString(), this.iaViewSearchAnalyser);
 	parser.setAllowLeadingWildcard(true);

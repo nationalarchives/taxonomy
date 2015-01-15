@@ -7,7 +7,6 @@ import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
-import gov.tna.discovery.taxonomy.common.service.domain.TSetBasedCategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
@@ -20,6 +19,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @Service
 public class TaxonomyWSServiceImpl implements TaxonomyWSService {
 

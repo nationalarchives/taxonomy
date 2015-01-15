@@ -1,6 +1,5 @@
 package gov.tna.discovery.taxonomy.cli;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.CategoryEvaluationResult;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.EvaluationReport;
@@ -20,7 +19,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +68,7 @@ public class CLIRunner implements CommandLineRunner {
     @Value("${spring.data.mongodb.host}")
     private String host;
 
+    @SuppressWarnings("rawtypes")
     @Autowired
     CategoriserService categoriser;
 

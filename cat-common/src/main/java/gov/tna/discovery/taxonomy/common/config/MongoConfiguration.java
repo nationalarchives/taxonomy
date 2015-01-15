@@ -14,8 +14,6 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import com.mongodb.Mongo;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoURI;
 
 @Configuration
 @EnableMongoRepositories

@@ -1,12 +1,10 @@
 package gov.tna.discovery.taxonomy.common.service.impl;
 
-import gov.tna.discovery.taxonomy.common.config.LuceneConfiguration;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneHelperTools;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
-import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.domain.TSetBasedCategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;

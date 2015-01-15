@@ -170,7 +170,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
 	Document doc = new Document();
 
-	doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getDESCRIPTION(), Field.Store.YES));
+	doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getDESCRIPTION(), Field.Store.NO));
 	if (!StringUtils.isEmpty(iaView.getTITLE())) {
 	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getTITLE(), Field.Store.NO));
 	}

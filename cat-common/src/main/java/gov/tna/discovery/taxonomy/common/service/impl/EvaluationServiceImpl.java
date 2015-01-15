@@ -29,10 +29,10 @@ import org.apache.lucene.search.TopDocs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @Service
 public class EvaluationServiceImpl implements EvaluationService {
 
@@ -154,7 +154,6 @@ public class EvaluationServiceImpl implements EvaluationService {
      * @see gov.tna.discovery.taxonomy.common.service.impl.EvaluationService#
      * getEvaluationReport()
      */
-    @SuppressWarnings("unchecked")
     @Override
     public EvaluationReport getEvaluationReport(String comments) {
 	logger.info(".getEvaluationReport > START");

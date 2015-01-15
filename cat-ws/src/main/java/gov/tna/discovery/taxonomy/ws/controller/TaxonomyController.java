@@ -2,7 +2,6 @@ package gov.tna.discovery.taxonomy.ws.controller;
 
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
-import gov.tna.discovery.taxonomy.common.service.domain.TSetBasedCategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
