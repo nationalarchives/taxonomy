@@ -162,8 +162,9 @@ public class CLIRunner implements CommandLineRunner {
 
 	if (cmd.hasOption(ACTION_CATEGORISE_EVALUATION_DATA_SET)) {
 	    Boolean matchNbOfReturnedCategories = false;
-	    if (cmd.hasOption(OPTION_MINIMUM_SIZE_PER_CATEGORY)) {
-		matchNbOfReturnedCategories = Boolean.valueOf(cmd.getOptionValue(OPTION_MINIMUM_SIZE_PER_CATEGORY));
+	    if (cmd.hasOption(OPTION_MATCH_NB_OF_RETURNED_CATEGORIES)) {
+		matchNbOfReturnedCategories = Boolean.valueOf(cmd
+			.getOptionValue(OPTION_MATCH_NB_OF_RETURNED_CATEGORIES));
 	    }
 	    evaluationService.runCategorisationOnTestDataSet(matchNbOfReturnedCategories);
 	}
