@@ -3,6 +3,7 @@ package gov.tna.discovery.taxonomy.cli;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.CategoryEvaluationResult;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.EvaluationReport;
+import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.EvaluationService;
@@ -48,7 +49,7 @@ public class CLIRunner implements CommandLineRunner {
     private static final String ACTION_TEST_CATEGORISE_ALL = "CATtestCategoriseAll";
 
     private static final String ACTION_TEST_CATEGORISE_SINGLE = "CATtestCategoriseSingle";
-    private static final String OPTION_CAT_DOC_REF = "CATcatDocRef";
+    private static final String OPTION_DOC_REF = "CATDocRef";
 
     private static final String ACTION_CREATE_EVALUATION_DATA_SET = "EVALcreateEvalDataSet";
     private static final String OPTION_MINIMUM_SIZE_PER_CATEGORY = "EVALminimumSizePerCat";
@@ -67,6 +68,7 @@ public class CLIRunner implements CommandLineRunner {
     @Value("${spring.data.mongodb.host}")
     private String host;
 
+    @SuppressWarnings("rawtypes")
     @Autowired
     CategoriserService categoriser;
 
@@ -78,6 +80,9 @@ public class CLIRunner implements CommandLineRunner {
 
     @Autowired
     CategoryRepository categoryRepository;
+
+    @Autowired
+    IAViewRepository iaViewRepository;
 
     public void run(String... args) throws IOException, ParseException, org.apache.commons.cli.ParseException {
 
@@ -134,8 +139,8 @@ public class CLIRunner implements CommandLineRunner {
 	 */
 
 	if (cmd.hasOption(ACTION_TEST_CATEGORISE_SINGLE)) {
-	    String catDocRef = cmd.getOptionValue(OPTION_CAT_DOC_REF);
-	    testCategoriseSingle(catDocRef);
+	    String docRef = cmd.getOptionValue(OPTION_DOC_REF);
+	    testCategoriseSingle(docRef);
 	}
 
 	if (cmd.hasOption(ACTION_TEST_CATEGORISE_ALL)) {
@@ -156,8 +161,9 @@ public class CLIRunner implements CommandLineRunner {
 
 	if (cmd.hasOption(ACTION_CATEGORISE_EVALUATION_DATA_SET)) {
 	    Boolean matchNbOfReturnedCategories = false;
-	    if (cmd.hasOption(OPTION_MINIMUM_SIZE_PER_CATEGORY)) {
-		matchNbOfReturnedCategories = Boolean.valueOf(cmd.getOptionValue(OPTION_MINIMUM_SIZE_PER_CATEGORY));
+	    if (cmd.hasOption(OPTION_MATCH_NB_OF_RETURNED_CATEGORIES)) {
+		matchNbOfReturnedCategories = Boolean.valueOf(cmd
+			.getOptionValue(OPTION_MATCH_NB_OF_RETURNED_CATEGORIES));
 	    }
 	    evaluationService.runCategorisationOnTestDataSet(matchNbOfReturnedCategories);
 	}
@@ -260,8 +266,8 @@ public class CLIRunner implements CommandLineRunner {
 	options.addOption(ACTION_INDEX, false, "index training set from mongo collection");
 
 	options.addOption(ACTION_TEST_CATEGORISE_SINGLE, false, "test the categorisation of one IAView Solr element");
-	options.addOption(OPTION_CAT_DOC_REF, true, "on -" + ACTION_TEST_CATEGORISE_SINGLE
-		+ ": cat doc ref of the element to work on");
+	options.addOption(OPTION_DOC_REF, true, "on -" + ACTION_TEST_CATEGORISE_SINGLE
+		+ ": doc reference of the element to work on");
 
 	options.addOption(ACTION_TEST_CATEGORISE_ALL, false, "test the categorisation of the whole IAView Solr index");
 
@@ -294,12 +300,12 @@ public class CLIRunner implements CommandLineRunner {
 	return options;
     }
 
-    private void testCategoriseSingle(String catDocRef) {
-	if (StringUtils.isEmpty(catDocRef)) {
-	    catDocRef = "CO 273/632/2";
+    private void testCategoriseSingle(String docRef) {
+	if (StringUtils.isEmpty(docRef)) {
+	    docRef = "C1253";
 	}
 
-	categoriser.categoriseIAViewSolrDocument(catDocRef);
+	categoriser.testCategoriseSingle(docRef);
     }
 
     private void updateTrainingSet(String categoryCiaid, Integer fixedLimitSize) throws IOException, ParseException {

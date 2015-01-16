@@ -8,14 +8,10 @@ import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;

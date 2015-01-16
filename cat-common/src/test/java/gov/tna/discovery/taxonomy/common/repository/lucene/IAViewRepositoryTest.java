@@ -17,7 +17,6 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
@@ -34,7 +33,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -64,7 +62,7 @@ public class IAViewRepositoryTest {
     private Directory iaViewDirectory;
 
     @Autowired
-    private Analyzer categoryQueryAnalyser;
+    private Analyzer iaViewSearchAnalyser;
 
     @Value("${lucene.index.version}")
     private String luceneVersion;
@@ -160,7 +158,7 @@ public class IAViewRepositoryTest {
 	try {
 	    String[] queryStrings = { "\"British National: B.B.C WO100.\"", "\"B.B.C\"", "\"WO100.\"",
 		    "\"British National:\"", "B.B.C" };
-	    writer = updateIAViewDirectoryWithOnePunctuatedDocument(this.categoryQueryAnalyser);
+	    writer = updateIAViewDirectoryWithOnePunctuatedDocument(this.iaViewSearchAnalyser);
 	    for (String queryString : Arrays.asList(queryStrings)) {
 		logger.info(queryString);
 		PaginatedList<InformationAssetView> results = iaViewRepository.performSearch(queryString, 0d, 100, 0);
@@ -187,7 +185,7 @@ public class IAViewRepositoryTest {
     public void ensureThatPunctuationIsIndexed() throws IOException {
 	IndexWriter writer = null;
 	try {
-	    TokenStream tokenStream = this.categoryQueryAnalyser.tokenStream("TITLE", new StringReader(
+	    TokenStream tokenStream = this.iaViewSearchAnalyser.tokenStream("TITLE", new StringReader(
 		    "B.B.C: Labour requirements for the housing programme."));
 	    OffsetAttribute offsetAttribute = tokenStream.addAttribute(OffsetAttribute.class);
 	    CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);

@@ -17,8 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.index.ReaderManager;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 import org.junit.After;
@@ -31,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ServiceConfigurationTest.class)
 public class TSetBasedCategoriserServiceTest {
@@ -76,14 +75,6 @@ public class TSetBasedCategoriserServiceTest {
     public void emptyDataSet() throws IOException {
 	mongoTestDataSet.dropDatabase();
 	luceneTestDataSet.deleteTrainingSetIndex();
-    }
-
-    @Test
-    public void testCategoriseIAViewSolrDocument() throws IOException, ParseException {
-	List<TSetBasedCategorisationResult> categorisationResults = categoriser
-		.categoriseIAViewSolrDocument("CO 273/630/9");
-	assertThat(categorisationResults, is(notNullValue()));
-	assertThat(categorisationResults, is(not(empty())));
     }
 
     @Test

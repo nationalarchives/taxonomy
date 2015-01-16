@@ -1,6 +1,5 @@
 package gov.tna.discovery.taxonomy.common.service.impl;
 
-import gov.tna.discovery.taxonomy.common.config.LuceneConfiguration;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
@@ -93,44 +92,6 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 
     @Value("${lucene.categoriser.fieldsToAnalyse}")
     private String fieldsToAnalyse;
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see gov.tna.discovery.taxonomy.common.service.impl.Categoriser#
-     * categoriseIAViewSolrDocument(java.lang.String)
-     */
-    @Override
-    public List<TSetBasedCategorisationResult> categoriseIAViewSolrDocument(String catdocref) {
-	logger.info("testCategoriseSingle on document: {} ", catdocref);
-	TopDocs results = iaViewRepository.searchIAViewIndexByFieldAndPhrase("CATDOCREF", catdocref, 1);
-
-	Document doc;
-	try {
-	    doc = this.iaViewIndexReader.document(results.scoreDocs[0].doc);
-	} catch (IOException e) {
-	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
-	}
-
-	List<TSetBasedCategorisationResult> result = runMlt(doc);
-
-	logger.debug("DOCUMENT");
-	logger.debug("------------------------");
-	logger.debug("TITLE: {}", doc.get("TITLE"));
-	logger.debug("IAID: {}", doc.get("CATDOCREF"));
-	logger.debug("DESCRIPTION: {}", doc.get("DESCRIPTION"));
-	logger.debug("");
-	for (TSetBasedCategorisationResult categoryResult : result) {
-	    logger.debug("CATEGORY: {}, score: {}, number of found documents: {}", categoryResult.getName(),
-		    categoryResult.getScore(), categoryResult.getNumberOfFoundDocuments());
-	}
-	logger.debug("------------------------");
-
-	logger.debug("");
-
-	return result;
-
-    }
 
     /**
      * run More Like This process on a document by comparing its description to
@@ -341,5 +302,11 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 
 	logger.info("test Categorisation finished");
 
+    }
+
+    @Override
+    public List<TSetBasedCategorisationResult> testCategoriseSingle(String catDocRef) {
+	// TODO Auto-generated method stub
+	return null;
     }
 }
