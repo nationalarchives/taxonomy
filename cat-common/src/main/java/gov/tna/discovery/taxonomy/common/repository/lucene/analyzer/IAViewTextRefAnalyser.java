@@ -13,6 +13,12 @@ import org.apache.lucene.analysis.miscellaneous.WordDelimiterFilterFactory;
 import org.apache.lucene.analysis.standard.ClassicTokenizer;
 import org.apache.lucene.util.Version;
 
+/**
+ * Analyser dedicated to fieldType textref from Solr Collection
+ * 
+ * @author jcharlet
+ *
+ */
 public final class IAViewTextRefAnalyser extends Analyzer {
 
     private final Version matchVersion;

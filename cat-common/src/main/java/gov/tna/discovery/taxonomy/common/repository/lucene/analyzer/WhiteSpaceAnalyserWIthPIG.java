@@ -8,20 +8,12 @@ import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.util.Version;
 
 /**
- * Text General Analyser dedicated to querying from Solr configuration for
- * IAViews<br/>
- * Applies the following tokenizers and filters:
- * <ul>
- * <li>WhitespaceTokenizer</li>
- * <li>StopFilter</li>
- * <li>LowerCaseFilter</li>
- * <li>SynonymFilter</li>
- * </ul>
+ * Modification of WhiteSpaceAnalyser with setPositionIncrementGap implemented
  * 
  * @author jcharlet
  *
  */
-public final class IAViewSearchAnalyser extends Analyzer {
+public final class WhiteSpaceAnalyserWIthPIG extends Analyzer {
 
     private final Version matchVersion;
     private int positionIncrementGap;
@@ -33,7 +25,7 @@ public final class IAViewSearchAnalyser extends Analyzer {
      *            Lucene version to match See
      *            {@link <a href="#version">above</a>}
      */
-    public IAViewSearchAnalyser(Version matchVersion) {
+    public WhiteSpaceAnalyserWIthPIG(Version matchVersion) {
 	this.matchVersion = matchVersion;
     }
 

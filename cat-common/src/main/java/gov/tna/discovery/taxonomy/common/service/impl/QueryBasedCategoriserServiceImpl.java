@@ -6,7 +6,6 @@ import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAss
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneHelperTools;
-import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextRefAnalyser;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
@@ -17,13 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
-import org.apache.lucene.analysis.miscellaneous.WordDelimiterFilterFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
@@ -56,13 +50,10 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     private String luceneVersion;
 
     @Autowired
-    private Analyzer iaViewSearchAnalyser;
+    private Analyzer iaViewIndexAnalyser;
 
     @Autowired
     private IAViewRepository iaViewRepository;
-
-    @Autowired
-    private WordDelimiterFilterFactory wordDelimiterFilterFactory;
 
     @Override
     public void testCategoriseIAViewSolrIndex() throws IOException {
@@ -125,10 +116,8 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
 	// Make an writer to create the index
 
-	PerFieldAnalyzerWrapper iaViewIndexAnalyser = createIAViewIndexAnalyser();
-
 	IndexWriter writer = new IndexWriter(ramDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
-		iaViewIndexAnalyser));
+		this.iaViewIndexAnalyser));
 
 	// Add some Document objects containing quotes
 	writer.addDocument(getLuceneDocumentFromIaVIew(iaView));
@@ -137,17 +126,6 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	writer.close();
 	return ramDirectory;
 
-    }
-
-    private PerFieldAnalyzerWrapper createIAViewIndexAnalyser() {
-	Map<String, Analyzer> analyzerPerField = new HashMap<String, Analyzer>();
-	IAViewTextRefAnalyser textRefAnalyser = new IAViewTextRefAnalyser(Version.valueOf(luceneVersion),
-		this.wordDelimiterFilterFactory);
-	textRefAnalyser.setPositionIncrementGap(100);
-	analyzerPerField.put("CATDOCREF", textRefAnalyser);
-	PerFieldAnalyzerWrapper iaViewIndexAnalyser = new PerFieldAnalyzerWrapper(this.iaViewSearchAnalyser,
-		analyzerPerField);
-	return iaViewIndexAnalyser;
     }
 
     private void sortCategorisationResultsByScoreDesc(List<CategorisationResult> categorisationResults) {

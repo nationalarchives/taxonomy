@@ -1,6 +1,7 @@
 package gov.tna.discovery.taxonomy.common.config;
 
-import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.IAViewSearchAnalyser;
+import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.WhiteSpaceAnalyserWIthPIG;
+import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextRefAnalyser;
 import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.TaxonomyTrainingSetAnalyser;
 
 import java.io.File;
@@ -10,6 +11,7 @@ import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.StopFilterFactory;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.miscellaneous.WordDelimiterFilterFactory;
 import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
 import org.apache.lucene.analysis.util.ClasspathResourceLoader;
@@ -60,6 +62,7 @@ public class LuceneConfiguration {
      */
 
     public @Bean Directory trainingSetDirectory() throws IOException {
+	// FIXME Use MMapDirectory to be faster. is used on solr Server
 	File file = new File(trainingSetCollectionPath);
 	return new SimpleFSDirectory(file);
     }
@@ -91,6 +94,8 @@ public class LuceneConfiguration {
 
     public @Bean SearcherManager iaviewSearcherManager() throws IOException {
 	// return new SearcherManager(iaviewIndexWriter(), true, lnull);
+	// FIXME how to make sure that updates on IAVIew are taken into account
+	// and viewable on GUI? KO ATM
 	return new SearcherManager(iaViewDirectory(), null);
     }
 
@@ -183,9 +188,28 @@ public class LuceneConfiguration {
      * @return
      */
     public @Bean Analyzer iaViewSearchAnalyser() {
-	IAViewSearchAnalyser iaViewSearchAnalyser = new IAViewSearchAnalyser(Version.valueOf(version));
-	iaViewSearchAnalyser.setPositionIncrementGap(100);
-	return iaViewSearchAnalyser;
+	Map<String, Analyzer> analyzerPerField = new HashMap<String, Analyzer>();
+	IAViewTextRefAnalyser textRefAnalyser = new IAViewTextRefAnalyser(Version.valueOf(version),
+		wordDelimiterFilterFactory());
+	textRefAnalyser.setPositionIncrementGap(100);
+	analyzerPerField.put("CATDOCREF", textRefAnalyser);
+
+	WhiteSpaceAnalyserWIthPIG textTaxAnalyser = new WhiteSpaceAnalyserWIthPIG(Version.valueOf(version));
+	textTaxAnalyser.setPositionIncrementGap(100);
+
+	PerFieldAnalyzerWrapper iaViewIndexAnalyser = new PerFieldAnalyzerWrapper(textTaxAnalyser, analyzerPerField);
+
+	return iaViewIndexAnalyser;
+    }
+
+    /**
+     * Analyzer dedicated to indexing a document to categorise in memory
+     * database
+     * 
+     * @return
+     */
+    public @Bean Analyzer iaViewIndexAnalyser() {
+	return iaViewSearchAnalyser();
     }
 
     /**
