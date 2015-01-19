@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.*;
 import gov.tna.discovery.taxonomy.common.config.LuceneConfigurationTest;
 import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 
 import java.io.IOException;
@@ -48,7 +49,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IAViewRepositoryTest {
 
-    private static final String QUERY_WITHOUT_WILDCARD = "\"church\"";
+    public static final String QUERY_WITHOUT_WILDCARD = "\"Daniel\"";
+    private static final String TERM_VALUE = "Daniel";
 
     public static final Logger logger = LoggerFactory.getLogger(IAViewRepositoryTest.class);
 
@@ -70,7 +72,7 @@ public class IAViewRepositoryTest {
     @Value("${lucene.index.fieldsToSearch}")
     private String fieldsToAnalyse;
 
-    private static final String QUERY_WITH_LEADING_WILDCARD = "*Church";
+    private static final String QUERY_WITH_LEADING_WILDCARD = "*stone";
 
     @Test
     public void testPerformSearchWithLeadingWildcard() {
@@ -78,7 +80,7 @@ public class IAViewRepositoryTest {
 		100, 0);
 	assertThat(results, is(notNullValue()));
 	assertThat(results.getResults(), is(not(empty())));
-	assertThat(results.size(), is(equalTo(4)));
+	assertThat(results.size(), is(equalTo(3)));
 	logger.debug(".testPerformSearchWithLeadingWildcard: Found {} results", results.size());
     }
 
@@ -94,20 +96,19 @@ public class IAViewRepositoryTest {
 
     @Test
     public void testPerformSearchWithQueryWithMinimumScoreWithLimit() {
-	PaginatedList<InformationAssetView> results = iaViewRepository.performSearch(QUERY_WITHOUT_WILDCARD, 0.005, 2,
-		0);
+	PaginatedList<InformationAssetView> results = iaViewRepository.performSearch("Daniel", 0.005, 2, 0);
 	assertThat(results, is(notNullValue()));
 	assertThat(results.getResults(), is(notNullValue()));
 	assertThat(results.getResults(), is(not(empty())));
 	assertThat(results.size(), is(equalTo(2)));
-	assertThat(results.getNumberOfResults(), is(equalTo(3)));
+	assertThat(results.getNumberOfResults(), is(equalTo(6)));
 	logger.debug(".testPerformSearchWithQueryWithMinimumScore: Returned {} results and found {} results in total",
 		results.size(), results.getNumberOfResults());
     }
 
     @Test
     public void testPerformSearchWithQueryWithMinimumScoreWithHighLimit() {
-	PaginatedList<InformationAssetView> results = iaViewRepository.performSearch(QUERY_WITHOUT_WILDCARD, 0.2, 100,
+	PaginatedList<InformationAssetView> results = iaViewRepository.performSearch(QUERY_WITHOUT_WILDCARD, 1.29, 100,
 		0);
 	assertThat(results, is(notNullValue()));
 	assertThat(results.getResults(), is(notNullValue()));
@@ -122,9 +123,9 @@ public class IAViewRepositoryTest {
     public void testGetNbOfElementsAboveScore() throws IOException {
 	IndexSearcher isearcher = iaviewSearcherManager.acquire();
 
-	Query query = new WildcardQuery(new Term("DESCRIPTION", "*record*"));
-	Integer nbOfElementsAboveScore = iaViewRepository.getNbOfElementsAboveScore(0.001, isearcher, query);
-	assertThat(nbOfElementsAboveScore, is(equalTo(101)));
+	Query query = new WildcardQuery(new Term(InformationAssetViewFields.texttax.toString(), TERM_VALUE));
+	Integer nbOfElementsAboveScore = iaViewRepository.getNbOfElementsAboveScore(0.005, isearcher, query);
+	assertThat(nbOfElementsAboveScore, is(equalTo(6)));
     }
 
     // @Test

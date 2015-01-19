@@ -6,6 +6,7 @@ import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
+import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepositoryTest;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
@@ -55,7 +56,7 @@ public class TaxonomyControllerTest {
     // private static final Logger logger =
     // LoggerFactory.getLogger(TestTaxonomyController.class);
 
-    private static final String TEST_CATEGORY_CIAID = "C10052";
+    private static final String TEST_CATEGORY_CIAID = "C10039";
 
     private static final String WS_PATH_TEST_CATEGORISE_SINGLE = "taxonomy/testCategoriseSingle";
 
@@ -94,7 +95,7 @@ public class TaxonomyControllerTest {
     @Test
     public final void testSearchIaView() {
 	SearchIAViewRequest request = new SearchIAViewRequest();
-	request.setCategoryQuery("*record*");
+	request.setCategoryQuery(IAViewRepositoryTest.QUERY_WITHOUT_WILDCARD);
 	request.setLimit(10);
 	PaginatedList iaViews = restTemplate.postForObject(WS_URL + WS_PATH_SEARCH, request, PaginatedList.class);
 	assertThat(iaViews, is(notNullValue()));
@@ -124,14 +125,14 @@ public class TaxonomyControllerTest {
 	List<TrainingDocument> trainingDocs = trainingDocRepo.findByCategory(category.getTtl());
 	assertThat(trainingDocs, is(notNullValue()));
 	assertThat(trainingDocs, is(not(empty())));
-	assertThat(trainingDocs.size(), equalTo(4));
+	assertThat(trainingDocs.size(), equalTo(1));
 
 	PaginatedList<InformationAssetView> IAViewResults = iaViewRepository.performSearch(category.getQry(),
 		(category.getSc()), 1000, 0);
 	assertThat(IAViewResults, is(notNullValue()));
 	assertThat(IAViewResults.getResults(), is(notNullValue()));
 	assertThat(IAViewResults.getResults(), is(not(empty())));
-	assertThat(IAViewResults.size(), equalTo(4));
+	assertThat(IAViewResults.size(), equalTo(1));
 
 	logger.debug("Publication succeeded");
 
