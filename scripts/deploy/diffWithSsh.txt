@@ -1,0 +1,1 @@
+diff ws/stopWS.sh <( ssh jcharlet@***REMOVED*** 'cat /home/jcharlet/apps/taxonomy/scripts/ws/stopWS.sh')
