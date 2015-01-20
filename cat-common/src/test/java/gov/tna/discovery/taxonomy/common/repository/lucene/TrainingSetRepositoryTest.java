@@ -20,8 +20,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@ActiveProfiles("tsetBased")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = LuceneConfigurationTest.class)
 public class TrainingSetRepositoryTest {
@@ -39,7 +41,7 @@ public class TrainingSetRepositoryTest {
     private String luceneVersion;
 
     @Autowired
-    private LuceneTestDataSet luceneTestDataSet;
+    private LuceneTestTrainingDataSet luceneTestDataSet;
 
     @Test
     public void testRetrieveLatestWrittenDocument() throws IOException {
@@ -55,7 +57,7 @@ public class TrainingSetRepositoryTest {
     private void checkNumberOfDocumentsIs0ForTestCategory() throws IOException {
 	IndexSearcher searcher = trainingSetSearcherManager.acquire();
 	Query query = new TermQuery(new Term(InformationAssetViewFields.CATEGORY.toString(),
-		LuceneTestDataSet.TEST_CATEGORY));
+		LuceneTestTrainingDataSet.TEST_CATEGORY));
 	TopDocs search = searcher.search(query, 1);
 	assertThat(search.totalHits, is(equalTo(0)));
 	LuceneHelperTools.releaseSearcherManagerQuietly(trainingSetSearcherManager, searcher);
@@ -67,7 +69,7 @@ public class TrainingSetRepositoryTest {
 	assertThat(wasRefreshed, is(true));
 	IndexSearcher searcher = trainingSetSearcherManager.acquire();
 	Query query = new TermQuery(new Term(InformationAssetViewFields.CATEGORY.toString(),
-		LuceneTestDataSet.TEST_CATEGORY));
+		LuceneTestTrainingDataSet.TEST_CATEGORY));
 	TopDocs search = searcher.search(query, 1);
 	assertThat(search.totalHits, is(equalTo(1)));
 	LuceneHelperTools.releaseSearcherManagerQuietly(trainingSetSearcherManager, searcher);

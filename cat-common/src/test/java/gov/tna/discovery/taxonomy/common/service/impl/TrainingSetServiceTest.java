@@ -6,7 +6,7 @@ import gov.tna.discovery.taxonomy.common.config.ServiceConfigurationTest;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
-import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneTestDataSet;
+import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneTestTrainingDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
@@ -26,8 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@ActiveProfiles("tsetBased")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ServiceConfigurationTest.class)
 public class TrainingSetServiceTest {
@@ -52,7 +54,7 @@ public class TrainingSetServiceTest {
     IAViewRepository iaViewRepository;
 
     @Autowired
-    LuceneTestDataSet luceneTestDataSet;
+    LuceneTestTrainingDataSet luceneTestDataSet;
 
     @After
     public void dropDbAndIndex() {

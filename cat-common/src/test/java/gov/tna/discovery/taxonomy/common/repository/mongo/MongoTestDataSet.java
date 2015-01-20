@@ -4,7 +4,6 @@ import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.TestDocument;
-import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
 
@@ -34,7 +33,7 @@ public class MongoTestDataSet {
     @Value("${spring.data.mongo.testdataset.categories}")
     private String categoriesDatasetFilePath;
 
-    private static final Logger logger = LoggerFactory.getLogger(LuceneTestDataSet.class);
+    private static final Logger logger = LoggerFactory.getLogger(MongoTestDataSet.class);
 
     @Autowired
     CategoryRepository categoryRepository;

@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.*;
 import gov.tna.discovery.taxonomy.common.config.ServiceConfigurationTest;
 import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneTestDataSet;
+import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneTestTrainingDataSet;
 import gov.tna.discovery.taxonomy.common.repository.lucene.TrainingSetRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
@@ -27,9 +27,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
+@ActiveProfiles("tsetBased")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ServiceConfigurationTest.class)
 public class TSetBasedCategoriserServiceTest {
@@ -61,7 +63,7 @@ public class TSetBasedCategoriserServiceTest {
     private String luceneVersion;
 
     @Autowired
-    private LuceneTestDataSet luceneTestDataSet;
+    private LuceneTestTrainingDataSet luceneTestDataSet;
 
     @Before
     public void initDataSet() throws IOException {
@@ -119,8 +121,8 @@ public class TSetBasedCategoriserServiceTest {
 
     private void checkCategorisationOnTestDocumentDoesNotFindTestCategory() {
 	InformationAssetView iaView = new InformationAssetView();
-	iaView.setDESCRIPTION(LuceneTestDataSet.TEST_DESC);
-	iaView.setDOCREFERENCE(LuceneTestDataSet.TEST_DOCREF);
+	iaView.setDESCRIPTION(LuceneTestTrainingDataSet.TEST_DESC);
+	iaView.setDOCREFERENCE(LuceneTestTrainingDataSet.TEST_DOCREF);
 	List<TSetBasedCategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(empty()));
@@ -128,12 +130,12 @@ public class TSetBasedCategoriserServiceTest {
 
     private void checkCategorisationOnTestDocumentFindsTestCategory() {
 	InformationAssetView iaView = new InformationAssetView();
-	iaView.setDESCRIPTION(LuceneTestDataSet.TEST_DESC);
-	iaView.setDOCREFERENCE(LuceneTestDataSet.TEST_DOCREF);
+	iaView.setDESCRIPTION(LuceneTestTrainingDataSet.TEST_DESC);
+	iaView.setDOCREFERENCE(LuceneTestTrainingDataSet.TEST_DOCREF);
 	List<TSetBasedCategorisationResult> categorisationResults = categoriser.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
-	assertThat(categorisationResults.get(0).getName(), is(equalTo(LuceneTestDataSet.TEST_CATEGORY)));
+	assertThat(categorisationResults.get(0).getName(), is(equalTo(LuceneTestTrainingDataSet.TEST_CATEGORY)));
     }
 
 }

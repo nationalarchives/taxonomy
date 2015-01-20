@@ -44,9 +44,6 @@ public class IAViewRepository {
     @Value("${lucene.index.version}")
     private String luceneVersion;
 
-    @Value("${lucene.index.fieldsToSearch}")
-    private String fieldsToAnalyse;
-
     @Value("${lucene.index.queryFilterSourceValue}")
     private String queryFilterSourceValue;
 

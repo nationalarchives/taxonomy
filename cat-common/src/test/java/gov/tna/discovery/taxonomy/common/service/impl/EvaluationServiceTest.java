@@ -11,7 +11,7 @@ import gov.tna.discovery.taxonomy.common.repository.domain.mongo.CategoryEvaluat
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.EvaluationReport;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.TestDocument;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
-import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneTestDataSet;
+import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneTestTrainingDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.EvaluationReportRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
@@ -37,9 +37,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @SuppressWarnings("rawtypes")
+@ActiveProfiles("tsetBased")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ServiceConfigurationTest.class)
 public class EvaluationServiceTest {
@@ -58,7 +60,7 @@ public class EvaluationServiceTest {
     MongoTestDataSet mongoTestDataSet;
 
     @Autowired
-    private LuceneTestDataSet luceneTestDataSet;
+    private LuceneTestTrainingDataSet luceneTestDataSet;
 
     @Autowired
     private CategoryRepository categoryRepository;

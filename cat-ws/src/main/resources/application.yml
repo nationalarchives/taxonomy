@@ -1,3 +1,8 @@
+spring.profiles.active: default
+
+---
+spring.profiles: default
+
 logging:
  config: classpath:log4j.properties
  level:
@@ -28,8 +33,6 @@ async:
 
 lucene:
  categoriser:
-  useTSetBasedCategoriser: false
-  useQueryBasedCategoriser: true
   fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
  mlt:
   mimimumScoreForMlt: 0
@@ -51,3 +54,17 @@ lucene:
   useSynonymFilter: false
   queryFilterSourceValue: 100
   fieldsToSearch: texttax,CATDOCREF
+  
+---
+spring.profiles: queryBased
+lucene:
+ categoriser:
+  useTSetBasedCategoriser: false
+  useQueryBasedCategoriser: true
+  
+---
+spring.profiles: tsetBased
+lucene:
+ categoriser:
+  useTSetBasedCategoriser: true
+  useQueryBasedCategoriser: false
