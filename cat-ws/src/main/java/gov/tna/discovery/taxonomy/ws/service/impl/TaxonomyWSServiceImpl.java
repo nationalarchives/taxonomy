@@ -5,7 +5,6 @@ import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
-import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
@@ -28,9 +27,6 @@ public class TaxonomyWSServiceImpl implements TaxonomyWSService {
 
     @Autowired
     CategoryRepository categoryRepository;
-
-    @Autowired
-    TrainingSetService trainingSetService;
 
     @Autowired
     IAViewRepository iaViewRepository;

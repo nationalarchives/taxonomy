@@ -1,7 +1,5 @@
-spring.profiles.active: default
+spring.profiles.include: test
 
----
-spring.profiles: default
 
 logging:
  level:
@@ -13,16 +11,12 @@ logging:
 spring:
  data:
   mongodb:
-   host: localhost
    port: 27017
    database: taxonomy
 
   mongo:
    repositories:
     enabled: true
-   testdataset:
-    trainingset: src/test/resources/dataset/mongo/trainingset.json
-    categories: src/test/resources/dataset/mongo/taxonomy.json
 
 async:
  executor:
@@ -44,10 +38,6 @@ lucene:
   contextDescBoostingFactor: 0.75
 
  index:
-#  iaviewCollectionPath: /opt/solr/solr/collection1/data/index
-#  trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
-  iaviewCollectionPath: src/test/resources/dataset/lucene/iaviews
-  trainingSetCollectionPath: src/test/resources/dataset/lucene/trainingset
   version: LUCENE_47
   maxTrainingDocsPerCategory: 100
   maxShingleSize: 3
@@ -57,8 +47,26 @@ lucene:
   fieldsToSearch: texttax,CATDOCREF
   
 ---
+spring.profiles: test
+
+spring.data:
+ mongodb:
+  host: localhost
+ mongo:
+  testdataset:
+   trainingset: src/test/resources/dataset/mongo/trainingset.json
+   categories: src/test/resources/dataset/mongo/taxonomy.json
+
+lucene.index:
+ iaviewCollectionPath: src/test/resources/dataset/lucene/iaviews
+ trainingSetCollectionPath: src/test/resources/dataset/lucene/trainingset
+  
+logging.config: classpath:log4j.properties
+
+---
 spring.profiles: queryBased
 lucene:
+ loadTSetServiceLayer: false
  categoriser:
   useTSetBasedCategoriser: false
   useQueryBasedCategoriser: true
@@ -66,6 +74,7 @@ lucene:
 ---
 spring.profiles: tsetBased
 lucene:
+ loadTSetServiceLayer: true
  categoriser:
   useTSetBasedCategoriser: true
   useQueryBasedCategoriser: false

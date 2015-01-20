@@ -1,23 +1,15 @@
-spring.profiles.active: default,queryBased
-
----
-spring.profiles: default
+spring.profiles.active: queryBased,local
 
 logging:
- config: classpath:log4j.properties
  level:
   gov:
    tna:
     discovery:
      taxonomy: DEBUG
 
-
-
-
 spring:
  data:
   mongodb:
-   host: localhost
    port: 27017
    database: taxonomy
 
@@ -32,6 +24,7 @@ async:
   queueCapacity: 11
 
 lucene:
+ loadTSetServiceLayer: true
  categoriser:
   fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
  mlt:
@@ -43,10 +36,8 @@ lucene:
   titleBoostingFactor: 0.25
   descBoostingFactor: 2
   contextDescBoostingFactor: 0.75
-  
+
  index:
-  iaviewCollectionPath: /mnt/share/lucene/index_20150112/data/index
-  trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
   version: LUCENE_47
   maxTrainingDocsPerCategory: 5000
   maxShingleSize: 0
@@ -54,6 +45,30 @@ lucene:
   useSynonymFilter: false
   queryFilterSourceValue: 100
   fieldsToSearch: texttax,CATDOCREF
+  
+---
+spring.profiles: local
+
+spring.data.mongodb:
+ host: localhost
+
+lucene.index:
+ iaviewCollectionPath: /mnt/share/lucene/index_20150112/data/index
+ trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
+  
+logging.config: classpath:log4j.properties
+
+---
+spring.profiles: tooling
+
+spring.data.mongodb:
+ host: ***REMOVED***.***REMOVED***
+   
+lucene.index:
+ iaviewCollectionPath: ***REMOVED***solr/collection4/data/index
+ trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
+
+logging.config: classpath:log4j-tooling.properties
   
 ---
 spring.profiles: queryBased

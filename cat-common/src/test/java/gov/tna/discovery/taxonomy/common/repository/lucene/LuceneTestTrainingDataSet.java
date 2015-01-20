@@ -21,7 +21,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useTSetBasedCategoriser")
+@ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
 public class LuceneTestTrainingDataSet {
 
     private static final Logger logger = LoggerFactory.getLogger(LuceneTestTrainingDataSet.class);
