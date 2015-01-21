@@ -94,6 +94,27 @@ public class IAViewRepository {
 	return hitDoc;
     }
 
+    public TopDocs performSearchWithoutAnyPostProcessing(String queryString, Filter filter, Double mimimumScore,
+	    Integer limit, Integer offset) {
+	PaginatedList<InformationAssetView> paginatedListOfIAViews = new PaginatedList<InformationAssetView>(limit,
+		offset, mimimumScore);
+	List<InformationAssetView> docs = new ArrayList<InformationAssetView>();
+
+	IndexSearcher isearcher = null;
+	try {
+	    isearcher = iaviewSearcherManager.acquire();
+
+	    Query finalQuery = buildSearchQueryWithFiltersIfNecessary(queryString, filter);
+
+	    return isearcher.search(finalQuery, offset + limit);
+
+	} catch (IOException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	} finally {
+	    LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager, isearcher);
+	}
+    }
+
     public PaginatedList<InformationAssetView> performSearch(String queryString, Double mimimumScore, Integer limit,
 	    Integer offset) {
 	PaginatedList<InformationAssetView> paginatedListOfIAViews = new PaginatedList<InformationAssetView>(limit,
@@ -104,7 +125,7 @@ public class IAViewRepository {
 	try {
 	    isearcher = iaviewSearcherManager.acquire();
 
-	    Query finalQuery = buildSearchQueryWithFiltersIfNecessary(queryString);
+	    Query finalQuery = buildSearchQueryWithFiltersIfNecessary(queryString, null);
 
 	    TopDocs topDocs = isearcher.search(finalQuery, offset + limit);
 	    logger.debug(".performSearch: found {} total hits", topDocs.totalHits);
@@ -145,10 +166,12 @@ public class IAViewRepository {
 	return paginatedListOfIAViews;
     }
 
-    public Query buildSearchQueryWithFiltersIfNecessary(String queryString) {
+    public Query buildSearchQueryWithFiltersIfNecessary(String queryString, Filter filter) {
 	Query searchQuery = buildSearchQuery(queryString);
 
-	Filter filter = getCatalogueFilter();
+	if (filter == null) {
+	    filter = getCatalogueFilter();
+	}
 
 	Query finalQuery;
 	if (filter != null) {

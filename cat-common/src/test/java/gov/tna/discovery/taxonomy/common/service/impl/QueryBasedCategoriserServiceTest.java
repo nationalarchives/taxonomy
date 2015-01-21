@@ -47,13 +47,14 @@ public class QueryBasedCategoriserServiceTest {
     @Test
     public void testTestCategoriseSingle() {
 	InformationAssetView iaView = new InformationAssetView();
-	iaView.setCATDOCREF("WO 195/11733");
-	iaView.setTITLE("Crop Committee: experiments at Camp Detrick with plant inhibitors on sugar beet crops");
-	iaView.setDESCRIPTION("Crop Committee: experiments at Camp Detrick with plant inhibitors on sugar beet crops");
+	iaView.setCATDOCREF("BT 351/1/107278");
+	iaView.setDOCREFERENCE("D8075845");
+	iaView.setTITLE("Registry of Shipping and Seamen: Index of First World War Mercantile Marine Medals and the British War Medal.");
+	iaView.setDESCRIPTION("Registry of Shipping and Seamen: Index of First World War Mercantile Marine Medals and the British War Medal.");
 	List<CategorisationResult> categorisationResults = categoriserService.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
-	assertThat(categorisationResults.get(0).getName(), is(equalTo("Farming")));
+	assertThat(categorisationResults.get(0).getName(), is(equalTo("Food and drink")));
 
     }
 

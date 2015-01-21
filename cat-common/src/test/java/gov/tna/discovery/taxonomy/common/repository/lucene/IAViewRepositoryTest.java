@@ -10,6 +10,7 @@ import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,9 +26,13 @@ import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.complexPhrase.ComplexPhraseQueryParser;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
@@ -128,6 +133,36 @@ public class IAViewRepositoryTest {
 	Query query = new WildcardQuery(new Term(InformationAssetViewFields.texttax.toString(), TERM_VALUE));
 	Integer nbOfElementsAboveScore = iaViewRepository.getNbOfElementsAboveScore(0.005, isearcher, query);
 	assertThat(nbOfElementsAboveScore, is(equalTo(6)));
+    }
+
+    // @Test
+    // @Ignore("to work on filters")
+    public void testPerformSearchWithQueryWithFilter() {
+
+	List<Filter> filters = new ArrayList<Filter>();
+
+	String catDocRef = "BT 351/1/102117";
+	String docRef = "D8068594";
+
+	filters.add(null);
+	filters.add(new QueryWrapperFilter(new TermQuery(new Term(InformationAssetViewFields.DOCREFERENCE.toString(),
+		docRef.toLowerCase()))));
+	filters.add(new QueryWrapperFilter(new TermQuery(new Term(InformationAssetViewFields.DOCREFERENCE.toString(),
+		docRef))));
+	filters.add(new QueryWrapperFilter(iaViewRepository.buildSearchQuery("\"" + catDocRef + "\"")));
+	filters.add(new QueryWrapperFilter(iaViewRepository.buildSearchQuery("CATDOCREF:\"" + catDocRef + "\"")));
+	filters.add(null);
+
+	TopDocs results = null;
+	for (Filter filter2 : filters) {
+	    results = iaViewRepository.performSearchWithoutAnyPostProcessing("Daniel", filter2, 0d, 1, 0);
+	    logger.info("testing filter: {}, found {} results", String.valueOf(filter2), results.scoreDocs.length);
+	}
+	assertThat(results, is(notNullValue()));
+	assertThat(results.totalHits, is(equalTo(1)));
+	assertThat(results.scoreDocs.length, is(equalTo(1)));
+	logger.debug(".testPerformSearchWithQueryWithFilter: Returned {} results and found {} results in total",
+		results.scoreDocs.length, results.totalHits);
     }
 
     // @Test

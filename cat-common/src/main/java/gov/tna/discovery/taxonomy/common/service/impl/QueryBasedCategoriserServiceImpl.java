@@ -17,15 +17,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
@@ -55,9 +60,13 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     @Autowired
     private IAViewRepository iaViewRepository;
 
+    @Autowired
+    private SearcherManager iaviewSearcherManager;
+
     @Override
     public void testCategoriseIAViewSolrIndex() throws IOException {
 	// TODO Auto-generated method stub
+	// iaViewRepository.performSearch(queryString, category.getSc(), 1, 0);
 
     }
 
@@ -66,15 +75,55 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	logger.info(".testCategoriseSingle: catdocref:{}, docreference:{} ", iaView.getCATDOCREF(),
 		iaView.getDOCREFERENCE());
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
+
+	listOfCategoryResults = runCategorisationWithFSDirectory(iaView);
+
+	sortCategorisationResultsByScoreDesc(listOfCategoryResults);
+	return listOfCategoryResults;
+    }
+
+    private List<CategorisationResult> runCategorisationWithFSDirectory(InformationAssetView iaView) {
+	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
+
+	Filter filter = new QueryWrapperFilter(new TermQuery(new Term(
+		InformationAssetViewFields.DOCREFERENCE.toString(), iaView.getDOCREFERENCE())));
+	for (Category category : categoryRepository.findAll()) {
+	    String queryString = category.getQry();
+	    try {
+
+		TopDocs topDocs = iaViewRepository.performSearchWithoutAnyPostProcessing(queryString, filter,
+			category.getSc(), 1, 0);
+		if (topDocs.totalHits != 0 && topDocs.scoreDocs[0].score > category.getSc()) {
+		    listOfCategoryResults.add(new CategorisationResult(category.getTtl(), topDocs.scoreDocs[0].score));
+		    logger.debug(".runCategorisationWithFSDirectory: found category {} with score {}",
+			    category.getTtl(), topDocs.scoreDocs[0].score);
+		} else {
+		    logger.debug(".runCategorisationWithFSDirectory: did not find category {} ", category.getTtl());
+		}
+	    } catch (TaxonomyException e) {
+		logger.debug(
+			".runCategorisationWithFSDirectory: an exception occured while parsing category query for category: {}, title: ",
+			category.getTtl(), e.getMessage());
+	    } catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
+	}
+
+	return listOfCategoryResults;
+    }
+
+    @Deprecated
+    private List<CategorisationResult> runCategorisationWithRAMDirectory(InformationAssetView iaView) {
+	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
+
 	SearcherManager searcherManager = null;
 	IndexSearcher searcher = null;
 	try {
-
 	    RAMDirectory ramDirectory = createRamDirectoryForDocument(iaView);
 	    searcherManager = new SearcherManager(ramDirectory, null);
 
 	    searcher = searcherManager.acquire();
-
 	    for (Category category : categoryRepository.findAll()) {
 		String queryString = category.getQry();
 		try {
@@ -89,19 +138,17 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 		    }
 		} catch (TaxonomyException e) {
 		    logger.debug(
-			    ".testCategoriseSingle: an exception occured while parsing category query for category: {}, title: ",
+			    ".runCategorisationWithRAMDirectory: an exception occured while parsing category query for category: {}, title: ",
 			    category.getTtl(), e.getMessage());
 		}
 	    }
-
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	} finally {
 	    LuceneHelperTools.releaseSearcherManagerQuietly(searcherManager, searcher);
 	}
-
-	sortCategorisationResultsByScoreDesc(listOfCategoryResults);
 	return listOfCategoryResults;
+
     }
 
     @Override
