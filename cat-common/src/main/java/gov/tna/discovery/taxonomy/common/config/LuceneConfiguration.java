@@ -1,8 +1,8 @@
 package gov.tna.discovery.taxonomy.common.config;
 
-import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.WhiteSpaceAnalyserWIthPIG;
 import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextRefAnalyser;
 import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.TaxonomyTrainingSetAnalyser;
+import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.WhiteSpaceAnalyserWIthPIG;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +21,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.ReaderManager;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NRTCachingDirectory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
@@ -68,8 +70,8 @@ public class LuceneConfiguration {
     }
 
     public @Bean Directory iaViewDirectory() throws IOException {
-	File file = new File(iaviewCollectionPath);
-	return new SimpleFSDirectory(file);
+	Directory fsDir = FSDirectory.open(new File(iaviewCollectionPath));
+	return new NRTCachingDirectory(fsDir, 5.0, 60.0);
     }
 
     /**

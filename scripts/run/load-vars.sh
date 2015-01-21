@@ -6,3 +6,4 @@ logsFolder=$logsFolder
 iaViewIndexFolder=$iaViewIndexFolder
 profile=$profile
 mongoDbHostName=$mongoDbHostName
+port=$port
