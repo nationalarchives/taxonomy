@@ -1,6 +1,9 @@
 package gov.tna.discovery.taxonomy.ws.controller;
 
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
+import gov.tna.discovery.taxonomy.common.service.CategoriserService;
+import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
@@ -8,7 +11,7 @@ import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 import gov.tna.discovery.taxonomy.ws.domain.PublishRequest;
 import gov.tna.discovery.taxonomy.ws.domain.SearchIAViewRequest;
 import gov.tna.discovery.taxonomy.ws.domain.TestCategoriseSingleRequest;
-import gov.tna.discovery.taxonomy.ws.service.TaxonomyWSService;
+import gov.tna.discovery.taxonomy.ws.mapper.WSTaxonomyMapper;
 
 import java.util.List;
 
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @RestController
 @EnableAutoConfiguration
 @RequestMapping("/taxonomy")
@@ -35,7 +39,13 @@ public class TaxonomyController {
     private static final Logger logger = LoggerFactory.getLogger(TaxonomyController.class);
 
     @Autowired
-    private TaxonomyWSService service;
+    IAViewRepository iaViewRepository;
+
+    @Autowired
+    CategoriserService categoriser;
+
+    @Autowired
+    TrainingSetService trainingSetService;
 
     @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ResponseBody
@@ -54,8 +64,9 @@ public class TaxonomyController {
 	    searchRequest.setOffset(0);
 	}
 
-	PaginatedList<InformationAssetView> listOfIAViews = service.performSearch(searchRequest.getCategoryQuery(),
-		searchRequest.getScore(), searchRequest.getLimit(), searchRequest.getOffset());
+	PaginatedList<InformationAssetView> listOfIAViews = iaViewRepository.performSearch(
+		searchRequest.getCategoryQuery(), searchRequest.getScore(), searchRequest.getLimit(),
+		searchRequest.getOffset());
 
 	logger.info("/search < {} IAViews returned, {} IAViews found", listOfIAViews.size(),
 		listOfIAViews.getNumberOfResults());
@@ -71,7 +82,7 @@ public class TaxonomyController {
     String publish(@RequestBody(required = true) PublishRequest publishRequest) {
 	logger.info("/publish > {}", publishRequest.toString());
 
-	service.publishUpdateOnCategory(publishRequest.getCiaid());
+	trainingSetService.publishUpdateOnCategory(publishRequest.getCiaid());
 
 	logger.info("/publish < {}", STATUS_OK_JSON_RESPONSE);
 	return STATUS_OK_JSON_RESPONSE;
@@ -85,8 +96,9 @@ public class TaxonomyController {
 	    throw new TaxonomyException(TaxonomyErrorType.INVALID_PARAMETER,
 		    "DESCRIPTION should be provided and not emptyw");
 	}
+	InformationAssetView iaView = WSTaxonomyMapper.getIAviewFromRequest(testCategoriseSingleRequest);
 
-	List<CategorisationResult> listOfCatRelevancies = service.testCategoriseSingle(testCategoriseSingleRequest);
+	List<CategorisationResult> listOfCatRelevancies = categoriser.testCategoriseSingle(iaView);
 
 	logger.info("/testCategoriseSingle < {} categories", listOfCatRelevancies.size());
 

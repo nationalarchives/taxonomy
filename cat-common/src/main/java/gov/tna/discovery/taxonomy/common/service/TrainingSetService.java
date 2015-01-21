@@ -57,4 +57,16 @@ public interface TrainingSetService {
 
     void updateCategoriesScores(int minNumber, int maxNumber);
 
+    /**
+     * publish update on a category:
+     * <ul>
+     * <li>lock category</li>
+     * <li>update training set mongo db for category</li>
+     * <li>index training set for category</li>
+     * </ul>
+     * 
+     * @param ciaid
+     */
+    public void publishUpdateOnCategory(String ciaid);
+
 }

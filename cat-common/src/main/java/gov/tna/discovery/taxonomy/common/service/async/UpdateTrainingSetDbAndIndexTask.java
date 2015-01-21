@@ -1,7 +1,7 @@
 /**
  * 
  */
-package gov.tna.discovery.taxonomy.ws.service.async;
+package gov.tna.discovery.taxonomy.common.service.async;
 
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;

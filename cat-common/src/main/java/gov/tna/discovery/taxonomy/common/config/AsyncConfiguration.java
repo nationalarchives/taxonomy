@@ -43,6 +43,8 @@ public class AsyncConfiguration {
 	this.queueCapacity = queueCapacity;
     }
 
+    // TODO think how to use threadPools for categorisation of several docs,
+    // running the queries for cat, user requests, etc
     /**
      * See
      * {@link org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor}

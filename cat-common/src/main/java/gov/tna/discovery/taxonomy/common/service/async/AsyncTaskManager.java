@@ -1,4 +1,4 @@
-package gov.tna.discovery.taxonomy.ws.service.async;
+package gov.tna.discovery.taxonomy.common.service.async;
 
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.concurrent.Executor;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 /**
@@ -21,10 +22,11 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
+@ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
 public class AsyncTaskManager {
 
     @Autowired
-    private Executor threadPoolTaskExecutor;
+    Executor threadPoolTaskExecutor;
 
     @Autowired
     TrainingSetService trainingSetService;

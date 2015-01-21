@@ -9,6 +9,7 @@ import gov.tna.discovery.taxonomy.common.repository.lucene.TrainingSetRepository
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
+import gov.tna.discovery.taxonomy.common.service.async.AsyncTaskManager;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
@@ -62,6 +63,9 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 
     @Value("${lucene.index.maxTrainingDocsPerCategory}")
     private Integer maxTrainingDocsPerCategory;
+
+    @Autowired
+    AsyncTaskManager asyncExecutor;
 
     /*
      * (non-Javadoc)
@@ -300,6 +304,30 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	    Double maximumValueObserved) {
 	// return long to round down to lower element
 	return (long) (maximumValueExpected * Math.log(1.0d * (valueToScale + 1)) / Math.log(maximumValueObserved));
+    }
+
+    @Override
+    public void publishUpdateOnCategory(String ciaid) {
+	Category category = categoryRepository.findByCiaid(ciaid);
+
+	checkLockOnCategory(category);
+
+	iaViewRepository.checkCategoryQueryValidity(category.getQry());
+
+	lockPublicationOnCategory(category);
+
+	asyncExecutor.updateTrainingSetDbAndIndex(category);
+    }
+
+    private void checkLockOnCategory(Category category) {
+	if (category.getLck() == true) {
+	    throw new TaxonomyException(TaxonomyErrorType.LOCKED_CATEGORY);
+	}
+    }
+
+    private void lockPublicationOnCategory(Category category) {
+	category.setLck(true);
+	categoryRepository.save(category);
     }
 
 }

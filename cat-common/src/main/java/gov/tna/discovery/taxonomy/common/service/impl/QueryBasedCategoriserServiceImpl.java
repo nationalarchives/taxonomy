@@ -82,6 +82,8 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	return listOfCategoryResults;
     }
 
+    // TODO set timeout on queries for categorisation
+    // http://stackoverflow.com/questions/5715235/java-set-timeout-on-a-certain-block-of-code
     private List<CategorisationResult> runCategorisationWithFSDirectory(InformationAssetView iaView) {
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
 
