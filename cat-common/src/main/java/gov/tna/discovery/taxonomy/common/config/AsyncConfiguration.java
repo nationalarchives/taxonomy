@@ -1,7 +1,5 @@
 package gov.tna.discovery.taxonomy.common.config;
 
-import java.util.concurrent.Executor;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -51,7 +49,7 @@ public class AsyncConfiguration {
      * 
      * @return
      */
-    public @Bean Executor threadPoolTaskExecutor() {
+    public @Bean ThreadPoolTaskExecutor threadPoolTaskExecutor() {
 	ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 	executor.setCorePoolSize(corePoolSize);
 	executor.setMaxPoolSize(maxPoolSize);
@@ -60,4 +58,5 @@ public class AsyncConfiguration {
 	executor.initialize();
 	return executor;
     }
+
 }

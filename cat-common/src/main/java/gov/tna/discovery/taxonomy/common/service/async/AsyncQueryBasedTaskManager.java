@@ -1,14 +1,18 @@
 package gov.tna.discovery.taxonomy.common.service.async;
 
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
+import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 
 import java.util.Arrays;
-import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
 
+import org.apache.lucene.search.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,26 +26,23 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
-@ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
-public class AsyncTaskManager {
+@ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useQueryBasedCategoriser")
+public class AsyncQueryBasedTaskManager {
 
     @Autowired
-    Executor threadPoolTaskExecutor;
+    ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @Autowired
-    TrainingSetService trainingSetService;
-
-    @Autowired
-    CategoryRepository categoryRepository;
+    IAViewRepository iaViewRepository;
 
     /**
-     * Launch asynchronously the
+     * launch asynchronously the @RunUnitCategoryQueryTask task
      * 
+     * @param filter
      * @param category
      */
-    public void updateTrainingSetDbAndIndex(Category category) {
-	threadPoolTaskExecutor.execute(new UpdateTrainingSetDbAndIndexTask(category, Arrays.asList(trainingSetService,
-		categoryRepository)));
+    public Future<CategorisationResult> runUnitCategoryQuery(Filter filter, Category category) {
+	return threadPoolTaskExecutor.submit(new RunUnitCategoryQueryTask(filter, category, this.iaViewRepository));
     }
 
 }

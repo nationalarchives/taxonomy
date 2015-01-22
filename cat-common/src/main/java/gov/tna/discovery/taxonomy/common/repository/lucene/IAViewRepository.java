@@ -3,6 +3,7 @@ package gov.tna.discovery.taxonomy.common.repository.lucene;
 import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.common.service.TaxonomyHelperTools;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
@@ -117,6 +118,8 @@ public class IAViewRepository {
 
     public PaginatedList<InformationAssetView> performSearch(String queryString, Double mimimumScore, Integer limit,
 	    Integer offset) {
+	long startTimer = TaxonomyHelperTools.startTimer();
+
 	PaginatedList<InformationAssetView> paginatedListOfIAViews = new PaginatedList<InformationAssetView>(limit,
 		offset, mimimumScore);
 	List<InformationAssetView> docs = new ArrayList<InformationAssetView>();
@@ -128,7 +131,8 @@ public class IAViewRepository {
 	    Query finalQuery = buildSearchQueryWithFiltersIfNecessary(queryString, null);
 
 	    TopDocs topDocs = isearcher.search(finalQuery, offset + limit);
-	    logger.debug(".performSearch: found {} total hits", topDocs.totalHits);
+	    logger.debug(".performSearch: found {} total hits, time: {}", topDocs.totalHits,
+		    TaxonomyHelperTools.getTimerDifference(startTimer));
 
 	    if (mimimumScore != null) {
 		Integer nbOfElementsAboveScore = getNbOfElementsAboveScore(mimimumScore, isearcher, finalQuery);
@@ -163,6 +167,7 @@ public class IAViewRepository {
 	    LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager, isearcher);
 	}
 	paginatedListOfIAViews.setResults(docs);
+
 	return paginatedListOfIAViews;
     }
 

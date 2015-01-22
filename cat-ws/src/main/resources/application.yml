@@ -19,9 +19,9 @@ spring:
 
 async:
  executor:
-  corePoolSize: 10
-  maxPoolSize: 20
-  queueCapacity: 100
+  corePoolSize: 1
+  maxPoolSize: 1
+  queueCapacity: 150
 
 lucene:
  loadTSetServiceLayer: true
@@ -45,6 +45,8 @@ lucene:
   useSynonymFilter: false
   queryFilterSourceValue: 100
   fieldsToSearch: texttax,CATDOCREF
+  iaViewMaxMergeSizeMB: 5.0
+  iaViewMaxCachedMB: 60.0
   
 ---
 spring.profiles: local

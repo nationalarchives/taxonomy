@@ -9,7 +9,7 @@ import gov.tna.discovery.taxonomy.common.repository.lucene.TrainingSetRepository
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
 import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
-import gov.tna.discovery.taxonomy.common.service.async.AsyncTaskManager;
+import gov.tna.discovery.taxonomy.common.service.async.AsyncTSetBasedTaskManager;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
@@ -65,7 +65,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     private Integer maxTrainingDocsPerCategory;
 
     @Autowired
-    AsyncTaskManager asyncExecutor;
+    AsyncTSetBasedTaskManager asyncExecutor;
 
     /*
      * (non-Javadoc)

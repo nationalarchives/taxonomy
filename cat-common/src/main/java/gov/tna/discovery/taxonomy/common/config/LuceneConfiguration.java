@@ -49,6 +49,8 @@ public class LuceneConfiguration {
     private String iaviewCollectionPath;
     private String trainingSetCollectionPath;
     private String version;
+    private double iaViewMaxMergeSizeMB;
+    private double iaViewMaxCachedMB;
 
     @Value("${lucene.index.maxShingleSize}")
     private String maxShingleSize;
@@ -71,7 +73,7 @@ public class LuceneConfiguration {
 
     public @Bean Directory iaViewDirectory() throws IOException {
 	Directory fsDir = FSDirectory.open(new File(iaviewCollectionPath));
-	return new NRTCachingDirectory(fsDir, 5.0, 60.0);
+	return new NRTCachingDirectory(fsDir, iaViewMaxMergeSizeMB, iaViewMaxCachedMB);
     }
 
     /**

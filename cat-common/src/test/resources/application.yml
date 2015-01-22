@@ -45,6 +45,8 @@ lucene:
   useSynonymFilter: true
   queryFilterSourceValue: 
   fieldsToSearch: texttax,CATDOCREF
+  iaViewMaxMergeSizeMB: 5.0
+  iaViewMaxCachedMB: 60.0
   
 ---
 spring.profiles: test

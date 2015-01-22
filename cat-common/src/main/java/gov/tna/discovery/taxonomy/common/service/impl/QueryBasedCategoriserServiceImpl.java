@@ -8,6 +8,7 @@ import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneHelperTools;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
+import gov.tna.discovery.taxonomy.common.service.async.AsyncQueryBasedTaskManager;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
@@ -17,6 +18,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -63,6 +68,9 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     @Autowired
     private SearcherManager iaviewSearcherManager;
 
+    @Autowired
+    private AsyncQueryBasedTaskManager asyncTaskManager;
+
     @Override
     public void testCategoriseIAViewSolrIndex() throws IOException {
 	// TODO Auto-generated method stub
@@ -86,29 +94,24 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     // http://stackoverflow.com/questions/5715235/java-set-timeout-on-a-certain-block-of-code
     private List<CategorisationResult> runCategorisationWithFSDirectory(InformationAssetView iaView) {
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
+	List<Future<CategorisationResult>> listOfFutureCategoryResults = new ArrayList<Future<CategorisationResult>>();
 
 	Filter filter = new QueryWrapperFilter(new TermQuery(new Term(
 		InformationAssetViewFields.DOCREFERENCE.toString(), iaView.getDOCREFERENCE())));
 	for (Category category : categoryRepository.findAll()) {
-	    String queryString = category.getQry();
-	    try {
+	    listOfFutureCategoryResults.add(asyncTaskManager.runUnitCategoryQuery(filter, category));
+	}
 
-		TopDocs topDocs = iaViewRepository.performSearchWithoutAnyPostProcessing(queryString, filter,
-			category.getSc(), 1, 0);
-		if (topDocs.totalHits != 0 && topDocs.scoreDocs[0].score > category.getSc()) {
-		    listOfCategoryResults.add(new CategorisationResult(category.getTtl(), topDocs.scoreDocs[0].score));
-		    logger.debug(".runCategorisationWithFSDirectory: found category {} with score {}",
-			    category.getTtl(), topDocs.scoreDocs[0].score);
-		} else {
-		    logger.debug(".runCategorisationWithFSDirectory: did not find category {} ", category.getTtl());
+	for (Future<CategorisationResult> futureCatResult : listOfFutureCategoryResults) {
+	    try {
+		CategorisationResult categorisationResult = futureCatResult.get(2l, TimeUnit.SECONDS);
+		if (categorisationResult != null) {
+		    listOfCategoryResults.add(categorisationResult);
 		}
-	    } catch (TaxonomyException e) {
-		logger.debug(
-			".runCategorisationWithFSDirectory: an exception occured while parsing category query for category: {}, title: ",
-			category.getTtl(), e.getMessage());
-	    } catch (Exception e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+	    } catch (InterruptedException | ExecutionException | TimeoutException e) {
+		logger.error(
+			".runCategorisationWithFSDirectory: an exception occured while retreiving the categorisation result: {}, exception: {}",
+			futureCatResult.toString(), e.getMessage());
 	    }
 	}
 
