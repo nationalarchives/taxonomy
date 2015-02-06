@@ -21,7 +21,6 @@ import org.apache.lucene.analysis.tokenattributes.PositionLengthAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.Attribute;
 import org.apache.lucene.util.AttributeImpl;
-import org.apache.lucene.util.Version;
 import org.junit.After;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -67,8 +66,7 @@ public class TaxonomyGeneralAnalyzerTest {
 
     @Test
     public void testQueryAnalyserWithStopWords() throws IOException {
-	trainingSetAnalyser = new TaxonomyTrainingSetAnalyser(Version.valueOf(luceneVersion), stopFilterFactory, null,
-		null);
+	trainingSetAnalyser = new TaxonomyTrainingSetAnalyser(stopFilterFactory, null, null);
 	StringReader reader = new StringReader("archives OR melody");
 
 	TokenStream stream = trainingSetAnalyser.tokenStream("test", reader);
@@ -80,8 +78,7 @@ public class TaxonomyGeneralAnalyzerTest {
 
     @Test
     public void testQueryAnalyserWithSynonyms() throws IOException {
-	trainingSetAnalyser = new TaxonomyTrainingSetAnalyser(Version.valueOf(luceneVersion), null,
-		synonymFilterFactory, null);
+	trainingSetAnalyser = new TaxonomyTrainingSetAnalyser(null, synonymFilterFactory, null);
 	Reader reader = new StringReader("agonise");
 
 	TokenStream stream = trainingSetAnalyser.tokenStream("test", reader);
@@ -92,7 +89,7 @@ public class TaxonomyGeneralAnalyzerTest {
 
     @Test
     public void testQueryAnalyserWithCapitalLetters() throws IOException {
-	trainingSetAnalyser = new TaxonomyTrainingSetAnalyser(Version.valueOf(luceneVersion), null, null, null);
+	trainingSetAnalyser = new TaxonomyTrainingSetAnalyser(null, null, null);
 	StringReader reader = new StringReader("archiveS tEst MELODY");
 
 	TokenStream stream = trainingSetAnalyser.tokenStream("test", reader);
@@ -104,7 +101,7 @@ public class TaxonomyGeneralAnalyzerTest {
 
     @Test
     public void testQueryAnalyserWithShingleFilter() throws IOException {
-	trainingSetAnalyser = new TaxonomyTrainingSetAnalyser(Version.valueOf(luceneVersion), null, null, 2);
+	trainingSetAnalyser = new TaxonomyTrainingSetAnalyser(null, null, 2);
 	StringReader reader = new StringReader("archiveS tEst");
 
 	TokenStream stream = trainingSetAnalyser.tokenStream("test", reader);

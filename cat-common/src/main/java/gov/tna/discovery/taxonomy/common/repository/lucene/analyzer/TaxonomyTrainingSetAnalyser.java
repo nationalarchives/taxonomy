@@ -12,7 +12,6 @@ import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.shingle.ShingleFilter;
 import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
-import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +33,6 @@ public final class TaxonomyTrainingSetAnalyser extends Analyzer {
 
     private static final Logger logger = LoggerFactory.getLogger(TaxonomyTrainingSetAnalyser.class);
 
-    private final Version matchVersion;
-
     private final StopFilterFactory stopFilterFactory;
 
     private final SynonymFilterFactory synonymFilterFactory;
@@ -51,9 +48,8 @@ public final class TaxonomyTrainingSetAnalyser extends Analyzer {
      *            Lucene version to match See
      *            {@link <a href="#version">above</a>}
      */
-    public TaxonomyTrainingSetAnalyser(Version matchVersion, StopFilterFactory stopFilterFactory,
-	    SynonymFilterFactory synonymFilterFactory, Integer maxShingleSize) {
-	this.matchVersion = matchVersion;
+    public TaxonomyTrainingSetAnalyser(StopFilterFactory stopFilterFactory, SynonymFilterFactory synonymFilterFactory,
+	    Integer maxShingleSize) {
 	this.stopFilterFactory = stopFilterFactory;
 	this.synonymFilterFactory = synonymFilterFactory;
 	this.maxShingleSize = maxShingleSize;
@@ -61,9 +57,9 @@ public final class TaxonomyTrainingSetAnalyser extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
-	Tokenizer source = new WhitespaceTokenizer(this.matchVersion, reader);
+	Tokenizer source = new WhitespaceTokenizer(reader);
 
-	result = new LowerCaseFilter(this.matchVersion, source);
+	result = new LowerCaseFilter(source);
 
 	if (stopFilterFactory != null) {
 	    result = this.stopFilterFactory.create(result);

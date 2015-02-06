@@ -5,7 +5,6 @@ import java.io.Reader;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
-import org.apache.lucene.util.Version;
 
 /**
  * Modification of WhiteSpaceAnalyser with setPositionIncrementGap implemented
@@ -14,8 +13,6 @@ import org.apache.lucene.util.Version;
  *
  */
 public final class WhiteSpaceAnalyserWIthPIG extends Analyzer {
-
-    private final Version matchVersion;
     private int positionIncrementGap;
 
     /**
@@ -25,8 +22,7 @@ public final class WhiteSpaceAnalyserWIthPIG extends Analyzer {
      *            Lucene version to match See
      *            {@link <a href="#version">above</a>}
      */
-    public WhiteSpaceAnalyserWIthPIG(Version matchVersion) {
-	this.matchVersion = matchVersion;
+    public WhiteSpaceAnalyserWIthPIG() {
     }
 
     @Override
@@ -40,6 +36,6 @@ public final class WhiteSpaceAnalyserWIthPIG extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
-	return new TokenStreamComponents(new WhitespaceTokenizer(matchVersion, reader));
+	return new TokenStreamComponents(new WhitespaceTokenizer(reader));
     }
 }

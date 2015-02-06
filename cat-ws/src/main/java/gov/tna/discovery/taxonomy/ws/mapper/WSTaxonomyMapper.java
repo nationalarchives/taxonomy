@@ -1,7 +1,6 @@
 package gov.tna.discovery.taxonomy.ws.mapper;
 
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.TestDocument;
 import gov.tna.discovery.taxonomy.ws.domain.TestCategoriseSingleRequest;
 
 public class WSTaxonomyMapper {

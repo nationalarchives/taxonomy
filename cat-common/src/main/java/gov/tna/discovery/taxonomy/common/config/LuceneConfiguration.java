@@ -6,6 +6,7 @@ import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.WhiteSpaceAn
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -116,7 +117,7 @@ public class LuceneConfiguration {
 	Map<String, String> stopFilterArgs = new HashMap<String, String>();
 	stopFilterArgs.put("words", "stopwords.txt");
 	stopFilterArgs.put("enablePositionIncrements", "true");
-	stopFilterArgs.put("luceneMatchVersion", Version.valueOf(version).toString());
+	stopFilterArgs.put("luceneMatchVersion", version);
 
 	StopFilterFactory stopFilterFactory = new StopFilterFactory(stopFilterArgs);
 
@@ -134,7 +135,7 @@ public class LuceneConfiguration {
 	synonymFilterArgs.put("synonyms", "synonyms.txt");
 	synonymFilterArgs.put("expand", "true");
 	synonymFilterArgs.put("ignoreCase", "true");
-	synonymFilterArgs.put("luceneMatchVersion", Version.valueOf(version).toString());
+	synonymFilterArgs.put("luceneMatchVersion", version);
 	SynonymFilterFactory synonymFilterFactory = new SynonymFilterFactory(synonymFilterArgs);
 
 	try {
@@ -153,6 +154,7 @@ public class LuceneConfiguration {
 	wordDelimiterFilterArgs.put("preserveOriginal", "1");
 	wordDelimiterFilterArgs.put("generateWordParts", "1");
 	wordDelimiterFilterArgs.put("catenateWords", "1");
+	wordDelimiterFilterArgs.put("luceneMatchVersion", version);
 	WordDelimiterFilterFactory wordDelimiterFilterFactory = new WordDelimiterFilterFactory(wordDelimiterFilterArgs);
 
 	try {
@@ -171,8 +173,10 @@ public class LuceneConfiguration {
      * them with document to categorise
      * 
      * @return
+     * @throws ParseException
+     * @throws NumberFormatException
      */
-    public @Bean Analyzer trainingSetAnalyser() {
+    public @Bean Analyzer trainingSetAnalyser() throws NumberFormatException, ParseException {
 	StopFilterFactory stopFilterFactory = null;
 	if (useStopFilter) {
 	    stopFilterFactory = stopFilterFactory();
@@ -181,8 +185,7 @@ public class LuceneConfiguration {
 	if (useSynonymFilter) {
 	    synonymFilterFactory = synonymFilterFactory();
 	}
-	return new TaxonomyTrainingSetAnalyser(Version.valueOf(version), stopFilterFactory, synonymFilterFactory,
-		Integer.valueOf(maxShingleSize));
+	return new TaxonomyTrainingSetAnalyser(stopFilterFactory, synonymFilterFactory, Integer.valueOf(maxShingleSize));
     }
 
     /**
@@ -190,15 +193,16 @@ public class LuceneConfiguration {
      * in IAView Index
      * 
      * @return
+     * @throws ParseException
      */
-    public @Bean Analyzer iaViewSearchAnalyser() {
+    public @Bean Analyzer iaViewSearchAnalyser() throws ParseException {
 	Map<String, Analyzer> analyzerPerField = new HashMap<String, Analyzer>();
-	IAViewTextRefAnalyser textRefAnalyser = new IAViewTextRefAnalyser(Version.valueOf(version),
+	IAViewTextRefAnalyser textRefAnalyser = new IAViewTextRefAnalyser(Version.parseLeniently(version),
 		wordDelimiterFilterFactory());
 	textRefAnalyser.setPositionIncrementGap(100);
 	analyzerPerField.put("CATDOCREF", textRefAnalyser);
 
-	WhiteSpaceAnalyserWIthPIG textTaxAnalyser = new WhiteSpaceAnalyserWIthPIG(Version.valueOf(version));
+	WhiteSpaceAnalyserWIthPIG textTaxAnalyser = new WhiteSpaceAnalyserWIthPIG();
 	textTaxAnalyser.setPositionIncrementGap(100);
 
 	PerFieldAnalyzerWrapper iaViewIndexAnalyser = new PerFieldAnalyzerWrapper(textTaxAnalyser, analyzerPerField);
@@ -211,8 +215,9 @@ public class LuceneConfiguration {
      * database
      * 
      * @return
+     * @throws ParseException
      */
-    public @Bean Analyzer iaViewIndexAnalyser() {
+    public @Bean Analyzer iaViewIndexAnalyser() throws ParseException {
 	return iaViewSearchAnalyser();
     }
 

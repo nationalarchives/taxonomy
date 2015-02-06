@@ -8,6 +8,7 @@ import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -85,7 +86,7 @@ public class TrainingSetRepository {
     public void indexTrainingDocuments(List<TrainingDocument> trainingDocuments) {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.parseLeniently(luceneVersion),
 		    trainingSetAnalyser));
 
 	    indexTrainingDocuments(writer, trainingDocuments);
@@ -93,6 +94,8 @@ public class TrainingSetRepository {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	} catch (TaxonomyException e) {
 	    throw e;
+	} catch (ParseException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
 	    LuceneHelperTools.closeIndexWriterQuietly(writer);
 	}
@@ -111,7 +114,7 @@ public class TrainingSetRepository {
     public void deleteTrainingDocumentsForCategory(Category category) {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.parseLeniently(luceneVersion),
 		    trainingSetAnalyser));
 
 	    deleteTrainingDocumentsForCategory(writer, category);
@@ -119,6 +122,8 @@ public class TrainingSetRepository {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	} catch (TaxonomyException e) {
 	    throw e;
+	} catch (ParseException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
 	    LuceneHelperTools.closeIndexWriterQuietly(writer);
 	}

@@ -15,7 +15,6 @@ public class CLIApplication {
 
     public static void main(String[] args) throws IOException, ParseException {
 	SpringApplication.run(CLIApplication.class, args);
-
     }
 
 }

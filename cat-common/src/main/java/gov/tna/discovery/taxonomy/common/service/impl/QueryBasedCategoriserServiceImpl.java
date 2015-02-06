@@ -14,15 +14,13 @@ import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -96,19 +94,26 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
 	List<Future<CategorisationResult>> listOfFutureCategoryResults = new ArrayList<Future<CategorisationResult>>();
 
+	// TODO JCT cache filter on current document
+	// Filter filter = new CachingWrapperFilter(new QueryWrapperFilter(new
+	// TermQuery(new Term(
+	// InformationAssetViewFields.DOCREFERENCE.toString(),
+	// iaView.getDOCREFERENCE()))));
 	Filter filter = new QueryWrapperFilter(new TermQuery(new Term(
 		InformationAssetViewFields.DOCREFERENCE.toString(), iaView.getDOCREFERENCE())));
 	for (Category category : categoryRepository.findAll()) {
 	    listOfFutureCategoryResults.add(asyncTaskManager.runUnitCategoryQuery(filter, category));
 	}
 
+	// TODO JCT manage timeout on the search to lucene and NOT on the task:
+	// impossible anyway to interrupt it this way
 	for (Future<CategorisationResult> futureCatResult : listOfFutureCategoryResults) {
 	    try {
-		CategorisationResult categorisationResult = futureCatResult.get(2l, TimeUnit.SECONDS);
+		CategorisationResult categorisationResult = futureCatResult.get();
 		if (categorisationResult != null) {
 		    listOfCategoryResults.add(categorisationResult);
 		}
-	    } catch (InterruptedException | ExecutionException | TimeoutException e) {
+	    } catch (InterruptedException | ExecutionException e) {
 		logger.error(
 			".runCategorisationWithFSDirectory: an exception occured while retreiving the categorisation result: {}, exception: {}",
 			futureCatResult.toString(), e.getMessage());
@@ -168,8 +173,13 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
 	// Make an writer to create the index
 
-	IndexWriter writer = new IndexWriter(ramDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
-		this.iaViewIndexAnalyser));
+	IndexWriter writer;
+	try {
+	    writer = new IndexWriter(ramDirectory, new IndexWriterConfig(Version.parseLeniently(luceneVersion),
+		    this.iaViewIndexAnalyser));
+	} catch (ParseException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
+	}
 
 	// Add some Document objects containing quotes
 	writer.addDocument(getLuceneDocumentFromIaVIew(iaView));

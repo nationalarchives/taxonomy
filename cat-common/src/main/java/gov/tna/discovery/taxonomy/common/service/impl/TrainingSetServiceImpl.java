@@ -166,7 +166,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     public void deleteAndUpdateTraingSetIndexForCategory(Category category) {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.parseLeniently(luceneVersion),
 		    trainingSetAnalyser));
 
 	    trainingSetRepository.deleteTrainingDocumentsForCategory(writer, category);
@@ -178,6 +178,8 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	} catch (IOException e) {
 	    logger.error(".deleteAndUpdateTraingSetIndexForCategory: an exception occured {}", e.getMessage());
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	} catch (java.text.ParseException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
 	    LuceneHelperTools.closeIndexWriterQuietly(writer);
 	}
@@ -195,7 +197,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	logger.info("index training set");
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.parseLeniently(luceneVersion),
 		    trainingSetAnalyser));
 
 	    writer.deleteAll();
@@ -210,6 +212,8 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	    writer.commit();
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	} catch (java.text.ParseException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
 	    LuceneHelperTools.closeIndexWriterQuietly(writer);
 	}

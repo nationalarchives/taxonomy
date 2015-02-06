@@ -51,13 +51,13 @@ public final class IAViewTextRefAnalyser extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
-	Tokenizer source = new ClassicTokenizer(this.matchVersion, reader);
+	Tokenizer source = new ClassicTokenizer(reader);
 
 	result = this.wordDelimiterFilterFactory.create(source);
 
 	result = new EnglishPossessiveFilter(this.matchVersion, result);
 
-	result = new LowerCaseFilter(this.matchVersion, result);
+	result = new LowerCaseFilter(result);
 
 	return new TokenStreamComponents(source, result);
     }

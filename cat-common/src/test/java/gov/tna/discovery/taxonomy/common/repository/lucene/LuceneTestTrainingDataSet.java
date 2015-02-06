@@ -67,12 +67,14 @@ public class LuceneTestTrainingDataSet {
 	logger.info(".deleteTrainingSetIndex");
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion),
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.parseLeniently(luceneVersion),
 		    trainingSetAnalyser));
 
 	    writer.deleteAll();
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	} catch (java.text.ParseException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
 	    LuceneHelperTools.closeIndexWriterQuietly(writer);
 	}

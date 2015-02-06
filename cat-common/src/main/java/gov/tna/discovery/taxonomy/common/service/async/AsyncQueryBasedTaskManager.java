@@ -2,11 +2,8 @@ package gov.tna.discovery.taxonomy.common.service.async;
 
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
-import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
-import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 
-import java.util.Arrays;
 import java.util.concurrent.Future;
 
 import org.apache.lucene.search.Filter;

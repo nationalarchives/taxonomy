@@ -20,9 +20,9 @@ spring:
 
 async:
  executor:
-  corePoolSize: 7
-  maxPoolSize: 42
-  queueCapacity: 11
+  corePoolSize: 2
+  maxPoolSize: 5
+  queueCapacity: 150
 
 lucene:
  categoriser:
@@ -38,7 +38,7 @@ lucene:
   contextDescBoostingFactor: 0.75
 
  index:
-  version: LUCENE_47
+  version: LUCENE_4_10_3
   maxTrainingDocsPerCategory: 100
   maxShingleSize: 3
   useStopFilter: true

@@ -26,7 +26,6 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,9 +96,6 @@ public class IAViewRepository {
 
     public TopDocs performSearchWithoutAnyPostProcessing(String queryString, Filter filter, Double mimimumScore,
 	    Integer limit, Integer offset) {
-	PaginatedList<InformationAssetView> paginatedListOfIAViews = new PaginatedList<InformationAssetView>(limit,
-		offset, mimimumScore);
-	List<InformationAssetView> docs = new ArrayList<InformationAssetView>();
 
 	IndexSearcher isearcher = null;
 	try {
@@ -198,8 +194,7 @@ public class IAViewRepository {
     }
 
     public Query buildSearchQuery(String queryString) {
-	QueryParser parser = new QueryParser(Version.valueOf(luceneVersion),
-		InformationAssetViewFields.texttax.toString(), this.iaViewSearchAnalyser);
+	QueryParser parser = new QueryParser(InformationAssetViewFields.texttax.toString(), this.iaViewSearchAnalyser);
 	parser.setAllowLeadingWildcard(true);
 	Query searchQuery;
 	try {
@@ -238,7 +233,7 @@ public class IAViewRepository {
 	try {
 	    searcher = iaviewSearcherManager.acquire();
 
-	    QueryParser qp = new QueryParser(Version.valueOf(luceneVersion), field, this.iaViewSearchAnalyser);
+	    QueryParser qp = new QueryParser(field, this.iaViewSearchAnalyser);
 
 	    return searcher.search(qp.parse(QueryParser.escape(value)), numHits);
 
@@ -252,7 +247,7 @@ public class IAViewRepository {
     }
 
     public void checkCategoryQueryValidity(String qry) {
-	QueryParser parser = new QueryParser(Version.valueOf(luceneVersion), "CATEGORY", this.iaViewSearchAnalyser);
+	QueryParser parser = new QueryParser("CATEGORY", this.iaViewSearchAnalyser);
 	parser.setAllowLeadingWildcard(true);
 	try {
 	    parser.parse(qry);

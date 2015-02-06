@@ -42,17 +42,28 @@ public class RunUnitCategoryQueryTask implements Callable<CategorisationResult> 
 	    TopDocs topDocs = iaViewRepository.performSearchWithoutAnyPostProcessing(category.getQry(), filter,
 		    category.getSc(), 1, 0);
 	    if (topDocs.totalHits != 0 && topDocs.scoreDocs[0].score > category.getSc()) {
-		logger.debug(".call: process lasted: {}, found category {} with score {}",
-			TaxonomyHelperTools.getTimerDifference(start_time), category.getTtl(),
-			topDocs.scoreDocs[0].score);
+		long timerDifference = TaxonomyHelperTools.getTimerDifference(start_time);
+		if (timerDifference > 1000) {
+		    logger.warn(".call: process lasted: {}, found category {} with score {}", timerDifference,
+			    category.getTtl(), topDocs.scoreDocs[0].score);
+		} else {
+		    logger.debug(".call: process lasted: {}, found category {} with score {}", timerDifference,
+			    category.getTtl(), topDocs.scoreDocs[0].score);
+		}
 		return new CategorisationResult(category.getTtl(), topDocs.scoreDocs[0].score);
 	    }
 	} catch (TaxonomyException e) {
 	    logger.debug(".call: an exception occured while parsing category query for category: {}, exception: {}",
 		    category.getTtl(), e.getMessage());
 	}
-	logger.debug(".call: process lasted: {}, did not find category {} ",
-		TaxonomyHelperTools.getTimerDifference(start_time), category.getTtl());
+	long timerDifference = TaxonomyHelperTools.getTimerDifference(start_time);
+	if (timerDifference > 1000) {
+	    logger.warn(".call: process lasted: {}, did not find category {} ",
+		    timerDifference, category.getTtl());
+	} else {
+	    logger.debug(".call: process lasted: {}, did not find category {} ",
+		    timerDifference, category.getTtl());
+	}
 	return null;
     }
 

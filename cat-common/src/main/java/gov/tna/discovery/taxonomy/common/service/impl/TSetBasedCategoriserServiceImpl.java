@@ -149,7 +149,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 			moreLikeThis.setBoostFactor(1);
 			break;
 		    }
-		    Query query = moreLikeThis.like(new StringReader(value), fieldName);
+		    Query query = moreLikeThis.like(fieldName, new StringReader(value));
 		    fullQuery.add(query, Occur.SHOULD);
 		}
 	    }

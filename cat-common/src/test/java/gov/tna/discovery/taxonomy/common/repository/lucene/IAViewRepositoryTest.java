@@ -7,6 +7,8 @@ import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
+import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
+import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -18,7 +20,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
@@ -28,7 +29,6 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.complexPhrase.ComplexPhraseQueryParser;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.SearcherManager;
@@ -225,7 +225,8 @@ public class IAViewRepositoryTest {
 	try {
 	    TokenStream tokenStream = this.iaViewSearchAnalyser.tokenStream("TITLE", new StringReader(
 		    "B.B.C: Labour requirements for the housing programme."));
-	    OffsetAttribute offsetAttribute = tokenStream.addAttribute(OffsetAttribute.class);
+	    // OffsetAttribute offsetAttribute =
+	    // tokenStream.addAttribute(OffsetAttribute.class);
 	    CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
 
 	    tokenStream.reset();
@@ -250,20 +251,18 @@ public class IAViewRepositoryTest {
 	SearcherManager iaviewSearcherManager = null;
 	IndexSearcher isearcher = null;
 	try {
-	    Analyzer analyzer = new WhitespaceAnalyzer(Version.valueOf(luceneVersion));
+	    Analyzer analyzer = new WhitespaceAnalyzer();
 	    writer = updateIAViewDirectoryWithOnePunctuatedDocument(analyzer);
 
 	    iaviewSearcherManager = new SearcherManager(writer, true, null);
 	    isearcher = iaviewSearcherManager.acquire();
 
-	    QueryParser multiFieldQueryParser = new MultiFieldQueryParser(Version.valueOf(luceneVersion),
-		    fieldsToAnalyse.split(","), analyzer);
+	    QueryParser multiFieldQueryParser = new MultiFieldQueryParser(fieldsToAnalyse.split(","), analyzer);
 	    multiFieldQueryParser.setAllowLeadingWildcard(true);
 
-	    QueryParser simpleQueryParser = new QueryParser(Version.valueOf(luceneVersion), "TITLE", analyzer);
+	    QueryParser simpleQueryParser = new QueryParser("TITLE", analyzer);
 
-	    QueryParser complexPhraseQueryParser = new ComplexPhraseQueryParser(Version.valueOf(luceneVersion),
-		    "TITLE", analyzer);
+	    QueryParser complexPhraseQueryParser = new ComplexPhraseQueryParser("TITLE", analyzer);
 
 	    List<QueryParser> queryParsers = Arrays.asList(multiFieldQueryParser, simpleQueryParser,
 		    complexPhraseQueryParser);
@@ -296,7 +295,12 @@ public class IAViewRepositoryTest {
 
     private IndexWriter updateIAViewDirectoryWithOnePunctuatedDocument(Analyzer analyser) throws IOException {
 	IndexWriter writer;
-	writer = new IndexWriter(iaViewDirectory, new IndexWriterConfig(Version.valueOf(luceneVersion), analyser));
+	try {
+	    writer = new IndexWriter(iaViewDirectory, new IndexWriterConfig(Version.parseLeniently(luceneVersion),
+		    analyser));
+	} catch (java.text.ParseException e) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_VERSION, e);
+	}
 	writer.deleteAll();
 	InformationAssetView iaView = new InformationAssetView();
 	iaView.setCATDOCREF("HLG 102/182");
