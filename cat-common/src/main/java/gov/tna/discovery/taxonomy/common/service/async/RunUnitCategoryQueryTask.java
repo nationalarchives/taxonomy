@@ -3,7 +3,6 @@ package gov.tna.discovery.taxonomy.common.service.async;
 import gov.tna.discovery.taxonomy.common.aop.annotation.Loggable;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
-import gov.tna.discovery.taxonomy.common.service.TaxonomyHelperTools;
 import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
@@ -37,7 +36,6 @@ public class RunUnitCategoryQueryTask implements Callable<CategorisationResult> 
     @Loggable
     @Override
     public CategorisationResult call() throws Exception {
-	long start_time = TaxonomyHelperTools.startTimer();
 	logger.debug(".call: start for category: {}", category.getTtl());
 	try {
 
@@ -50,7 +48,6 @@ public class RunUnitCategoryQueryTask implements Callable<CategorisationResult> 
 	    logger.debug(".call: an exception occured while parsing category query for category: {}, exception: {}",
 		    category.getTtl(), e.getMessage());
 	}
-	long timerDifference = TaxonomyHelperTools.getTimerDifference(start_time);
 	return null;
     }
 

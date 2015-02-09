@@ -20,7 +20,7 @@ spring:
 async:
  executor:
   corePoolSize: 3
-  maxPoolSize: 5
+  maxPoolSize: 3
   queueCapacity: 200
 
 lucene:

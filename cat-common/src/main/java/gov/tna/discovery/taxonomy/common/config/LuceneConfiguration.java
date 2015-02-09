@@ -1,5 +1,6 @@
 package gov.tna.discovery.taxonomy.common.config;
 
+import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextRefAnalyser;
 import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.TaxonomyTrainingSetAnalyser;
 import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.WhiteSpaceAnalyserWIthPIG;
@@ -20,6 +21,9 @@ import org.apache.lucene.analysis.util.ResourceLoader;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.ReaderManager;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.NumericRangeFilter;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -33,6 +37,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration dedicated to Lucene:<br/>
@@ -61,6 +66,9 @@ public class LuceneConfiguration {
 
     @Value("${lucene.index.useSynonymFilter}")
     private Boolean useSynonymFilter;
+
+    @Value("${lucene.index.queryFilterSourceValue}")
+    private String queryFilterSourceValue;
 
     /**
      ************************* Directories
@@ -96,6 +104,10 @@ public class LuceneConfiguration {
     /**
      ************************* Searchers
      */
+
+    public @Bean IndexSearcher iaviewSearcher() throws IOException {
+	return new IndexSearcher(iaViewIndexReader());
+    }
 
     public @Bean SearcherManager iaviewSearcherManager() throws IOException {
 	// return new SearcherManager(iaviewIndexWriter(), true, lnull);
@@ -219,6 +231,23 @@ public class LuceneConfiguration {
      */
     public @Bean Analyzer iaViewIndexAnalyser() throws ParseException {
 	return iaViewSearchAnalyser();
+    }
+
+    /**
+     * Filters
+     */
+
+    /**
+     * 
+     * @return
+     */
+    public @Bean Filter catalogueFilter() {
+	if (!StringUtils.isEmpty(queryFilterSourceValue)) {
+	    Integer intCatalogueSourceValue = Integer.valueOf(queryFilterSourceValue);
+	    return NumericRangeFilter.newIntRange(InformationAssetViewFields.SOURCE.toString(),
+		    intCatalogueSourceValue, intCatalogueSourceValue, true, true);
+	}
+	return null;
     }
 
     /**

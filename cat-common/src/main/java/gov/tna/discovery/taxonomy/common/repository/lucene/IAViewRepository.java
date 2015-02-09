@@ -45,11 +45,14 @@ public class IAViewRepository {
     @Value("${lucene.index.version}")
     private String luceneVersion;
 
-    @Value("${lucene.index.queryFilterSourceValue}")
-    private String queryFilterSourceValue;
-
     @Autowired
     private Analyzer iaViewSearchAnalyser;
+
+    @Autowired
+    private IndexSearcher iaviewSearcher;
+
+    @Autowired
+    private Filter catalogueFilter;
 
     private static final Logger logger = LoggerFactory.getLogger(IAViewRepository.class);
 
@@ -99,18 +102,20 @@ public class IAViewRepository {
     public TopDocs performSearchWithoutAnyPostProcessing(String queryString, Filter filter, Double mimimumScore,
 	    Integer limit, Integer offset) {
 
-	IndexSearcher isearcher = null;
+	// IndexSearcher isearcher = null;
 	try {
-	    isearcher = iaviewSearcherManager.acquire();
+	    // isearcher = iaviewSearcherManager.acquire();
 
 	    Query finalQuery = buildSearchQueryWithFiltersIfNecessary(queryString, filter);
 
-	    return isearcher.search(finalQuery, offset + limit);
+	    // return isearcher.search(finalQuery, offset + limit);
+	    return this.iaviewSearcher.search(finalQuery, offset + limit);
 
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	} finally {
-	    LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager, isearcher);
+	    // LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager,
+	    // isearcher);
 	}
     }
 
@@ -173,7 +178,7 @@ public class IAViewRepository {
 	Query searchQuery = buildSearchQuery(queryString);
 
 	if (filter == null) {
-	    filter = getCatalogueFilter();
+	    filter = this.catalogueFilter;
 	}
 
 	Query finalQuery;
@@ -183,16 +188,6 @@ public class IAViewRepository {
 	    finalQuery = searchQuery;
 	}
 	return finalQuery;
-    }
-
-    public Filter getCatalogueFilter() {
-	Filter filter = null;
-	if (!StringUtils.isEmpty(queryFilterSourceValue)) {
-	    Integer intCatalogueSourceValue = Integer.valueOf(queryFilterSourceValue);
-	    filter = NumericRangeFilter.newIntRange(InformationAssetViewFields.SOURCE.toString(),
-		    intCatalogueSourceValue, intCatalogueSourceValue, true, true);
-	}
-	return filter;
     }
 
     public Query buildSearchQuery(String queryString) {
