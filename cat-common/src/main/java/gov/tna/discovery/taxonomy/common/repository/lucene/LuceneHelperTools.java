@@ -24,6 +24,7 @@ public class LuceneHelperTools {
 	try {
 	    if (searcher != null) {
 		iaviewSearcherManager.release(searcher);
+		searcher = null;
 	    }
 	} catch (IOException ioe) {
 	    logger.error("releaseSearcherManagerQuietly failed", ioe);
@@ -40,6 +41,7 @@ public class LuceneHelperTools {
 	try {
 	    if (writer != null) {
 		writer.close();
+		writer = null;
 	    }
 	} catch (IOException ioe) {
 	    logger.error("closeWriterQuietly failed", ioe);

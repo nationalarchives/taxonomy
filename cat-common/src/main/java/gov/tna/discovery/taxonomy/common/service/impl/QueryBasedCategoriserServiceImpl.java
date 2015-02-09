@@ -30,6 +30,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.TermFilter;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -79,6 +80,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     }
 
     @Override
+    @Loggable
     public List<CategorisationResult> testCategoriseSingle(InformationAssetView iaView) {
 	logger.info(".testCategoriseSingle: catdocref:{}, docreference:{} ", iaView.getCATDOCREF(),
 		iaView.getDOCREFERENCE());
@@ -101,8 +103,8 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	// TermQuery(new Term(
 	// InformationAssetViewFields.DOCREFERENCE.toString(),
 	// iaView.getDOCREFERENCE()))));
-	Filter filter = new QueryWrapperFilter(new TermQuery(new Term(
-		InformationAssetViewFields.DOCREFERENCE.toString(), iaView.getDOCREFERENCE())));
+	Filter filter = new TermFilter(new Term(InformationAssetViewFields.DOCREFERENCE.toString(),
+		iaView.getDOCREFERENCE()));
 	for (Category category : categoryRepository.findAll()) {
 	    listOfFutureCategoryResults.add(asyncTaskManager.runUnitCategoryQuery(filter, category));
 	}

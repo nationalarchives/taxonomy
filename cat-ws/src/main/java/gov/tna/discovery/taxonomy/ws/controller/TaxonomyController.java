@@ -94,7 +94,11 @@ public class TaxonomyController {
 	logger.info("/testCategoriseSingle > {}", testCategoriseSingleRequest.toString());
 	if (StringUtils.isEmpty(testCategoriseSingleRequest.getDescription())) {
 	    throw new TaxonomyException(TaxonomyErrorType.INVALID_PARAMETER,
-		    "DESCRIPTION should be provided and not emptyw");
+		    "DESCRIPTION should be provided and not empty");
+	}
+	if (StringUtils.isEmpty(testCategoriseSingleRequest.getDocReference())) {
+	    throw new TaxonomyException(TaxonomyErrorType.INVALID_PARAMETER,
+		    "DOCREFERENCE should be provided and not empty");
 	}
 	InformationAssetView iaView = WSTaxonomyMapper.getIAviewFromRequest(testCategoriseSingleRequest);
 

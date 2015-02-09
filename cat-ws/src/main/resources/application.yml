@@ -19,9 +19,9 @@ spring:
 
 async:
  executor:
-  corePoolSize: 2
+  corePoolSize: 3
   maxPoolSize: 5
-  queueCapacity: 150
+  queueCapacity: 200
 
 lucene:
  loadTSetServiceLayer: true
