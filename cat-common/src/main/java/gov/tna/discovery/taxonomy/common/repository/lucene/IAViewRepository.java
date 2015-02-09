@@ -1,5 +1,6 @@
 package gov.tna.discovery.taxonomy.common.repository.lucene;
 
+import gov.tna.discovery.taxonomy.common.aop.annotation.Loggable;
 import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
@@ -94,6 +95,7 @@ public class IAViewRepository {
 	return hitDoc;
     }
 
+    @Loggable
     public TopDocs performSearchWithoutAnyPostProcessing(String queryString, Filter filter, Double mimimumScore,
 	    Integer limit, Integer offset) {
 

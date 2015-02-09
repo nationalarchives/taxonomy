@@ -1,5 +1,6 @@
 package gov.tna.discovery.taxonomy.common.service.async;
 
+import gov.tna.discovery.taxonomy.common.aop.annotation.Loggable;
 import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.service.TaxonomyHelperTools;
@@ -24,7 +25,7 @@ public class RunUnitCategoryQueryTask implements Callable<CategorisationResult> 
     private Filter filter;
     private Category category;
     private IAViewRepository iaViewRepository;
-    private Logger logger = LoggerFactory.getLogger(RunUnitCategoryQueryTask.class);;
+    private Logger logger = LoggerFactory.getLogger(RunUnitCategoryQueryTask.class);
 
     public RunUnitCategoryQueryTask(Filter filter, Category category, IAViewRepository iaViewRepository) {
 	super();
@@ -33,6 +34,7 @@ public class RunUnitCategoryQueryTask implements Callable<CategorisationResult> 
 	this.iaViewRepository = iaViewRepository;
     }
 
+    @Loggable
     @Override
     public CategorisationResult call() throws Exception {
 	long start_time = TaxonomyHelperTools.startTimer();
@@ -42,14 +44,6 @@ public class RunUnitCategoryQueryTask implements Callable<CategorisationResult> 
 	    TopDocs topDocs = iaViewRepository.performSearchWithoutAnyPostProcessing(category.getQry(), filter,
 		    category.getSc(), 1, 0);
 	    if (topDocs.totalHits != 0 && topDocs.scoreDocs[0].score > category.getSc()) {
-		long timerDifference = TaxonomyHelperTools.getTimerDifference(start_time);
-		if (timerDifference > 1000) {
-		    logger.warn(".call: process lasted: {}, found category {} with score {}", timerDifference,
-			    category.getTtl(), topDocs.scoreDocs[0].score);
-		} else {
-		    logger.debug(".call: process lasted: {}, found category {} with score {}", timerDifference,
-			    category.getTtl(), topDocs.scoreDocs[0].score);
-		}
 		return new CategorisationResult(category.getTtl(), topDocs.scoreDocs[0].score);
 	    }
 	} catch (TaxonomyException e) {
@@ -57,13 +51,6 @@ public class RunUnitCategoryQueryTask implements Callable<CategorisationResult> 
 		    category.getTtl(), e.getMessage());
 	}
 	long timerDifference = TaxonomyHelperTools.getTimerDifference(start_time);
-	if (timerDifference > 1000) {
-	    logger.warn(".call: process lasted: {}, did not find category {} ",
-		    timerDifference, category.getTtl());
-	} else {
-	    logger.debug(".call: process lasted: {}, did not find category {} ",
-		    timerDifference, category.getTtl());
-	}
 	return null;
     }
 

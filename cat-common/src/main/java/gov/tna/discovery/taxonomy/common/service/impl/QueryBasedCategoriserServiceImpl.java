@@ -1,5 +1,6 @@
 package gov.tna.discovery.taxonomy.common.service.impl;
 
+import gov.tna.discovery.taxonomy.common.aop.annotation.Loggable;
 import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
@@ -21,6 +22,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -88,8 +90,8 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	return listOfCategoryResults;
     }
 
-    // TODO set timeout on queries for categorisation
-    // http://stackoverflow.com/questions/5715235/java-set-timeout-on-a-certain-block-of-code
+    // TODO JCT manage timeout on the search to lucene and NOT on the task:
+    // impossible anyway to interrupt it this way
     private List<CategorisationResult> runCategorisationWithFSDirectory(InformationAssetView iaView) {
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
 	List<Future<CategorisationResult>> listOfFutureCategoryResults = new ArrayList<Future<CategorisationResult>>();
@@ -105,8 +107,6 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	    listOfFutureCategoryResults.add(asyncTaskManager.runUnitCategoryQuery(filter, category));
 	}
 
-	// TODO JCT manage timeout on the search to lucene and NOT on the task:
-	// impossible anyway to interrupt it this way
 	for (Future<CategorisationResult> futureCatResult : listOfFutureCategoryResults) {
 	    try {
 		CategorisationResult categorisationResult = futureCatResult.get();
@@ -162,6 +162,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     }
 
     @Override
+    @Loggable
     public List<CategorisationResult> testCategoriseSingle(String docReference) {
 	return testCategoriseSingle(LuceneTaxonomyMapper.getIAViewFromLuceneDocument(iaViewRepository
 		.searchDocByDocReference(docReference)));
