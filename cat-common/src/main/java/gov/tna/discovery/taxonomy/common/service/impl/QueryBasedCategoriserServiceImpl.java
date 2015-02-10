@@ -144,10 +144,9 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 		    Query query = iaViewRepository.buildSearchQuery(queryString);
 		    TopDocs topDocs = searcher.search(query, 1);
 
-		    if (topDocs.totalHits != 0 && topDocs.scoreDocs[0].score > category.getSc()) {
+		    if (topDocs.totalHits != 0) {
 			listOfRelevantCategories.add(category);
-			logger.debug(".findRelevantCategories: found category {} with score {}", category.getTtl(),
-				topDocs.scoreDocs[0].score);
+			logger.debug(".findRelevantCategories: found category {}", category.getTtl());
 		    }
 		} catch (TaxonomyException e) {
 		    logger.debug(
