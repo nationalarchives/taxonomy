@@ -102,6 +102,9 @@ public class IAViewRepository {
     public TopDocs performSearchWithoutAnyPostProcessing(String queryString, Filter filter, Double mimimumScore,
 	    Integer limit, Integer offset) {
 
+	// FIXME to refresh the indexSearcher after updates on the index, I
+	// might be forced to use the
+	// searcherManager
 	// IndexSearcher isearcher = null;
 	try {
 	    // isearcher = iaviewSearcherManager.acquire();

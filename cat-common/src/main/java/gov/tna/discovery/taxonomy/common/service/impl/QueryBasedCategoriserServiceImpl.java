@@ -86,7 +86,9 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 		iaView.getDOCREFERENCE());
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
 
-	listOfCategoryResults = runCategorisationWithFSDirectory(iaView);
+	List<Category> listOfRelevantCategories = findRelevantCategories(iaView);
+
+	listOfCategoryResults = runCategorisationWithFSDirectory(iaView, listOfRelevantCategories);
 
 	sortCategorisationResultsByScoreDesc(listOfCategoryResults);
 	return listOfCategoryResults;
@@ -94,7 +96,8 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
     // TODO JCT manage timeout on the search to lucene and NOT on the task:
     // impossible anyway to interrupt it this way
-    private List<CategorisationResult> runCategorisationWithFSDirectory(InformationAssetView iaView) {
+    private List<CategorisationResult> runCategorisationWithFSDirectory(InformationAssetView iaView,
+	    List<Category> listOfRelevantCategories) {
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
 	List<Future<CategorisationResult>> listOfFutureCategoryResults = new ArrayList<Future<CategorisationResult>>();
 
@@ -105,7 +108,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	// iaView.getDOCREFERENCE()))));
 	Filter filter = new TermFilter(new Term(InformationAssetViewFields.DOCREFERENCE.toString(),
 		iaView.getDOCREFERENCE()));
-	for (Category category : categoryRepository.findAll()) {
+	for (Category category : listOfRelevantCategories) {
 	    listOfFutureCategoryResults.add(asyncTaskManager.runUnitCategoryQuery(filter, category));
 	}
 
@@ -125,9 +128,8 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	return listOfCategoryResults;
     }
 
-    @Deprecated
-    private List<CategorisationResult> runCategorisationWithRAMDirectory(InformationAssetView iaView) {
-	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
+    private List<Category> findRelevantCategories(InformationAssetView iaView) {
+	List<Category> listOfRelevantCategories = new ArrayList<Category>();
 
 	SearcherManager searcherManager = null;
 	IndexSearcher searcher = null;
@@ -143,14 +145,13 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 		    TopDocs topDocs = searcher.search(query, 1);
 
 		    if (topDocs.totalHits != 0 && topDocs.scoreDocs[0].score > category.getSc()) {
-			listOfCategoryResults.add(new CategorisationResult(category.getTtl(),
-				topDocs.scoreDocs[0].score));
-			logger.debug(".testCategoriseSingle: found category {} with score {}", category.getTtl(),
+			listOfRelevantCategories.add(category);
+			logger.debug(".findRelevantCategories: found category {} with score {}", category.getTtl(),
 				topDocs.scoreDocs[0].score);
 		    }
 		} catch (TaxonomyException e) {
 		    logger.debug(
-			    ".runCategorisationWithRAMDirectory: an exception occured while parsing category query for category: {}, title: ",
+			    ".findRelevantCategories: an exception occured while parsing category query for category: {}, title: ",
 			    category.getTtl(), e.getMessage());
 		}
 	    }
@@ -159,7 +160,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	} finally {
 	    LuceneHelperTools.releaseSearcherManagerQuietly(searcherManager, searcher);
 	}
-	return listOfCategoryResults;
+	return listOfRelevantCategories;
 
     }
 
