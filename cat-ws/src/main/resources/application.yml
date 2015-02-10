@@ -21,7 +21,7 @@ async:
  executor:
   corePoolSize: 3
   maxPoolSize: 3
-  queueCapacity: 200
+  queueCapacity: 150
 
 lucene:
  loadTSetServiceLayer: true
