@@ -48,9 +48,15 @@ public class QueryBasedCategoriserServiceTest {
     public void testTestCategoriseSingle() {
 	InformationAssetView iaView = new InformationAssetView();
 	iaView.setCATDOCREF("BT 351/1/107278");
+	iaView.setCONTEXTDESCRIPTION("Registry of Shipping and Seamen: Index of First World War Mercantile Marine Medals and the British War Medal.");
+	iaView.setCOVERINGDATES("1914-1925");
+	iaView.setDESCRIPTION("Medal Card of Oosten Dorp or Van Oosten Dorp, B M. Place of Birth: Rothendam. Date of Birth: 1898.");
 	iaView.setDOCREFERENCE("D8075845");
-	iaView.setTITLE("Registry of Shipping and Seamen: Index of First World War Mercantile Marine Medals and the British War Medal.");
-	iaView.setDESCRIPTION("Registry of Shipping and Seamen: Index of First World War Mercantile Marine Medals and the British War Medal.");
+	iaView.setPERSON_FULLNAME(new String[] { "B M Oosten Dorp or Van Oosten Dorp" });
+	iaView.setPLACE_NAME(new String[] { "Rothendam" });
+	iaView.setSUBJECTS(new String[] { "WW1", "Merchant", "Seamen", "Medal", "Cards" });
+	iaView.setTITLE("Medal Card of Oosten Dorp or Van Oosten Dorp, B M. Place of Birth: Rothendam");
+
 	List<CategorisationResult> categorisationResults = categoriserService.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));

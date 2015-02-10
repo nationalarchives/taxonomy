@@ -167,7 +167,7 @@ public class TaxonomyControllerTest {
     }
 
     @Test
-    public final void testTestCategoriseSingleDocumentWithMissingDescription() {
+    public final void testTestCategoriseSingleDocumentWithMissingDescriptionAndDocRef() {
 	TestCategoriseSingleRequest request = new TestCategoriseSingleRequest();
 	request.setTitle("TRINITY Church of England School.");
 	ResponseEntity<TaxonomyErrorResponse> response = restTemplate.postForEntity(WS_URL
@@ -180,9 +180,10 @@ public class TaxonomyControllerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public final void testTestCategoriseSingleDocumentWithOnlyDescription() {
+    public final void testTestCategoriseSingleDocumentWithOnlyDescriptionAndDocRef() {
 	TestCategoriseSingleRequest request = new TestCategoriseSingleRequest();
-	request.setDescription("UK bilateral aid programme: review by Ministry of Overseas Development working party; papers, minutes and correspondance");
+	request.setDescription("Registry of Shipping and Seamen: Index of First World War Mercantile Marine Medals and the British War Medal.");
+	request.setDocReference("D8075845");
 	List<LinkedHashMap<String, String>> categorisationResults = restTemplate.postForObject(WS_URL
 		+ WS_PATH_TEST_CATEGORISE_SINGLE, request, List.class);
 

@@ -109,10 +109,10 @@ public class TestCategoriseSingleRequest {
 	StringBuilder builder = new StringBuilder();
 	builder.append("TestCategoriseSingleRequest [title=");
 	builder.append(title);
-	builder.append(", description=");
-	builder.append(description);
-	builder.append(", contextDescription=");
-	builder.append(contextDescription);
+	builder.append(", docReference=");
+	builder.append(docReference);
+	builder.append(", catDocRef=");
+	builder.append(catDocRef);
 	builder.append("]");
 	return builder.toString();
     }
