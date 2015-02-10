@@ -11,6 +11,8 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
@@ -21,6 +23,7 @@ import org.apache.lucene.analysis.util.ResourceLoader;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.ReaderManager;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.NumericRangeFilter;
@@ -69,6 +72,11 @@ public class LuceneConfiguration {
 
     @Value("${lucene.index.queryFilterSourceValue}")
     private String queryFilterSourceValue;
+
+    @PostConstruct
+    public void init() {
+	BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
+    }
 
     /**
      ************************* Directories
