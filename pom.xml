@@ -33,4 +33,17 @@
 		<plugins>
 		</plugins>
 	</build>
+	
+	 <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>Releases</name>
+            <url>http://***REMOVED***.***REMOVED***:9004/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Snapshots</name>
+            <url>http://***REMOVED***.***REMOVED***:9004/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
