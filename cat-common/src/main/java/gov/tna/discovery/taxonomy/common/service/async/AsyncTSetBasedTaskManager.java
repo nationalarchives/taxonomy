@@ -1,9 +1,12 @@
 package gov.tna.discovery.taxonomy.common.service.async;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
+import gov.tna.discovery.taxonomy.common.service.async.task.UpdateTrainingSetDbAndIndexTask;
+
 import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;

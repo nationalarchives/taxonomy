@@ -1,13 +1,13 @@
 package gov.tna.discovery.taxonomy.common.service.impl;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.common.domain.service.TSetBasedCategorisationResult;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
-import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneHelperTools;
+import gov.tna.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
-import gov.tna.discovery.taxonomy.common.service.domain.TSetBasedCategorisationResult;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
 import java.io.IOException;
 import java.io.StringReader;

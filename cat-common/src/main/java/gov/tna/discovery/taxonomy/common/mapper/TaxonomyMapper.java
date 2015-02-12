@@ -1,7 +1,7 @@
 package gov.tna.discovery.taxonomy.common.mapper;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.TestDocument;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.TestDocument;
 
 public class TaxonomyMapper {
     public static TestDocument getTestDocumentFromIAView(InformationAssetView iaView) {

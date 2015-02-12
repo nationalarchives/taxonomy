@@ -3,12 +3,13 @@ package gov.tna.discovery.taxonomy.common.repository.lucene;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import gov.tna.discovery.taxonomy.common.config.LuceneConfigurationTest;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.common.domain.service.PaginatedList;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
-import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
+import gov.tna.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 
 import java.io.IOException;
 import java.io.StringReader;

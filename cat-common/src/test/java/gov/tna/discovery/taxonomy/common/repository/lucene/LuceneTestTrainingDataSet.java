@@ -1,9 +1,10 @@
 package gov.tna.discovery.taxonomy.common.repository.lucene;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
+import gov.tna.discovery.taxonomy.common.domain.repository.TrainingDocument;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.Category;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
+import gov.tna.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 
 import java.io.IOException;
 import java.util.Arrays;

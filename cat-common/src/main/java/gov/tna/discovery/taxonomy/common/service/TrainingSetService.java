@@ -1,6 +1,6 @@
 package gov.tna.discovery.taxonomy.common.service;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.Category;
 
 import java.io.IOException;
 
@@ -20,6 +20,19 @@ public interface TrainingSetService {
      * @param fixedLimitSize
      */
     public void updateTrainingSetForCategory(Category category, Float fixedLimitScore, Integer fixedLimitSize);
+
+    /**
+     * Update training set for a category:<br/>
+     * <ul>
+     * <li>search ia view solr index from category query</li>
+     * <li>add all documents found to the training set mongo db</li>
+     * </ul>
+     * 
+     * @param categoryCiaid
+     * @param fixedLimitScore
+     * @param fixedLimitSize
+     */
+    public void updateTrainingSetForCategory(String categoryCiaid, Integer fixedLimitScore, Integer fixedLimitSize);
 
     /**
      * 

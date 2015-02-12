@@ -1,17 +1,17 @@
 package gov.tna.discovery.taxonomy.ws.controller;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.domain.service.CategorisationResult;
+import gov.tna.discovery.taxonomy.common.domain.service.PaginatedList;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
+import gov.tna.discovery.taxonomy.common.service.IAViewService;
 import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
-import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
-import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
-import gov.tna.discovery.taxonomy.ws.domain.PublishRequest;
-import gov.tna.discovery.taxonomy.ws.domain.SearchIAViewRequest;
-import gov.tna.discovery.taxonomy.ws.domain.TestCategoriseSingleRequest;
 import gov.tna.discovery.taxonomy.ws.mapper.WSTaxonomyMapper;
+import gov.tna.discovery.taxonomy.ws.model.PublishRequest;
+import gov.tna.discovery.taxonomy.ws.model.SearchIAViewRequest;
+import gov.tna.discovery.taxonomy.ws.model.TestCategoriseSingleRequest;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class TaxonomyController {
     private static final Logger logger = LoggerFactory.getLogger(TaxonomyController.class);
 
     @Autowired
-    IAViewRepository iaViewRepository;
+    IAViewService iaViewService;
 
     @Autowired
     CategoriserService categoriser;
@@ -64,7 +64,7 @@ public class TaxonomyController {
 	    searchRequest.setOffset(0);
 	}
 
-	PaginatedList<InformationAssetView> listOfIAViews = iaViewRepository.performSearch(
+	PaginatedList<InformationAssetView> listOfIAViews = iaViewService.performSearch(
 		searchRequest.getCategoryQuery(), searchRequest.getScore(), searchRequest.getLimit(),
 		searchRequest.getOffset());
 

@@ -1,8 +1,7 @@
 package gov.tna.discovery.taxonomy.common.service;
 
-import gov.tna.discovery.taxonomy.common.aop.annotation.Loggable;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.domain.service.CategorisationResult;
 
 import java.io.IOException;
 import java.util.List;

@@ -1,13 +1,14 @@
 package gov.tna.discovery.taxonomy.common.repository.lucene;
 
 import gov.tna.discovery.taxonomy.common.aop.annotation.Loggable;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.common.domain.service.PaginatedList;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
-import gov.tna.discovery.taxonomy.common.service.TaxonomyHelperTools;
-import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
+import gov.tna.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
+import gov.tna.discovery.taxonomy.common.service.tools.TaxonomyHelperTools;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +22,6 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.FilteredQuery;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.NumericRangeFilter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
@@ -31,12 +31,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
+import org.springframework.stereotype.Repository;
 
-//TODO put timeout on search requests on index: related to wildcard
-//TODO create IAVIewService and put in IAViewRepository only simple execution of queries
-@Component
+/**
+ * Repository dedicated the the retrieval, storage, search of IAViews on the
+ * snapshot of the Solr Cloud index. Use Lucene to process the index directly
+ * 
+ * @author jcharlet
+ *
+ */
+// TODO put timeout on search requests on index: related to wildcard
+// TODO create IAVIewService and put in IAViewRepository only simple execution
+// of queries
+@Repository
 public class IAViewRepository {
 
     @Autowired

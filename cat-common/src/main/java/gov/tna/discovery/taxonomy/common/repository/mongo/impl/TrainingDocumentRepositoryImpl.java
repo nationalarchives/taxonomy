@@ -1,6 +1,6 @@
 package gov.tna.discovery.taxonomy.common.repository.mongo.impl;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
+import gov.tna.discovery.taxonomy.common.domain.repository.TrainingDocument;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepositoryCustom;
 
 import org.springframework.beans.factory.annotation.Autowired;

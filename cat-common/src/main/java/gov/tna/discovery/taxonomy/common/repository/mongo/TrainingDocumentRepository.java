@@ -1,6 +1,6 @@
 package gov.tna.discovery.taxonomy.common.repository.mongo;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
+import gov.tna.discovery.taxonomy.common.domain.repository.TrainingDocument;
 
 import java.util.List;
 

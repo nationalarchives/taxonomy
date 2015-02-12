@@ -1,6 +1,6 @@
 package gov.tna.discovery.taxonomy.common.config;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextRefAnalyser;
 import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.TaxonomyTrainingSetAnalyser;
 import gov.tna.discovery.taxonomy.common.repository.lucene.analyzer.WhiteSpaceAnalyserWIthPIG;

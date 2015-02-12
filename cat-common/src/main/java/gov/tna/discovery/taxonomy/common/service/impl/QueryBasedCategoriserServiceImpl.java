@@ -1,18 +1,18 @@
 package gov.tna.discovery.taxonomy.common.service.impl;
 
 import gov.tna.discovery.taxonomy.common.aop.annotation.Loggable;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.Category;
+import gov.tna.discovery.taxonomy.common.domain.service.CategorisationResult;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
-import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneHelperTools;
+import gov.tna.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.async.AsyncQueryBasedTaskManager;
-import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -34,9 +34,7 @@ import org.apache.lucene.queries.TermFilter;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.SearcherManager;
-import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;

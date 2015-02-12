@@ -2,10 +2,10 @@ package gov.tna.discovery.taxonomy.common.mapper;
 
 import java.util.Arrays;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.TestDocument;
+import gov.tna.discovery.taxonomy.common.domain.repository.TrainingDocument;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.TestDocument;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;

@@ -3,7 +3,8 @@ package gov.tna.discovery.taxonomy.common.repository.lucene;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import gov.tna.discovery.taxonomy.common.config.LuceneConfigurationTest;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 
 import java.io.IOException;
 

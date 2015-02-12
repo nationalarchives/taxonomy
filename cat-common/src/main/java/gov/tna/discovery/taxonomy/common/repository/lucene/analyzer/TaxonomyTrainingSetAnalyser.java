@@ -1,6 +1,6 @@
 package gov.tna.discovery.taxonomy.common.repository.lucene.analyzer;
 
-import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneHelperTools;
+import gov.tna.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 
 import java.io.Reader;
 

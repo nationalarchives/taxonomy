@@ -1,8 +1,9 @@
 package gov.tna.discovery.taxonomy.common.service.async;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.Category;
+import gov.tna.discovery.taxonomy.common.domain.service.CategorisationResult;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
-import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
+import gov.tna.discovery.taxonomy.common.service.async.task.RunUnitCategoryQueryTask;
 
 import java.util.concurrent.Future;
 

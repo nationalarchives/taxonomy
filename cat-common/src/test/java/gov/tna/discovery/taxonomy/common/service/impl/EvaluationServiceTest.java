@@ -3,13 +3,16 @@ package gov.tna.discovery.taxonomy.common.service.impl;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import gov.tna.discovery.taxonomy.common.config.ServiceConfigurationTest;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.Category;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.CategoryEvaluationResult;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.EvaluationReport;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.TestDocument;
+import gov.tna.discovery.taxonomy.common.domain.service.PaginatedList;
+import gov.tna.discovery.taxonomy.common.domain.service.TSetBasedCategorisationResult;
 import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.mapper.TaxonomyMapper;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.CategoryEvaluationResult;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.EvaluationReport;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.TestDocument;
+import gov.tna.discovery.taxonomy.common.repository.legacy.LegacySystemRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.LuceneTestTrainingDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
@@ -17,9 +20,6 @@ import gov.tna.discovery.taxonomy.common.repository.mongo.EvaluationReportReposi
 import gov.tna.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TestDocumentRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
-import gov.tna.discovery.taxonomy.common.service.LegacySystemService;
-import gov.tna.discovery.taxonomy.common.service.domain.TSetBasedCategorisationResult;
-import gov.tna.discovery.taxonomy.common.service.domain.PaginatedList;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -270,8 +270,8 @@ public class EvaluationServiceTest {
 	return iaViewRepositoryMock;
     }
 
-    private LegacySystemService getLegacySystemServiceMock() {
-	LegacySystemService legacySystemServiceMock = Mockito.mock(LegacySystemService.class);
+    private LegacySystemRepository getLegacySystemServiceMock() {
+	LegacySystemRepository legacySystemServiceMock = Mockito.mock(LegacySystemRepository.class);
 	HashMap<String, String[]> mapOfLegacyDocuments = new HashMap<String, String[]>();
 	mapOfLegacyDocuments.put("C465432", new String[] { "Air Force", "Medals" });
 	Mockito.when(legacySystemServiceMock.findLegacyDocumentsByCategory(Mockito.anyString(), Mockito.anyInt()))

@@ -1,11 +1,12 @@
 package gov.tna.discovery.taxonomy.common.repository.lucene;
 
+import gov.tna.discovery.taxonomy.common.domain.repository.TrainingDocument;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.Category;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
-import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
+import gov.tna.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -23,10 +24,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-@Component
+@Repository
 @ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
 public class TrainingSetRepository {
 

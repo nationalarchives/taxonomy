@@ -1,21 +1,21 @@
 package gov.tna.discovery.taxonomy.common.service.impl;
 
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.Category;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.CategoryEvaluationResult;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.EvaluationReport;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.TestDocument;
+import gov.tna.discovery.taxonomy.common.domain.service.CategorisationResult;
 import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.mapper.TaxonomyMapper;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetViewFields;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.CategoryEvaluationResult;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.EvaluationReport;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.TestDocument;
+import gov.tna.discovery.taxonomy.common.repository.legacy.LegacySystemRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.EvaluationReportRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TestDocumentRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.EvaluationService;
-import gov.tna.discovery.taxonomy.common.service.LegacySystemService;
-import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,7 +51,7 @@ public class EvaluationServiceImpl implements EvaluationService {
     private EvaluationReportRepository evaluationReportRepository;
 
     @Autowired
-    private LegacySystemService legacySystemService;
+    private LegacySystemRepository legacySystemService;
 
     @Autowired
     private CategoriserService categoriserService;
@@ -213,7 +213,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 	mapOfOccurencesPerCat.put(category, (existingCounter != null) ? (existingCounter + 1) : 1);
     }
 
-    public void setLegacySystemService(LegacySystemService legacySystemService) {
+    public void setLegacySystemService(LegacySystemRepository legacySystemService) {
 	this.legacySystemService = legacySystemService;
     }
 

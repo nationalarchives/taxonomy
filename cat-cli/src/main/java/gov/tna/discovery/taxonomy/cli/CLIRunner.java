@@ -1,10 +1,7 @@
 package gov.tna.discovery.taxonomy.cli;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.Category;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.CategoryEvaluationResult;
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.EvaluationReport;
-import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
-import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.CategoryEvaluationResult;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.EvaluationReport;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.EvaluationService;
 import gov.tna.discovery.taxonomy.common.service.TrainingSetService;
@@ -80,12 +77,6 @@ public class CLIRunner implements CommandLineRunner {
 
     @Autowired
     EvaluationService evaluationService;
-
-    @Autowired
-    CategoryRepository categoryRepository;
-
-    @Autowired
-    IAViewRepository iaViewRepository;
 
     public void run(String... args) throws IOException, ParseException, org.apache.commons.cli.ParseException {
 
@@ -315,8 +306,7 @@ public class CLIRunner implements CommandLineRunner {
 	if (StringUtils.isEmpty(categoryCiaid)) {
 	    trainingSetService.createTrainingSet(null, fixedLimitSize);
 	} else {
-	    Category category = categoryRepository.findByCiaid(categoryCiaid);
-	    trainingSetService.updateTrainingSetForCategory(category, null, fixedLimitSize);
+	    trainingSetService.updateTrainingSetForCategory(categoryCiaid, null, fixedLimitSize);
 	}
     }
 

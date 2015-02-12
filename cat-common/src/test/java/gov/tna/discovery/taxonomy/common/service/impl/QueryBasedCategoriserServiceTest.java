@@ -3,9 +3,9 @@ package gov.tna.discovery.taxonomy.common.service.impl;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import gov.tna.discovery.taxonomy.common.config.ServiceConfigurationTest;
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.domain.service.CategorisationResult;
 import gov.tna.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
-import gov.tna.discovery.taxonomy.common.service.domain.CategorisationResult;
 
 import java.io.IOException;
 import java.util.List;

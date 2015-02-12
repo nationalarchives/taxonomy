@@ -1,6 +1,6 @@
 package gov.tna.discovery.taxonomy.common.service;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.mongo.EvaluationReport;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.EvaluationReport;
 
 /**
  * Service dedicated to the evaluation of the current categorisation system

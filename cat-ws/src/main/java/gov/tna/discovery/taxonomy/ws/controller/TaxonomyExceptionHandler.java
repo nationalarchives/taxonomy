@@ -1,8 +1,8 @@
 package gov.tna.discovery.taxonomy.ws.controller;
 
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyErrorType;
-import gov.tna.discovery.taxonomy.common.service.exception.TaxonomyException;
-import gov.tna.discovery.taxonomy.ws.domain.TaxonomyErrorResponse;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
+import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
+import gov.tna.discovery.taxonomy.ws.model.TaxonomyErrorResponse;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.slf4j.Logger;

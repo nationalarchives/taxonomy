@@ -3,7 +3,7 @@ package gov.tna.discovery.taxonomy.common.repository.mongo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import gov.tna.discovery.taxonomy.common.repository.domain.TrainingDocument;
+import gov.tna.discovery.taxonomy.common.domain.repository.TrainingDocument;
 
 import java.io.IOException;
 

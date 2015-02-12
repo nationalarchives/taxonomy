@@ -1,6 +1,6 @@
 package gov.tna.discovery.taxonomy.common.aop;
 
-import gov.tna.discovery.taxonomy.common.service.TaxonomyHelperTools;
+import gov.tna.discovery.taxonomy.common.service.tools.TaxonomyHelperTools;
 
 import java.util.Arrays;
 

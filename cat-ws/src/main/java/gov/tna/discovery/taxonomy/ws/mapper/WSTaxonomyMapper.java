@@ -1,7 +1,7 @@
 package gov.tna.discovery.taxonomy.ws.mapper;
 
-import gov.tna.discovery.taxonomy.common.repository.domain.lucene.InformationAssetView;
-import gov.tna.discovery.taxonomy.ws.domain.TestCategoriseSingleRequest;
+import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.ws.model.TestCategoriseSingleRequest;
 
 public class WSTaxonomyMapper {
 
