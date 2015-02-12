@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -78,6 +79,9 @@ public class CLIRunner implements CommandLineRunner {
 
     @Autowired
     EvaluationService evaluationService;
+
+    @Autowired
+    ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     public void run(String... args) throws IOException, ParseException, org.apache.commons.cli.ParseException {
 
@@ -196,6 +200,10 @@ public class CLIRunner implements CommandLineRunner {
 	}
 
 	logger.info("Stop cat CLI Runner.");
+
+	// FIXME why threadPoolTaskExecutor must be manually destroyed to
+	// shutdown the cli application?
+	threadPoolTaskExecutor.destroy();
     }
 
     private String aggregateCommentsWithArguments(String userComments, String... args) {
