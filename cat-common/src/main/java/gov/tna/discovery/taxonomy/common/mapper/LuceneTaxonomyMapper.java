@@ -32,6 +32,7 @@ public class LuceneTaxonomyMapper {
 	assetView.setPERSON_FULLNAME(document.getValues(InformationAssetViewFields.PERSON_FULLNAME.toString()));
 	assetView.setPLACE_NAME(document.getValues(InformationAssetViewFields.PLACE_NAME.toString()));
 	assetView.setSUBJECTS(document.getValues(InformationAssetViewFields.SUBJECTS.toString()));
+	assetView.setSERIES(document.get(InformationAssetViewFields.SERIES.toString()));
 	return assetView;
     }
 

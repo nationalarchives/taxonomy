@@ -33,6 +33,8 @@ public class InformationAssetView {
     @JsonProperty(value = "categories")
     private String[] CATEGORIES;
     private Float score;
+    @JsonProperty(value = "series")
+    private String SERIES;
 
     public String getDOCREFERENCE() {
 	return DOCREFERENCE;
@@ -128,6 +130,14 @@ public class InformationAssetView {
 
     public void setScore(Float score) {
 	this.score = score;
+    }
+
+    public String getSERIES() {
+	return SERIES;
+    }
+
+    public void setSERIES(String sERIES) {
+	SERIES = sERIES;
     }
 
     @Override
