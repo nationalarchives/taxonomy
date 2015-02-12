@@ -46,6 +46,7 @@ public class CLIRunner implements CommandLineRunner {
     private static final String ACTION_TEST_CATEGORISE_ALL = "CATtestCategoriseAll";
 
     private static final String ACTION_TEST_CATEGORISE_SINGLE = "CATtestCategoriseSingle";
+    private static final String ACTION_CATEGORISE_SINGLE = "CATcategoriseSingle";
     private static final String OPTION_DOC_REF = "CATDocRef";
 
     private static final String ACTION_CREATE_EVALUATION_DATA_SET = "EVALcreateEvalDataSet";
@@ -82,7 +83,7 @@ public class CLIRunner implements CommandLineRunner {
 
 	logger.info("Start cat CLI Runner.");
 	logger.info("mongo host: {}", host);
-	logger.info("mongo solr Index path: {}", iaviewCollectionPath);
+	logger.info("mongo Index path: {}", iaviewCollectionPath);
 
 	final String[] cliArgs = filterInputToGetOnlyCliArguments(args);
 
@@ -134,7 +135,17 @@ public class CLIRunner implements CommandLineRunner {
 
 	if (cmd.hasOption(ACTION_TEST_CATEGORISE_SINGLE)) {
 	    String docRef = cmd.getOptionValue(OPTION_DOC_REF);
-	    testCategoriseSingle(docRef);
+	    if (StringUtils.isEmpty(docRef)) {
+		docRef = "C1253";
+	    }
+	    categoriser.testCategoriseSingle(docRef);
+	}
+	if (cmd.hasOption(ACTION_CATEGORISE_SINGLE)) {
+	    String docRef = cmd.getOptionValue(OPTION_DOC_REF);
+	    if (StringUtils.isEmpty(docRef)) {
+		docRef = "C1253";
+	    }
+	    categoriser.categoriseSingle(docRef);
 	}
 
 	if (cmd.hasOption(ACTION_TEST_CATEGORISE_ALL)) {
@@ -259,11 +270,12 @@ public class CLIRunner implements CommandLineRunner {
 
 	options.addOption(ACTION_INDEX, false, "index training set from mongo collection");
 
-	options.addOption(ACTION_TEST_CATEGORISE_SINGLE, false, "test the categorisation of one IAView Solr element");
-	options.addOption(OPTION_DOC_REF, true, "on -" + ACTION_TEST_CATEGORISE_SINGLE
-		+ ": doc reference of the element to work on");
+	options.addOption(ACTION_TEST_CATEGORISE_SINGLE, false, "test the categorisation of one IAView element");
+	options.addOption(ACTION_CATEGORISE_SINGLE, false, "categorise one IAView element and save it into mongo");
+	options.addOption(OPTION_DOC_REF, true, "on -" + ACTION_TEST_CATEGORISE_SINGLE + " and -"
+		+ ACTION_CATEGORISE_SINGLE + ": doc reference of the element to work on");
 
-	options.addOption(ACTION_TEST_CATEGORISE_ALL, false, "test the categorisation of the whole IAView Solr index");
+	options.addOption(ACTION_TEST_CATEGORISE_ALL, false, "test the categorisation of the whole IAView index");
 
 	options.addOption(ACTION_CREATE_EVALUATION_DATA_SET, false, "Create the evaluation data set from Legacy System");
 	options.addOption(OPTION_MINIMUM_SIZE_PER_CATEGORY, true, "on -" + ACTION_CREATE_EVALUATION_DATA_SET
@@ -292,14 +304,6 @@ public class CLIRunner implements CommandLineRunner {
 
 	options.addOption(ACTION_HELP, false, "print help");
 	return options;
-    }
-
-    private void testCategoriseSingle(String docRef) {
-	if (StringUtils.isEmpty(docRef)) {
-	    docRef = "C1253";
-	}
-
-	categoriser.testCategoriseSingle(docRef);
     }
 
     private void updateTrainingSet(String categoryCiaid, Integer fixedLimitSize) throws IOException, ParseException {

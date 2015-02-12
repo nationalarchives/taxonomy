@@ -27,9 +27,25 @@ public interface CategoriserService<T extends CategorisationResult> {
     /**
      * Preview the categorisation of a document
      * 
-     * @param catDocRef
+     * @param docReference
      * @return {@link CategorisationResult}
      */
-    public List<T> testCategoriseSingle(String catDocRef);
+    public List<T> testCategoriseSingle(String docReference);
+
+    /**
+     * Categorise a document and save the found categories
+     * 
+     * @param iaView
+     * @return
+     */
+    public List<T> categoriseSingle(InformationAssetView iaView);
+
+    /**
+     * Categorise a document and save the found categories
+     * 
+     * @param docReference
+     * @return
+     */
+    public List<T> categoriseSingle(String docReference);
 
 }

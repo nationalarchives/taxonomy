@@ -309,4 +309,16 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 	// TODO Auto-generated method stub
 	return null;
     }
+
+    @Override
+    public List<TSetBasedCategorisationResult> categoriseSingle(String docReference) {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public List<TSetBasedCategorisationResult> categoriseSingle(InformationAssetView iaView) {
+	// TODO Auto-generated method stub
+	return null;
+    }
 }

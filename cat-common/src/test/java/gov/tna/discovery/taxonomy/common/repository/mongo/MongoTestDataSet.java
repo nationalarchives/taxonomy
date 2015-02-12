@@ -3,6 +3,7 @@ package gov.tna.discovery.taxonomy.common.repository.mongo;
 import gov.tna.discovery.taxonomy.common.domain.repository.TrainingDocument;
 import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.domain.repository.mongo.Category;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.MongoInformationAssetView;
 import gov.tna.discovery.taxonomy.common.domain.repository.mongo.TestDocument;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import gov.tna.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
@@ -101,6 +102,8 @@ public class MongoTestDataSet {
 	mongoTemplate.dropCollection(Category.class);
 	mongoTemplate.dropCollection(TrainingDocument.class);
 	mongoTemplate.dropCollection(TestDocument.class);
+	mongoTemplate.dropCollection(MongoInformationAssetView.class);
+	mongoTemplate.dropCollection(IAViewUpdateRepository.class);
     }
 
     public static InformationAssetView getIAViewSample() {

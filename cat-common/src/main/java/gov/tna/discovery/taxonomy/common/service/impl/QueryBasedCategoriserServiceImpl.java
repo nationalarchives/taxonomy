@@ -4,19 +4,26 @@ import gov.tna.discovery.taxonomy.common.aop.annotation.Loggable;
 import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import gov.tna.discovery.taxonomy.common.domain.repository.mongo.Category;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.MongoInformationAssetView;
 import gov.tna.discovery.taxonomy.common.domain.service.CategorisationResult;
 import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import gov.tna.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import gov.tna.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
+import gov.tna.discovery.taxonomy.common.mapper.TaxonomyMapper;
 import gov.tna.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import gov.tna.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 import gov.tna.discovery.taxonomy.common.repository.mongo.CategoryRepository;
+import gov.tna.discovery.taxonomy.common.repository.mongo.IAViewUpdateRepository;
+import gov.tna.discovery.taxonomy.common.repository.mongo.InformationAssetViewMongoRepository;
 import gov.tna.discovery.taxonomy.common.service.CategoriserService;
 import gov.tna.discovery.taxonomy.common.service.async.AsyncQueryBasedTaskManager;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -65,6 +72,12 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     private IAViewRepository iaViewRepository;
 
     @Autowired
+    private InformationAssetViewMongoRepository iaViewMongoRepository;
+
+    @Autowired
+    private IAViewUpdateRepository iaViewUpdateRepository;
+
+    @Autowired
     private SearcherManager iaviewSearcherManager;
 
     @Autowired
@@ -75,6 +88,13 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	// TODO Auto-generated method stub
 	// iaViewRepository.performSearch(queryString, category.getSc(), 1, 0);
 
+    }
+
+    @Override
+    @Loggable
+    public List<CategorisationResult> testCategoriseSingle(String docReference) {
+	return testCategoriseSingle(LuceneTaxonomyMapper.getIAViewFromLuceneDocument(iaViewRepository
+		.searchDocByDocReference(docReference)));
     }
 
     @Override
@@ -90,6 +110,28 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
 	sortCategorisationResultsByScoreDesc(listOfCategoryResults);
 	return listOfCategoryResults;
+    }
+
+    @Override
+    public List<CategorisationResult> categoriseSingle(String docReference) {
+	return categoriseSingle(LuceneTaxonomyMapper.getIAViewFromLuceneDocument(iaViewRepository
+		.searchDocByDocReference(docReference)));
+    }
+
+    @Override
+    public List<CategorisationResult> categoriseSingle(InformationAssetView iaView) {
+	List<CategorisationResult> listOfCategorisationResults = testCategoriseSingle(iaView);
+
+	List<String> categories = new ArrayList<String>();
+	for (CategorisationResult categorisationResult : listOfCategorisationResults) {
+	    categories.add(categorisationResult.getName());
+	}
+	iaView.setCATEGORIES(categories.toArray(new String[] {}));
+
+	long timestamp = Calendar.getInstance().getTime().getTime();
+	iaViewMongoRepository.save(TaxonomyMapper.getMongoIAViewFromLuceneIAView(iaView, timestamp));
+	iaViewUpdateRepository.save(TaxonomyMapper.getIAViewUpdateFromLuceneIAView(iaView, timestamp));
+	return listOfCategorisationResults;
     }
 
     // TODO JCT manage timeout on the search to lucene and NOT on the task:
@@ -158,14 +200,6 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	    LuceneHelperTools.releaseSearcherManagerQuietly(searcherManager, searcher);
 	}
 	return listOfRelevantCategories;
-
-    }
-
-    @Override
-    @Loggable
-    public List<CategorisationResult> testCategoriseSingle(String docReference) {
-	return testCategoriseSingle(LuceneTaxonomyMapper.getIAViewFromLuceneDocument(iaViewRepository
-		.searchDocByDocReference(docReference)));
 
     }
 
@@ -246,6 +280,24 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 		    Field.Store.NO));
 	}
 	return doc;
+    }
+
+    /**
+     * set repository for testing purpose
+     * 
+     * @param iaViewMongoRepository
+     */
+    public void setIaViewMongoRepository(InformationAssetViewMongoRepository iaViewMongoRepository) {
+	this.iaViewMongoRepository = iaViewMongoRepository;
+    }
+
+    /**
+     * set repository for testing purpose
+     * 
+     * @param iaViewUpdateRepository
+     */
+    public void setIaViewUpdateRepository(IAViewUpdateRepository iaViewUpdateRepository) {
+	this.iaViewUpdateRepository = iaViewUpdateRepository;
     }
 
 }

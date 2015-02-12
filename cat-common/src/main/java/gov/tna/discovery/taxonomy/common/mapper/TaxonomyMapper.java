@@ -1,6 +1,8 @@
 package gov.tna.discovery.taxonomy.common.mapper;
 
 import gov.tna.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
+import gov.tna.discovery.taxonomy.common.domain.repository.mongo.MongoInformationAssetView;
 import gov.tna.discovery.taxonomy.common.domain.repository.mongo.TestDocument;
 
 public class TaxonomyMapper {
@@ -30,6 +32,25 @@ public class TaxonomyMapper {
 	iaView.setPLACE_NAME(testDocument.getPlaceName());
 	iaView.setSUBJECTS(testDocument.getSubjects());
 	return iaView;
+    }
+
+    public static MongoInformationAssetView getMongoIAViewFromLuceneIAView(
+	    InformationAssetView iaViewFromLuceneDocument, long timestamp) {
+	MongoInformationAssetView mongoIaView = new MongoInformationAssetView(timestamp);
+	mongoIaView.setDocReference(iaViewFromLuceneDocument.getDOCREFERENCE());
+	mongoIaView.setCatDocRef(iaViewFromLuceneDocument.getCATDOCREF());
+	mongoIaView.setCategories(iaViewFromLuceneDocument.getCATEGORIES());
+	mongoIaView.setSeries(iaViewFromLuceneDocument.getSERIES());
+	return mongoIaView;
+    }
+
+    public static IAViewUpdate getIAViewUpdateFromLuceneIAView(InformationAssetView iaViewFromLuceneDocument,
+	    long timestamp) {
+	IAViewUpdate iaViewUpdate = new IAViewUpdate(timestamp);
+	iaViewUpdate.setDocReference(iaViewFromLuceneDocument.getDOCREFERENCE());
+	iaViewUpdate.setCatDocRef(iaViewFromLuceneDocument.getCATDOCREF());
+	iaViewUpdate.setCategories(iaViewFromLuceneDocument.getCATEGORIES());
+	return iaViewUpdate;
     }
 
 }
