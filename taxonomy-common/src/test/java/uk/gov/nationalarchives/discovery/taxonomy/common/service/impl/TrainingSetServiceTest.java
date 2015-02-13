@@ -104,7 +104,6 @@ public class TrainingSetServiceTest {
     }
 
     @Test
-    @Ignore
     public void testUpdateCategoriesScoresAndTrainingSet() throws IOException {
 	mongoTestDataSet.initCategoryCollection();
 	for (Category category : categoryRepository.findAll()) {

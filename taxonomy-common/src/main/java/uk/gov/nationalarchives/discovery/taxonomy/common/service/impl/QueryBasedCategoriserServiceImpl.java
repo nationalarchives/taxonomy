@@ -4,8 +4,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.aop.annotation.Loggable
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.MongoInformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
@@ -20,7 +18,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserServ
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncQueryBasedTaskManager;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -93,15 +90,12 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     @Override
     @Loggable
     public List<CategorisationResult> testCategoriseSingle(String docReference) {
+	logger.info(".testCategoriseSingle: docreference:{} ", docReference);
 	return testCategoriseSingle(LuceneTaxonomyMapper.getIAViewFromLuceneDocument(iaViewRepository
 		.searchDocByDocReference(docReference)));
     }
 
-    @Override
-    @Loggable
     public List<CategorisationResult> testCategoriseSingle(InformationAssetView iaView) {
-	logger.info(".testCategoriseSingle: catdocref:{}, docreference:{} ", iaView.getCATDOCREF(),
-		iaView.getDOCREFERENCE());
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
 
 	List<Category> listOfRelevantCategories = findRelevantCategories(iaView);
@@ -113,12 +107,13 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     }
 
     @Override
+    @Loggable
     public List<CategorisationResult> categoriseSingle(String docReference) {
+	logger.info(".categoriseSingle: docreference:{} ", docReference);
 	return categoriseSingle(LuceneTaxonomyMapper.getIAViewFromLuceneDocument(iaViewRepository
 		.searchDocByDocReference(docReference)));
     }
 
-    @Override
     public List<CategorisationResult> categoriseSingle(InformationAssetView iaView) {
 	List<CategorisationResult> listOfCategorisationResults = testCategoriseSingle(iaView);
 

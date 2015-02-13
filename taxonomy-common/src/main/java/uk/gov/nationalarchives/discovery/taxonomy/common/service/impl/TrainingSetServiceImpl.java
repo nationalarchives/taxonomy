@@ -70,8 +70,9 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     /*
      * (non-Javadoc)
      * 
-     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.TrainingSetService#
-     * updateTrainingSetForCategory (java.lang.String), java.lang.Float)
+     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.
+     * TrainingSetService# updateTrainingSetForCategory (java.lang.String),
+     * java.lang.Float)
      */
     @Override
     public void updateTrainingSetForCategory(String categoryCiaid, Integer fixedLimitScore, Integer fixedLimitSize) {
@@ -82,9 +83,10 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     /*
      * (non-Javadoc)
      * 
-     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.TrainingSetService#
-     * updateTrainingSetForCategory
-     * (uk.gov.nationalarchives.discovery.taxonomy.common.repository.domain.mongo.Category,
+     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.
+     * TrainingSetService# updateTrainingSetForCategory
+     * (uk.gov.nationalarchives.
+     * discovery.taxonomy.common.repository.domain.mongo.Category,
      * java.lang.Float)
      */
     @Override
@@ -141,8 +143,8 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     /*
      * (non-Javadoc)
      * 
-     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.TrainingSetService#
-     * createTrainingSet (java.lang.Float)
+     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.
+     * TrainingSetService# createTrainingSet (java.lang.Float)
      */
     @Override
     public void createTrainingSet(Float fixedLimitScore, Integer fixedLimitSize) throws IOException, ParseException {
@@ -170,9 +172,10 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     /*
      * (non-Javadoc)
      * 
-     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.TrainingSetService#
-     * deleteAndUpdateTraingSetIndexForCategory
-     * (uk.gov.nationalarchives.discovery.taxonomy.common.repository.domain.mongo.Category)
+     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.
+     * TrainingSetService# deleteAndUpdateTraingSetIndexForCategory
+     * (uk.gov.nationalarchives
+     * .discovery.taxonomy.common.repository.domain.mongo.Category)
      */
     @Override
     public void deleteAndUpdateTraingSetIndexForCategory(Category category) {
@@ -201,8 +204,8 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     /*
      * (non-Javadoc)
      * 
-     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.TrainingSetService#
-     * indexTrainingSet ()
+     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.
+     * TrainingSetService# indexTrainingSet ()
      */
     @Override
     public void indexTrainingSet() {
@@ -258,7 +261,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	    Integer numberOfResults = searchResponse.getNumberOfResults();
 
 	    if (numberOfResults == 0) {
-		logger.error(".updateCategoriesScores: category '{}' has no result", category.getTtl());
+		logger.warn(".updateCategoriesScores: category '{}' has no result", category.getTtl());
 		category.setSc(0d);
 		categoryRepository.save(category);
 		continue;

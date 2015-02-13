@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.jms.listener.SimpleMessageListenerContainer;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 
 import uk.gov.nationalarchives.discovery.taxonomy.batch.consumer.CategoriseDocMessageConsumer;
@@ -28,12 +28,15 @@ public class BatchApplication {
 
     @Bean
     MessageListenerAdapter adapter(CategoriseDocMessageConsumer categoriseDocMessageConsumer) {
-	return new MessageListenerAdapter(categoriseDocMessageConsumer);
+	MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(categoriseDocMessageConsumer);
+	messageListenerAdapter.setMessageConverter(null);
+	return messageListenerAdapter;
     }
 
     @Bean
-    SimpleMessageListenerContainer container(MessageListenerAdapter messageListener, ConnectionFactory connectionFactory) {
-	SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+    DefaultMessageListenerContainer container(MessageListenerAdapter messageListener,
+	    ConnectionFactory connectionFactory) {
+	DefaultMessageListenerContainer container = new DefaultMessageListenerContainer();
 	container.setMessageListener(messageListener);
 	container.setConnectionFactory(connectionFactory);
 	container.setDestinationName(categoriseDocumentsQueueName);

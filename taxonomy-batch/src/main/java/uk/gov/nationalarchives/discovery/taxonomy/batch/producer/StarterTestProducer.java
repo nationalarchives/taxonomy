@@ -19,8 +19,9 @@ import org.springframework.stereotype.Component;
  * @author jcharlet
  *
  */
-@Component
-public class Producer implements CommandLineRunner {
+// TODO to remove once batch is finished
+// @Component
+public class StarterTestProducer implements CommandLineRunner {
 
     @Value("${spring.activemq.categorise-doc-queue-name}")
     String queueName;
@@ -28,12 +29,12 @@ public class Producer implements CommandLineRunner {
     @Autowired
     ConfigurableApplicationContext context;
 
-    public Producer(String queueName) {
+    public StarterTestProducer(String queueName) {
 	super();
 	this.queueName = queueName;
     }
 
-    public Producer() {
+    public StarterTestProducer() {
 	super();
     }
 
@@ -42,7 +43,7 @@ public class Producer implements CommandLineRunner {
 	MessageCreator messageCreator = new MessageCreator() {
 	    @Override
 	    public Message createMessage(Session session) throws JMSException {
-		return session.createTextMessage("ping!");
+		return session.createTextMessage("C14906;14966");
 	    }
 	};
 	JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);

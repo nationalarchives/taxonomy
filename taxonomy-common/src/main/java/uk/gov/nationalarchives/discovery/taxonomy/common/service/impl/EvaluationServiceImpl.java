@@ -1,6 +1,5 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryEvaluationResult;
@@ -8,7 +7,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.TestDocument;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
 import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
-import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.TaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.legacy.LegacySystemRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;
@@ -59,8 +57,8 @@ public class EvaluationServiceImpl implements EvaluationService {
     /*
      * (non-Javadoc)
      * 
-     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.EvaluationService#
-     * createEvaluationTestDataset()
+     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.
+     * EvaluationService# createEvaluationTestDataset()
      */
     @Override
     public void createEvaluationTestDataset(Integer pMinNbOfElementsPerCat) {
@@ -121,8 +119,8 @@ public class EvaluationServiceImpl implements EvaluationService {
     /*
      * (non-Javadoc)
      * 
-     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.EvaluationService#
-     * evaluateCategorisation()
+     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.
+     * EvaluationService# evaluateCategorisation()
      */
     @Override
     public void runCategorisationOnTestDataSet(Boolean matchNbOfReturnedCategories) {
@@ -130,8 +128,8 @@ public class EvaluationServiceImpl implements EvaluationService {
 	logger.info(".runCategorisationOnTestDataSet: processing {} documents",
 		String.valueOf(testDocumentRepository.count()));
 	for (TestDocument testDocument : testDocumentRepository.findAll()) {
-	    InformationAssetView iaView = TaxonomyMapper.getIAViewFromTestDocument(testDocument);
-	    List<CategorisationResult> categorisationResults = categoriserService.testCategoriseSingle(iaView);
+	    List<CategorisationResult> categorisationResults = categoriserService.testCategoriseSingle(testDocument
+		    .getDocReference());
 	    List<String> categories = new ArrayList<String>();
 	    for (int i = 0; i < categorisationResults.size(); i++) {
 		if (matchNbOfReturnedCategories && i >= testDocument.getLegacyCategories().length) {
@@ -151,8 +149,8 @@ public class EvaluationServiceImpl implements EvaluationService {
     /*
      * (non-Javadoc)
      * 
-     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.EvaluationService#
-     * getEvaluationReport()
+     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.
+     * EvaluationService# getEvaluationReport()
      */
     @Override
     public EvaluationReport getEvaluationReport(String comments) {

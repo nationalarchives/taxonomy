@@ -246,7 +246,7 @@ public class EvaluationServiceTest {
 	categorisationResults.addAll(Arrays.asList(new TSetBasedCategorisationResult("Labour", 1.12f, 10),
 		new TSetBasedCategorisationResult("Forestry", 1.02f, 15), new TSetBasedCategorisationResult("Forestry",
 			0.12f, 2)));
-	Mockito.when(categoriserService.testCategoriseSingle(Mockito.any(InformationAssetView.class))).thenReturn(
+	Mockito.when(categoriserService.testCategoriseSingle(Mockito.any(String.class))).thenReturn(
 		categorisationResults);
 
 	return categoriserService;

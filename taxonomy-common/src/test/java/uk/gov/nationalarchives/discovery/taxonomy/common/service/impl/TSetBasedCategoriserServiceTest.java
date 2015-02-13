@@ -2,15 +2,6 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import uk.gov.nationalarchives.discovery.taxonomy.common.config.ServiceConfigurationTest;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.TrainingDocument;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.TSetBasedCategorisationResult;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.LuceneTestTrainingDataSet;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.TrainingSetRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -30,7 +21,15 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
+import uk.gov.nationalarchives.discovery.taxonomy.common.config.ServiceConfigurationTest;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.TrainingDocument;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.TSetBasedCategorisationResult;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.LuceneTestTrainingDataSet;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.TrainingSetRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
+
 @ActiveProfiles("tsetBased")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ServiceConfigurationTest.class)
@@ -39,7 +38,7 @@ public class TSetBasedCategoriserServiceTest {
     // LoggerFactory.getLogger(CategoriserTest.class);
 
     @Autowired
-    CategoriserService categoriser;
+    TSetBasedCategoriserServiceImpl categoriser;
 
     @Autowired
     TrainingDocumentRepository trainingDocumentRepository;
@@ -102,7 +101,7 @@ public class TSetBasedCategoriserServiceTest {
 	assertThat(categorisationResults, is(not(empty())));
     }
 
-    // FIXME to fix
+    // FIXME must take into account latest adds to index
     @Test
     @Ignore
     public void testCategorisationTakesIntoAccountLatestAddsToIndex() throws IOException {

@@ -5,6 +5,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucen
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.TSetBasedCategorisationResult;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
+import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
@@ -226,14 +227,6 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 	return sortedResults;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.Categoriser#
-     * testCategoriseSingle (gov
-     * .tna.discovery.taxonomy.repository.domain.lucene.InformationAssetView)
-     */
-    @Override
     public List<TSetBasedCategorisationResult> testCategoriseSingle(InformationAssetView iaView) {
 
 	logger.info(".testCategoriseSingle: catdocref:{}, docreference:{} ", iaView.getCATDOCREF(),
@@ -264,8 +257,9 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     /*
      * (non-Javadoc)
      * 
-     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.Categoriser#
-     * categoriseIAViewSolrIndex ()
+     * @see
+     * uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.Categoriser
+     * # categoriseIAViewSolrIndex ()
      */
     @Override
     public void testCategoriseIAViewSolrIndex() throws IOException {
@@ -305,9 +299,10 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     }
 
     @Override
-    public List<TSetBasedCategorisationResult> testCategoriseSingle(String catDocRef) {
-	// TODO Auto-generated method stub
-	return null;
+    public List<TSetBasedCategorisationResult> testCategoriseSingle(String docReference) {
+	logger.info(".testCategoriseSingle: docreference:{} ", docReference);
+	return testCategoriseSingle(LuceneTaxonomyMapper.getIAViewFromLuceneDocument(iaViewRepository
+		.searchDocByDocReference(docReference)));
     }
 
     @Override
@@ -316,7 +311,6 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 	return null;
     }
 
-    @Override
     public List<TSetBasedCategorisationResult> categoriseSingle(InformationAssetView iaView) {
 	// TODO Auto-generated method stub
 	return null;

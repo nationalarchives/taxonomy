@@ -8,7 +8,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exceptio
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.TrainingSetService;
-import uk.gov.nationalarchives.discovery.taxonomy.ws.mapper.WSTaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.ws.model.PublishRequest;
 import uk.gov.nationalarchives.discovery.taxonomy.ws.model.SearchIAViewRequest;
 import uk.gov.nationalarchives.discovery.taxonomy.ws.model.TestCategoriseSingleRequest;
@@ -92,17 +91,13 @@ public class TaxonomyController {
     @ResponseBody
     List<CategorisationResult> testCategoriseSingle(@RequestBody TestCategoriseSingleRequest testCategoriseSingleRequest) {
 	logger.info("/testCategoriseSingle > {}", testCategoriseSingleRequest.toString());
-	if (StringUtils.isEmpty(testCategoriseSingleRequest.getDescription())) {
-	    throw new TaxonomyException(TaxonomyErrorType.INVALID_PARAMETER,
-		    "DESCRIPTION should be provided and not empty");
-	}
 	if (StringUtils.isEmpty(testCategoriseSingleRequest.getDocReference())) {
 	    throw new TaxonomyException(TaxonomyErrorType.INVALID_PARAMETER,
 		    "DOCREFERENCE should be provided and not empty");
 	}
-	InformationAssetView iaView = WSTaxonomyMapper.getIAviewFromRequest(testCategoriseSingleRequest);
 
-	List<CategorisationResult> listOfCatRelevancies = categoriser.testCategoriseSingle(iaView);
+	List<CategorisationResult> listOfCatRelevancies = categoriser.testCategoriseSingle(testCategoriseSingleRequest
+		.getDocReference());
 
 	logger.info("/testCategoriseSingle < {} categories", listOfCatRelevancies.size());
 
