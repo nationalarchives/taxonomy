@@ -81,13 +81,6 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     private AsyncQueryBasedTaskManager asyncTaskManager;
 
     @Override
-    public void testCategoriseIAViewSolrIndex() throws IOException {
-	// TODO Auto-generated method stub
-	// iaViewRepository.performSearch(queryString, category.getSc(), 1, 0);
-
-    }
-
-    @Override
     @Loggable
     public List<CategorisationResult> testCategoriseSingle(String docReference) {
 	logger.info(".testCategoriseSingle: docreference:{} ", docReference);
@@ -129,14 +122,14 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	return listOfCategorisationResults;
     }
 
-    // TODO JCT manage timeout on the search to lucene and NOT on the task:
+    // TODO 4 manage timeout? on the search to lucene and NOT on the task:
     // impossible anyway to interrupt it this way
     private List<CategorisationResult> runCategorisationWithFSDirectory(InformationAssetView iaView,
 	    List<Category> listOfRelevantCategories) {
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
 	List<Future<CategorisationResult>> listOfFutureCategoryResults = new ArrayList<Future<CategorisationResult>>();
 
-	// TODO JCT cache filter on current document
+	// TODO 2 cache filter on current document
 	// Filter filter = new CachingWrapperFilter(new QueryWrapperFilter(new
 	// TermQuery(new Term(
 	// InformationAssetViewFields.DOCREFERENCE.toString(),

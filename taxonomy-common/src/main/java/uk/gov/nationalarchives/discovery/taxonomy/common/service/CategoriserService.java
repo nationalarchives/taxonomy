@@ -8,14 +8,6 @@ import java.util.List;
 public interface CategoriserService<T extends CategorisationResult> {
 
     /**
-     * Categorise the whole IA collection
-     * 
-     * @throws IOException
-     */
-    @Deprecated
-    public void testCategoriseIAViewSolrIndex() throws IOException;
-
-    /**
      * Preview the categorisation of a document
      * 
      * @param docReference

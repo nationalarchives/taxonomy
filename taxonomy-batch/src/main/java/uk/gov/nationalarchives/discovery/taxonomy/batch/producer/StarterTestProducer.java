@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
  * @author jcharlet
  *
  */
-// TODO to remove once batch is finished
+// TODO 5 to remove once batch is finished
 // @Component
 public class StarterTestProducer implements CommandLineRunner {
 

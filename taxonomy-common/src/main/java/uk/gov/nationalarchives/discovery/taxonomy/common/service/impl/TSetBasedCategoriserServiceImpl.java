@@ -104,9 +104,6 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
      * @return
      * @throws IOException
      */
-    // TODO 1 check and update fields that are being retrieved to create
-    // training set, used for MLT (run MLT on title, context desc and desc at
-    // least. returns results by score not from a fixed number)
     public List<TSetBasedCategorisationResult> runMlt(Document document) {
 
 	Map<String, TSetBasedCategorisationResult> result = null;
@@ -254,50 +251,6 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 	return runMlt(doc);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.Categoriser
-     * # categoriseIAViewSolrIndex ()
-     */
-    @Override
-    public void testCategoriseIAViewSolrIndex() throws IOException {
-
-	logger.info("test the categorisation of the whole IAView Solr index");
-	// TODO 1 insert results in a new database/index
-
-	for (int i = 0; i < this.iaViewIndexReader.maxDoc(); i++) {
-	    // TODO 2 Add concurrency: categorize several documents at the same
-	    // time
-	    if (this.iaViewIndexReader.hasDeletions()) {
-		logger.error(".testCategoriseIAViewSolrIndex: the reader provides deleted elements though it should not");
-	    }
-
-	    Document doc = this.iaViewIndexReader.document(i);
-
-	    List<TSetBasedCategorisationResult> result = runMlt(doc);
-
-	    logger.debug("DOCUMENT");
-	    logger.debug("------------------------");
-	    logger.debug("TITLE: {}", doc.get("TITLE"));
-	    logger.debug("IAID: {}", doc.get("CATDOCREF"));
-	    logger.debug("DESCRIPTION: {}", doc.get("DESCRIPTION"));
-	    logger.debug("");
-	    for (TSetBasedCategorisationResult categoryResult : result) {
-		logger.info("CATEGORY: {}, score: {}, number of found documents: {}", categoryResult.getName(),
-			categoryResult.getScore(), categoryResult.getNumberOfFoundDocuments());
-	    }
-	    logger.debug("------------------------");
-
-	    logger.debug("");
-
-	}
-
-	logger.info("test Categorisation finished");
-
-    }
-
     @Override
     public List<TSetBasedCategorisationResult> testCategoriseSingle(String docReference) {
 	logger.info(".testCategoriseSingle: docreference:{} ", docReference);
@@ -307,12 +260,12 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 
     @Override
     public List<TSetBasedCategorisationResult> categoriseSingle(String docReference) {
-	// TODO Auto-generated method stub
+	// TODO TSETBASED Auto-generated method stub
 	return null;
     }
 
     public List<TSetBasedCategorisationResult> categoriseSingle(InformationAssetView iaView) {
-	// TODO Auto-generated method stub
+	// TODO TSETBASED Auto-generated method stub
 	return null;
     }
 }

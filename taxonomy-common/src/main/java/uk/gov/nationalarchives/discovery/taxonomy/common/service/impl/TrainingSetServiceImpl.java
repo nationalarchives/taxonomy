@@ -98,7 +98,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 
 	PaginatedList<InformationAssetView> IAViewResults;
 	try {
-	    // FIXME JCT Iterate instead of taking only
+	    // TODO TSETBASED Iterate instead of taking only
 	    // maxTrainingDocsPerCategory (could be 5000) elements
 	    if (fixedLimitSize != null) {
 		IAViewResults = iaViewRepository.performSearch(category.getQry(), null, fixedLimitSize, 0);
@@ -128,11 +128,6 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 		}
 	    }
 	} catch (TaxonomyException e) {
-	    // TODO 1 several errors occur while creating the training set,
-	    // to investigate
-	    // some queries are not valid: paul takes care of them.
-	    // Some queries have wildcards and lucene doesnt accept them: to
-	    // enable.
 	    logger.error(".updateTrainingSetForCategory< An error occured for category: " + category.toString());
 	    logger.error(".updateTrainingSetForCategory< Error message: " + e.getMessage());
 	    throw e;

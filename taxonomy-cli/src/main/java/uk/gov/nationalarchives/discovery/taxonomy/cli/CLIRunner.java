@@ -44,7 +44,8 @@ public class CLIRunner implements CommandLineRunner {
     private static final String OPTION_MIN_ELEMENTS_PER_CAT = "TSETminElements";
     private static final String OPTION_MAX_ELEMENTS_PER_CAT = "TSETmaxElements";
 
-    private static final String ACTION_TEST_CATEGORISE_ALL = "CATtestCategoriseAll";
+    // private static final String ACTION_TEST_CATEGORISE_ALL =
+    // "CATtestCategoriseAll";
 
     private static final String ACTION_TEST_CATEGORISE_SINGLE = "CATtestCategoriseSingle";
     private static final String ACTION_CATEGORISE_SINGLE = "CATcategoriseSingle";
@@ -71,7 +72,7 @@ public class CLIRunner implements CommandLineRunner {
     @Autowired
     CategoriserService categoriser;
 
-    // FIXME JCT instead of always wiring the TSet service layer, do conditional
+    // TODO 3 instead of always wiring the TSet service layer, do conditional
     // wiring with factories: will allow to remove "loadTSetServiceLayer: true"
     // http://stackoverflow.com/questions/19225115/how-to-do-conditional-auto-wiring-in-spring
     @Autowired
@@ -152,9 +153,9 @@ public class CLIRunner implements CommandLineRunner {
 	    categoriser.categoriseSingle(docRef);
 	}
 
-	if (cmd.hasOption(ACTION_TEST_CATEGORISE_ALL)) {
-	    categoriser.testCategoriseIAViewSolrIndex();
-	}
+	// if (cmd.hasOption(ACTION_TEST_CATEGORISE_ALL)) {
+	// categoriser.testCategoriseIAViewSolrIndex();
+	// }
 
 	/**
 	 * Evaluate Categorisation System
@@ -201,7 +202,7 @@ public class CLIRunner implements CommandLineRunner {
 
 	logger.info("Stop cat CLI Runner.");
 
-	// FIXME why threadPoolTaskExecutor must be manually destroyed to
+	// TODO 4 why threadPoolTaskExecutor must be manually destroyed to
 	// shutdown the cli application?
 	threadPoolTaskExecutor.destroy();
     }
@@ -283,7 +284,8 @@ public class CLIRunner implements CommandLineRunner {
 	options.addOption(OPTION_DOC_REF, true, "on -" + ACTION_TEST_CATEGORISE_SINGLE + " and -"
 		+ ACTION_CATEGORISE_SINGLE + ": doc reference of the element to work on");
 
-	options.addOption(ACTION_TEST_CATEGORISE_ALL, false, "test the categorisation of the whole IAView index");
+	// options.addOption(ACTION_TEST_CATEGORISE_ALL, false,
+	// "test the categorisation of the whole IAView index");
 
 	options.addOption(ACTION_CREATE_EVALUATION_DATA_SET, false, "Create the evaluation data set from Legacy System");
 	options.addOption(OPTION_MINIMUM_SIZE_PER_CATEGORY, true, "on -" + ACTION_CREATE_EVALUATION_DATA_SET

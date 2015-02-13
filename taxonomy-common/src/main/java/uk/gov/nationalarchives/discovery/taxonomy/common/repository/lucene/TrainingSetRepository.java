@@ -50,9 +50,7 @@ public class TrainingSetRepository {
      * @throws IOException
      */
     public void indexTrainingSetDocument(TrainingDocument trainingDocument, IndexWriter writer) throws IOException {
-	// TODO 4 handle exceptions, do not stop the process unless several
-	// errors occur
-	// TODO 1 bulk insert, this is far too slow to do it unitary!
+	// TODO TSETBASED bulk index, this is far too slow to do it unitary!
 
 	try {
 	    if (!StringUtils.isEmpty(trainingDocument.getDescription())) {

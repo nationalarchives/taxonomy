@@ -40,9 +40,6 @@ import org.springframework.stereotype.Repository;
  * @author jcharlet
  *
  */
-// TODO put timeout on search requests on index: related to wildcard
-// TODO create IAVIewService and put in IAViewRepository only simple execution
-// of queries
 @Repository
 public class IAViewRepository {
 
@@ -109,7 +106,7 @@ public class IAViewRepository {
     public TopDocs performSearchWithoutAnyPostProcessing(String queryString, Filter filter, Double mimimumScore,
 	    Integer limit, Integer offset) {
 
-	// FIXME to refresh the indexSearcher after updates on the index, I
+	// FIXME 1 to refresh the indexSearcher after updates on the index, I
 	// might be forced to use the
 	// searcherManager
 	// IndexSearcher isearcher = null;
@@ -212,7 +209,7 @@ public class IAViewRepository {
 	return searchQuery;
     }
 
-    // FIXME pay attention to memory leak
+    // TODO TSETBASED & WS check if there are memory leak
     public Integer getNbOfElementsAboveScore(Double mimimumScore, IndexSearcher isearcher, Query query)
 	    throws IOException {
 

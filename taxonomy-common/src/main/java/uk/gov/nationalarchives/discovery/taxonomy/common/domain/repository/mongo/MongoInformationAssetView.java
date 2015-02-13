@@ -3,7 +3,7 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mong
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-//TODO provide indexes on collection
+//TODO 1 provide indexes on collection
 @Document(collection = "iaViews")
 public class MongoInformationAssetView {
 
