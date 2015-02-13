@@ -48,6 +48,8 @@ lucene:
   iaViewMaxMergeSizeMB: 5.0
   iaViewMaxCachedMB: 60.0
   
+
+spring.activemq.categorise-doc-queue-name: CATEGORISE.DOCUMENTS
 ---
 spring.profiles: local
 
@@ -60,6 +62,10 @@ lucene.index:
   
 logging.config: classpath:log4j.properties
 
+spring.activemq:
+ broker-url: tcp://localhost:61616
+ user***REMOVED***
+ password***REMOVED***
 ---
 spring.profiles: tooling
 
