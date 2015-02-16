@@ -59,7 +59,7 @@ public class LuceneTaxonomyMapper {
 	doc.add(new TextField(InformationAssetViewFields.DESCRIPTION.toString(), trainingDocument.getDescription(),
 		Field.Store.YES));
 
-	doc.add(new StringField(InformationAssetViewFields.CATEGORY.toString(), trainingDocument.getCategory(),
+	doc.add(new StringField(InformationAssetViewFields.CATEGORIES.toString(), trainingDocument.getCategory(),
 		Field.Store.YES));
 
 	if (!StringUtils.isEmpty(trainingDocument.getCatDocRef())) {

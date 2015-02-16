@@ -25,7 +25,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserServ
  * @author jcharlet
  *
  */
-// TODO 1 handling of messages in error?
+// TODO 1 handling of messages in error? log? retry?
 @Component
 public class CategoriseDocMessageConsumer {
 

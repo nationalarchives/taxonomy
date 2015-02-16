@@ -2,7 +2,6 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.service;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface CategoriserService<T extends CategorisationResult> {

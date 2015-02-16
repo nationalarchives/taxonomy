@@ -19,7 +19,6 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.ReaderManager;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;

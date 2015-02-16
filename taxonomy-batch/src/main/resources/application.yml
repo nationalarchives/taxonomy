@@ -42,7 +42,7 @@ lucene:
   maxTrainingDocsPerCategory: 5000
   maxShingleSize: 0
   useStopFilter: false
-  useSynonymFilter: false
+  useSynonymFilter: true
   queryFilterSourceValue: 100
   fieldsToSearch: texttax,CATDOCREF
   iaViewMaxMergeSizeMB: 5.0

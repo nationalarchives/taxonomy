@@ -25,9 +25,8 @@ async:
 
 lucene:
  loadTSetServiceLayer: true
- categoriser:
-  fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
  mlt:
+  fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
   mimimumScoreForMlt: 0
   mimimumGlobalScoreForACategory: 0
   maximumSimilarElements: 2000
@@ -42,11 +41,11 @@ lucene:
   maxTrainingDocsPerCategory: 5000
   maxShingleSize: 0
   useStopFilter: false
-  useSynonymFilter: false
+  useSynonymFilter: true
   queryFilterSourceValue: 100
-  fieldsToSearch: texttax,CATDOCREF
   iaViewMaxMergeSizeMB: 5.0
   iaViewMaxCachedMB: 60.0
+  defaultTaxonomyField: texttax
   
 ---
 spring.profiles: local
