@@ -65,6 +65,7 @@ lucene.index:
   
 logging.config: classpath:log4j.properties
 
+solr.host: http://localhost:8983/solr/collection5/
 ---
 spring.profiles: queryBased
 lucene:
