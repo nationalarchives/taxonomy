@@ -25,7 +25,6 @@ public final class IAViewTextCasPuncAnalyser extends Analyzer {
 
     private final StopFilterFactory stopFilterFactory;
     private final SynonymFilterFactory synonymFilterFactory;
-    private TokenStream result;
     private AnalyzerType analyzerType;
     private int positionIncrementGap;
 
@@ -54,8 +53,9 @@ public final class IAViewTextCasPuncAnalyser extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
-	result = null;
 	Tokenizer source = new WhitespaceTokenizer(reader);
+
+	TokenStream result = null;
 
 	if (stopFilterFactory != null) {
 	    result = this.stopFilterFactory.create(source);
@@ -71,5 +71,10 @@ public final class IAViewTextCasPuncAnalyser extends Analyzer {
 	    }
 	}
 	return new TokenStreamComponents(source, result == null ? source : result);
+    }
+
+    @Override
+    public void close() {
+	super.close();
     }
 }

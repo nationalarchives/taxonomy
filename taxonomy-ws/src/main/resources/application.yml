@@ -69,7 +69,7 @@ spring.data.mongodb:
  host: ***REMOVED***.***REMOVED***
    
 lucene.index:
- iaviewCollectionPath: ***REMOVED***solr/collection4/data/index
+ iaviewCollectionPath: ***REMOVED***solr/collection5/data/index
  trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
 
 logging.config: classpath:log4j-tooling.properties

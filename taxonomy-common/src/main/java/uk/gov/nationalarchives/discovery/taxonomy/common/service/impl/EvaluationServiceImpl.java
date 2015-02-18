@@ -6,6 +6,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.EvaluationReport;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.TestDocument;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.legacy.LegacySystemRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
@@ -128,8 +129,14 @@ public class EvaluationServiceImpl implements EvaluationService {
 	logger.info(".runCategorisationOnTestDataSet: processing {} documents",
 		String.valueOf(testDocumentRepository.count()));
 	for (TestDocument testDocument : testDocumentRepository.findAll()) {
-	    List<CategorisationResult> categorisationResults = categoriserService.testCategoriseSingle(testDocument
-		    .getDocReference());
+	    List<CategorisationResult> categorisationResults;
+	    try {
+		categorisationResults = categoriserService.testCategoriseSingle(testDocument.getDocReference());
+	    } catch (TaxonomyException e) {
+		logger.error(".runCategorisationOnTestDataSet: an error occured while getting categories for doc: {}",
+			testDocument.getDocReference(), e);
+		continue;
+	    }
 	    List<String> categories = new ArrayList<String>();
 	    for (int i = 0; i < categorisationResults.size(); i++) {
 		if (matchNbOfReturnedCategories && i >= testDocument.getLegacyCategories().length) {

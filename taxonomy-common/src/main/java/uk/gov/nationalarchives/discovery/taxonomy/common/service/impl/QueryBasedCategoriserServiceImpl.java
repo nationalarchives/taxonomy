@@ -148,8 +148,8 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 		}
 	    } catch (InterruptedException | ExecutionException e) {
 		logger.error(
-			".runCategorisationWithFSDirectory: an exception occured while retreiving the categorisation result: {}, exception: {}",
-			futureCatResult.toString(), e.getMessage());
+			".runCategorisationWithFSDirectory: an exception occured while retreiving the categorisation result: , exception: {}",
+			futureCatResult.toString(), e);
 	    }
 	}
 

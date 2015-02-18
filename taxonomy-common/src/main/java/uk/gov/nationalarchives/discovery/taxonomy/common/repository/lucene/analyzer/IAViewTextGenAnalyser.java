@@ -29,8 +29,6 @@ public final class IAViewTextGenAnalyser extends Analyzer {
 
     private final Version matchVersion;
 
-    private TokenStream result;
-
     private WordDelimiterFilterFactory wordDelimiterFilterFactory;
     private int positionIncrementGap;
     private final SynonymFilterFactory synonymFilterFactory;
@@ -62,8 +60,9 @@ public final class IAViewTextGenAnalyser extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
-	result = null;
 	Tokenizer source = new ClassicTokenizer(reader);
+
+	TokenStream result = null;
 
 	if (AnalyzerType.QUERY.equals(analyzerType)) {
 	    if (synonymFilterFactory != null) {
@@ -85,7 +84,6 @@ public final class IAViewTextGenAnalyser extends Analyzer {
 
     @Override
     public void close() {
-	LuceneHelperTools.closeTokenStreamQuietly(result);
 	super.close();
     }
 

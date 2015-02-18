@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.AnalyzerType;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 
 /**
  * General search no stemming case insensitive punctuation removed originals
@@ -29,8 +28,6 @@ public final class IAViewTextNoCasNoPuncAnalyser extends Analyzer {
     private static final Logger logger = LoggerFactory.getLogger(IAViewTextNoCasNoPuncAnalyser.class);
 
     private final Version matchVersion;
-
-    private TokenStream result;
 
     private WordDelimiterFilterFactory wordDelimiterFilterFactory;
     private final SynonymFilterFactory synonymFilterFactory;
@@ -63,8 +60,9 @@ public final class IAViewTextNoCasNoPuncAnalyser extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
-	result = null;
 	Tokenizer source = new ClassicTokenizer(reader);
+
+	TokenStream result = null;
 
 	if (AnalyzerType.QUERY.equals(analyzerType)) {
 	    if (synonymFilterFactory != null) {
@@ -86,7 +84,6 @@ public final class IAViewTextNoCasNoPuncAnalyser extends Analyzer {
 
     @Override
     public void close() {
-	LuceneHelperTools.closeTokenStreamQuietly(result);
 	super.close();
     }
 
