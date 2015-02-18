@@ -52,20 +52,17 @@ public class QueryBasedCategoriserServiceTest {
     @Test
     public void testTestCategoriseSingle() {
 	InformationAssetView iaView = new InformationAssetView();
-	iaView.setCATDOCREF("BT 351/1/107278");
-	iaView.setCONTEXTDESCRIPTION("Registry of Shipping and Seamen: Index of First World War Mercantile Marine Medals and the British War Medal.");
-	iaView.setCOVERINGDATES("1914-1925");
-	iaView.setDESCRIPTION("Medal Card of Oosten Dorp or Van Oosten Dorp, B M. Place of Birth: Rothendam. Date of Birth: 1898.");
-	iaView.setDOCREFERENCE("D8075845");
-	iaView.setPERSON_FULLNAME(new String[] { "B M Oosten Dorp or Van Oosten Dorp" });
-	iaView.setPLACE_NAME(new String[] { "Rothendam" });
-	iaView.setSUBJECTS(new String[] { "WW1", "Merchant", "Seamen", "Medal", "Cards" });
-	iaView.setTITLE("Medal Card of Oosten Dorp or Van Oosten Dorp, B M. Place of Birth: Rothendam");
+	iaView.setCATDOCREF("AIR 37/177");
+	iaView.setCONTEXTDESCRIPTION("Air Ministry: Allied Expeditionary Air Force, later Supreme Headquarters Allied Expeditionary Force (Air), and 2nd Tactical Air Force: Registered Files and Reports.");
+	iaView.setCOVERINGDATES("1942");
+	iaView.setDESCRIPTION("CHIEF OF STAFF, SUPREME ALLIED COMMAND: Operation \"Round-up\": operational organisation of RAF.");
+	iaView.setDOCREFERENCE("C508096");
+	iaView.setTITLE("CHIEF OF STAFF, SUPREME ALLIED COMMAND: Operation \"Round-up\": operational organisation of RAF");
 
 	List<CategorisationResult> categorisationResults = categoriserService.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
-	assertThat(categorisationResults.get(0).getName(), is(equalTo("Food and drink")));
+	assertThat(categorisationResults.get(0).getName(), is(equalTo("Fishing")));
 
     }
 
@@ -78,21 +75,17 @@ public class QueryBasedCategoriserServiceTest {
 	categoriserService.setIaViewUpdateRepository(iaViewUpdateRepositoryMock);
 
 	InformationAssetView iaView = new InformationAssetView();
-	iaView.setCATDOCREF("BT 351/1/107278");
-	iaView.setCONTEXTDESCRIPTION("Registry of Shipping and Seamen: Index of First World War Mercantile Marine Medals and the British War Medal.");
-	iaView.setCOVERINGDATES("1914-1925");
-	iaView.setDESCRIPTION("Medal Card of Oosten Dorp or Van Oosten Dorp, B M. Place of Birth: Rothendam. Date of Birth: 1898.");
-	iaView.setDOCREFERENCE("D8075845");
-	iaView.setPERSON_FULLNAME(new String[] { "B M Oosten Dorp or Van Oosten Dorp" });
-	iaView.setPLACE_NAME(new String[] { "Rothendam" });
-	iaView.setSUBJECTS(new String[] { "WW1", "Merchant", "Seamen", "Medal", "Cards" });
-	iaView.setTITLE("Medal Card of Oosten Dorp or Van Oosten Dorp, B M. Place of Birth: Rothendam");
-	iaView.setSERIES("BT 351");
+	iaView.setCATDOCREF("AIR 37/177");
+	iaView.setCONTEXTDESCRIPTION("Air Ministry: Allied Expeditionary Air Force, later Supreme Headquarters Allied Expeditionary Force (Air), and 2nd Tactical Air Force: Registered Files and Reports.");
+	iaView.setCOVERINGDATES("1942");
+	iaView.setDESCRIPTION("CHIEF OF STAFF, SUPREME ALLIED COMMAND: Operation \"Round-up\": operational organisation of RAF.");
+	iaView.setDOCREFERENCE("C508096");
+	iaView.setTITLE("CHIEF OF STAFF, SUPREME ALLIED COMMAND: Operation \"Round-up\": operational organisation of RAF");
 
 	List<CategorisationResult> categorisationResults = categoriserService.categoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
-	assertThat(categorisationResults.get(0).getName(), is(equalTo("Food and drink")));
+	assertThat(categorisationResults.get(0).getName(), is(equalTo("Fishing")));
 
 	Mockito.verify(informationAssetViewMongoRepositoryMock, Mockito.times(1)).save(
 		Mockito.any(MongoInformationAssetView.class));

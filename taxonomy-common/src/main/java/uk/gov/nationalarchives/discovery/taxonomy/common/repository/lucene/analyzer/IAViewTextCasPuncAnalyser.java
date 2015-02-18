@@ -54,6 +54,7 @@ public final class IAViewTextCasPuncAnalyser extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
+	result = null;
 	Tokenizer source = new WhitespaceTokenizer(reader);
 
 	if (stopFilterFactory != null) {
@@ -64,11 +65,11 @@ public final class IAViewTextCasPuncAnalyser extends Analyzer {
 
 	if (AnalyzerType.QUERY.equals(analyzerType)) {
 	    if (synonymFilterFactory != null) {
-		result = this.synonymFilterFactory.create(result);
+		result = this.synonymFilterFactory.create(result == null ? source : result);
 	    } else {
 		logger.warn(".createComponents: synonymFilter disabled");
 	    }
 	}
-	return new TokenStreamComponents(source, result);
+	return new TokenStreamComponents(source, result == null ? source : result);
     }
 }

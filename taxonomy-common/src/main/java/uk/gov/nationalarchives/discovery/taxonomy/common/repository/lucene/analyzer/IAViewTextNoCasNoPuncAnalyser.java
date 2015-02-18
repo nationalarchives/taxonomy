@@ -63,16 +63,17 @@ public final class IAViewTextNoCasNoPuncAnalyser extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
+	result = null;
 	Tokenizer source = new ClassicTokenizer(reader);
 
 	if (AnalyzerType.QUERY.equals(analyzerType)) {
 	    if (synonymFilterFactory != null) {
-		result = this.synonymFilterFactory.create(result);
+		result = this.synonymFilterFactory.create(source);
 	    } else {
 		logger.warn(".createComponents: synonymFilter disabled");
 	    }
 	}
-	result = this.wordDelimiterFilterFactory.create(source);
+	result = this.wordDelimiterFilterFactory.create(result == null ? source : result);
 
 	result = new EnglishPossessiveFilter(this.matchVersion, result);
 
