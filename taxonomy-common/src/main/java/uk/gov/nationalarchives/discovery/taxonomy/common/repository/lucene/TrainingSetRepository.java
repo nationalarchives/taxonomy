@@ -104,7 +104,7 @@ public class TrainingSetRepository {
 	try {
 	    logger.info(".deleteAndUpdateTraingSetIndexForCategory: removed elements for category: {}",
 		    category.getTtl());
-	    writer.deleteDocuments(new Term(InformationAssetViewFields.CATEGORIES.toString(), category.getTtl()));
+	    writer.deleteDocuments(new Term(InformationAssetViewFields.TAXONOMY.toString(), category.getTtl()));
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	}

@@ -65,7 +65,7 @@ lucene.index:
   
 logging.config: classpath:log4j.properties
 
-solr.host: http://localhost:8983/solr/collection5/
+solr.host: http://localhost:8983/solr/iaview_unittest/
 ---
 spring.profiles: queryBased
 lucene:

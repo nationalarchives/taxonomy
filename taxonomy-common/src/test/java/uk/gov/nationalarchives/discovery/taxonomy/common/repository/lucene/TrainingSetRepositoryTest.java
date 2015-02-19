@@ -57,7 +57,7 @@ public class TrainingSetRepositoryTest {
 
     private void checkNumberOfDocumentsIs0ForTestCategory() throws IOException {
 	IndexSearcher searcher = trainingSetSearcherManager.acquire();
-	Query query = new TermQuery(new Term(InformationAssetViewFields.CATEGORIES.toString(),
+	Query query = new TermQuery(new Term(InformationAssetViewFields.TAXONOMY.toString(),
 		LuceneTestTrainingDataSet.TEST_CATEGORY));
 	TopDocs search = searcher.search(query, 1);
 	assertThat(search.totalHits, is(equalTo(0)));
@@ -69,7 +69,7 @@ public class TrainingSetRepositoryTest {
 	Boolean wasRefreshed = trainingSetSearcherManager.maybeRefresh();
 	assertThat(wasRefreshed, is(true));
 	IndexSearcher searcher = trainingSetSearcherManager.acquire();
-	Query query = new TermQuery(new Term(InformationAssetViewFields.CATEGORIES.toString(),
+	Query query = new TermQuery(new Term(InformationAssetViewFields.TAXONOMY.toString(),
 		LuceneTestTrainingDataSet.TEST_CATEGORY));
 	TopDocs search = searcher.search(query, 1);
 	assertThat(search.totalHits, is(equalTo(1)));
