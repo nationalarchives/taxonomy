@@ -174,7 +174,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 		}
 
 		Document hitDoc = searcher.doc(scoreDoc.doc);
-		String category = hitDoc.get(InformationAssetViewFields.CATEGORIES.toString());
+		String category = hitDoc.get(InformationAssetViewFields.TAXONOMY.toString());
 		String docReference = hitDoc.get(InformationAssetViewFields.DOCREFERENCE.toString());
 		logger.debug(".runMlt: found doc, category: {}, score: {}, docreference: {}", category, currrentScore,
 			docReference);

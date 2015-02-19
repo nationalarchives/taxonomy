@@ -1,20 +1,15 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.impl;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.common.params.MapSolrParams;
 import org.apache.solr.common.params.SolrParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -29,13 +24,14 @@ public class SolrIAViewRepositoryImpl implements SolrIAViewRepository {
     @Autowired
     private SolrServer solrServer;
 
-    private static final Logger logger = LoggerFactory.getLogger(SolrIAViewRepositoryImpl.class);
+    // private static final Logger logger =
+    // LoggerFactory.getLogger(SolrIAViewRepositoryImpl.class);
 
     @Override
     public SolrDocument getByDocReference(String docReference) {
-	SolrParams params = createSolrRequestParamsForDocReference(docReference);
+	SolrQuery query = createSolrQueryForDocReference(docReference);
 
-	SolrDocumentList results = submitQueryToSolr(params);
+	SolrDocumentList results = submitQueryToSolr(query);
 
 	validateSolrResponseForGetByDocReferenceRequest(docReference, results);
 
@@ -67,11 +63,12 @@ public class SolrIAViewRepositoryImpl implements SolrIAViewRepository {
 	return results;
     }
 
-    private SolrParams createSolrRequestParamsForDocReference(String docReference) {
-	Map<String, String> map = new HashMap<String, String>();
-	map.put(InformationAssetViewFields.DOCREFERENCE.toString(), docReference);
-	SolrParams params = new MapSolrParams(map);
-	return params;
+    private SolrQuery createSolrQueryForDocReference(String docReference) {
+	SolrQuery query = new SolrQuery();
+	String queryString = new StringBuilder().append(InformationAssetViewFields.DOCREFERENCE.toString()).append(":")
+		.append(docReference).toString();
+	query.setQuery(queryString);
+	return query;
     }
 
     @Override

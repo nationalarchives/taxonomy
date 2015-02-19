@@ -1,1 +1,3 @@
 /target/
+write.lock
+src/test/resources/dataset/solr/iaview_unittest/data/tlog/

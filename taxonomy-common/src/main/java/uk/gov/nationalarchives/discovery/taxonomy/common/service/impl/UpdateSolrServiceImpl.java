@@ -39,8 +39,8 @@ public class UpdateSolrServiceImpl implements UpdateSolrService {
     }
 
     private SolrInputDocument createDocumentForUpdate(SolrDocument iaView, String[] categories) {
-	iaView.removeFields(InformationAssetViewFields.CATEGORY.toString());
-	iaView.addField(InformationAssetViewFields.CATEGORY.toString(), categories);
+	iaView.removeFields(InformationAssetViewFields.TAXONOMY.toString());
+	iaView.addField(InformationAssetViewFields.TAXONOMY.toString(), categories);
 
 	// TODO 1 Check that the solr doc updated has still all other fields:
 	// search with DOCREF:"" & text_gen:""

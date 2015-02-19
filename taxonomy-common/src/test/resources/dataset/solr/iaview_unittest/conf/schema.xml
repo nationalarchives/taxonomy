@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<schema name="discovery" version="1.5">
+
+  <types>
+
+    <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+
+
+    <!--
+      Default numeric field types. For faster range queries, consider the tint/tfloat/tlong/tdouble types.
+    -->
+    <fieldType name="int" class="solr.TrieIntField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="float" class="solr.TrieFloatField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="long" class="solr.TrieLongField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+
+    <!--
+     Numeric field types that index each value at various levels of precision
+     to accelerate range queries when the number of values between the range
+     endpoints is large. See the javadoc for NumericRangeQuery for internal
+     implementation details.
+
+     Smaller precisionStep values (specified in bits) will lead to more tokens
+     indexed per value, slightly larger index size, and faster range queries.
+     A precisionStep of 0 disables indexing at different precision levels.
+    -->
+    <fieldType name="tint" class="solr.TrieIntField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="tfloat" class="solr.TrieFloatField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="tlong" class="solr.TrieLongField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="tdouble" class="solr.TrieDoubleField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
+
+    <!-- The format for this date field is of the form 1995-12-31T23:59:59Z, and
+         is a more restricted form of the canonical representation of dateTime
+         http://www.w3.org/TR/xmlschema-2/#dateTime    
+         The trailing "Z" designates UTC time and is mandatory.
+         Optional fractional seconds are allowed: 1995-12-31T23:59:59.999Z
+         All other components are mandatory.
+
+         Expressions can also be used to denote calculations that should be
+         performed relative to "NOW" to determine the value, ie...
+
+               NOW/HOUR
+                  ... Round to the start of the current hour
+               NOW-1DAY
+                  ... Exactly 1 day prior to now
+               NOW/DAY+6MONTHS+3DAYS
+                  ... 6 months and 3 days in the future from the start of
+                      the current day
+                      
+         Consult the DateField javadocs for more information.
+
+         Note: For faster range queries, consider the tdate type
+      -->
+    <fieldType name="date" class="solr.TrieDateField" omitNorms="true" precisionStep="0" positionIncrementGap="0"/>
+
+    <!-- A Trie based date field for faster date range queries and date faceting. -->
+    <fieldType name="tdate" class="solr.TrieDateField" omitNorms="true" precisionStep="6" positionIncrementGap="0"/>
+
+	<!-- General search stemming punctuation removed originals preserved-->
+	<fieldType name="text_st" class="solr.TextField" positionIncrementGap="100">
+		<analyzer type="index">
+			<tokenizer class="solr.ClassicTokenizerFactory"/>
+			<filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true"/>
+			<filter class="solr.WordDelimiterFilterFactory" preserveOriginal="1" generateWordParts="1" catenateWords="1"/>			
+			<filter class="solr.EnglishPossessiveFilterFactory"/>
+			<filter class="solr.ASCIIFoldingFilterFactory" />
+			<filter class="solr.LowerCaseFilterFactory"/>
+			<filter class="solr.PorterStemFilterFactory"/>
+		</analyzer>
+		<analyzer type="query">
+			<tokenizer class="solr.ClassicTokenizerFactory"/>
+			<filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
+			<filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+			<filter class="solr.WordDelimiterFilterFactory" preserveOriginal="1" generateWordParts="1" catenateWords="1"/>
+			<filter class="solr.EnglishPossessiveFilterFactory"/>
+			<filter class="solr.ASCIIFoldingFilterFactory" />
+			<filter class="solr.LowerCaseFilterFactory"/>
+			<filter class="solr.PorterStemFilterFactory"/>
+        </analyzer>
+    </fieldType>
+	
+	<!-- General search no stemming punctuation removed originals preserved-->
+    <fieldType name="text_gen" class="solr.TextField" positionIncrementGap="100">
+    	<analyzer type="index">
+    		<tokenizer class="solr.ClassicTokenizerFactory"/>
+    		<filter class="solr.WordDelimiterFilterFactory" preserveOriginal="1" generateWordParts="1" catenateWords="1" />
+    		<filter class="solr.EnglishPossessiveFilterFactory" />
+			<filter class="solr.ASCIIFoldingFilterFactory" />
+    		<filter class="solr.LowerCaseFilterFactory"/>
+    	</analyzer>
+    	<analyzer type="query">
+    		<tokenizer class="solr.ClassicTokenizerFactory"/>
+    		<filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+    		<filter class="solr.WordDelimiterFilterFactory" preserveOriginal="1" generateWordParts="1" catenateWords="1" />
+    		<filter class="solr.EnglishPossessiveFilterFactory" />
+			<filter class="solr.ASCIIFoldingFilterFactory" />
+    		<filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+    </fieldType>
+	
+	<!-- General search no stemming case insensitive punctuation removed originals preserved-->
+    <fieldType name="text_nocasnopnuc" class="solr.TextField" positionIncrementGap="100">
+    	<analyzer type="index">
+    		<tokenizer class="solr.ClassicTokenizerFactory"/>
+    		<filter class="solr.WordDelimiterFilterFactory" preserveOriginal="1" generateWordParts="1" catenateWords="1" />
+    		<filter class="solr.EnglishPossessiveFilterFactory" />
+			<filter class="solr.ASCIIFoldingFilterFactory" />
+    		<filter class="solr.LowerCaseFilterFactory"/>
+    	</analyzer>
+    	<analyzer type="query">
+    		<tokenizer class="solr.ClassicTokenizerFactory"/>
+    		<filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+    		<filter class="solr.WordDelimiterFilterFactory" preserveOriginal="1" generateWordParts="1" catenateWords="1" />
+    		<filter class="solr.EnglishPossessiveFilterFactory" />
+			<filter class="solr.ASCIIFoldingFilterFactory" />
+    		<filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+    </fieldType>
+	
+	<!-- taxonomy search no stemming case sensitive punctuation retained -->
+	<fieldType name="text_caspunc" class="solr.TextField" positionIncrementGap="100">
+		<analyzer type="index">
+			<tokenizer class="solr.WhitespaceTokenizerFactory"/>
+			<filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true"/>
+		</analyzer>
+		<analyzer type="query">
+			<tokenizer class="solr.WhitespaceTokenizerFactory"/>
+			<filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
+			<filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+        </analyzer>
+    </fieldType>
+	
+	<!-- taxonomy search no stemming case sensitive punctuation removed -->
+	<fieldType name="text_casnopunc" class="solr.TextField" positionIncrementGap="100">
+		<analyzer type="index">
+    		<tokenizer class="solr.ClassicTokenizerFactory"/>
+    		<filter class="solr.WordDelimiterFilterFactory" preserveOriginal="1" generateWordParts="1" catenateWords="1" />
+    		<filter class="solr.EnglishPossessiveFilterFactory" />
+			<filter class="solr.ASCIIFoldingFilterFactory" />
+    	</analyzer>
+    	<analyzer type="query">
+    		<tokenizer class="solr.ClassicTokenizerFactory"/>
+    		<filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+    		<filter class="solr.WordDelimiterFilterFactory" preserveOriginal="1" generateWordParts="1" catenateWords="1" />
+    		<filter class="solr.EnglishPossessiveFilterFactory" />
+			<filter class="solr.ASCIIFoldingFilterFactory" />
+		</analyzer>
+    </fieldType>
+    
+	<!-- filter for alpha-numeric sorting -->
+	<fieldType name="alphaNumSort" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+		<analyzer>
+			<tokenizer class="solr.KeywordTokenizerFactory"/>
+			<filter class="solr.LowerCaseFilterFactory" />
+			<filter class="solr.TrimFilterFactory" />
+			 <!-- Left-pad numbers with zeroes -->
+			<filter class="solr.PatternReplaceFilterFactory" pattern="(\d+)" replacement="000000000$1" replace="all"/>
+			<!-- Left-trim zeroes to produce 9 digit numbers -->
+			<filter class="solr.PatternReplaceFilterFactory" pattern="0*([0-9]{8,})" replacement="$1" replace="all"/>
+			<!-- remove all punctuation -->
+			<filter class="solr.PatternReplaceFilterFactory" pattern="([^a-zA-Z0-9])" replacement="" replace="all"/>
+		</analyzer>
+	</fieldType>
+		
+	<fieldType name="text_suggest" class="solr.TextField" positionIncrementGap="100">
+        <analyzer>
+            <tokenizer class="solr.UAX29URLEmailTokenizerFactory"/>
+            <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
+            <filter class="solr.LowerCaseFilterFactory"/>
+            <filter class="solr.ASCIIFoldingFilterFactory"/>
+            <filter class="solr.EnglishPossessiveFilterFactory"/>
+		</analyzer>
+    </fieldType>
+
+    <fieldType name="text_suggest_ngram" class="solr.TextField" positionIncrementGap="100">
+        <analyzer type="index">
+			<tokenizer class="solr.UAX29URLEmailTokenizerFactory"/>
+			<filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
+			<filter class="solr.LowerCaseFilterFactory"/>
+			<filter class="solr.ASCIIFoldingFilterFactory"/>
+			<filter class="solr.EnglishPossessiveFilterFactory"/>
+			<filter class="solr.EdgeNGramFilterFactory" maxGramSize="10" minGramSize="2"/>
+        </analyzer>
+        <analyzer type="query">
+			<tokenizer class="solr.UAX29URLEmailTokenizerFactory"/>
+			<filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
+			<filter class="solr.LowerCaseFilterFactory"/>
+			<filter class="solr.ASCIIFoldingFilterFactory"/>
+			<filter class="solr.EnglishPossessiveFilterFactory"/>
+       </analyzer>
+    </fieldType>
+
+	
+    <fieldType name="text_path" class="solr.TextField" positionIncrementGap="100">
+      <analyzer>
+        <tokenizer class="solr.PathHierarchyTokenizerFactory"/>
+      </analyzer> 
+    </fieldType>
+	
+    <!-- since fields of this type are by default not stored or indexed, any data added to them will be ignored outright.  --> 
+    <fieldtype name="ignored" stored="false" indexed="false" multiValued="true" class="solr.StrField" />
+
+ </types>
+
+ <fields>
+    <field name="id" type="string" stored="true" indexed="true"/>
+    <field name="_version_" type="long" indexed="true" stored="true"/>
+
+    <!-- core fields -->
+    <field name="segment" type="string" stored="true" indexed="false"/>
+    <field name="digest" type="string" stored="true" indexed="false"/>
+    <field name="boost" type="float" stored="true" indexed="false"/>
+    <field name="DOCREFERENCE" type="string" stored="true" indexed="true"/>
+	<field name="URLPARAMS" type="string" stored="true" indexed="false"/>
+	<field name="SOURCE" type="int" stored="true" indexed="true"/>
+	<field name="SOURCELEVEL" type="int" stored="true" indexed="true"/>
+	<field name="SCHEMA" type="text_gen" stored="true" indexed="true"/>
+	<field name="DEPARTMENT" type="string" stored="true" indexed="true"/>
+	<field name="SERIES" type="string" stored="true" indexed="true"/>
+	<field name="CATDOCREF" type="text_gen" stored="true" indexed="true"/>
+	<field name="CATDOCREFFILTER" type="string" stored="true" indexed="true"/>
+	<field name="SORTCATDOCREF" type="string" stored="true" indexed="true"/>
+	<field name="CATDOCREFSORT" type="alphaNumSort" stored="true" indexed="true"/>
+	<field name="FORMERREFDEP" type="text_gen" stored="true" indexed="true"/>
+	<field name="FORMERREFPRO" type="text_gen" stored="true" indexed="true"/>
+	<field name="TITLE" type="text_gen" stored="true" indexed="true"/>
+	<field name="TITLEFILTER" type="string" stored="true" indexed="true"/>
+	<field name="SORTTITLE" type="alphaNumSort" stored="true" indexed="true"/>
+    <field name="DESCRIPTION" type="text_gen" stored="true" indexed="true"/>
+	<field name="CONTEXTDESCRIPTION" type="text_gen" stored="true" indexed="true"/>
+	<field name="NOTE" type="text_gen" stored="true" indexed="true"/>
+	<field name="ADMINHIST" type="text_gen" stored="true" indexed="true"/>
+	<field name="ARRANGEMENT" type="text_gen" stored="true" indexed="true"/>
+    <field name="CORPBODYS" type="text_gen" stored="true" indexed="true" multiValued="true"/>
+	<field name="SUBJECTS" type="text_gen" stored="true" indexed="true" multiValued="true"/>
+    <field name="ALTNAMES" type="text_gen" stored="true" indexed="true" />
+	<field name="PLACE_NAME" type="text_gen" stored="true" indexed="true" multiValued="true"/>
+	<field name="PLACE_TOWN" type="text_gen" stored="true" indexed="true" multiValued="true"/>
+	<field name="PLACE_COUNTY" type="string" stored="true" indexed="true" multiValued="true"/>
+    <field name="PLACE_COUNTYID" type="int" stored="true" indexed="true" multiValued="true"/>
+	<field name="PLACE_REGION" type="string" stored="true" indexed="true" multiValued="true"/>
+    <field name="PLACE_REGIONID" type="int" stored="true" indexed="true" multiValued="true"/>        
+	<field name="PLACE_COUNTRY" type="string" stored="true" indexed="true" multiValued="true"/>
+    <field name="PLACE_COUNTRYID" type="int" stored="true" indexed="true" multiValued="true"/>
+	<field name="PLACE_ADDRESS" type="text_gen" stored="true" indexed="true"/>
+	<field name="PERSON_TNAME" type="text_gen" stored="true" indexed="true" multiValued="true"/>
+    <field name="PERSON_FNAME" type="text_gen" stored="true" indexed="true" multiValued="true"/>
+	<field name="PERSON_SNAME" type="text_gen" stored="true" indexed="true" multiValued="true"/>
+	<field name="PERSON_FULLNAME" type="text_gen" stored="true" indexed="true" multiValued="true"/>
+	<field name="PERSON_STATS" type="text_gen" stored="true" indexed="true" multiValued="true"/>
+	<field name="PERSON_REFS" type="text_gen" stored="true" indexed="true" multiValued="true"/>
+	<field name="PERSON_DOB" type="tdate" stored="true" indexed="true" multiValued="true"/>
+	<field name="PERIODS" type="string" stored="true" indexed="true" multiValued="true"/>
+	<field name="STARTDATE" type="tdate" stored="true" indexed="true"/>
+    <field name="ENDDATE" type="tdate" stored="true" indexed="true"/>
+	<field name="NUMSTARTDATE" type="int" stored="true" indexed="true"/>
+    <field name="NUMENDDATE" type="int" stored="true" indexed="true"/>
+	<field name="OPENINGDATE" type="tdate" stored="true" indexed="true"/>
+	<field name="COVERINGDATES" type="string" stored="true" indexed="false" />
+	<field name="CLOSURECODE" type="string" stored="true" indexed="true"/>
+    <field name="CLOSURETYPE" type="string" stored="true" indexed="true"/>
+    <field name="CLOSURESTATUS" type="string" stored="true" indexed="true"/>
+    <field name="CLOSURE" type="string" stored="true" indexed="true"/>
+	<field name="REPOSITORY" type="string" stored="true" indexed="true" multiValued="true"/>
+    <field name="REPOSITORYREF" type="string" stored="true" indexed="true" multiValued="true"/>
+	<field name="REPOSITORYNAME" type="text_gen" stored="true" indexed="true" multiValued="true"/>
+	<field name="REPOSITORYNAMESUGGEST" type="text_gen" stored="true" indexed="true" multiValued="true"/>
+    <field name="HBCODE" type="string" stored="true" indexed="true" multiValued="true"/>
+	<field name="REPTYPECODE" type="string" stored="true" indexed="true" multiValued="true"/>
+	<field name="MAPSCALE" type="string" stored="true" indexed="true"/>
+	<field name="MAPDESIGNATION" type="text_gen" stored="true" indexed="true"/>
+	<field name="PHYSICALCOND" type="text_gen" stored="true" indexed="true"/>
+    <field name="TSTAMP" type="date" stored="true" indexed="false"/>
+    <field name="CONTENT" type="text_st" stored="true" indexed="true"/>
+		
+    <!-- catch-all field text_st(stemmed) text_gen(not stemmed)-->
+	<field name="text" type="text_gen" stored="false" indexed="true" multiValued="true"/>
+	<field name="textst" type="text_st" stored="false" indexed="true" multiValued="true"/>
+	
+	<!-- catch-all field taxonomy fields -->
+	<field name="textnocasnopunc" type="text_nocasnopnuc" stored="false" indexed="true" multiValued="true"/>
+	<field name="textcasnopunc" type="text_casnopunc" stored="false" indexed="true" multiValued="true"/>
+	<field name="textcaspunc" type="text_caspunc" stored="false" indexed="true" multiValued="true"/>
+	
+	<!-- catch-all field for stemmed title-->
+	<field name="TITLEST" type="text_st" stored="false" indexed="true" multiValued="true"/>
+	
+	<!-- catch-all field for all references-->
+	<field name="ALLREFS" type="text_gen" stored="false" indexed="true" multiValued="true"/>
+	
+	<!-- catch-all field for stemmed contextdescription-->
+	<field name="CONTEXTDESCRIPTIONST" type="text_st" stored="false" indexed="true" multiValued="true"/>
+	
+	<!-- fields for auto suggest -->
+	<field name="suggest" type="text_suggest" indexed="true" stored="false" multiValued="false" />
+	<field name="suggest_ngram" type="text_suggest_ngram" indexed="true" stored="false"/>
+	
+	
+    <!-- fields for index-more plugin -->
+    <field name="type" type="string" stored="true" indexed="true" multiValued="true"/>
+    <!-- fields for languageidentifier plugin -->
+    <field name="lang" type="string" stored="true" indexed="true"/>
+    <field name="TAXONOMY" type="text_gen" stored="true" indexed="true" multiValued="true"/>
+    <field name="TAXONOMYID" type="text_gen" stored="true" indexed="true" multiValued="true"/> 
+</fields>
+
+ <uniqueKey>DOCREFERENCE</uniqueKey>
+ 
+ <copyField source="DOCREFERENCE" dest="id"/>
+ 
+ <!-- copy fields for suggest-->
+ <copyField source="REPOSITORYNAMESUGGEST" dest="suggest"/>
+ <copyField source="REPOSITORYNAMESUGGEST" dest="suggest_ngram"/>
+ 
+ <!-- copy field for stemmed title-->
+ <copyField source="TITLE" dest="TITLEST"/>
+ 
+ <!-- copy field for sorting references-->
+ <copyField source="CATDOCREF" dest="CATDOCREFSORT"/>
+ 
+ <!-- copy field for stemmed contextdescription-->
+ <copyField source="CONTEXTDESCRIPTION" dest="CONTEXTDESCRIPTIONST"/>
+ 
+ <!-- copy field for all references-->
+ <copyField source="FORMERREFDEP" dest="ALLREFS"/>
+ <copyField source="FORMERREFPRO" dest="ALLREFS"/>
+ <copyField source="CATDOCREF" dest="ALLREFS"/>
+
+ <!-- copy field for exact-match search--> 
+ <copyField source="DESCRIPTION" dest="text"/>
+ <copyField source="NOTE" dest="text"/>
+ <copyField source="ADMINHIST" dest="text"/>
+ <copyField source="ARRANGEMENT" dest="text"/> 
+ <copyField source="SUBJECTS" dest="text"/>
+ <copyField source="ALTNAMES" dest="text"/>
+ <copyField source="PERSON_FULLNAME" dest="text"/>
+ <copyField source="PLACE_NAME" dest="text"/>
+ <copyField source="CORPBODYS" dest="text"/>
+ <copyField source="REPOSITORYNAME" dest="text"/>
+ <copyField source="PLACE_COUNTRY" dest="text"/>
+ <copyField source="PLACE_ADDRESS" dest="text"/>
+ <copyField source="MAPSCALE" dest="text"/>
+ <copyField source="MAPDESIGNATION" dest="text"/>
+ <copyField source="PHYSICALCOND" dest="text"/>
+ <copyField source="FORMERREFDEP" dest="text"/>
+ <copyField source="FORMERREFPRO" dest="text"/>
+ 
+ <!-- copy field for stemmed search--> 
+ <copyField source="DESCRIPTION" dest="textst"/>
+ <copyField source="NOTE" dest="textst"/>
+ <copyField source="ADMINHIST" dest="textst"/>
+ <copyField source="ARRANGEMENT" dest="textst"/>
+ <copyField source="SUBJECTS" dest="textst"/>
+ <copyField source="ALTNAMES" dest="textst"/>
+ <copyField source="PERSON_FULLNAME" dest="textst"/>
+ <copyField source="PLACE_NAME" dest="textst"/>
+ <copyField source="CORPBODYS" dest="textst"/>
+ <copyField source="REPOSITORYNAME" dest="textst"/>
+ <copyField source="PLACE_COUNTRY" dest="textst"/>
+ <copyField source="PLACE_ADDRESS" dest="textst"/>
+ <copyField source="MAPSCALE" dest="textst"/>
+ <copyField source="MAPDESIGNATION" dest="textst"/>
+ <copyField source="PHYSICALCOND" dest="textst"/>
+ <copyField source="FORMERREFDEP" dest="textst"/>
+ <copyField source="FORMERREFPRO" dest="textst"/>
+ 
+ <!-- copy field for taxonomy search--> 
+ <copyField source="DESCRIPTION" dest="textnocasnopunc"/>
+ <copyField source="TITLE" dest="textnocasnopunc"/>
+ <copyField source="CONTEXTDESCRIPTION" dest="textnocasnopunc"/>
+ <copyField source="CORPBODYS" dest="textnocasnopunc"/>
+ <copyField source="SUBJECTS" dest="textnocasnopunc"/>
+ <copyField source="PERSON_FULLNAME" dest="textnocasnopunc"/>
+ <copyField source="PLACE_NAME" dest="textnocasnopunc"/>
+ <copyField source="CATDOCREF" dest="textnocasnopunc"/>
+ 
+ <!-- copy field for taxonomy search--> 
+ <copyField source="DESCRIPTION" dest="textcasnopunc"/>
+ <copyField source="TITLE" dest="textcasnopunc"/>
+ <copyField source="CONTEXTDESCRIPTION" dest="textcasnopunc"/>
+ <copyField source="CORPBODYS" dest="textcasnopunc"/>
+ <copyField source="SUBJECTS" dest="textcasnopunc"/>
+ <copyField source="PERSON_FULLNAME" dest="textcasnopunc"/>
+ <copyField source="PLACE_NAME" dest="textcasnopunc"/>
+ <copyField source="CATDOCREF" dest="textcasnopunc"/>
+ 
+ <!-- copy field for taxonomy search--> 
+ <copyField source="DESCRIPTION" dest="textcaspunc"/>
+ <copyField source="TITLE" dest="textcaspunc"/>
+ <copyField source="CONTEXTDESCRIPTION" dest="textcaspunc"/>
+ <copyField source="CORPBODYS" dest="textcaspunc"/>
+ <copyField source="SUBJECTS" dest="textcaspunc"/>
+ <copyField source="PERSON_FULLNAME" dest="textcaspunc"/>
+ <copyField source="PLACE_NAME" dest="textcaspunc"/>
+ <copyField source="CATDOCREF" dest="textcaspunc"/>
+
+</schema>
