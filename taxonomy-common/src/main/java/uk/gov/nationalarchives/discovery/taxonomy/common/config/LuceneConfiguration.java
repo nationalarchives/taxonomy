@@ -1,10 +1,5 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.config;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextRefAnalyser;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.TaxonomyTrainingSetAnalyser;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.WhiteSpaceAnalyserWIthPIG;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -42,6 +37,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.AnalyzerType;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextCasNoPuncAnalyser;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextCasPuncAnalyser;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextGenAnalyser;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextNoCasNoPuncAnalyser;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.TaxonomyTrainingSetAnalyser;
+
 /**
  * Configuration dedicated to Lucene:<br/>
  * provides all necessary beans (directory, reader, etc)
@@ -72,6 +75,9 @@ public class LuceneConfiguration {
 
     @Value("${lucene.index.queryFilterSourceValue}")
     private String queryFilterSourceValue;
+
+    @Value("${lucene.index.defaultTaxonomyField}")
+    private String defaultTaxonomyField;
 
     @PostConstruct
     public void init() {
@@ -218,18 +224,12 @@ public class LuceneConfiguration {
      * @throws ParseException
      */
     public @Bean Analyzer iaViewSearchAnalyser() throws ParseException {
-	Map<String, Analyzer> analyzerPerField = new HashMap<String, Analyzer>();
-	IAViewTextRefAnalyser textRefAnalyser = new IAViewTextRefAnalyser(Version.parseLeniently(version),
-		wordDelimiterFilterFactory());
-	textRefAnalyser.setPositionIncrementGap(100);
-	analyzerPerField.put("CATDOCREF", textRefAnalyser);
+	Map<String, Analyzer> mapOfAnalyzerPerField = getMapOfAnalyzersForAnalyzerType(AnalyzerType.QUERY);
 
-	WhiteSpaceAnalyserWIthPIG textTaxAnalyser = new WhiteSpaceAnalyserWIthPIG();
-	textTaxAnalyser.setPositionIncrementGap(100);
+	PerFieldAnalyzerWrapper iaViewSearchAnalyser = new PerFieldAnalyzerWrapper(
+		mapOfAnalyzerPerField.get(defaultTaxonomyField), mapOfAnalyzerPerField);
 
-	PerFieldAnalyzerWrapper iaViewIndexAnalyser = new PerFieldAnalyzerWrapper(textTaxAnalyser, analyzerPerField);
-
-	return iaViewIndexAnalyser;
+	return iaViewSearchAnalyser;
     }
 
     /**
@@ -240,7 +240,38 @@ public class LuceneConfiguration {
      * @throws ParseException
      */
     public @Bean Analyzer iaViewIndexAnalyser() throws ParseException {
-	return iaViewSearchAnalyser();
+	Map<String, Analyzer> mapOfAnalyzerPerField = getMapOfAnalyzersForAnalyzerType(AnalyzerType.INDEX);
+
+	PerFieldAnalyzerWrapper iaViewIndexAnalyser = new PerFieldAnalyzerWrapper(
+		mapOfAnalyzerPerField.get(defaultTaxonomyField), mapOfAnalyzerPerField);
+
+	return iaViewIndexAnalyser;
+
+    }
+
+    private Map<String, Analyzer> getMapOfAnalyzersForAnalyzerType(AnalyzerType query) throws ParseException {
+	Map<String, Analyzer> mapOfAnalyzerPerField = new HashMap<String, Analyzer>();
+
+	IAViewTextGenAnalyser textGenAnalyser = new IAViewTextGenAnalyser(Version.parseLeniently(version),
+		synonymFilterFactory(), wordDelimiterFilterFactory(), query);
+	textGenAnalyser.setPositionIncrementGap(100);
+	mapOfAnalyzerPerField.put(InformationAssetViewFields.CATDOCREF.toString(), textGenAnalyser);
+
+	IAViewTextNoCasNoPuncAnalyser textNoCasNoPuncAnalyser = new IAViewTextNoCasNoPuncAnalyser(
+		Version.parseLeniently(version), synonymFilterFactory(), wordDelimiterFilterFactory(), query);
+	textNoCasNoPuncAnalyser.setPositionIncrementGap(100);
+	mapOfAnalyzerPerField.put(InformationAssetViewFields.textnocasnopunc.toString(), textNoCasNoPuncAnalyser);
+
+	IAViewTextCasNoPuncAnalyser textCasNoPuncAnalyser = new IAViewTextCasNoPuncAnalyser(
+		Version.parseLeniently(version), synonymFilterFactory(), wordDelimiterFilterFactory(), query);
+	textCasNoPuncAnalyser.setPositionIncrementGap(100);
+	mapOfAnalyzerPerField.put(InformationAssetViewFields.textcasnopunc.toString(), textCasNoPuncAnalyser);
+
+	IAViewTextCasPuncAnalyser textCasPuncAnalyser = new IAViewTextCasPuncAnalyser(stopFilterFactory(),
+		synonymFilterFactory(), query);
+	textCasPuncAnalyser.setPositionIncrementGap(100);
+	mapOfAnalyzerPerField.put(InformationAssetViewFields.textcaspunc.toString(), textCasPuncAnalyser);
+	return mapOfAnalyzerPerField;
     }
 
     /**

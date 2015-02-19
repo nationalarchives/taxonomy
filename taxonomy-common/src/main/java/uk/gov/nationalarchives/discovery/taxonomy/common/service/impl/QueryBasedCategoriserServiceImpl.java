@@ -148,8 +148,8 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 		}
 	    } catch (InterruptedException | ExecutionException e) {
 		logger.error(
-			".runCategorisationWithFSDirectory: an exception occured while retreiving the categorisation result: {}, exception: {}",
-			futureCatResult.toString(), e.getMessage());
+			".runCategorisationWithFSDirectory: an exception occured while retreiving the categorisation result: , exception: {}",
+			futureCatResult.toString(), e);
 	    }
 	}
 
@@ -223,51 +223,78 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     }
 
     /**
-     * Create a lucene document from an iaView object and add it to the
-     * TrainingIndex index
+     * Create a lucene document from an iaView object
      * 
      * @param iaView
      * @throws IOException
      */
     public Document getLuceneDocumentFromIaVIew(InformationAssetView iaView) throws IOException {
 
-	Document doc = new Document();
+	Document document = new Document();
+	List<Field> listOfFields = new ArrayList<Field>();
 
-	doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getDESCRIPTION(), Field.Store.NO));
+	listOfFields.addAll(getListOfUnmodifiedFieldsFromIAView(iaView));
+
+	listOfFields.addAll(getCopyIAViewFieldsToTaxonomyField(iaView, InformationAssetViewFields.textcaspunc));
+	listOfFields.addAll(getCopyIAViewFieldsToTaxonomyField(iaView, InformationAssetViewFields.textcasnopunc));
+	listOfFields.addAll(getCopyIAViewFieldsToTaxonomyField(iaView, InformationAssetViewFields.textnocasnopunc));
+
+	addFieldsToLuceneDocument(document, listOfFields);
+
+	return document;
+    }
+
+    private List<Field> getListOfUnmodifiedFieldsFromIAView(InformationAssetView iaView) {
+	List<Field> listOfUnmodifiedFields = new ArrayList<Field>();
+	if (iaView.getCATDOCREF() != null) {
+	    listOfUnmodifiedFields.add(new TextField(InformationAssetViewFields.CATDOCREF.toString(), iaView
+		    .getCATDOCREF(), Field.Store.NO));
+	}
+	return listOfUnmodifiedFields;
+    }
+
+    private void addFieldsToLuceneDocument(Document document, List<Field> listOfFields) {
+	for (Field field : listOfFields) {
+	    document.add(field);
+	}
+    }
+
+    private List<Field> getCopyIAViewFieldsToTaxonomyField(InformationAssetView iaView,
+	    InformationAssetViewFields texttax) {
+	List<Field> listOfFields = new ArrayList<Field>();
+
+	listOfFields.add(new TextField(texttax.toString(), iaView.getDESCRIPTION(), Field.Store.NO));
 	if (!StringUtils.isEmpty(iaView.getTITLE())) {
-	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getTITLE(), Field.Store.NO));
+	    listOfFields.add(new TextField(texttax.toString(), iaView.getTITLE(), Field.Store.NO));
 	}
 	if (!StringUtils.isEmpty(iaView.getCONTEXTDESCRIPTION())) {
-	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getCONTEXTDESCRIPTION(),
-		    Field.Store.NO));
+	    listOfFields.add(new TextField(texttax.toString(), iaView.getCONTEXTDESCRIPTION(), Field.Store.NO));
 	}
 	if (iaView.getCORPBODYS() != null) {
 	    for (String corpBody : iaView.getCORPBODYS()) {
-		doc.add(new TextField(InformationAssetViewFields.texttax.toString(), corpBody, Field.Store.NO));
+		listOfFields.add(new TextField(texttax.toString(), corpBody, Field.Store.NO));
 	    }
 	}
 	if (iaView.getSUBJECTS() != null) {
 	    for (String subject : iaView.getSUBJECTS()) {
-		doc.add(new TextField(InformationAssetViewFields.texttax.toString(), subject, Field.Store.NO));
+		listOfFields.add(new TextField(texttax.toString(), subject, Field.Store.NO));
 	    }
 	}
 
 	if (iaView.getPERSON_FULLNAME() != null) {
 	    for (String person : iaView.getPERSON_FULLNAME()) {
-		doc.add(new TextField(InformationAssetViewFields.texttax.toString(), person, Field.Store.NO));
+		listOfFields.add(new TextField(texttax.toString(), person, Field.Store.NO));
 	    }
 	}
 	if (iaView.getPLACE_NAME() != null) {
 	    for (String place : iaView.getPLACE_NAME()) {
-		doc.add(new TextField(InformationAssetViewFields.texttax.toString(), place, Field.Store.NO));
+		listOfFields.add(new TextField(texttax.toString(), place, Field.Store.NO));
 	    }
 	}
 	if (iaView.getCATDOCREF() != null) {
-	    doc.add(new TextField(InformationAssetViewFields.texttax.toString(), iaView.getCATDOCREF(), Field.Store.NO));
-	    doc.add(new TextField(InformationAssetViewFields.CATDOCREF.toString(), iaView.getCATDOCREF(),
-		    Field.Store.NO));
+	    listOfFields.add(new TextField(texttax.toString(), iaView.getCATDOCREF(), Field.Store.NO));
 	}
-	return doc;
+	return listOfFields;
     }
 
     /**

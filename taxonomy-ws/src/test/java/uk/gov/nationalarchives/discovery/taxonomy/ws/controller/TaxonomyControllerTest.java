@@ -127,14 +127,14 @@ public class TaxonomyControllerTest {
 	List<TrainingDocument> trainingDocs = trainingDocRepo.findByCategory(category.getTtl());
 	assertThat(trainingDocs, is(notNullValue()));
 	assertThat(trainingDocs, is(not(empty())));
-	assertThat(trainingDocs.size(), equalTo(1));
+	assertThat(trainingDocs.size(), equalTo(4));
 
 	PaginatedList<InformationAssetView> IAViewResults = iaViewRepository.performSearch(category.getQry(),
 		(category.getSc()), 1000, 0);
 	assertThat(IAViewResults, is(notNullValue()));
 	assertThat(IAViewResults.getResults(), is(notNullValue()));
 	assertThat(IAViewResults.getResults(), is(not(empty())));
-	assertThat(IAViewResults.size(), equalTo(1));
+	assertThat(IAViewResults.size(), equalTo(4));
 
 	logger.debug("Publication succeeded");
 
@@ -182,8 +182,8 @@ public class TaxonomyControllerTest {
     @Test
     public final void testTestCategoriseSingleDocumentWithOnlyDescriptionAndDocRef() {
 	TestCategoriseSingleRequest request = new TestCategoriseSingleRequest();
-	request.setDescription("Registry of Shipping and Seamen: Index of First World War Mercantile Marine Medals and the British War Medal.");
-	request.setDocReference("D8075845");
+	request.setDescription("CHIEF OF STAFF, SUPREME ALLIED COMMAND: Operation \"Round-up\": operational organisation of RAF.");
+	request.setDocReference("C508096");
 	List<LinkedHashMap<String, String>> categorisationResults = restTemplate.postForObject(WS_URL
 		+ WS_PATH_TEST_CATEGORISE_SINGLE, request, List.class);
 

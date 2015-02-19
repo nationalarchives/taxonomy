@@ -57,8 +57,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IAViewRepositoryTest {
 
-    public static final String QUERY_WITHOUT_WILDCARD = "\"Daniel\"";
-    private static final String TERM_VALUE = "Daniel";
+    @Value("${lucene.index.defaultTaxonomyField}")
+    private String defaultTaxonomyField;
+
+    public static final String QUERY_WITHOUT_WILDCARD = "\"air force\"";
+    private static final String TERM_VALUE = "attacks";
 
     public static final Logger logger = LoggerFactory.getLogger(IAViewRepositoryTest.class);
 
@@ -77,10 +80,7 @@ public class IAViewRepositoryTest {
     @Value("${lucene.index.version}")
     private String luceneVersion;
 
-    @Value("${lucene.index.fieldsToSearch}")
-    private String fieldsToAnalyse;
-
-    private static final String QUERY_WITH_LEADING_WILDCARD = "*stone";
+    private static final String QUERY_WITH_LEADING_WILDCARD = "*quarters";
 
     @Test
     public void testPerformSearchWithLeadingWildcard() {
@@ -88,7 +88,7 @@ public class IAViewRepositoryTest {
 		100, 0);
 	assertThat(results, is(notNullValue()));
 	assertThat(results.getResults(), is(not(empty())));
-	assertThat(results.size(), is(equalTo(3)));
+	assertThat(results.size(), is(equalTo(100)));
 	logger.debug(".testPerformSearchWithLeadingWildcard: Found {} results", results.size());
     }
 
@@ -104,25 +104,25 @@ public class IAViewRepositoryTest {
 
     @Test
     public void testPerformSearchWithQueryWithMinimumScoreWithLimit() {
-	PaginatedList<InformationAssetView> results = iaViewRepository.performSearch("Daniel", 0.005, 2, 0);
+	PaginatedList<InformationAssetView> results = iaViewRepository.performSearch(TERM_VALUE, 0.62, 2, 0);
 	assertThat(results, is(notNullValue()));
 	assertThat(results.getResults(), is(notNullValue()));
 	assertThat(results.getResults(), is(not(empty())));
 	assertThat(results.size(), is(equalTo(2)));
-	assertThat(results.getNumberOfResults(), is(equalTo(6)));
+	assertThat(results.getNumberOfResults(), is(equalTo(26)));
 	logger.debug(".testPerformSearchWithQueryWithMinimumScore: Returned {} results and found {} results in total",
 		results.size(), results.getNumberOfResults());
     }
 
     @Test
     public void testPerformSearchWithQueryWithMinimumScoreWithHighLimit() {
-	PaginatedList<InformationAssetView> results = iaViewRepository.performSearch(QUERY_WITHOUT_WILDCARD, 1.29, 100,
+	PaginatedList<InformationAssetView> results = iaViewRepository.performSearch(QUERY_WITHOUT_WILDCARD, 0.62, 100,
 		0);
 	assertThat(results, is(notNullValue()));
 	assertThat(results.getResults(), is(notNullValue()));
 	assertThat(results.getResults(), is(not(empty())));
-	assertThat(results.size(), is(equalTo(1)));
-	assertThat(results.getNumberOfResults(), is(equalTo(1)));
+	assertThat(results.size(), is(equalTo(30)));
+	assertThat(results.getNumberOfResults(), is(equalTo(30)));
 	logger.debug(".testPerformSearchWithQueryWithMinimumScore: Returned {} results and found {} results in total",
 		results.size(), results.getNumberOfResults());
     }
@@ -131,9 +131,9 @@ public class IAViewRepositoryTest {
     public void testGetNbOfElementsAboveScore() throws IOException {
 	IndexSearcher isearcher = iaviewSearcherManager.acquire();
 
-	Query query = new WildcardQuery(new Term(InformationAssetViewFields.texttax.toString(), TERM_VALUE));
-	Integer nbOfElementsAboveScore = iaViewRepository.getNbOfElementsAboveScore(0.005, isearcher, query);
-	assertThat(nbOfElementsAboveScore, is(equalTo(6)));
+	Query query = new WildcardQuery(new Term(defaultTaxonomyField, TERM_VALUE));
+	Integer nbOfElementsAboveScore = iaViewRepository.getNbOfElementsAboveScore(0.62, isearcher, query);
+	assertThat(nbOfElementsAboveScore, is(equalTo(28)));
     }
 
     // @Test
@@ -258,6 +258,7 @@ public class IAViewRepositoryTest {
 	    iaviewSearcherManager = new SearcherManager(writer, true, null);
 	    isearcher = iaviewSearcherManager.acquire();
 
+	    String fieldsToAnalyse = "texttax,CATDOCREF";
 	    QueryParser multiFieldQueryParser = new MultiFieldQueryParser(fieldsToAnalyse.split(","), analyzer);
 	    multiFieldQueryParser.setAllowLeadingWildcard(true);
 

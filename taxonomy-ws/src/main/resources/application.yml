@@ -25,9 +25,8 @@ async:
 
 lucene:
  loadTSetServiceLayer: true
- categoriser:
-  fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
  mlt:
+  fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
   mimimumScoreForMlt: 0
   mimimumGlobalScoreForACategory: 0
   maximumSimilarElements: 2000
@@ -42,11 +41,11 @@ lucene:
   maxTrainingDocsPerCategory: 5000
   maxShingleSize: 0
   useStopFilter: false
-  useSynonymFilter: false
+  useSynonymFilter: true
   queryFilterSourceValue: 100
-  fieldsToSearch: texttax,CATDOCREF
   iaViewMaxMergeSizeMB: 5.0
   iaViewMaxCachedMB: 60.0
+  defaultTaxonomyField: textnocasnopunc
   
 ---
 spring.profiles: local
@@ -55,7 +54,7 @@ spring.data.mongodb:
  host: localhost
 
 lucene.index:
-  iaviewCollectionPath: /mnt/share/lucene/index_20150112/data/index
+  iaviewCollectionPath: /mnt/search_indexes/index_20150217/data/index
   trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
   
 logging.config: classpath:log4j.properties
@@ -70,7 +69,7 @@ spring.data.mongodb:
  host: ***REMOVED***.***REMOVED***
    
 lucene.index:
- iaviewCollectionPath: ***REMOVED***solr/collection4/data/index
+ iaviewCollectionPath: ***REMOVED***solr/collection5/data/index
  trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
 
 logging.config: classpath:log4j-tooling.properties

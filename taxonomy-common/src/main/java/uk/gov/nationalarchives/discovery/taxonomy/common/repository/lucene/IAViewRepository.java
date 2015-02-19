@@ -43,6 +43,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class IAViewRepository {
 
+    @Value("${lucene.index.defaultTaxonomyField}")
+    private String defaultTaxonomyField;
+
     @Autowired
     private SearcherManager iaviewSearcherManager;
 
@@ -198,7 +201,7 @@ public class IAViewRepository {
     }
 
     public Query buildSearchQuery(String queryString) {
-	QueryParser parser = new QueryParser(InformationAssetViewFields.texttax.toString(), this.iaViewSearchAnalyser);
+	QueryParser parser = new QueryParser(defaultTaxonomyField, this.iaViewSearchAnalyser);
 	parser.setAllowLeadingWildcard(true);
 	Query searchQuery;
 	try {

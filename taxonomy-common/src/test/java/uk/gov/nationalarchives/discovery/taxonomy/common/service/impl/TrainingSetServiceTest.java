@@ -67,7 +67,7 @@ public class TrainingSetServiceTest {
 	mongoTestDataSet.initCategoryCollection();
 
 	trainingSetService.createTrainingSet(0.001f, null);
-	assertThat(trainingDocumentRepository.count(), equalTo(1l));
+	assertThat(trainingDocumentRepository.count(), equalTo(10l));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class TrainingSetServiceTest {
 	mongoTestDataSet.initCategoryCollection();
 
 	trainingSetService.createTrainingSet(null, 1);
-	assertThat(trainingDocumentRepository.count(), equalTo(2l));
+	assertThat(trainingDocumentRepository.count(), equalTo(9l));
     }
 
     @Test

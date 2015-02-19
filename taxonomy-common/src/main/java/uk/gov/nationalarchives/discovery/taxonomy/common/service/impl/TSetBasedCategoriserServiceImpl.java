@@ -91,7 +91,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     @Value("${lucene.mlt.titleBoostingFactor}")
     private float titleBoostingFactor;
 
-    @Value("${lucene.categoriser.fieldsToAnalyse}")
+    @Value("${lucene.mlt.fieldsToAnalyse}")
     private String fieldsToAnalyse;
 
     /**
@@ -174,7 +174,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 		}
 
 		Document hitDoc = searcher.doc(scoreDoc.doc);
-		String category = hitDoc.get(InformationAssetViewFields.CATEGORY.toString());
+		String category = hitDoc.get(InformationAssetViewFields.CATEGORIES.toString());
 		String docReference = hitDoc.get(InformationAssetViewFields.DOCREFERENCE.toString());
 		logger.debug(".runMlt: found doc, category: {}, score: {}, docreference: {}", category, currrentScore,
 			docReference);

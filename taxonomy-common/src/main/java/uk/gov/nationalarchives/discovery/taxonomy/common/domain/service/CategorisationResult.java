@@ -47,4 +47,15 @@ public class CategorisationResult {
     public void setScore(Float score) {
 	this.score = score;
     }
+
+    @Override
+    public String toString() {
+	StringBuilder builder = new StringBuilder();
+	builder.append("CategorisationResult [name=");
+	builder.append(name);
+	builder.append(", score=");
+	builder.append(score);
+	builder.append("]");
+	return builder.toString();
+    }
 }

@@ -24,8 +24,6 @@ async:
   queueCapacity: 150
 
 lucene:
- categoriser:
-  fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
  mlt:
   mimimumScoreForMlt: 0.001
   mimimumGlobalScoreForACategory: 0
@@ -34,7 +32,9 @@ lucene:
   minDocFreq: 1
   titleBoostingFactor: 0.25
   descBoostingFactor: 2
-  contextDescBoostingFactor: 0.75
+  contextDescBoostingFactor: 0.75  
+  fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
+  
 
  index:
   version: LUCENE_4_10_3
@@ -46,6 +46,7 @@ lucene:
   fieldsToSearch: texttax,CATDOCREF
   iaViewMaxMergeSizeMB: 5.0
   iaViewMaxCachedMB: 60.0
+  defaultTaxonomyField: textnocasnopunc
   
 ---
 spring.profiles: test
