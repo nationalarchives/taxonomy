@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.batch.producer;
+package uk.gov.nationalarchives.discovery.taxonomy.batch.msg.producer;
 
 import javax.jms.JMSException;
 import javax.jms.Message;

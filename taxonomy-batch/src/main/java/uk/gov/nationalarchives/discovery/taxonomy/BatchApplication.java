@@ -15,7 +15,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 
-import uk.gov.nationalarchives.discovery.taxonomy.batch.consumer.CategoriseDocMessageConsumer;
+import uk.gov.nationalarchives.discovery.taxonomy.batch.msg.consumer.CategoriseDocMessageConsumer;
 
 @Configuration
 @ComponentScan

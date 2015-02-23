@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.batch.consumer;
+package uk.gov.nationalarchives.discovery.taxonomy.batch.msg.consumer;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import uk.gov.nationalarchives.discovery.taxonomy.batch.consumer.message.CategoriseDocumentMessage;
+import uk.gov.nationalarchives.discovery.taxonomy.batch.msg.consumer.message.CategoriseDocumentMessage;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
