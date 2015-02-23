@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import uk.gov.nationalarchives.discovery.taxonomy.batch.msg.consumer.CategoriseDocMessageConsumer;
 
@@ -21,6 +22,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.batch.msg.consumer.CategoriseD
 @ComponentScan
 @EnableAutoConfiguration
 @PropertySource("application.yml")
+@EnableScheduling
 public class BatchApplication {
 
     @Value("${spring.activemq.categorise-doc-queue-name}")

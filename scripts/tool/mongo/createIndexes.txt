@@ -1,0 +1,2 @@
+to complete with other collections!
+db.iaViewUpdates.ensureIndex( { creationDate: -1 } )
