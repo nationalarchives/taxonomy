@@ -67,6 +67,8 @@ spring.activemq:
  broker-url: tcp://localhost:61616
  user***REMOVED***
  password***REMOVED***
+ 
+solr.host: http://localhost:8983/solr/IAView_subset/
 ---
 spring.profiles: tooling
 

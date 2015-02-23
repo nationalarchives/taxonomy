@@ -2,6 +2,7 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.TSetBasedCategorisationResult;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -266,6 +269,25 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 
     public List<TSetBasedCategorisationResult> categoriseSingle(InformationAssetView iaView) {
 	// TODO TSETBASED Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public boolean hasNewCategorisedDocumentsSinceDate(Date lastIAViewUpdateProcessedTime) {
+	// TODO Auto-generated method stub
+	return false;
+    }
+
+    @Override
+    public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceDate(int pageNumber,
+	    Date lastIAViewUpdateProcessedTime) {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public IAViewUpdate findLastIAViewUpdate() {
+	// TODO Auto-generated method stub
 	return null;
     }
 }

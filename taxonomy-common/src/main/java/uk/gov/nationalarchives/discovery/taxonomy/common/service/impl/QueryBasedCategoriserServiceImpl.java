@@ -1,28 +1,12 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.aop.annotation.Loggable;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
-import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
-import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.TaxonomyMapper;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.IAViewUpdateRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.InformationAssetViewMongoRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncQueryBasedTaskManager;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -42,13 +26,36 @@ import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import uk.gov.nationalarchives.discovery.taxonomy.common.aop.annotation.Loggable;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
+import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
+import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.TaxonomyMapper;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.IAViewUpdateRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.InformationAssetViewMongoRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncQueryBasedTaskManager;
 
 @Service
 @ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useQueryBasedCategoriser")
@@ -56,6 +63,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
     private static final Logger logger = LoggerFactory.getLogger(QueryBasedCategoriserServiceImpl.class);
 
+    // TODO 6 put all autowired fields in constructors
     @Autowired
     private CategoryRepository categoryRepository;
 
@@ -79,6 +87,8 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
     @Autowired
     private AsyncQueryBasedTaskManager asyncTaskManager;
+
+    private static final int PAGE_SIZE = 10;
 
     @Override
     @Loggable
@@ -116,9 +126,9 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	}
 	iaView.setCATEGORIES(categories.toArray(new String[] {}));
 
-	long timestamp = Calendar.getInstance().getTime().getTime();
-	iaViewMongoRepository.save(TaxonomyMapper.getMongoIAViewFromLuceneIAView(iaView, timestamp));
-	iaViewUpdateRepository.save(TaxonomyMapper.getIAViewUpdateFromLuceneIAView(iaView, timestamp));
+	Date creationDate = Calendar.getInstance().getTime();
+	iaViewMongoRepository.save(TaxonomyMapper.getMongoIAViewFromLuceneIAView(iaView, creationDate));
+	iaViewUpdateRepository.save(TaxonomyMapper.getIAViewUpdateFromLuceneIAView(iaView, creationDate));
 	return listOfCategorisationResults;
     }
 
@@ -313,6 +323,26 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
      */
     public void setIaViewUpdateRepository(IAViewUpdateRepository iaViewUpdateRepository) {
 	this.iaViewUpdateRepository = iaViewUpdateRepository;
+    }
+
+    @Override
+    public boolean hasNewCategorisedDocumentsSinceDate(Date date) {
+	PageRequest pageRequest = new PageRequest(0, 1);
+	Page<IAViewUpdate> pageOfIAViewUpdatesToProcess = iaViewUpdateRepository.findByCreationDateGreaterThan(date,
+		pageRequest);
+	return pageOfIAViewUpdatesToProcess.hasContent();
+    }
+
+    @Override
+    public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceDate(int pageNumber, Date date) {
+	Sort sort = new Sort(Direction.ASC, IAViewUpdate.CREATIONDATE);
+	PageRequest pageRequest = new PageRequest(0, PAGE_SIZE, sort);
+	return iaViewUpdateRepository.findByCreationDateGreaterThan(date, pageRequest);
+    }
+
+    @Override
+    public IAViewUpdate findLastIAViewUpdate() {
+	return iaViewUpdateRepository.findLastIAViewUpdate();
     }
 
 }

@@ -1,22 +1,36 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo;
 
+import java.util.Date;
+
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * IAView with its categories <br/>
+ * this collection contains all the results of categorisation for all documents.
+ * Would potentially contain several update documents per IAView.
+ * 
+ * @author jcharlet
+ *
+ */
 @Document(collection = "iaViewUpdates")
 public class IAViewUpdate {
 
+    public static final String CREATIONDATE = "creationDate";
+
     @Id
-    private long timestamp;
+    private ObjectId id;
+
+    private Date creationDate;
 
     private String docReference;
 
     private String[] categories;
     private String catDocRef;
 
-    public IAViewUpdate(long timestamp) {
+    public IAViewUpdate() {
 	super();
-	this.timestamp = timestamp;
     }
 
     public String getDocReference() {
@@ -43,12 +57,31 @@ public class IAViewUpdate {
 	this.catDocRef = catDocRef;
     }
 
-    public long getTimestamp() {
-	return timestamp;
+    public ObjectId getId() {
+	return id;
     }
 
-    public void setTimestamp(long timestamp) {
-	this.timestamp = timestamp;
+    public void setId(ObjectId id) {
+	this.id = id;
+    }
+
+    public Date getCreationDate() {
+	return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+	this.creationDate = creationDate;
+    }
+
+    @Override
+    public String toString() {
+	StringBuilder builder = new StringBuilder();
+	builder.append("IAViewUpdate [creationDate=");
+	builder.append(creationDate);
+	builder.append(", docReference=");
+	builder.append(docReference);
+	builder.append("]");
+	return builder.toString();
     }
 
 }

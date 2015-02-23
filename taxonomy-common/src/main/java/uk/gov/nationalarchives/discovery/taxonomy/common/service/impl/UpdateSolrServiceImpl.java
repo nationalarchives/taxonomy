@@ -1,6 +1,7 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,8 @@ import java.util.Map;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +23,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.service.UpdateSolrServi
 @Service
 public class UpdateSolrServiceImpl implements UpdateSolrService {
 
-    // private static final Logger logger =
-    // LoggerFactory.getLogger(UpdateSolrServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(UpdateSolrServiceImpl.class);
 
     @Autowired
     private SolrIAViewRepository solrIAViewRepository;
@@ -31,6 +33,7 @@ public class UpdateSolrServiceImpl implements UpdateSolrService {
 
     @Override
     public void updateCategoriesOnIAView(String docReference) {
+	logger.info(".updateCategoriesOnIAView: {}", docReference);
 
 	String[] categories = retrieveCategoriesForIAView(docReference);
 
@@ -48,6 +51,7 @@ public class UpdateSolrServiceImpl implements UpdateSolrService {
 
     @Override
     public void bulkUpdateCategoriesOnIAViews(String[] docReferences) {
+	logger.info(".updateCategoriesOnIAView: {}", Arrays.toString(docReferences));
 	List<SolrInputDocument> listOfUpdatesToSubmitToSolr = new ArrayList<SolrInputDocument>();
 
 	for (String docReference : docReferences) {

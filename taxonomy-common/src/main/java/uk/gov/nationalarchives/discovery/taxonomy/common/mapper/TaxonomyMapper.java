@@ -1,5 +1,7 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.mapper;
 
+import java.util.Date;
+
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.MongoInformationAssetView;
@@ -35,8 +37,8 @@ public class TaxonomyMapper {
     }
 
     public static MongoInformationAssetView getMongoIAViewFromLuceneIAView(
-	    InformationAssetView iaViewFromLuceneDocument, long timestamp) {
-	MongoInformationAssetView mongoIaView = new MongoInformationAssetView(timestamp);
+	    InformationAssetView iaViewFromLuceneDocument, Date creationDate) {
+	MongoInformationAssetView mongoIaView = new MongoInformationAssetView(creationDate);
 	mongoIaView.setDocReference(iaViewFromLuceneDocument.getDOCREFERENCE());
 	mongoIaView.setCatDocRef(iaViewFromLuceneDocument.getCATDOCREF());
 	mongoIaView.setCategories(iaViewFromLuceneDocument.getCATEGORIES());
@@ -45,11 +47,12 @@ public class TaxonomyMapper {
     }
 
     public static IAViewUpdate getIAViewUpdateFromLuceneIAView(InformationAssetView iaViewFromLuceneDocument,
-	    long timestamp) {
-	IAViewUpdate iaViewUpdate = new IAViewUpdate(timestamp);
+	    Date creationDate) {
+	IAViewUpdate iaViewUpdate = new IAViewUpdate();
 	iaViewUpdate.setDocReference(iaViewFromLuceneDocument.getDOCREFERENCE());
 	iaViewUpdate.setCatDocRef(iaViewFromLuceneDocument.getCATDOCREF());
 	iaViewUpdate.setCategories(iaViewFromLuceneDocument.getCATEGORIES());
+	iaViewUpdate.setCreationDate(creationDate);
 	return iaViewUpdate;
     }
 

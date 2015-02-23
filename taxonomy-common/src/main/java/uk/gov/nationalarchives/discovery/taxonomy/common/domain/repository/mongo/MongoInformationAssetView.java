@@ -1,24 +1,34 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-//TODO 1 provide indexes on collection
+/**
+ * IAView with its categories <br/>
+ * this collection contains the latest results of categorisation for every
+ * unique IAView categorised.<br/>
+ * It's a copy of the IAView Solr/Lucene index with only docRefs and categories
+ * 
+ * @author jcharlet
+ *
+ */
 @Document(collection = "iaViews")
 public class MongoInformationAssetView {
 
     @Id
     private String docReference;
 
-    private long timestamp;
+    private Date creationDate;
 
     private String[] categories;
     private String catDocRef;
     private String series;
 
-    public MongoInformationAssetView(long timestamp) {
+    public MongoInformationAssetView(Date creationDate) {
 	super();
-	this.timestamp = timestamp;
+	this.creationDate = creationDate;
     }
 
     public String getDocReference() {
@@ -45,12 +55,12 @@ public class MongoInformationAssetView {
 	this.catDocRef = catDocRef;
     }
 
-    public long getTimestamp() {
-	return timestamp;
+    public Date getCreationDate() {
+	return creationDate;
     }
 
-    public void setTimestamp(long timestamp) {
-	this.timestamp = timestamp;
+    public void setCreationDate(Date creationDate) {
+	this.creationDate = creationDate;
     }
 
     public String getSeries() {

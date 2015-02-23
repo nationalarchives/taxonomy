@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.stereotype.Component;
 
 import com.mongodb.Mongo;
 
@@ -19,6 +20,7 @@ import com.mongodb.Mongo;
 @EnableMongoRepositories
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 @EnableConfigurationProperties
+@Component
 public class MongoConfiguration {
 
     private String host;
@@ -63,9 +65,9 @@ public class MongoConfiguration {
     }
 
     public @Bean MongoTemplate mongoTemplate() throws Exception {
-	// remove _class
 	MappingMongoConverter converter = new MappingMongoConverter(new DefaultDbRefResolver(mongoDbFactory()),
 		new MongoMappingContext());
+	// remove _class
 	converter.setTypeMapper(new DefaultMongoTypeMapper(null));
 
 	return new MongoTemplate(mongoDbFactory(), converter);
