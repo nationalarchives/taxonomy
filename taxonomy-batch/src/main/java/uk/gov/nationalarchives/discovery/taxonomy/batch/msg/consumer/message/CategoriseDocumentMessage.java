@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.batch.consumer.message;
+package uk.gov.nationalarchives.discovery.taxonomy.batch.msg.consumer.message;
 
 import java.util.List;
 
