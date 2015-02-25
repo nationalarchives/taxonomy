@@ -57,6 +57,9 @@ public class updateSolrCloudTask {
 		if (hasNext = pageOfIAViewUpdatesToProcess.hasNext()) {
 		    pageNumber++;
 		} else {
+		    // TODO 1 if an element fails, updates to Solr are stopped.
+		    // that's interesting but there might be something else to
+		    // do
 		    updateLastIAViewUpdateProcessedTime(pageOfIAViewUpdatesToProcess);
 		}
 	    }
@@ -94,7 +97,7 @@ public class updateSolrCloudTask {
 
     private Date generatePastDate() {
 	Calendar instance = Calendar.getInstance();
-	instance.roll(Calendar.YEAR, 1);
+	instance.roll(Calendar.YEAR, -1);
 	return instance.getTime();
     }
 }

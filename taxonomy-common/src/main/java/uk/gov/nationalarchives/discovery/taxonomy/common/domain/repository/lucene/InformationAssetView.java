@@ -1,7 +1,5 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene;
 
-import java.util.Arrays;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,8 +28,6 @@ public class InformationAssetView {
     @JsonProperty(value = "coveringDates")
     private String COVERINGDATES;
 
-    @JsonProperty(value = "categories")
-    private String[] CATEGORIES;
     private Float score;
     @JsonProperty(value = "series")
     private String SERIES;
@@ -116,14 +112,6 @@ public class InformationAssetView {
 	COVERINGDATES = cOVERINGDATES;
     }
 
-    public String[] getCATEGORIES() {
-	return CATEGORIES;
-    }
-
-    public void setCATEGORIES(String[] cATEGORIES) {
-	CATEGORIES = cATEGORIES;
-    }
-
     public Float getScore() {
 	return score;
     }
@@ -147,12 +135,6 @@ public class InformationAssetView {
 	builder.append(DOCREFERENCE);
 	builder.append(", TITLE=");
 	builder.append(TITLE);
-	builder.append(", CATEGORIES=");
-	builder.append(Arrays.toString(CATEGORIES));
-	if (score != null) {
-	    builder.append(", SCORE=");
-	    builder.append(score);
-	}
 	builder.append("]");
 	return builder.toString();
     }
