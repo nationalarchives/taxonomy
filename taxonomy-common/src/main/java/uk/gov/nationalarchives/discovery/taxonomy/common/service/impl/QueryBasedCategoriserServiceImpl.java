@@ -26,7 +26,6 @@ import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,9 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.aop.annotation.Loggable
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryLight;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.MongoInformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
@@ -120,16 +121,40 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     public List<CategorisationResult> categoriseSingle(InformationAssetView iaView) {
 	List<CategorisationResult> listOfCategorisationResults = testCategoriseSingle(iaView);
 
-	List<String> categories = new ArrayList<String>();
-	for (CategorisationResult categorisationResult : listOfCategorisationResults) {
-	    categories.add(categorisationResult.getName());
-	}
-	iaView.setCATEGORIES(categories.toArray(new String[] {}));
+	List<CategoryLight> categories = getListOfCategoryLightFromListOfCatResult(listOfCategorisationResults);
 
 	Date creationDate = Calendar.getInstance().getTime();
-	iaViewMongoRepository.save(TaxonomyMapper.getMongoIAViewFromLuceneIAView(iaView, creationDate));
-	iaViewUpdateRepository.save(TaxonomyMapper.getIAViewUpdateFromLuceneIAView(iaView, creationDate));
+
+	saveRecordInMongoIAViewTable(iaView, categories, creationDate);
+
+	saveNewRecordInIAViewUpdateTable(iaView, categories, creationDate);
+
 	return listOfCategorisationResults;
+    }
+
+    private void saveNewRecordInIAViewUpdateTable(InformationAssetView iaView, List<CategoryLight> categories,
+	    Date creationDate) {
+	IAViewUpdate iaViewUpdateFromLuceneIAView = TaxonomyMapper
+		.getIAViewUpdateFromLuceneIAView(iaView, creationDate);
+	iaViewUpdateFromLuceneIAView.setCategories(categories);
+	iaViewUpdateRepository.save(iaViewUpdateFromLuceneIAView);
+    }
+
+    private void saveRecordInMongoIAViewTable(InformationAssetView iaView, List<CategoryLight> categories,
+	    Date creationDate) {
+	MongoInformationAssetView mongoIAViewFromLuceneIAView = TaxonomyMapper.getMongoIAViewFromLuceneIAView(iaView,
+		creationDate);
+	mongoIAViewFromLuceneIAView.setCategories(categories);
+	iaViewMongoRepository.save(mongoIAViewFromLuceneIAView);
+    }
+
+    private List<CategoryLight> getListOfCategoryLightFromListOfCatResult(
+	    List<CategorisationResult> listOfCategorisationResults) {
+	List<CategoryLight> categories = new ArrayList<CategoryLight>();
+	for (CategorisationResult categorisationResult : listOfCategorisationResults) {
+	    categories.add(new CategoryLight(categorisationResult.getCiaid(), categorisationResult.getName()));
+	}
+	return categories;
     }
 
     // TODO 4 manage timeout? on the search to lucene and NOT on the task:

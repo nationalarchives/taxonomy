@@ -1,6 +1,7 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo;
 
 import java.util.Date;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -26,7 +27,7 @@ public class IAViewUpdate {
 
     private String docReference;
 
-    private String[] categories;
+    private List<CategoryLight> categories;
     private String catDocRef;
 
     public IAViewUpdate() {
@@ -41,11 +42,11 @@ public class IAViewUpdate {
 	this.docReference = docReference;
     }
 
-    public String[] getCategories() {
+    public List<CategoryLight> getCategories() {
 	return categories;
     }
 
-    public void setCategories(String[] categories) {
+    public void setCategories(List<CategoryLight> categories) {
 	this.categories = categories;
     }
 

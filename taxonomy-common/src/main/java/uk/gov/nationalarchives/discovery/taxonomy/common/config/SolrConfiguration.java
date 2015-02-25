@@ -2,6 +2,7 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.config;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "solr.")
 @EnableConfigurationProperties
+@ConditionalOnProperty(prefix = "solr.", value = "host")
 public class SolrConfiguration {
 
     private String host;

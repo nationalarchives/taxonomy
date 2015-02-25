@@ -42,7 +42,7 @@ public class RunUnitCategoryQueryTask implements Callable<CategorisationResult> 
 	    TopDocs topDocs = iaViewRepository.performSearchWithoutAnyPostProcessing(category.getQry(), filter,
 		    category.getSc(), 1, 0);
 	    if (topDocs.totalHits != 0 && topDocs.scoreDocs[0].score > category.getSc()) {
-		return new CategorisationResult(category.getTtl(), topDocs.scoreDocs[0].score);
+		return new CategorisationResult(category.getTtl(), category.getCiaid(), topDocs.scoreDocs[0].score);
 	    }
 	} catch (TaxonomyException e) {
 	    logger.debug(".call: an exception occured while parsing category query for category: {}, exception: {}",

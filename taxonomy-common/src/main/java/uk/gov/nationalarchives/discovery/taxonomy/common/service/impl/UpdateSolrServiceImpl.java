@@ -12,16 +12,23 @@ import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryLight;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.MongoInformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.InformationAssetViewMongoRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrIAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.UpdateSolrService;
 
 @Service
+@ConditionalOnProperty(prefix = "solr.", value = "host")
 public class UpdateSolrServiceImpl implements UpdateSolrService {
+
+    private static final String FIELD_MODIFIER_KEY_ADD = "add";
+
+    private static final String FIELD_MODIFIER_KEY_SET = "set";
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateSolrServiceImpl.class);
 
@@ -35,17 +42,17 @@ public class UpdateSolrServiceImpl implements UpdateSolrService {
     public void updateCategoriesOnIAView(String docReference) {
 	logger.info(".updateCategoriesOnIAView: {}", docReference);
 
-	String[] categories = retrieveCategoriesForIAView(docReference);
+	List<CategoryLight> categories = retrieveCategoriesForIAView(docReference);
 
 	SolrInputDocument document = createDocumentForAtomicUpdate(docReference, categories);
 
 	solrIAViewRepository.save(document);
     }
 
-    private String[] retrieveCategoriesForIAView(String docReference) {
+    private List<CategoryLight> retrieveCategoriesForIAView(String docReference) {
 	MongoInformationAssetView iaViewWithCategories = informationAssetViewMongoRepository
 		.findByDocReference(docReference);
-	String[] categories = iaViewWithCategories.getCategories();
+	List<CategoryLight> categories = iaViewWithCategories.getCategories();
 	return categories;
     }
 
@@ -56,7 +63,7 @@ public class UpdateSolrServiceImpl implements UpdateSolrService {
 
 	for (String docReference : docReferences) {
 
-	    String[] categories = retrieveCategoriesForIAView(docReference);
+	    List<CategoryLight> categories = retrieveCategoriesForIAView(docReference);
 
 	    SolrInputDocument document = createDocumentForAtomicUpdate(docReference, categories);
 
@@ -72,18 +79,30 @@ public class UpdateSolrServiceImpl implements UpdateSolrService {
 
     }
 
-    private SolrInputDocument createDocumentForAtomicUpdate(String docReference, String[] categories) {
+    private SolrInputDocument createDocumentForAtomicUpdate(String docReference, List<CategoryLight> categories) {
 	SolrInputDocument solrInputDocument = new SolrInputDocument();
 	solrInputDocument.addField(InformationAssetViewFields.DOCREFERENCE.toString(), docReference);
-	for (String category : categories) {
-	    Map<String, Object> addFieldModifier = new HashMap<>(1);
-	    addFieldModifier.put("add", category);
-	    solrInputDocument.addField(InformationAssetViewFields.TAXONOMY.toString(), addFieldModifier);
+	for (CategoryLight category : categories) {
+	    addFieldToSolrInputDocument(InformationAssetViewFields.TAXONOMY.toString(), category.getCiaidAndTtl(),
+		    solrInputDocument);
+	    addFieldToSolrInputDocument(InformationAssetViewFields.TAXONOMYID.toString(), category.getCiaid(),
+		    solrInputDocument);
 	}
-	Map<String, Object> removeFieldModifier = new HashMap<>(1);
-	removeFieldModifier.put("set", null);
-	solrInputDocument.addField(InformationAssetViewFields.TAXONOMY.toString(), removeFieldModifier);
+	resetFieldOnSolrDocument(InformationAssetViewFields.TAXONOMY.toString(), solrInputDocument);
+	resetFieldOnSolrDocument(InformationAssetViewFields.TAXONOMYID.toString(), solrInputDocument);
 	return solrInputDocument;
+    }
+
+    private void resetFieldOnSolrDocument(String fieldToReset, SolrInputDocument solrInputDocument) {
+	Map<String, Object> removeFieldModifier = new HashMap<>(1);
+	removeFieldModifier.put(FIELD_MODIFIER_KEY_SET, null);
+	solrInputDocument.addField(fieldToReset, removeFieldModifier);
+    }
+
+    private void addFieldToSolrInputDocument(String fieldKey, String fieldValue, SolrInputDocument solrInputDocument) {
+	Map<String, Object> addFieldModifier = new HashMap<>(1);
+	addFieldModifier.put(FIELD_MODIFIER_KEY_ADD, fieldValue);
+	solrInputDocument.addField(fieldKey, addFieldModifier);
     }
 
     @Deprecated

@@ -41,7 +41,6 @@ public class TaxonomyMapper {
 	MongoInformationAssetView mongoIaView = new MongoInformationAssetView(creationDate);
 	mongoIaView.setDocReference(iaViewFromLuceneDocument.getDOCREFERENCE());
 	mongoIaView.setCatDocRef(iaViewFromLuceneDocument.getCATDOCREF());
-	mongoIaView.setCategories(iaViewFromLuceneDocument.getCATEGORIES());
 	mongoIaView.setSeries(iaViewFromLuceneDocument.getSERIES());
 	return mongoIaView;
     }
@@ -51,7 +50,6 @@ public class TaxonomyMapper {
 	IAViewUpdate iaViewUpdate = new IAViewUpdate();
 	iaViewUpdate.setDocReference(iaViewFromLuceneDocument.getDOCREFERENCE());
 	iaViewUpdate.setCatDocRef(iaViewFromLuceneDocument.getCATDOCREF());
-	iaViewUpdate.setCategories(iaViewFromLuceneDocument.getCATEGORIES());
 	iaViewUpdate.setCreationDate(creationDate);
 	return iaViewUpdate;
     }

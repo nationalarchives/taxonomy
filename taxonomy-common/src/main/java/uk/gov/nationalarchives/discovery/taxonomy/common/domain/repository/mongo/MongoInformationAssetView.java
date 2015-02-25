@@ -1,6 +1,7 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,7 +23,7 @@ public class MongoInformationAssetView {
 
     private Date creationDate;
 
-    private String[] categories;
+    private List<CategoryLight> categories;
     private String catDocRef;
     private String series;
 
@@ -39,11 +40,11 @@ public class MongoInformationAssetView {
 	this.docReference = docReference;
     }
 
-    public String[] getCategories() {
+    public List<CategoryLight> getCategories() {
 	return categories;
     }
 
-    public void setCategories(String[] categories) {
+    public void setCategories(List<CategoryLight> categories) {
 	this.categories = categories;
     }
 

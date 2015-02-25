@@ -20,15 +20,18 @@ public class CategorisationResult {
     @JsonProperty
     protected String name;
     @JsonProperty
+    protected String ciaid;
+    @JsonProperty
     protected Float score;
 
     public CategorisationResult() {
 	super();
     }
 
-    public CategorisationResult(String name, Float score) {
+    public CategorisationResult(String name, String ciaid, Float score) {
 	super();
 	this.name = name;
+	this.ciaid = ciaid;
 	this.score = score;
     }
 
@@ -48,14 +51,25 @@ public class CategorisationResult {
 	this.score = score;
     }
 
+    public String getCiaid() {
+	return ciaid;
+    }
+
+    public void setCiaid(String ciaid) {
+	this.ciaid = ciaid;
+    }
+
     @Override
     public String toString() {
 	StringBuilder builder = new StringBuilder();
 	builder.append("CategorisationResult [name=");
 	builder.append(name);
+	builder.append(", ciaid=");
+	builder.append(ciaid);
 	builder.append(", score=");
 	builder.append(score);
 	builder.append("]");
 	return builder.toString();
     }
+
 }

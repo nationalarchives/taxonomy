@@ -2,6 +2,7 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.impl;
 
 import java.io.IOException;
 import java.util.List;
+
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -11,6 +12,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.SolrParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
@@ -19,6 +21,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exceptio
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrIAViewRepository;
 
 @Repository
+@ConditionalOnProperty(prefix = "solr.", value = "host")
 public class SolrIAViewRepositoryImpl implements SolrIAViewRepository {
 
     @Autowired
