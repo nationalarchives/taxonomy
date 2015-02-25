@@ -256,6 +256,8 @@ public class LuceneConfiguration {
 		synonymFilterFactory(), wordDelimiterFilterFactory(), query);
 	textGenAnalyser.setPositionIncrementGap(100);
 	mapOfAnalyzerPerField.put(InformationAssetViewFields.CATDOCREF.toString(), textGenAnalyser);
+	mapOfAnalyzerPerField.put(InformationAssetViewFields.DESCRIPTION.toString(), textGenAnalyser);
+	mapOfAnalyzerPerField.put(InformationAssetViewFields.TITLE.toString(), textGenAnalyser);
 
 	IAViewTextNoCasNoPuncAnalyser textNoCasNoPuncAnalyser = new IAViewTextNoCasNoPuncAnalyser(
 		Version.parseLeniently(version), synonymFilterFactory(), wordDelimiterFilterFactory(), query);

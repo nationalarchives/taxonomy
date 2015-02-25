@@ -260,6 +260,14 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	    listOfUnmodifiedFields.add(new TextField(InformationAssetViewFields.CATDOCREF.toString(), iaView
 		    .getCATDOCREF(), Field.Store.NO));
 	}
+	if (iaView.getDESCRIPTION() != null) {
+	    listOfUnmodifiedFields.add(new TextField(InformationAssetViewFields.DESCRIPTION.toString(), iaView
+		    .getDESCRIPTION(), Field.Store.NO));
+	}
+	if (iaView.getTITLE() != null) {
+	    listOfUnmodifiedFields.add(new TextField(InformationAssetViewFields.TITLE.toString(), iaView.getTITLE(),
+		    Field.Store.NO));
+	}
 	return listOfUnmodifiedFields;
     }
 
