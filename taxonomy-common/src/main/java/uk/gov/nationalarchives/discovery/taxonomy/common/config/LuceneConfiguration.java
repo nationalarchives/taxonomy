@@ -31,6 +31,7 @@ import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -85,40 +86,17 @@ public class LuceneConfiguration {
     }
 
     /**
-     ************************* Directories
+     ************************* IA Views
      */
-
-    public @Bean Directory trainingSetDirectory() throws IOException {
-	// TODO TSETBASED Use MMapDirectory to be faster. is used on solr
-	// Server
-	File file = new File(trainingSetCollectionPath);
-	return new SimpleFSDirectory(file);
-    }
 
     public @Bean Directory iaViewDirectory() throws IOException {
 	Directory fsDir = FSDirectory.open(new File(iaviewCollectionPath));
 	return new NRTCachingDirectory(fsDir, iaViewMaxMergeSizeMB, iaViewMaxCachedMB);
     }
 
-    /**
-     ************************* Readers
-     */
-
     public @Bean IndexReader iaViewIndexReader() throws IOException {
 	return DirectoryReader.open(iaViewDirectory());
     }
-
-    public @Bean ReaderManager trainingSetReaderManager() throws IOException {
-	return new ReaderManager(trainingSetDirectory());
-    }
-
-    public @Bean IndexReader trainingSetIndexReader() throws IOException {
-	return DirectoryReader.open(trainingSetDirectory());
-    }
-
-    /**
-     ************************* Searchers
-     */
 
     public @Bean IndexSearcher iaviewSearcher() throws IOException {
 	return new IndexSearcher(iaViewIndexReader());
@@ -132,9 +110,53 @@ public class LuceneConfiguration {
 	return new SearcherManager(iaViewDirectory(), null);
     }
 
+    /**
+     ************************* TSet Based
+     */
+
+    @ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
+    public @Bean Directory trainingSetDirectory() throws IOException {
+	// TODO TSETBASED Use MMapDirectory to be faster. is used on solr
+	// Server
+	File file = new File(trainingSetCollectionPath);
+	return new SimpleFSDirectory(file);
+    }
+
+    @ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
+    public @Bean ReaderManager trainingSetReaderManager() throws IOException {
+	return new ReaderManager(trainingSetDirectory());
+    }
+
+    @ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
+    public @Bean IndexReader trainingSetIndexReader() throws IOException {
+	return DirectoryReader.open(trainingSetDirectory());
+    }
+
+    @ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
     public @Bean SearcherManager trainingSetSearcherManager() throws IOException {
 	// return new SearcherManager(iaviewIndexWriter(), true, null);
 	return new SearcherManager(trainingSetDirectory(), null);
+    }
+
+    /**
+     * Analyzer dedicated to indexing elements into training set and comparing
+     * them with document to categorise
+     * 
+     * @return
+     * @throws ParseException
+     * @throws NumberFormatException
+     */
+    @ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
+    public @Bean Analyzer trainingSetAnalyser() throws NumberFormatException, ParseException {
+	StopFilterFactory stopFilterFactory = null;
+	if (useStopFilter) {
+	    stopFilterFactory = stopFilterFactory();
+	}
+	SynonymFilterFactory synonymFilterFactory = null;
+	if (useSynonymFilter) {
+	    synonymFilterFactory = synonymFilterFactory();
+	}
+	return new TaxonomyTrainingSetAnalyser(stopFilterFactory, synonymFilterFactory, Integer.valueOf(maxShingleSize));
     }
 
     /**
@@ -194,26 +216,6 @@ public class LuceneConfiguration {
 	}
 	return wordDelimiterFilterFactory;
 
-    }
-
-    /**
-     * Analyzer dedicated to indexing elements into training set and comparing
-     * them with document to categorise
-     * 
-     * @return
-     * @throws ParseException
-     * @throws NumberFormatException
-     */
-    public @Bean Analyzer trainingSetAnalyser() throws NumberFormatException, ParseException {
-	StopFilterFactory stopFilterFactory = null;
-	if (useStopFilter) {
-	    stopFilterFactory = stopFilterFactory();
-	}
-	SynonymFilterFactory synonymFilterFactory = null;
-	if (useSynonymFilter) {
-	    synonymFilterFactory = synonymFilterFactory();
-	}
-	return new TaxonomyTrainingSetAnalyser(stopFilterFactory, synonymFilterFactory, Integer.valueOf(maxShingleSize));
     }
 
     /**

@@ -201,10 +201,6 @@ public class CLIRunner implements CommandLineRunner {
 	}
 
 	logger.info("Stop cat CLI Runner.");
-
-	// TODO 4 why threadPoolTaskExecutor must be manually destroyed to
-	// shutdown the cli application?
-	threadPoolTaskExecutor.destroy();
     }
 
     private String aggregateCommentsWithArguments(String userComments, String... args) {
