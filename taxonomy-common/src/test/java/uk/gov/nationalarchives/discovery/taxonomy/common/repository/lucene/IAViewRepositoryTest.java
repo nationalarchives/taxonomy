@@ -77,6 +77,9 @@ public class IAViewRepositoryTest {
     @Autowired
     private Analyzer iaViewSearchAnalyser;
 
+    @Autowired
+    private LuceneHelperTools luceneHelperTools;
+
     @Value("${lucene.index.version}")
     private String luceneVersion;
 
@@ -150,8 +153,8 @@ public class IAViewRepositoryTest {
 		docRef.toLowerCase()))));
 	filters.add(new QueryWrapperFilter(new TermQuery(new Term(InformationAssetViewFields.DOCREFERENCE.toString(),
 		docRef))));
-	filters.add(new QueryWrapperFilter(iaViewRepository.buildSearchQuery("\"" + catDocRef + "\"")));
-	filters.add(new QueryWrapperFilter(iaViewRepository.buildSearchQuery("CATDOCREF:\"" + catDocRef + "\"")));
+	filters.add(new QueryWrapperFilter(luceneHelperTools.buildSearchQuery("\"" + catDocRef + "\"")));
+	filters.add(new QueryWrapperFilter(luceneHelperTools.buildSearchQuery("CATDOCREF:\"" + catDocRef + "\"")));
 	filters.add(null);
 
 	TopDocs results = null;

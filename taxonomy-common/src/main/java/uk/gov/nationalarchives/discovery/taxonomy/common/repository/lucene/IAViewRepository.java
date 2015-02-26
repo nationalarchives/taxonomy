@@ -1,15 +1,5 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.aop.annotation.Loggable;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.PaginatedList;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
-import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.tools.TaxonomyHelperTools;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +10,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.FilteredQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -33,6 +22,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import uk.gov.nationalarchives.discovery.taxonomy.common.aop.annotation.Loggable;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.PaginatedList;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
+import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.tools.TaxonomyHelperTools;
+
 /**
  * Repository dedicated the the retrieval, storage, search of IAViews on the
  * snapshot of the Solr Cloud index. Use Lucene to process the index directly
@@ -43,25 +42,28 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class IAViewRepository {
 
-    @Value("${lucene.index.defaultTaxonomyField}")
-    private String defaultTaxonomyField;
-
-    @Autowired
     private SearcherManager iaviewSearcherManager;
 
     @Value("${lucene.index.version}")
     private String luceneVersion;
 
-    @Autowired
-    private Analyzer iaViewSearchAnalyser;
+    private final Analyzer iaViewSearchAnalyser;
 
-    @Autowired
-    private IndexSearcher iaviewSearcher;
-
-    @Autowired
-    private Filter catalogueFilter;
+    private final IndexSearcher iaviewSearcher;
 
     private static final Logger logger = LoggerFactory.getLogger(IAViewRepository.class);
+
+    private final LuceneHelperTools luceneHelperTools;
+
+    @Autowired
+    public IAViewRepository(SearcherManager iaviewSearcherManager, Analyzer iaViewSearchAnalyser,
+	    IndexSearcher iaviewSearcher, LuceneHelperTools luceneHelperTools) {
+	super();
+	this.iaviewSearcherManager = iaviewSearcherManager;
+	this.iaViewSearchAnalyser = iaViewSearchAnalyser;
+	this.iaviewSearcher = iaviewSearcher;
+	this.luceneHelperTools = luceneHelperTools;
+    }
 
     public Document getDoc(ScoreDoc scoreDoc) {
 	Document hitDoc = null;
@@ -116,7 +118,7 @@ public class IAViewRepository {
 	try {
 	    // isearcher = iaviewSearcherManager.acquire();
 
-	    Query finalQuery = buildSearchQueryWithFiltersIfNecessary(queryString, filter);
+	    Query finalQuery = luceneHelperTools.buildSearchQueryWithFiltersIfNecessary(queryString, filter);
 
 	    // return isearcher.search(finalQuery, offset + limit);
 	    return this.iaviewSearcher.search(finalQuery, offset + limit);
@@ -141,7 +143,7 @@ public class IAViewRepository {
 	try {
 	    isearcher = iaviewSearcherManager.acquire();
 
-	    Query finalQuery = buildSearchQueryWithFiltersIfNecessary(queryString, null);
+	    Query finalQuery = luceneHelperTools.buildSearchQueryWithFiltersIfNecessary(queryString, null);
 
 	    TopDocs topDocs = isearcher.search(finalQuery, offset + limit);
 	    logger.debug(".performSearch: found {} total hits, time: {}", topDocs.totalHits,
@@ -182,34 +184,6 @@ public class IAViewRepository {
 	paginatedListOfIAViews.setResults(docs);
 
 	return paginatedListOfIAViews;
-    }
-
-    public Query buildSearchQueryWithFiltersIfNecessary(String queryString, Filter filter) {
-	Query searchQuery = buildSearchQuery(queryString);
-
-	if (filter == null) {
-	    filter = this.catalogueFilter;
-	}
-
-	Query finalQuery;
-	if (filter != null) {
-	    finalQuery = new FilteredQuery(searchQuery, filter);
-	} else {
-	    finalQuery = searchQuery;
-	}
-	return finalQuery;
-    }
-
-    public Query buildSearchQuery(String queryString) {
-	QueryParser parser = new QueryParser(defaultTaxonomyField, this.iaViewSearchAnalyser);
-	parser.setAllowLeadingWildcard(true);
-	Query searchQuery;
-	try {
-	    searchQuery = parser.parse(queryString);
-	} catch (ParseException e) {
-	    throw new TaxonomyException(TaxonomyErrorType.INVALID_CATEGORY_QUERY, e);
-	}
-	return searchQuery;
     }
 
     // TODO TSETBASED & WS check if there are memory leak

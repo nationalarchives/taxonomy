@@ -1,7 +1,5 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -11,32 +9,18 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.TermFilter;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.SearcherManager;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.aop.annotation.Loggable;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
@@ -46,12 +30,10 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.MongoInformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.TaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.InMemoryIAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.IAViewUpdateRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.InformationAssetViewMongoRepository;
@@ -68,23 +50,17 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @Value("${lucene.index.version}")
-    private String luceneVersion;
-
-    @Autowired
-    private Analyzer iaViewIndexAnalyser;
-
     @Autowired
     private IAViewRepository iaViewRepository;
+
+    @Autowired
+    private InMemoryIAViewRepository inMemoryiaViewRepository;
 
     @Autowired
     private InformationAssetViewMongoRepository iaViewMongoRepository;
 
     @Autowired
     private IAViewUpdateRepository iaViewUpdateRepository;
-
-    @Autowired
-    private SearcherManager iaviewSearcherManager;
 
     @Autowired
     private AsyncQueryBasedTaskManager asyncTaskManager;
@@ -102,7 +78,8 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     public List<CategorisationResult> testCategoriseSingle(InformationAssetView iaView) {
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
 
-	List<Category> listOfRelevantCategories = findRelevantCategories(iaView);
+	List<Category> listOfRelevantCategories = inMemoryiaViewRepository.findRelevantCategoriesForDocument(iaView,
+		categoryRepository.findAll());
 
 	listOfCategoryResults = runCategorisationWithFSDirectory(iaView, listOfRelevantCategories);
 
@@ -191,63 +168,6 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	return listOfCategoryResults;
     }
 
-    private List<Category> findRelevantCategories(InformationAssetView iaView) {
-	List<Category> listOfRelevantCategories = new ArrayList<Category>();
-
-	SearcherManager searcherManager = null;
-	IndexSearcher searcher = null;
-	try {
-	    RAMDirectory ramDirectory = createRamDirectoryForDocument(iaView);
-	    searcherManager = new SearcherManager(ramDirectory, null);
-
-	    searcher = searcherManager.acquire();
-	    for (Category category : categoryRepository.findAll()) {
-		String queryString = category.getQry();
-		try {
-		    Query query = iaViewRepository.buildSearchQuery(queryString);
-		    TopDocs topDocs = searcher.search(query, 1);
-
-		    if (topDocs.totalHits != 0) {
-			listOfRelevantCategories.add(category);
-			logger.debug(".findRelevantCategories: found category {}", category.getTtl());
-		    }
-		} catch (TaxonomyException e) {
-		    logger.debug(
-			    ".findRelevantCategories: an exception occured while parsing category query for category: {}, title: ",
-			    category.getTtl(), e.getMessage());
-		}
-	    }
-	} catch (IOException e) {
-	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
-	} finally {
-	    LuceneHelperTools.releaseSearcherManagerQuietly(searcherManager, searcher);
-	}
-	return listOfRelevantCategories;
-
-    }
-
-    private RAMDirectory createRamDirectoryForDocument(InformationAssetView iaView) throws IOException {
-	RAMDirectory ramDirectory = new RAMDirectory();
-
-	// Make an writer to create the index
-
-	IndexWriter writer;
-	try {
-	    writer = new IndexWriter(ramDirectory, new IndexWriterConfig(Version.parseLeniently(luceneVersion),
-		    this.iaViewIndexAnalyser));
-	} catch (ParseException e) {
-	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
-	}
-
-	// Add some Document objects containing quotes
-	writer.addDocument(getLuceneDocumentFromIaVIew(iaView));
-
-	// Optimize and close the writer to finish building the index
-	writer.close();
-	return ramDirectory;
-
-    }
-
     private void sortCategorisationResultsByScoreDesc(List<CategorisationResult> categorisationResults) {
 	// Sort results by Score in descending Order
 	Collections.sort(categorisationResults, new Comparator<CategorisationResult>() {
@@ -255,89 +175,6 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 		return b.getScore().compareTo(a.getScore());
 	    }
 	});
-    }
-
-    /**
-     * Create a lucene document from an iaView object
-     * 
-     * @param iaView
-     * @throws IOException
-     */
-    public Document getLuceneDocumentFromIaVIew(InformationAssetView iaView) throws IOException {
-
-	Document document = new Document();
-	List<Field> listOfFields = new ArrayList<Field>();
-
-	listOfFields.addAll(getListOfUnmodifiedFieldsFromIAView(iaView));
-
-	listOfFields.addAll(getCopyIAViewFieldsToTaxonomyField(iaView, InformationAssetViewFields.textcaspunc));
-	listOfFields.addAll(getCopyIAViewFieldsToTaxonomyField(iaView, InformationAssetViewFields.textcasnopunc));
-	listOfFields.addAll(getCopyIAViewFieldsToTaxonomyField(iaView, InformationAssetViewFields.textnocasnopunc));
-
-	addFieldsToLuceneDocument(document, listOfFields);
-
-	return document;
-    }
-
-    private List<Field> getListOfUnmodifiedFieldsFromIAView(InformationAssetView iaView) {
-	List<Field> listOfUnmodifiedFields = new ArrayList<Field>();
-	if (iaView.getCATDOCREF() != null) {
-	    listOfUnmodifiedFields.add(new TextField(InformationAssetViewFields.CATDOCREF.toString(), iaView
-		    .getCATDOCREF(), Field.Store.NO));
-	}
-	if (iaView.getDESCRIPTION() != null) {
-	    listOfUnmodifiedFields.add(new TextField(InformationAssetViewFields.DESCRIPTION.toString(), iaView
-		    .getDESCRIPTION(), Field.Store.NO));
-	}
-	if (iaView.getTITLE() != null) {
-	    listOfUnmodifiedFields.add(new TextField(InformationAssetViewFields.TITLE.toString(), iaView.getTITLE(),
-		    Field.Store.NO));
-	}
-	return listOfUnmodifiedFields;
-    }
-
-    private void addFieldsToLuceneDocument(Document document, List<Field> listOfFields) {
-	for (Field field : listOfFields) {
-	    document.add(field);
-	}
-    }
-
-    private List<Field> getCopyIAViewFieldsToTaxonomyField(InformationAssetView iaView,
-	    InformationAssetViewFields texttax) {
-	List<Field> listOfFields = new ArrayList<Field>();
-
-	listOfFields.add(new TextField(texttax.toString(), iaView.getDESCRIPTION(), Field.Store.NO));
-	if (!StringUtils.isEmpty(iaView.getTITLE())) {
-	    listOfFields.add(new TextField(texttax.toString(), iaView.getTITLE(), Field.Store.NO));
-	}
-	if (!StringUtils.isEmpty(iaView.getCONTEXTDESCRIPTION())) {
-	    listOfFields.add(new TextField(texttax.toString(), iaView.getCONTEXTDESCRIPTION(), Field.Store.NO));
-	}
-	if (iaView.getCORPBODYS() != null) {
-	    for (String corpBody : iaView.getCORPBODYS()) {
-		listOfFields.add(new TextField(texttax.toString(), corpBody, Field.Store.NO));
-	    }
-	}
-	if (iaView.getSUBJECTS() != null) {
-	    for (String subject : iaView.getSUBJECTS()) {
-		listOfFields.add(new TextField(texttax.toString(), subject, Field.Store.NO));
-	    }
-	}
-
-	if (iaView.getPERSON_FULLNAME() != null) {
-	    for (String person : iaView.getPERSON_FULLNAME()) {
-		listOfFields.add(new TextField(texttax.toString(), person, Field.Store.NO));
-	    }
-	}
-	if (iaView.getPLACE_NAME() != null) {
-	    for (String place : iaView.getPLACE_NAME()) {
-		listOfFields.add(new TextField(texttax.toString(), place, Field.Store.NO));
-	    }
-	}
-	if (iaView.getCATDOCREF() != null) {
-	    listOfFields.add(new TextField(texttax.toString(), iaView.getCATDOCREF(), Field.Store.NO));
-	}
-	return listOfFields;
     }
 
     /**
