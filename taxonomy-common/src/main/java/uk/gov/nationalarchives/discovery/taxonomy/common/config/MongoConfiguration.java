@@ -1,5 +1,6 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -25,8 +26,14 @@ public class MongoConfiguration {
 
     private String host;
     private Integer port;
-
     private String database;
+
+    @Value("${mongo.categories.host}")
+    private String categoriesHost;
+    @Value("${mongo.categories.port}")
+    private Integer categoriesPort;
+    @Value("${mongo.categories.database}")
+    private String categoriesDatabase;
 
     public String getHost() {
 	return host;
@@ -71,5 +78,19 @@ public class MongoConfiguration {
 	converter.setTypeMapper(new DefaultMongoTypeMapper(null));
 
 	return new MongoTemplate(mongoDbFactory(), converter);
+    }
+
+    @SuppressWarnings("deprecation")
+    public @Bean MongoDbFactory categoriesMongoDbFactory() throws Exception {
+	return new SimpleMongoDbFactory(new Mongo(host, port), database);
+    }
+
+    public @Bean MongoTemplate categoriesMongoTemplate() throws Exception {
+	MappingMongoConverter converter = new MappingMongoConverter(
+		new DefaultDbRefResolver(categoriesMongoDbFactory()), new MongoMappingContext());
+	// remove _class
+	converter.setTypeMapper(new DefaultMongoTypeMapper(null));
+
+	return new MongoTemplate(categoriesMongoDbFactory(), converter);
     }
 }

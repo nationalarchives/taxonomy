@@ -10,12 +10,17 @@ logging:
 spring:
  data:
   mongodb:
+   host: localhost
    port: 27017
    database: taxonomy
 
   mongo:
    repositories:
     enabled: true
+
+mongo.categories:
+ port: 27017
+ database: taxonomy
 
 async:
  executor:
@@ -46,37 +51,7 @@ lucene:
   iaViewMaxMergeSizeMB: 5.0
   iaViewMaxCachedMB: 60.0
   defaultTaxonomyField: textnocasnopunc
-  
----
-spring.profiles: local
 
-spring.data.mongodb:
- host: localhost
-
-lucene.index:
-  iaviewCollectionPath: /mnt/search_indexes/index_20150217/data/index
-  trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
-  
-logging.config: classpath:log4j.properties
-
-server:
- port: 8090
- 
----
-spring.profiles: tooling
-
-spring.data.mongodb:
- host: ***REMOVED***.***REMOVED***
-   
-lucene.index:
- iaviewCollectionPath: ***REMOVED***solr/collection5/data/index
- trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
-
-logging.config: classpath:log4j-tooling.properties
-  
-server:
- port: 9001 
- 
 ---
 spring.profiles: queryBased
 lucene:
@@ -90,3 +65,31 @@ lucene:
  categoriser:
   useTSetBasedCategoriser: true
   useQueryBasedCategoriser: false
+
+---
+spring.profiles: local
+
+mongo.categories.host: localhost
+
+lucene.index:
+ iaviewCollectionPath: /mnt/search_indexes/index_20150217/data/index
+ trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
+  
+logging.config: classpath:log4j.properties
+
+server:
+ port: 8090
+ 
+---
+spring.profiles: tooling
+
+mongo.categories.host: ***REMOVED***.***REMOVED***
+   
+lucene.index:
+ iaviewCollectionPath: ***REMOVED***solr/collection5/data/index
+ trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
+
+logging.config: classpath:log4j-tooling.properties
+  
+server:
+ port: 9001
