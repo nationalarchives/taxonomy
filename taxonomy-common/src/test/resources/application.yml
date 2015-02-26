@@ -10,12 +10,17 @@ logging:
 spring:
  data:
   mongodb:
+   host: localhost
    port: 27017
    database: taxonomy
 
   mongo:
    repositories:
     enabled: true
+
+mongo.categories:
+ port: 27017
+ database: taxonomy
 
 async:
  executor:
@@ -24,8 +29,8 @@ async:
   queueCapacity: 150
 
 lucene:
- categoriser:
  mlt:
+  fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
   mimimumScoreForMlt: 0.001
   mimimumGlobalScoreForACategory: 0
   maximumSimilarElements: 500
@@ -34,7 +39,6 @@ lucene:
   titleBoostingFactor: 0.25
   descBoostingFactor: 2
   contextDescBoostingFactor: 0.75
-  fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
 
  index:
   version: LUCENE_4_10_3
@@ -43,29 +47,10 @@ lucene:
   useStopFilter: true
   useSynonymFilter: true
   queryFilterSourceValue: 
-  fieldsToSearch: texttax,CATDOCREF
   iaViewMaxMergeSizeMB: 5.0
   iaViewMaxCachedMB: 60.0
   defaultTaxonomyField: textnocasnopunc
-  
----
-spring.profiles: test
 
-spring.data:
- mongodb:
-  host: localhost
- mongo:
-  testdataset:
-   trainingset: src/test/resources/dataset/mongo/trainingset.json
-   categories: src/test/resources/dataset/mongo/taxonomy.json
-
-lucene.index:
- iaviewCollectionPath: src/test/resources/dataset/lucene/iaviews
- trainingSetCollectionPath: src/test/resources/dataset/lucene/trainingset
-  
-logging.config: classpath:log4j.properties
-
-solr.host: http://localhost:8983/solr/iaview_unittest/
 ---
 spring.profiles: queryBased
 lucene:
@@ -81,3 +66,22 @@ lucene:
  categoriser:
   useTSetBasedCategoriser: true
   useQueryBasedCategoriser: false
+
+---
+spring.profiles: test
+
+spring.data:
+ mongo:
+  testdataset:
+   trainingset: src/test/resources/dataset/mongo/trainingset.json
+   categories: src/test/resources/dataset/mongo/taxonomy.json
+
+mongo.categories.host: localhost
+ 
+lucene.index:
+ iaviewCollectionPath: src/test/resources/dataset/lucene/iaviews
+ trainingSetCollectionPath: src/test/resources/dataset/lucene/trainingset
+
+logging.config: classpath:log4j.properties
+
+solr.host: http://localhost:8983/solr/iaview_unittest/

@@ -1,4 +1,4 @@
-spring.profiles.active: queryBased,local
+spring.profiles.active: queryBased,local,batch
 
 logging:
  level:
@@ -10,12 +10,17 @@ logging:
 spring:
  data:
   mongodb:
+   host: localhost
    port: 27017
    database: taxonomy
 
   mongo:
    repositories:
     enabled: true
+
+mongo.categories:
+ port: 27017
+ database: taxonomy
 
 async:
  executor:
@@ -24,10 +29,8 @@ async:
   queueCapacity: 150
 
 lucene:
- loadTSetServiceLayer: true
- categoriser:
-  fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
  mlt:
+  fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
   mimimumScoreForMlt: 0
   mimimumGlobalScoreForACategory: 0
   maximumSimilarElements: 2000
@@ -44,18 +47,32 @@ lucene:
   useStopFilter: false
   useSynonymFilter: true
   queryFilterSourceValue: 100
-  fieldsToSearch: texttax,CATDOCREF
   iaViewMaxMergeSizeMB: 5.0
   iaViewMaxCachedMB: 60.0
   defaultTaxonomyField: textnocasnopunc
-  
 
+---
+spring.profiles: queryBased
+lucene:
+ categoriser:
+  useTSetBasedCategoriser: false
+  useQueryBasedCategoriser: true
+  
+---
+spring.profiles: tsetBased
+lucene:
+ categoriser:
+  useTSetBasedCategoriser: true
+  useQueryBasedCategoriser: false
+
+---
+spring.profiles: batch
 spring.activemq.categorise-doc-queue-name: CATEGORISE.DOCUMENTS
+
 ---
 spring.profiles: local
 
-spring.data.mongodb:
- host: localhost
+mongo.categories.host: localhost
 
 lucene.index:
  iaviewCollectionPath: /mnt/search_indexes/index_20150217/data/index
@@ -72,25 +89,18 @@ solr.host: http://localhost:8983/solr/IAView_subset/
 ---
 spring.profiles: tooling
 
-spring.data.mongodb:
- host: ***REMOVED***.***REMOVED***
+mongo.categories.host: ***REMOVED***.***REMOVED***
    
 lucene.index:
  iaviewCollectionPath: ***REMOVED***solr/collection5/data/index
  trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
 
 logging.config: classpath:log4j-tooling.properties
-  
----
-spring.profiles: queryBased
-lucene:
- categoriser:
-  useTSetBasedCategoriser: false
-  useQueryBasedCategoriser: true
-  
----
-spring.profiles: tsetBased
-lucene:
- categoriser:
-  useTSetBasedCategoriser: true
-  useQueryBasedCategoriser: false
+
+spring.activemq:
+ broker-url: tcp://localhost:61616
+ user***REMOVED***
+ password***REMOVED***
+ 
+solr.host: http://localhost:8983/solr/IAView_subset/  
+

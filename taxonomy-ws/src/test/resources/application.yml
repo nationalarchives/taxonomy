@@ -5,17 +5,22 @@ logging:
   gov:
    tna:
     discovery:
-     taxonomy: INFO
+     taxonomy: DEBUG
 
 spring:
  data:
   mongodb:
+   host: localhost
    port: 27017
    database: taxonomy
 
   mongo:
    repositories:
     enabled: true
+
+mongo.categories:
+ port: 27017
+ database: taxonomy
 
 async:
  executor:
@@ -25,6 +30,7 @@ async:
 
 lucene:
  mlt:
+  fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
   mimimumScoreForMlt: 0.001
   mimimumGlobalScoreForACategory: 0
   maximumSimilarElements: 500
@@ -32,9 +38,7 @@ lucene:
   minDocFreq: 1
   titleBoostingFactor: 0.25
   descBoostingFactor: 2
-  contextDescBoostingFactor: 0.75  
-  fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
-  
+  contextDescBoostingFactor: 0.75
 
  index:
   version: LUCENE_4_10_3
@@ -43,61 +47,10 @@ lucene:
   useStopFilter: true
   useSynonymFilter: true
   queryFilterSourceValue: 
-  fieldsToSearch: texttax,CATDOCREF
   iaViewMaxMergeSizeMB: 5.0
   iaViewMaxCachedMB: 60.0
   defaultTaxonomyField: textnocasnopunc
-  
----
-spring.profiles: test
 
-spring.data:
- mongodb:
-  host: localhost
- mongo:
-  testdataset:
-   trainingset: ../taxonomy-common/src/test/resources/dataset/mongo/trainingset.json
-   categories: ../taxonomy-common/src/test/resources/dataset/mongo/taxonomy.json
-
-lucene.index:
- iaviewCollectionPath: ../taxonomy-common/src/test/resources/dataset/lucene/iaviews
- trainingSetCollectionPath: ../taxonomy-common/src/test/resources/dataset/lucene/trainingset
-  
-logging.config: classpath:log4j.properties
-
-server:
- port: 8085
-
----
-spring.profiles: local
-
-spring.data.mongodb:
- host: localhost
-
-lucene.index:
- iaviewCollectionPath: /mnt/share/lucene/index_20150112/data/index
- trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
-  
-logging.config: classpath:log4j.properties
-
-server:
- port: 8090
- 
----
-spring.profiles: tooling
-
-spring.data.mongodb:
- host: ***REMOVED***.***REMOVED***
-   
-lucene.index:
- iaviewCollectionPath: ***REMOVED***solr/collection4/data/index
- trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
-
-logging.config: classpath:log4j-tooling.properties
-  
-server:
- port: 9001 
- 
 ---
 spring.profiles: queryBased
 lucene:
@@ -113,3 +66,51 @@ lucene:
  categoriser:
   useTSetBasedCategoriser: true
   useQueryBasedCategoriser: false
+
+---
+spring.profiles: local
+
+mongo.categories.host: localhost
+
+lucene.index:
+ iaviewCollectionPath: /mnt/search_indexes/index_20150217/data/index
+ trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
+  
+logging.config: classpath:log4j.properties
+
+server:
+ port: 8090
+ 
+---
+spring.profiles: tooling
+
+mongo.categories.host: ***REMOVED***.***REMOVED***
+   
+lucene.index:
+ iaviewCollectionPath: ***REMOVED***solr/collection5/data/index
+ trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
+
+logging.config: classpath:log4j-tooling.properties
+  
+server:
+ port: 9001
+ 
+---
+spring.profiles: test
+
+spring.data:
+ mongo:
+  testdataset:
+   trainingset: ../taxonomy-common/src/test/resources/dataset/mongo/trainingset.json
+   categories: ../taxonomy-common/src/test/resources/dataset/mongo/taxonomy.json
+
+mongo.categories.host: localhost
+ 
+lucene.index:
+ iaviewCollectionPath: ../taxonomy-common/src/test/resources/dataset/lucene/iaviews
+ trainingSetCollectionPath: ../taxonomy-common/src/test/resources/dataset/lucene/trainingset
+
+logging.config: classpath:log4j.properties
+
+server:
+ port: 8085

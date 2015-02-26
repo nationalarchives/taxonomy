@@ -16,13 +16,18 @@ import com.mongodb.WriteResult;
 @ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
 public class TrainingDocumentRepositoryImpl implements TrainingDocumentRepositoryCustom {
 
+    private final MongoTemplate categoriesMongoTemplate;
+
     @Autowired
-    private MongoTemplate mongoTemplate;
+    public TrainingDocumentRepositoryImpl(MongoTemplate categoriesMongoTemplate) {
+	super();
+	this.categoriesMongoTemplate = categoriesMongoTemplate;
+    }
 
     @Override
     public int deleteByCategory(String categoryName) {
 	Query query = new Query(Criteria.where("CATEGORY").is(categoryName));
-	WriteResult writeResult = mongoTemplate.remove(query, TrainingDocument.class);
+	WriteResult writeResult = categoriesMongoTemplate.remove(query, TrainingDocument.class);
 	return writeResult.getN();
     }
 
