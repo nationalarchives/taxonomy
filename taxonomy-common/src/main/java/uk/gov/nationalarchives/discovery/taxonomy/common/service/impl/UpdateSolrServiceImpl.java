@@ -104,18 +104,4 @@ public class UpdateSolrServiceImpl implements UpdateSolrService {
 	addFieldModifier.put(FIELD_MODIFIER_KEY_ADD, fieldValue);
 	solrInputDocument.addField(fieldKey, addFieldModifier);
     }
-
-    @Deprecated
-    private SolrInputDocument createDocumentForOverwriteUpdate(String docReference, String[] categories) {
-	SolrDocument iaView = solrIAViewRepository.getByDocReference(docReference);
-
-	iaView.removeFields(InformationAssetViewFields.TAXONOMY.toString());
-	iaView.addField(InformationAssetViewFields.TAXONOMY.toString(), categories);
-
-	// TODO 1 Check that the solr doc updated has still all other fields:
-	// search with DOCREF:"" & text_gen:""
-	// TODO 1 what about boost? are there any in schema.xml?
-	SolrInputDocument document = ClientUtils.toSolrInputDocument(iaView);
-	return document;
-    }
 }
