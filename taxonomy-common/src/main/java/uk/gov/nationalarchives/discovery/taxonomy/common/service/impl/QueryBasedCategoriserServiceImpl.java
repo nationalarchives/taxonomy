@@ -215,4 +215,9 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	return iaViewUpdateRepository.findLastIAViewUpdate();
     }
 
+    @Override
+    public void refreshIndexUsedForCategorisation() {
+	iaViewRepository.refreshIndexUsedForCategorisation();
+    }
+
 }

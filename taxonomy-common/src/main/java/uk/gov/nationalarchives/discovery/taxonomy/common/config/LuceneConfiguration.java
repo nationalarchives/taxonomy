@@ -103,10 +103,6 @@ public class LuceneConfiguration {
     }
 
     public @Bean SearcherManager iaviewSearcherManager() throws IOException {
-	// return new SearcherManager(iaviewIndexWriter(), true, lnull);
-	// FIXME 1 how to make sure that updates on IAVIew are taken into
-	// account
-	// and viewable on GUI? KO ATM
 	return new SearcherManager(iaViewDirectory(), null);
     }
 
