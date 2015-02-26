@@ -45,6 +45,8 @@ public class CategoriseDocMessageConsumer {
 	logger.info("received Categorise Document message: {}, docReferences: {}",
 		categoriseDocumentMessage.getMessageId(), categoriseDocumentMessage.getListOfDocReferences());
 
+	categoriserService.refreshIndexUsedForCategorisation();
+
 	for (String docReference : categoriseDocumentMessage.getListOfDocReferences()) {
 	    try {
 		categoriserService.categoriseSingle(docReference);

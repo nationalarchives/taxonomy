@@ -119,6 +119,8 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 	    // }
 	    searcher = trainingSetSearcherManager.acquire();
 
+	    // TODO TSETBASED refresh reader/searcher: Use readermanager and
+	    // refresh it?
 	    MoreLikeThis moreLikeThis = new MoreLikeThis(this.trainingSetIndexReader);
 	    moreLikeThis.setMinTermFreq(minTermFreq);
 	    moreLikeThis.setMinDocFreq(minDocFreq);
@@ -289,5 +291,11 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     public IAViewUpdate findLastIAViewUpdate() {
 	// TODO TSETBASED Auto-generated method stub
 	return null;
+    }
+
+    @Override
+    public void refreshIndexUsedForCategorisation() {
+	// TODO Auto-generated method stub
+
     }
 }

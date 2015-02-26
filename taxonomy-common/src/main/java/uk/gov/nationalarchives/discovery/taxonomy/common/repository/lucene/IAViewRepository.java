@@ -49,19 +49,16 @@ public class IAViewRepository {
 
     private final Analyzer iaViewSearchAnalyser;
 
-    private final IndexSearcher iaviewSearcher;
-
     private static final Logger logger = LoggerFactory.getLogger(IAViewRepository.class);
 
     private final LuceneHelperTools luceneHelperTools;
 
     @Autowired
     public IAViewRepository(SearcherManager iaviewSearcherManager, Analyzer iaViewSearchAnalyser,
-	    IndexSearcher iaviewSearcher, LuceneHelperTools luceneHelperTools) {
+	    LuceneHelperTools luceneHelperTools) {
 	super();
 	this.iaviewSearcherManager = iaviewSearcherManager;
 	this.iaViewSearchAnalyser = iaViewSearchAnalyser;
-	this.iaviewSearcher = iaviewSearcher;
 	this.luceneHelperTools = luceneHelperTools;
     }
 
@@ -111,23 +108,19 @@ public class IAViewRepository {
     public TopDocs performSearchWithoutAnyPostProcessing(String queryString, Filter filter, Double mimimumScore,
 	    Integer limit, Integer offset) {
 
-	// FIXME 1 to refresh the indexSearcher after updates on the index, I
-	// might be forced to use the
-	// searcherManager
-	// IndexSearcher isearcher = null;
+	IndexSearcher isearcher = null;
 	try {
-	    // isearcher = iaviewSearcherManager.acquire();
+	    isearcher = iaviewSearcherManager.acquire();
 
 	    Query finalQuery = luceneHelperTools.buildSearchQueryWithFiltersIfNecessary(queryString, filter);
 
-	    // return isearcher.search(finalQuery, offset + limit);
-	    return this.iaviewSearcher.search(finalQuery, offset + limit);
+	    return isearcher.search(finalQuery, offset + limit);
+	    // return this.iaviewSearcher.search(finalQuery, offset + limit);
 
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	} finally {
-	    // LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager,
-	    // isearcher);
+	    LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager, isearcher);
 	}
     }
 
@@ -239,5 +232,19 @@ public class IAViewRepository {
 
     public void setIaviewSearcherManager(SearcherManager iaviewSearcherManager) {
 	this.iaviewSearcherManager = iaviewSearcherManager;
+    }
+
+    /**
+     * refresh the index used for categorisation.<br/>
+     * It is necessary to call that method if the document to categorise was
+     * indexed right before that call
+     */
+    public void refreshIndexUsedForCategorisation() {
+	try {
+	    iaviewSearcherManager.maybeRefreshBlocking();
+	} catch (IOException e) {
+	    logger.error(".refreshIndexUsedForCategorisation: exception was raised when trying to refresh the lucene Index");
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	}
     }
 }

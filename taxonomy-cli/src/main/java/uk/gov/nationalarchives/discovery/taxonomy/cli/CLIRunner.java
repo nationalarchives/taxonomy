@@ -72,9 +72,6 @@ public class CLIRunner implements CommandLineRunner {
     @Autowired
     CategoriserService categoriser;
 
-    // TODO 3 instead of always wiring the TSet service layer, do conditional
-    // wiring with factories: will allow to remove "loadTSetServiceLayer: true"
-    // http://stackoverflow.com/questions/19225115/how-to-do-conditional-auto-wiring-in-spring
     @Autowired
     TrainingSetService trainingSetService;
 

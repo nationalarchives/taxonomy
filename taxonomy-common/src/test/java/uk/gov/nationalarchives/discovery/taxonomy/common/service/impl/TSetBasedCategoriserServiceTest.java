@@ -101,7 +101,8 @@ public class TSetBasedCategoriserServiceTest {
 	assertThat(categorisationResults, is(not(empty())));
     }
 
-    // FIXME 1 must take into account latest adds to index
+    // TODO TSETBASED refresh reader/searcher: 1 must take into account latest
+    // adds to index
     @Test
     @Ignore
     public void testCategorisationTakesIntoAccountLatestAddsToIndex() throws IOException {
