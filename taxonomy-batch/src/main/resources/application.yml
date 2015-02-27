@@ -1,11 +1,6 @@
 spring.profiles.active: queryBased,local,batch
 
-logging:
- level:
-  gov:
-   tna:
-    discovery:
-     taxonomy: DEBUG
+logging.level.uk.gov.nationalarchives.discovery.taxonomy: DEBUG
 
 spring:
  data:
@@ -86,6 +81,7 @@ spring.activemq:
  password***REMOVED***
  
 solr.host: http://localhost:8983/solr/IAView_subset/
+
 ---
 spring.profiles: tooling
 
@@ -103,4 +99,23 @@ spring.activemq:
  password***REMOVED***
  
 solr.host: http://localhost:8983/solr/IAView_subset/  
+
+---
+spring.profiles: test-platform
+
+mongo.categories.host: ***REMOVED***.***REMOVED***
+   
+lucene.index:
+ iaviewCollectionPath: ***REMOVED***solr/collection1/data/index
+ trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
+
+logging.config: classpath:log4j-test.properties
+logging.level.uk.gov.nationalarchives.discovery.taxonomy=INFO
+
+spring.activemq:
+ broker-url: tcp://localhost:8984
+ user***REMOVED***
+ password***REMOVED***
+ 
+solr.host: http://localhost:8985/solr/testUpdatesCollection/  
 

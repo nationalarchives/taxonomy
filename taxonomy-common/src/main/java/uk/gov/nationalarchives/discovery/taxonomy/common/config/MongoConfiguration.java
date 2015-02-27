@@ -82,7 +82,7 @@ public class MongoConfiguration {
 
     @SuppressWarnings("deprecation")
     public @Bean MongoDbFactory categoriesMongoDbFactory() throws Exception {
-	return new SimpleMongoDbFactory(new Mongo(host, port), database);
+	return new SimpleMongoDbFactory(new Mongo(categoriesHost, categoriesPort), database);
     }
 
     public @Bean MongoTemplate categoriesMongoTemplate() throws Exception {
