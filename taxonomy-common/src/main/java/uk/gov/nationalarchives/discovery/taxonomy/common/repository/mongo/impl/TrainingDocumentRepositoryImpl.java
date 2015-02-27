@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import com.mongodb.WriteResult;
 
 @Repository
-@ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
+@ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useTSetBasedCategoriser")
 public class TrainingDocumentRepositoryImpl implements TrainingDocumentRepositoryCustom {
 
     private final MongoTemplate categoriesMongoTemplate;

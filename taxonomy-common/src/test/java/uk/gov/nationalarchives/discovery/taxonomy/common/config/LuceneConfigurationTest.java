@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @EnableConfigurationProperties
 @ComponentScan(basePackages = "uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene")
-@Import({ PropertiesConfiguration.class, LuceneConfiguration.class })
+@Import({ PropertiesConfiguration.class, LuceneIAViewConfiguration.class, TrainingSetConfiguration.class })
 public class LuceneConfigurationTest {
 
     @Value("${lucene.index.trainingSetCollectionPath}")

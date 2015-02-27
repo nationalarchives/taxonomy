@@ -28,7 +28,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 @Repository
-@ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
+@ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useTSetBasedCategoriser")
 public class TrainingSetRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(TrainingSetRepository.class);

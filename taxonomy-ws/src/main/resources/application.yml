@@ -29,7 +29,6 @@ async:
   queueCapacity: 150
 
 lucene:
- loadTSetServiceLayer: true
  mlt:
   fieldsToAnalyse: DESCRIPTION,TITLE,CONTEXTDESCRIPTION,CORPBODYS,SUBJECTS,PERSON_FULLNAME,PLACE_NAME,CATDOCREF
   mimimumScoreForMlt: 0
