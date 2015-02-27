@@ -17,13 +17,14 @@ import org.springframework.stereotype.Service;
  * responsible for launching asynchronous tasks and providing the needed
  * dependencies
  * 
- * See {@link uk.gov.nationalarchives.discovery.taxonomy.config.AsyncConfiguration}
+ * See
+ * {@link uk.gov.nationalarchives.discovery.taxonomy.config.AsyncConfiguration}
  * 
  * @author jcharlet
  *
  */
 @Service
-@ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
+@ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useTSetBasedCategoriser")
 public class AsyncTSetBasedTaskManager {
 
     @Autowired

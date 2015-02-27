@@ -54,7 +54,6 @@ lucene:
 ---
 spring.profiles: queryBased
 lucene:
- loadTSetServiceLayer: false
  categoriser:
   useTSetBasedCategoriser: false
   useQueryBasedCategoriser: true
@@ -62,7 +61,6 @@ lucene:
 ---
 spring.profiles: tsetBased
 lucene:
- loadTSetServiceLayer: true
  categoriser:
   useTSetBasedCategoriser: true
   useQueryBasedCategoriser: false

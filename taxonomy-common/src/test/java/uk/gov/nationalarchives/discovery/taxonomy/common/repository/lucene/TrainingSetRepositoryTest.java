@@ -2,9 +2,6 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import uk.gov.nationalarchives.discovery.taxonomy.common.config.LuceneConfigurationTest;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 
 import java.io.IOException;
 
@@ -24,9 +21,13 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import uk.gov.nationalarchives.discovery.taxonomy.common.config.LuceneConfigurationTest;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
+
 @ActiveProfiles("tsetBased")
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = LuceneConfigurationTest.class)
+@SpringApplicationConfiguration(classes = { LuceneConfigurationTest.class })
 public class TrainingSetRepositoryTest {
 
     @Autowired

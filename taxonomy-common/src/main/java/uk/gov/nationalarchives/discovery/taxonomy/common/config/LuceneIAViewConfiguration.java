@@ -17,7 +17,6 @@ import org.apache.lucene.analysis.util.ClasspathResourceLoader;
 import org.apache.lucene.analysis.util.ResourceLoader;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.ReaderManager;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
@@ -26,12 +25,9 @@ import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NRTCachingDirectory;
-import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +40,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analy
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextCasPuncAnalyser;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextGenAnalyser;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextNoCasNoPuncAnalyser;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.TaxonomyTrainingSetAnalyser;
 
 /**
  * Configuration dedicated to Lucene:<br/>
@@ -56,28 +51,16 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analy
 @Configuration
 @ConfigurationProperties(prefix = "lucene.index")
 @EnableConfigurationProperties
-public class LuceneConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(LuceneConfiguration.class);
+public class LuceneIAViewConfiguration {
+    private static final Logger logger = LoggerFactory.getLogger(LuceneIAViewConfiguration.class);
 
     private String iaviewCollectionPath;
-    private String trainingSetCollectionPath;
     private String version;
     private double iaViewMaxMergeSizeMB;
     private double iaViewMaxCachedMB;
 
-    @Value("${lucene.index.maxShingleSize}")
-    private String maxShingleSize;
-
-    @Value("${lucene.index.useStopFilter}")
-    private Boolean useStopFilter;
-
-    @Value("${lucene.index.useSynonymFilter}")
-    private Boolean useSynonymFilter;
-
-    @Value("${lucene.index.queryFilterSourceValue}")
     private String queryFilterSourceValue;
 
-    @Value("${lucene.index.defaultTaxonomyField}")
     private String defaultTaxonomyField;
 
     @PostConstruct
@@ -104,55 +87,6 @@ public class LuceneConfiguration {
 
     public @Bean SearcherManager iaviewSearcherManager() throws IOException {
 	return new SearcherManager(iaViewDirectory(), null);
-    }
-
-    /**
-     ************************* TSet Based
-     */
-
-    @ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
-    public @Bean Directory trainingSetDirectory() throws IOException {
-	// TODO TSETBASED Use MMapDirectory to be faster. is used on solr
-	// Server
-	File file = new File(trainingSetCollectionPath);
-	return new SimpleFSDirectory(file);
-    }
-
-    @ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
-    public @Bean ReaderManager trainingSetReaderManager() throws IOException {
-	return new ReaderManager(trainingSetDirectory());
-    }
-
-    @ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
-    public @Bean IndexReader trainingSetIndexReader() throws IOException {
-	return DirectoryReader.open(trainingSetDirectory());
-    }
-
-    @ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
-    public @Bean SearcherManager trainingSetSearcherManager() throws IOException {
-	// return new SearcherManager(iaviewIndexWriter(), true, null);
-	return new SearcherManager(trainingSetDirectory(), null);
-    }
-
-    /**
-     * Analyzer dedicated to indexing elements into training set and comparing
-     * them with document to categorise
-     * 
-     * @return
-     * @throws ParseException
-     * @throws NumberFormatException
-     */
-    @ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
-    public @Bean Analyzer trainingSetAnalyser() throws NumberFormatException, ParseException {
-	StopFilterFactory stopFilterFactory = null;
-	if (useStopFilter) {
-	    stopFilterFactory = stopFilterFactory();
-	}
-	SynonymFilterFactory synonymFilterFactory = null;
-	if (useSynonymFilter) {
-	    synonymFilterFactory = synonymFilterFactory();
-	}
-	return new TaxonomyTrainingSetAnalyser(stopFilterFactory, synonymFilterFactory, Integer.valueOf(maxShingleSize));
     }
 
     /**
@@ -292,31 +226,31 @@ public class LuceneConfiguration {
     }
 
     /**
-     ************************* Getters and Setters
+     ************************* Setters
      */
-
-    public String getIaviewCollectionPath() {
-	return iaviewCollectionPath;
-    }
 
     public void setIaviewCollectionPath(String iaviewCollectionPath) {
 	this.iaviewCollectionPath = iaviewCollectionPath;
     }
 
-    public String getTrainingSetCollectionPath() {
-	return trainingSetCollectionPath;
-    }
-
-    public void setTrainingSetCollectionPath(String trainingSetCollectionPath) {
-	this.trainingSetCollectionPath = trainingSetCollectionPath;
-    }
-
-    public String getVersion() {
-	return version;
-    }
-
     public void setVersion(String version) {
 	this.version = version;
+    }
+
+    public void setIaViewMaxMergeSizeMB(double iaViewMaxMergeSizeMB) {
+	this.iaViewMaxMergeSizeMB = iaViewMaxMergeSizeMB;
+    }
+
+    public void setIaViewMaxCachedMB(double iaViewMaxCachedMB) {
+	this.iaViewMaxCachedMB = iaViewMaxCachedMB;
+    }
+
+    public void setQueryFilterSourceValue(String queryFilterSourceValue) {
+	this.queryFilterSourceValue = queryFilterSourceValue;
+    }
+
+    public void setDefaultTaxonomyField(String defaultTaxonomyField) {
+	this.defaultTaxonomyField = defaultTaxonomyField;
     }
 
 }

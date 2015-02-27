@@ -32,7 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnProperty(prefix = "lucene.", value = "loadTSetServiceLayer")
+@ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useTSetBasedCategoriser")
 public class TrainingSetServiceImpl implements TrainingSetService {
 
     private static final Logger logger = LoggerFactory.getLogger(TrainingSetServiceImpl.class);
