@@ -1,11 +1,6 @@
 spring.profiles.include: test
 
-logging:
- level:
-  gov:
-   tna:
-    discovery:
-     taxonomy: DEBUG
+logging.level.uk.gov.nationalarchives.discovery.taxonomy: DEBUG
 
 spring:
  data:
