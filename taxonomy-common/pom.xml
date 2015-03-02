@@ -101,7 +101,7 @@
 		<dependency>
 			<artifactId>solr-solrj</artifactId>
 			<groupId>org.apache.solr</groupId>
-			<version>${lucene.version}</version>
+			<version>${lucene.version}</version><!--$NO-MVN-MAN-VER$ -->
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -127,6 +127,7 @@
 			<version>2.1.1</version>
 		</dependency>
 
+		<!-- In memory mongo db for testing -->
 		<dependency>
 			<groupId>com.github.fakemongo</groupId>
 			<artifactId>fongo</artifactId>
@@ -134,17 +135,17 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- <dependency> -->
-		<!-- <groupId>org.apache.lucene</groupId> -->
-		<!-- <artifactId>lucene-test-framework</artifactId> -->
-		<!-- <version>${lucene.version}</version> -->
-		<!-- <scope>test</scope> -->
-		<!-- </dependency> -->
-
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.typesafe.akka</groupId>
+			<artifactId>akka-actor_2.11</artifactId>
+			<version>2.3.9</version>
+		</dependency>
+
 
 	</dependencies>
 
