@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.actor;
+package uk.gov.nationalarchives.discovery.taxonomy.common.actor.common;
 
 import akka.actor.Actor;
 import akka.actor.IndirectActorProducer;

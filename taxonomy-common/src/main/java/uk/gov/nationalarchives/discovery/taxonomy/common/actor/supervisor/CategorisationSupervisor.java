@@ -1,7 +1,6 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc;
+package uk.gov.nationalarchives.discovery.taxonomy.common.actor.supervisor;
 
 import static akka.pattern.Patterns.*;
-import static uk.gov.nationalarchives.discovery.taxonomy.common.actor.SpringExtension.*;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -12,10 +11,14 @@ import org.springframework.stereotype.Service;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.FiniteDuration;
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationWorker.CategoriseDocuments;
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.domain.Ping;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc.CategorisationPOCService;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc.CategorisationWorker;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc.domain.CategoriseDocuments;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc.domain.Ping;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.actor.Props;
+import akka.routing.FromConfig;
 import akka.util.Timeout;
 
 //import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationWorkerRouter.GetNbOfAvailableActors;
@@ -45,7 +48,7 @@ public class CategorisationSupervisor {
 	this.categorisationPOCService = categorisationPOCService;
 
 	this.categorisationWorkerRouter = actorSystem.actorOf(
-		SpringExtProvider.get(actorSystem).props("CategorisationWorkerRouter"), "categorisationWorkerRouter");
+		FromConfig.getInstance().props(Props.create(CategorisationWorker.class)), "categorisation-router");
     }
 
     public class CategorisationStatus {
@@ -118,7 +121,7 @@ public class CategorisationSupervisor {
 		NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME);
 
 	// ask worker to categorise those docs.
-	categorisationWorkerRouter.tell(new CategoriseDocuments(docReferences), null);
+	categorisationWorkerRouter.tell(new CategoriseDocuments(docReferences.toArray(new String[0])), null);
     }
 
     synchronized private int getIndexOfNextElementThenIncrement(int nbOfElementsToProcess) {

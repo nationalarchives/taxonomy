@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.actor;
+package uk.gov.nationalarchives.discovery.taxonomy.common.actor.slave;
 
 import akka.actor.ActorSystem;
 
@@ -7,7 +7,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static uk.gov.nationalarchives.discovery.taxonomy.common.actor.SpringExtension.SpringExtProvider;
+import com.typesafe.config.ConfigFactory;
+
+import static uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.SpringExtension.*;
 
 /**
  * The application configuration.
@@ -24,7 +26,7 @@ class ActorConfiguration {
      */
     @Bean
     public ActorSystem actorSystem() {
-	ActorSystem system = ActorSystem.create("AkkaJavaSpring");
+	ActorSystem system = ActorSystem.create("slave", ConfigFactory.load("slave.conf"));
 	// initialize the application context in the Akka Spring Extension
 	SpringExtProvider.get(system).initialize(applicationContext);
 	// system.logConfiguration();
@@ -38,4 +40,5 @@ class ActorConfiguration {
 	SpringExtProvider.get(system).initialize(applicationContext);
 	return system;
     }
+
 }
