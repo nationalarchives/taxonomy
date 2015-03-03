@@ -1,13 +1,12 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc;
-
-import java.util.List;
+package uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.domain.Ping;
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.domain.Pong;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc.domain.CategoriseDocuments;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc.domain.Ping;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc.domain.Pong;
 import akka.actor.UntypedActor;
 
 /**
@@ -24,23 +23,10 @@ public class CategorisationWorker extends UntypedActor {
     public CategorisationWorker() {
     }
 
-    public static class CategoriseDocuments {
-	private List<String> docReferences;
-
-	public CategoriseDocuments(List<String> docReferences) {
-	    super();
-	    this.docReferences = docReferences;
-	}
-
-	public List<String> getDocReferences() {
-	    return docReferences;
-	}
-    }
-
     @Override
     public void onReceive(Object message) throws Exception {
 	if (message instanceof CategoriseDocuments) {
-	    List<String> docReferences = ((CategoriseDocuments) message).getDocReferences();
+	    String[] docReferences = ((CategoriseDocuments) message).getDocReferences();
 	    System.out.println(getSelf().hashCode() + ". categorising those: " + ArrayUtils.toString(docReferences));
 	    try {
 		Thread.sleep(1000);

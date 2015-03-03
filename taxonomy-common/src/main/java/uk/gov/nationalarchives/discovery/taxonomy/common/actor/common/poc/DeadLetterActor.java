@@ -1,9 +1,9 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc;
+package uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.domain.Pong;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc.domain.Pong;
 import akka.actor.DeadLetter;
 import akka.actor.UntypedActor;
 

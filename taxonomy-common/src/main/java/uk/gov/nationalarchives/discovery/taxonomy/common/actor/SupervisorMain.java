@@ -2,9 +2,9 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.actor;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationSupervisor;
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationSupervisor.CategorisationStatus;
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.DeadLetterActor;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc.DeadLetterActor;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.supervisor.CategorisationSupervisor;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.supervisor.CategorisationSupervisor.CategorisationStatus;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.AllDeadLetters;
@@ -16,7 +16,7 @@ import akka.actor.Props;
 /**
  * A main class to start up the application.
  */
-public class Main {
+public class SupervisorMain {
 
     public static void main(String[] args) throws Exception {
 	AnnotationConfigApplicationContext ctx = createActorPOCContext();
@@ -69,7 +69,8 @@ public class Main {
     private static AnnotationConfigApplicationContext createActorPOCContext() {
 	// create a spring context and scan the classes
 	AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-	ctx.scan("uk.gov.nationalarchives.discovery.taxonomy.common.actor");
+	ctx.scan("uk.gov.nationalarchives.discovery.taxonomy.common.actor.common");
+	ctx.scan("uk.gov.nationalarchives.discovery.taxonomy.common.actor.supervisor");
 	ctx.refresh();
 	return ctx;
     }
