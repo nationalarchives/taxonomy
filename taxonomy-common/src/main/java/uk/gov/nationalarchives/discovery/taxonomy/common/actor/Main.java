@@ -12,10 +12,14 @@ import scala.concurrent.Future;
 import scala.concurrent.duration.FiniteDuration;
 import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationSupervisor;
 import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationSupervisor.CategorisationStatus;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.DeadLetterActor;
 import uk.gov.nationalarchives.discovery.taxonomy.common.actor.sample.CountingActor.Count;
 import uk.gov.nationalarchives.discovery.taxonomy.common.actor.sample.CountingActor.Get;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.actor.AllDeadLetters;
+import akka.actor.DeadLetter;
+import akka.actor.Props;
 import akka.util.Timeout;
 
 ;
@@ -29,7 +33,15 @@ public class Main {
 	AnnotationConfigApplicationContext ctx = createActorPOCContext();
 
 	// get hold of the actor system
-	// ActorSystem system = ctx.getBean(ActorSystem.class);
+	ActorSystem system = ctx.getBean("actorSystem", ActorSystem.class);
+	ActorSystem deadLettersSystem = ctx.getBean("deadLettersActorSystem", ActorSystem.class);
+	final ActorRef actor = deadLettersSystem.actorOf(Props.create(DeadLetterActor.class));
+	system.eventStream().subscribe(actor, AllDeadLetters.class);
+	// actorSystem.actorOf(
+	// SpringExtProvider.get(actorSystem).props("CategorisationWorkerRouter"),
+	// "categorisationWorkerRouter");
+
+	deadLettersSystem.eventStream().subscribe(actor, DeadLetter.class);
 
 	final CategorisationSupervisor categorisationSupervisor = ctx.getBean(CategorisationSupervisor.class);
 
@@ -37,13 +49,16 @@ public class Main {
 	    testPOC(categorisationSupervisor);
 	    // testActorSample(system);
 	} finally {
-	    // system.shutdown();
-	    // system.awaitTermination();
+	    system.shutdown();
+	    system.awaitTermination();
+	    deadLettersSystem.shutdown();
+	    deadLettersSystem.awaitTermination();
 	    ctx.close();
 	}
     }
 
     private static void testPOC(final CategorisationSupervisor categorisationSupervisor) throws Exception {
+
 	Thread thread = runWholeCategorisationInSeparateThread(categorisationSupervisor);
 
 	CategorisationStatus status = null;
