@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CategorisationPOCService {
 
+    private static final int NB_OF_FAKE_DOCS = 20;
     List<String> docReferences;
 
     @PostConstruct
@@ -18,14 +19,20 @@ public class CategorisationPOCService {
     }
 
     public List<String> getNextXDocuments(int indexOfNextElement, int nbOfElementsToProcess) {
-	List<String> subList = docReferences.subList(indexOfNextElement, indexOfNextElement + nbOfElementsToProcess);
+	int toIndex;
+	if (docReferences.size() > indexOfNextElement + nbOfElementsToProcess) {
+	    toIndex = indexOfNextElement + nbOfElementsToProcess;
+	} else {
+	    toIndex = docReferences.size();
+	}
+	List<String> subList = docReferences.subList(indexOfNextElement, toIndex);
 	return subList;
     }
 
     private List<String> generateDocRefArray() {
 	List<String> listOfReferences = new ArrayList<String>();
-	for (int i = 0; i < 10; i++) {
-	    listOfReferences.add("doc_" + i);
+	for (int i = 0; i < NB_OF_FAKE_DOCS; i++) {
+	    listOfReferences.add("doc_" + (i + 1));
 	}
 	return listOfReferences;
     }
