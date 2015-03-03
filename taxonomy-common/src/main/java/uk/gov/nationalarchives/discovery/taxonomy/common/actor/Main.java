@@ -10,14 +10,13 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.FiniteDuration;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationSupervisor;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationSupervisor.CategorisationStatus;
 import uk.gov.nationalarchives.discovery.taxonomy.common.actor.sample.CountingActor.Count;
 import uk.gov.nationalarchives.discovery.taxonomy.common.actor.sample.CountingActor.Get;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.util.Timeout;
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationSupervisor.CategoriseAllDocuments;
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationSupervisor.GetCategorisationStatus;
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationSupervisor.CategorisationStatus;
 
 ;
 
@@ -25,42 +24,46 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.Categorisatio
  * A main class to start up the application.
  */
 public class Main {
+
     public static void main(String[] args) throws Exception {
 	AnnotationConfigApplicationContext ctx = createActorPOCContext();
 
 	// get hold of the actor system
-	ActorSystem system = ctx.getBean(ActorSystem.class);
+	// ActorSystem system = ctx.getBean(ActorSystem.class);
+
+	final CategorisationSupervisor categorisationSupervisor = ctx.getBean(CategorisationSupervisor.class);
 
 	try {
-	    testPOC(system);
+	    testPOC(categorisationSupervisor);
 	    // testActorSample(system);
 	} finally {
-	    system.shutdown();
-	    system.awaitTermination();
+	    // system.shutdown();
+	    // system.awaitTermination();
+	    ctx.close();
 	}
     }
 
-    private static void testPOC(ActorSystem system) throws Exception {
-	ActorRef supervisor = system.actorOf(SpringExtProvider.get(system).props("CategorisationSupervisor"),
-		"supervisor");
+    private static void testPOC(final CategorisationSupervisor categorisationSupervisor) throws Exception {
+	Thread thread = runWholeCategorisationInSeparateThread(categorisationSupervisor);
 
-	supervisor.tell(new CategoriseAllDocuments(), null);
-
-	// print the result
-	askCategorisationStatus(supervisor);
-	Thread.sleep(2000);
-	askCategorisationStatus(supervisor);
+	CategorisationStatus status = null;
+	while (status == null || status.getProgress() != 100) {
+	    System.out.println("PROGRESS OF CATEGORISATION: " + status);
+	    Thread.sleep(600);
+	    status = categorisationSupervisor.getCategorisationStatus();
+	}
+	System.out.println("PROGRESS OF CATEGORISATION: " + status);
 
     }
 
-    private static void askCategorisationStatus(ActorRef supervisor) {
-	FiniteDuration duration = FiniteDuration.create(3, TimeUnit.SECONDS);
-	Future<Object> result = ask(supervisor, new GetCategorisationStatus(), Timeout.durationToTimeout(duration));
-	try {
-	    System.out.println("Got back " + (CategorisationStatus) Await.result(result, duration));
-	} catch (Exception e) {
-	    System.err.println("Failed getting result: " + e.getMessage());
-	}
+    private static Thread runWholeCategorisationInSeparateThread(final CategorisationSupervisor categorisationSupervisor) {
+	Thread thread = new Thread(new Runnable() {
+	    public void run() {
+		categorisationSupervisor.categoriseAllDocuments();
+	    }
+	});
+	thread.start();
+	return thread;
     }
 
     private static void testActorSample(ActorSystem system) throws Exception {

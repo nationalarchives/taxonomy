@@ -1,27 +1,24 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc;
 
+import static akka.pattern.Patterns.*;
 import static uk.gov.nationalarchives.discovery.taxonomy.common.actor.SpringExtension.*;
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.FiniteDuration;
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationWorker.CategoriseDocuments;
-//import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationWorkerRouter.GetNbOfAvailableActors;
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.sample.CountingActor.Get;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static akka.pattern.Patterns.*;
-
-import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.FiniteDuration;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationWorker.CategoriseDocuments;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.domain.Ping;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import akka.actor.UntypedActor;
 import akka.util.Timeout;
+
+//import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationWorkerRouter.GetNbOfAvailableActors;
 
 /**
  * An actor that can count using an injected CountingService.
@@ -29,25 +26,26 @@ import akka.util.Timeout;
  * @note The scope here is prototype since we want to create a new actor
  *       instance for use of this bean.
  */
-@Component("CategorisationSupervisor")
-@Scope("prototype")
-public class CategorisationSupervisor extends UntypedActor {
+@Service
+public class CategorisationSupervisor {
+
+    private static final int LIMIT_OF_RETRIES = 100;
 
     private static final int NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME = 2;
 
     int indexOfNextElementToCategorise;
     int totalNbOfDocs;
-    // int nbOfAvailableActors;
 
     private final CategorisationPOCService categorisationPOCService;
 
     private ActorRef categorisationWorkerRouter;
 
-    public static class GetCategorisationStatus {
+    @Autowired
+    public CategorisationSupervisor(CategorisationPOCService categorisationPOCService, ActorSystem actorSystem) {
+	this.categorisationPOCService = categorisationPOCService;
 
-    }
-
-    public static class CategoriseAllDocuments {
+	this.categorisationWorkerRouter = actorSystem.actorOf(
+		SpringExtProvider.get(actorSystem).props("CategorisationWorkerRouter"), "categorisationWorkerRouter");
     }
 
     public class CategorisationStatus {
@@ -56,6 +54,10 @@ public class CategorisationSupervisor extends UntypedActor {
 	public CategorisationStatus(int progress) {
 	    super();
 	    this.progress = progress;
+	}
+
+	public int getProgress() {
+	    return progress;
 	}
 
 	@Override
@@ -69,63 +71,46 @@ public class CategorisationSupervisor extends UntypedActor {
 
     }
 
-    @Autowired
-    public CategorisationSupervisor(CategorisationPOCService categorisationPOCService) {
-	this.categorisationPOCService = categorisationPOCService;
+    public void categoriseAllDocuments() {
+	this.indexOfNextElementToCategorise = 0;
+	this.totalNbOfDocs = categorisationPOCService.getTotalNbOfDocs();
 
-	this.categorisationWorkerRouter = getContext().actorOf(
-		SpringExtProvider.get(getContext().system()).props("CategorisationWorkerRouter"),
-		"categorisationWorkerRouter");
-	// this.nbOfAvailableActors = askRouterItsNbOfAvailableActors();
-    }
+	System.out.println("CategoriseAllDocuments request");
+	while (categorisationPOCService.hasNextXDocuments(indexOfNextElementToCategorise)) {
+	    waitForAvailableWorker();
 
-    // private int askRouterItsNbOfAvailableActors() {
-    // FiniteDuration duration = FiniteDuration.create(3, TimeUnit.SECONDS);
-    // Future<Object> result = ask(categorisationWorkerRouter, new
-    // GetNbOfAvailableActors(),
-    // Timeout.durationToTimeout(duration));
-    // int nbOfAvailableActors = 0;
-    // try {
-    // nbOfAvailableActors = (int) Await.result(result, duration);
-    // System.out.println("there are " + nbOfAvailableActors +
-    // " actors available");
-    // } catch (Exception e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    // return nbOfAvailableActors;
-    // }
+	    int indexOfNextElement = getIndexOfNextElementThenIncrement(NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME);
+	    System.out.println("nxt element: " + indexOfNextElement);
 
-    @Override
-    public void onReceive(Object message) throws Exception {
-	if (message instanceof CategoriseAllDocuments) {
-	    this.indexOfNextElementToCategorise = 0;
-	    this.totalNbOfDocs = categorisationPOCService.getTotalNbOfDocs();
-
-	    System.out.println("CategoriseAllDocuments request");
-	    while (categorisationPOCService.hasNextXDocuments(indexOfNextElementToCategorise)) {
-		// while (nbOfAvailableActors == 0) {
-		// Thread.sleep(1000);
-		// this.nbOfAvailableActors = askRouterItsNbOfAvailableActors();
-		// }
-		int indexOfNextElement = getIndexOfNextElementThenIncrement(NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME);
-		System.out.println("nxt element: " + indexOfNextElement);
-
-		categoriseXNextDocuments(indexOfNextElement);
-		// this.nbOfAvailableActors--;
-	    }
-
-	} else if (message instanceof GetCategorisationStatus) {
-	    System.out.println("GetCategorisationStatus request");
-	    getSender().tell(getCategorisationStatus(), getSelf());
-	} else {
-	    unhandled(message);
+	    categoriseXNextDocuments(indexOfNextElement);
 	}
     }
 
-    private Object getCategorisationStatus() {
-	int progress = indexOfNextElementToCategorise / totalNbOfDocs;
+    public CategorisationStatus getCategorisationStatus() {
+	if (totalNbOfDocs == 0) {
+	    return null;
+	}
+	int progress = 100 * indexOfNextElementToCategorise / totalNbOfDocs;
 	return new CategorisationStatus(progress);
+    }
+
+    private void waitForAvailableWorker() {
+	int nbOfRetries = 0;
+	while (!askForAvailableWorker() && nbOfRetries < LIMIT_OF_RETRIES) {
+	    nbOfRetries++;
+	}
+
+    }
+
+    private boolean askForAvailableWorker() {
+	FiniteDuration duration = FiniteDuration.create(500, TimeUnit.MILLISECONDS);
+	Future<Object> result = ask(categorisationWorkerRouter, new Ping(), Timeout.durationToTimeout(duration));
+	try {
+	    Await.result(result, duration);
+	} catch (Exception e) {
+	    return false;
+	}
+	return true;
     }
 
     private void categoriseXNextDocuments(int indexOfNextElement) {
@@ -133,7 +118,7 @@ public class CategorisationSupervisor extends UntypedActor {
 		NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME);
 
 	// ask worker to categorise those docs.
-	categorisationWorkerRouter.tell(new CategoriseDocuments(docReferences), getSelf());
+	categorisationWorkerRouter.tell(new CategoriseDocuments(docReferences), null);
     }
 
     synchronized private int getIndexOfNextElementThenIncrement(int nbOfElementsToProcess) {
