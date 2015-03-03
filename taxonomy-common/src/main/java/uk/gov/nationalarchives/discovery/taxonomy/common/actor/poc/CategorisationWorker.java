@@ -6,6 +6,8 @@ import org.apache.commons.lang.ArrayUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.domain.Ping;
+import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.domain.Pong;
 import akka.actor.UntypedActor;
 
 /**
@@ -18,6 +20,10 @@ import akka.actor.UntypedActor;
 @Scope("prototype")
 public class CategorisationWorker extends UntypedActor {
 
+    // @Autowired
+    public CategorisationWorker() {
+    }
+
     public static class CategoriseDocuments {
 	private List<String> docReferences;
 
@@ -29,10 +35,6 @@ public class CategorisationWorker extends UntypedActor {
 	public List<String> getDocReferences() {
 	    return docReferences;
 	}
-    }
-
-    // @Autowired
-    public CategorisationWorker() {
     }
 
     @Override
@@ -48,6 +50,8 @@ public class CategorisationWorker extends UntypedActor {
 	    for (String docReference : docReferences) {
 		categoriseDocument(docReference);
 	    }
+	} else if (message instanceof Ping) {
+	    getSender().tell(new Pong(), getSelf());
 	} else {
 	    unhandled(message);
 	}
