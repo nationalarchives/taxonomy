@@ -31,7 +31,7 @@ public class CategorisationSupervisor {
 
     private static final int LIMIT_OF_RETRIES = 100;
 
-    private static final int NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME = 2;
+    private static final int NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME = 3;
 
     int indexOfNextElementToCategorise;
     int totalNbOfDocs;
@@ -123,7 +123,13 @@ public class CategorisationSupervisor {
 
     synchronized private int getIndexOfNextElementThenIncrement(int nbOfElementsToProcess) {
 	Integer indexToReturn = new Integer(this.indexOfNextElementToCategorise);
-	this.indexOfNextElementToCategorise = indexOfNextElementToCategorise + nbOfElementsToProcess;
+
+	if (this.totalNbOfDocs > this.indexOfNextElementToCategorise + nbOfElementsToProcess) {
+	    this.indexOfNextElementToCategorise = this.indexOfNextElementToCategorise + nbOfElementsToProcess;
+	} else {
+	    this.indexOfNextElementToCategorise = this.totalNbOfDocs;
+	}
+
 	return indexToReturn;
     }
 }
