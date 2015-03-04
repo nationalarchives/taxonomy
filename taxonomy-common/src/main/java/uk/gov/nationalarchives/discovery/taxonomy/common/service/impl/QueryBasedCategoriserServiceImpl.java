@@ -1,22 +1,5 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.aop.annotation.Loggable;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
-import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
-import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.TaxonomyMapper;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.IAViewUpdateRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.InformationAssetViewMongoRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncQueryBasedTaskManager;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -30,6 +13,7 @@ import java.util.concurrent.Future;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -49,6 +33,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import uk.gov.nationalarchives.discovery.taxonomy.common.aop.annotation.Loggable;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
+import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
+import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.TaxonomyMapper;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.IAViewUpdateRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.InformationAssetViewMongoRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncQueryBasedTaskManager;
 
 @Service
 @ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useQueryBasedCategoriser")
@@ -257,6 +258,10 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	if (iaView.getTITLE() != null) {
 	    listOfUnmodifiedFields.add(new TextField(InformationAssetViewFields.TITLE.toString(), iaView.getTITLE(),
 		    Field.Store.NO));
+	}
+	if (iaView.getSOURCE() != null) {
+	    listOfUnmodifiedFields.add(new IntField(InformationAssetViewFields.SOURCE.toString(), Integer
+		    .valueOf(iaView.getSOURCE()), Field.Store.NO));
 	}
 	return listOfUnmodifiedFields;
     }

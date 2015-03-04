@@ -2,16 +2,17 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.mapper;
 
 import java.util.Arrays;
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.IntField;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.springframework.util.StringUtils;
+
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.TrainingDocument;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.TestDocument;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
-import org.springframework.util.StringUtils;
 
 public class LuceneTaxonomyMapper {
     /**
@@ -33,6 +34,7 @@ public class LuceneTaxonomyMapper {
 	assetView.setPLACE_NAME(document.getValues(InformationAssetViewFields.PLACE_NAME.toString()));
 	assetView.setSUBJECTS(document.getValues(InformationAssetViewFields.SUBJECTS.toString()));
 	assetView.setSERIES(document.get(InformationAssetViewFields.SERIES.toString()));
+	assetView.setSOURCE(document.get(InformationAssetViewFields.SOURCE.toString()));
 	return assetView;
     }
 
@@ -127,6 +129,10 @@ public class LuceneTaxonomyMapper {
 	if (iaViewSample.getSUBJECTS() != null) {
 	    doc.add(new TextField(InformationAssetViewFields.SUBJECTS.toString(), Arrays.toString(iaViewSample
 		    .getSUBJECTS()), Field.Store.YES));
+	}
+	if (iaViewSample.getSOURCE() != null) {
+	    doc.add(new IntField(InformationAssetViewFields.SOURCE.toString(),
+		    Integer.valueOf(iaViewSample.getSOURCE()), Field.Store.YES));
 	}
 	return doc;
     }
