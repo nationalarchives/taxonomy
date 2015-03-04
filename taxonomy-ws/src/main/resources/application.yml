@@ -42,7 +42,7 @@ lucene:
   maxShingleSize: 0
   useStopFilter: false
   useSynonymFilter: true
-  queryFilterSourceValue: 100
+  queryFilterSourceValues: 100,200
   iaViewMaxMergeSizeMB: 5.0
   iaViewMaxCachedMB: 60.0
   defaultTaxonomyField: textnocasnopunc
