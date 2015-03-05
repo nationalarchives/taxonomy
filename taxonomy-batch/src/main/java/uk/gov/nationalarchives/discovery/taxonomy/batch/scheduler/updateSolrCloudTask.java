@@ -57,7 +57,8 @@ public class updateSolrCloudTask {
 		if (hasNext = pageOfIAViewUpdatesToProcess.hasNext()) {
 		    pageNumber++;
 		} else {
-		    // TODO 1 if an element fails, updates to Solr are stopped.
+		    // TODO 1 ERROR_HANDLING if an element fails, updates to
+		    // Solr are stopped.
 		    // that's interesting but there might be something else to
 		    // do
 		    updateLastIAViewUpdateProcessedTime(pageOfIAViewUpdatesToProcess);

@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.actor.supervisor;
+package uk.gov.nationalarchives.discovery.taxonomy.batch.actor.supervisor;
 
 import static akka.pattern.Patterns.*;
 
@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import scala.concurrent.Await;
@@ -30,7 +31,8 @@ import akka.util.Timeout;
  *       instance for use of this bean.
  */
 @Service
-public class CategorisationSupervisor {
+@ConditionalOnProperty(prefix = "batch.role.", value = { "categorise-all", "categorise-all.supervisor" })
+public class CategorisationSupervisorService {
 
     private static final int LIMIT_OF_RETRIES = 100;
 
@@ -44,7 +46,7 @@ public class CategorisationSupervisor {
     private ActorRef categorisationWorkerRouter;
 
     @Autowired
-    public CategorisationSupervisor(CategorisationPOCService categorisationPOCService, ActorSystem actorSystem) {
+    public CategorisationSupervisorService(CategorisationPOCService categorisationPOCService, ActorSystem actorSystem) {
 	this.categorisationPOCService = categorisationPOCService;
 
 	this.categorisationWorkerRouter = actorSystem.actorOf(
