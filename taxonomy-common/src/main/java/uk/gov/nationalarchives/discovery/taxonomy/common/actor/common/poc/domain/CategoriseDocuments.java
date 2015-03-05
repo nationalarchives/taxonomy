@@ -1,9 +1,10 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc.domain;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class CategoriseDocuments implements Serializable {
+    private static final long serialVersionUID = -2111185858468095541L;
+
     private String[] docReferences;
 
     public CategoriseDocuments(String[] docReferences) {

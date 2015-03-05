@@ -44,7 +44,7 @@ public class SupervisorMain {
 
     private static void testPOC(final CategorisationSupervisor categorisationSupervisor) throws Exception {
 
-	Thread thread = runWholeCategorisationInSeparateThread(categorisationSupervisor);
+	runWholeCategorisationInSeparateThread(categorisationSupervisor);
 
 	CategorisationStatus status = null;
 	while (status == null || status.getProgress() != 100) {
