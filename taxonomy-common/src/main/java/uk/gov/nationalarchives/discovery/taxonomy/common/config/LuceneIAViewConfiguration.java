@@ -3,7 +3,9 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.config;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -17,14 +19,18 @@ import org.apache.lucene.analysis.util.ClasspathResourceLoader;
 import org.apache.lucene.analysis.util.ResourceLoader;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.ChainedFilter;
+import org.apache.lucene.queries.TermFilter;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.NumericRangeFilter;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NRTCachingDirectory;
+import org.apache.lucene.util.BytesRefBuilder;
+import org.apache.lucene.util.NumericUtils;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +65,7 @@ public class LuceneIAViewConfiguration {
     private double iaViewMaxMergeSizeMB;
     private double iaViewMaxCachedMB;
 
-    private String queryFilterSourceValue;
+    private String queryFilterSourceValues;
 
     private String defaultTaxonomyField;
 
@@ -213,16 +219,39 @@ public class LuceneIAViewConfiguration {
      */
 
     /**
+     * w
      * 
      * @return
      */
     public @Bean Filter catalogueFilter() {
-	if (!StringUtils.isEmpty(queryFilterSourceValue)) {
-	    Integer intCatalogueSourceValue = Integer.valueOf(queryFilterSourceValue);
-	    return NumericRangeFilter.newIntRange(InformationAssetViewFields.SOURCE.toString(),
-		    intCatalogueSourceValue, intCatalogueSourceValue, true, true);
+	if (!StringUtils.isEmpty(queryFilterSourceValues)) {
+
+	    String[] arrayOfSourceValues = queryFilterSourceValues.split(",");
+
+	    if (arrayOfSourceValues.length == 1) {
+		return getSourceFilterForValue(arrayOfSourceValues[0]);
+	    } else {
+		return getChainOfSourceFiltersForValues(arrayOfSourceValues);
+	    }
 	}
 	return null;
+    }
+
+    private Filter getChainOfSourceFiltersForValues(String[] arrayOfSourceValues) {
+	List<Filter> chainOfFilters = new ArrayList<Filter>();
+	for (String sourceValue : arrayOfSourceValues) {
+	    TermFilter sourceFilter = getSourceFilterForValue(sourceValue);
+	    chainOfFilters.add(sourceFilter);
+	}
+	return new ChainedFilter(chainOfFilters.toArray(new Filter[0]), ChainedFilter.OR);
+    }
+
+    private TermFilter getSourceFilterForValue(String sourceValue) {
+	Integer intCatalogueSourceValue = Integer.valueOf(sourceValue);
+	BytesRefBuilder bytes = new BytesRefBuilder();
+	NumericUtils.intToPrefixCoded(intCatalogueSourceValue, 0, bytes);
+	TermFilter termFilter = new TermFilter(new Term(InformationAssetViewFields.SOURCE.toString(), bytes.get()));
+	return termFilter;
     }
 
     /**
@@ -245,8 +274,8 @@ public class LuceneIAViewConfiguration {
 	this.iaViewMaxCachedMB = iaViewMaxCachedMB;
     }
 
-    public void setQueryFilterSourceValue(String queryFilterSourceValue) {
-	this.queryFilterSourceValue = queryFilterSourceValue;
+    public void setQueryFilterSourceValues(String queryFilterSourceValues) {
+	this.queryFilterSourceValues = queryFilterSourceValues;
     }
 
     public void setDefaultTaxonomyField(String defaultTaxonomyField) {
