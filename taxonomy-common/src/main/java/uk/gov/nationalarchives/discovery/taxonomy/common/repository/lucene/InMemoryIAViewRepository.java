@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -149,6 +150,10 @@ public class InMemoryIAViewRepository {
 	if (iaView.getTITLE() != null) {
 	    listOfUnmodifiedFields.add(new TextField(InformationAssetViewFields.TITLE.toString(), iaView.getTITLE(),
 		    Field.Store.NO));
+	}
+	if (iaView.getSOURCE() != null) {
+	    listOfUnmodifiedFields.add(new IntField(InformationAssetViewFields.SOURCE.toString(), Integer
+		    .valueOf(iaView.getSOURCE()), Field.Store.NO));
 	}
 	return listOfUnmodifiedFields;
     }

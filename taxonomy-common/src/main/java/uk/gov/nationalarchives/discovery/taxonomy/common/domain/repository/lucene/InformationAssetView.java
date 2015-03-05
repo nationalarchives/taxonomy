@@ -31,6 +31,7 @@ public class InformationAssetView {
     private Float score;
     @JsonProperty(value = "series")
     private String SERIES;
+    private String SOURCE;
 
     public String getDOCREFERENCE() {
 	return DOCREFERENCE;
@@ -126,6 +127,14 @@ public class InformationAssetView {
 
     public void setSERIES(String sERIES) {
 	SERIES = sERIES;
+    }
+
+    public String getSOURCE() {
+	return SOURCE;
+    }
+
+    public void setSOURCE(String sOURCE) {
+	SOURCE = sOURCE;
     }
 
     @Override

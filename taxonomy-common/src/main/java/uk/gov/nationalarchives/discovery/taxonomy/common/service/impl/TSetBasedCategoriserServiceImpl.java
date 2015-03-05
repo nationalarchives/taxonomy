@@ -295,7 +295,6 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 
     @Override
     public void refreshIndexUsedForCategorisation() {
-	// TODO Auto-generated method stub
-
+	// TODO TSETBASED Auto-generated method stub
     }
 }
