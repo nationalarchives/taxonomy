@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.parser.TaxonomyQueryParser;
 
 @Component
 public class LuceneHelperTools {
@@ -98,6 +99,33 @@ public class LuceneHelperTools {
     public Query buildSearchQueryWithFiltersIfNecessary(String queryString, Filter filter) {
 	Query searchQuery = buildSearchQuery(queryString);
 
+	// TODO 1 take into account queries on SOURCE and filter them to get
+	// faster
+	// String sourceFieldQueryString = "SOURCE:";
+	// if (searchQuery.toString().contains(sourceFieldQueryString)) {
+	//
+	// if(searchQuery.toString().indexOf(sourceFieldQueryString)!=
+	// searchQuery.toString().lastIndexOf(sourceFieldQueryString)){
+	// throw new TaxonomyException(TaxonomyErrorType.INVALID_CATEGORY_QUERY,
+	// "found several occurences of SOURCE:");
+	// }
+	//
+	// if (searchQuery instanceof BooleanQuery) {
+	// BooleanClause[] clauses = ((BooleanQuery) searchQuery).getClauses();
+	// for (BooleanClause booleanClause : clauses) {
+	// Query query = booleanClause.getQuery();
+	// if (searchQuery instanceof TermQuery) {
+	// String field = ((TermQuery) searchQuery).getTerm().field();
+	// if (InformationAssetViewFields.SOURCE.toString().equals(field)){
+	//
+	// }
+	// } else if (searchQuery instanceof NumericRangeQuery) {
+	//
+	// }
+	// }
+	// }
+	// }
+
 	if (filter == null) {
 	    filter = this.catalogueFilter;
 	}
@@ -112,7 +140,7 @@ public class LuceneHelperTools {
     }
 
     public Query buildSearchQuery(String queryString) {
-	QueryParser parser = new QueryParser(defaultTaxonomyField, this.iaViewSearchAnalyser);
+	QueryParser parser = new TaxonomyQueryParser(defaultTaxonomyField, this.iaViewSearchAnalyser);
 	parser.setAllowLeadingWildcard(true);
 	Query searchQuery;
 	try {
