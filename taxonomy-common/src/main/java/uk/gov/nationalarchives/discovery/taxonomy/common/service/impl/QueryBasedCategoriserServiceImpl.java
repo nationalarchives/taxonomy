@@ -141,7 +141,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
 	List<Future<CategorisationResult>> listOfFutureCategoryResults = new ArrayList<Future<CategorisationResult>>();
 
-	// TODO 2 cache filter on current document
+	// TODO 2 PERF cache filter on current document
 	// Filter filter = new CachingWrapperFilter(new QueryWrapperFilter(new
 	// TermQuery(new Term(
 	// InformationAssetViewFields.DOCREFERENCE.toString(),

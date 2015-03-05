@@ -99,7 +99,8 @@ public class LuceneHelperTools {
     public Query buildSearchQueryWithFiltersIfNecessary(String queryString, Filter filter) {
 	Query searchQuery = buildSearchQuery(queryString);
 
-	// TODO 1 take into account queries on SOURCE and filter them to get
+	// TODO 1 PERF take into account queries on SOURCE and filter them to
+	// get
 	// faster
 	// String sourceFieldQueryString = "SOURCE:";
 	// if (searchQuery.toString().contains(sourceFieldQueryString)) {

@@ -63,6 +63,12 @@ lucene:
 ---
 spring.profiles: batch
 spring.activemq.categorise-doc-queue-name: CATEGORISE.DOCUMENTS
+batch.role:
+ udpate-solr-cloud: true
+ check-categorisation-request-messages: true
+ categorise-all: true
+ categorise-all.supervisor: true
+ categorise-all.slave: false
 
 ---
 spring.profiles: local
