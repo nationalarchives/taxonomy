@@ -51,14 +51,15 @@ public class CategoriseDocMessageConsumer {
 	    try {
 		categoriserService.categoriseSingle(docReference);
 	    } catch (TaxonomyException e) {
-		categoriseDocumentMessage.setHasProcessingErrors(true);
+		categoriseDocumentMessage.incrementNbOfProcessingErrors();
 		logger.error("an error occured while processing Document: {}, from message: {}", docReference,
 			categoriseDocumentMessage.getMessageId(), e);
 	    }
 	}
 
 	if (categoriseDocumentMessage.hasProcessingErrors()) {
-	    logger.warn("completed treatment for message: {} with errors", categoriseDocumentMessage.getMessageId());
+	    logger.warn("completed treatment for message: {} with {} errors", categoriseDocumentMessage.getMessageId(),
+		    categoriseDocumentMessage.getNbOfProcessingErrors());
 	} else {
 	    logger.info("completed treatment for message: {}", categoriseDocumentMessage.getMessageId());
 	}

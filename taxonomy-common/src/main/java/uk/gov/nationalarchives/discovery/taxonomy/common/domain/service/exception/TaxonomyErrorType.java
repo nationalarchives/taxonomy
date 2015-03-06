@@ -48,5 +48,10 @@ public enum TaxonomyErrorType {
     /**
      * When an error occurs while updating Solr Server
      */
-    SOLR_WRITE_EXCEPTION;
+    SOLR_WRITE_EXCEPTION,
+
+    /**
+     * Document was not found in lucene Index
+     */
+    DOC_NOT_FOUND;
 }
