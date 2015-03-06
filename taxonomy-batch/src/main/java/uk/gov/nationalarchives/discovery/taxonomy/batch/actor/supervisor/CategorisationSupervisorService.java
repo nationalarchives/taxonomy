@@ -15,17 +15,15 @@ import org.springframework.util.CollectionUtils;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.FiniteDuration;
+import uk.gov.nationalarchives.discovery.taxonomy.common.config.actor.SpringExtension;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.BrowseAllDocsResponse;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseDocuments;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Ping;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationWorker;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import akka.actor.Props;
-import akka.routing.FromConfig;
 import akka.util.Timeout;
 
 @Service
@@ -48,8 +46,11 @@ public class CategorisationSupervisorService {
     public CategorisationSupervisorService(IAViewService iaViewService, ActorSystem actorSystem) {
 	this.iaViewService = iaViewService;
 
+	// FIXME Do not use the router once it generates the actor using spring
+	// provider.
 	this.categorisationWorkerRouter = actorSystem.actorOf(
-		FromConfig.getInstance().props(Props.create(CategorisationWorker.class)), "categorisation-router");
+		SpringExtension.SpringExtProvider.get(actorSystem).props("CategorisationWorker"),
+		"categorisation-router");
 	lastElementRetrieved = null;
     }
 
