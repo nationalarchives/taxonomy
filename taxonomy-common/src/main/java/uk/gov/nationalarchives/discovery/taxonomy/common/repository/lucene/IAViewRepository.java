@@ -29,7 +29,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.Paginate
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.parser.TaxonomyQueryParser;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.tools.TaxonomyHelperTools;
 
@@ -91,9 +90,9 @@ public class IAViewRepository {
 	    TopDocs results = searcher.search(new TermQuery(new Term(
 		    InformationAssetViewFields.DOCREFERENCE.toString(), docReference)), 1);
 	    if (results.totalHits != 1) {
-		throw new TaxonomyException(TaxonomyErrorType.INVALID_PARAMETER, "searchDocByDocReference: there were "
+		throw new TaxonomyException(TaxonomyErrorType.DOC_NOT_FOUND, "searchDocByDocReference: there were "
 			+ results.totalHits + " results for DOCREFERENCE: " + docReference
-			+ " though it should have found only 1 doc");
+			+ " though it should have found 1 doc");
 	    }
 	    hitDoc = searcher.doc(results.scoreDocs[0].doc);
 
