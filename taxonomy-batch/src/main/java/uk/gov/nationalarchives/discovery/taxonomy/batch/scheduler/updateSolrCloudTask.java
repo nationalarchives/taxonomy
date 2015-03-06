@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.UpdateSolrService;
 
 @Component
@@ -28,7 +29,8 @@ public class updateSolrCloudTask {
     private static Date lastIAViewUpdateProcessedTime = null;
 
     @Autowired
-    public updateSolrCloudTask(CategoriserService categoriserService, UpdateSolrService updateSolrService) {
+    public updateSolrCloudTask(CategoriserService categoriserService, UpdateSolrService updateSolrService,
+	    IAViewService iaViewService) {
 	super();
 	this.categoriserService = categoriserService;
 	this.updateSolrService = updateSolrService;

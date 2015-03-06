@@ -17,6 +17,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.Categori
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
 
 /**
  * Consumer dedicated to handling all Categorisation requests sent to activeMQ
@@ -29,8 +30,17 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserServ
 @Component
 public class CategoriseDocMessageConsumer {
 
+    private final CategoriserService<CategorisationResult> categoriserService;
+
+    private final IAViewService iaViewService;
+
     @Autowired
-    private CategoriserService<CategorisationResult> categoriserService;
+    public CategoriseDocMessageConsumer(CategoriserService<CategorisationResult> categoriserService,
+	    IAViewService iaViewService) {
+	super();
+	this.categoriserService = categoriserService;
+	this.iaViewService = iaViewService;
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(CategoriseDocMessageConsumer.class);
 
@@ -45,7 +55,7 @@ public class CategoriseDocMessageConsumer {
 	logger.info("received Categorise Document message: {}, docReferences: {}",
 		categoriseDocumentMessage.getMessageId(), categoriseDocumentMessage.getListOfDocReferences());
 
-	categoriserService.refreshIndexUsedForCategorisation();
+	iaViewService.refreshIAViewIndex();
 
 	for (String docReference : categoriseDocumentMessage.getListOfDocReferences()) {
 	    try {

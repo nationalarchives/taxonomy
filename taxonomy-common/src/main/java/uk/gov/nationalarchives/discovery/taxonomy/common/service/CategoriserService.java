@@ -51,11 +51,4 @@ public interface CategoriserService<T extends CategorisationResult> {
      */
     public IAViewUpdate findLastIAViewUpdate();
 
-    /**
-     * refresh the index used for categorisation.<br/>
-     * It is necessary to call that method if the document to categorise was
-     * indexed right before that call
-     */
-    public void refreshIndexUsedForCategorisation();
-
 }

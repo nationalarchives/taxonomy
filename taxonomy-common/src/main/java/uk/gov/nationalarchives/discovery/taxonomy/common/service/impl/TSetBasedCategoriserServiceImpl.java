@@ -2,7 +2,6 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.TsetInformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.TSetBasedCategorisationResult;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
@@ -294,8 +293,4 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 	return null;
     }
 
-    @Override
-    public void refreshIndexUsedForCategorisation() {
-	// TODO TSETBASED Auto-generated method stub
-    }
 }
