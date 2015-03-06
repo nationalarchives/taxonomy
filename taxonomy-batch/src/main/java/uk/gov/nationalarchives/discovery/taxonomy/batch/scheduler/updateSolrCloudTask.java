@@ -35,7 +35,7 @@ public class updateSolrCloudTask {
     }
 
     @SuppressWarnings("unchecked")
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelay = 1000)
     public void updateSolrCloudWithLatestUpdatesOnCategories() {
 	if (lastIAViewUpdateProcessedTime == null) {
 	    initBatch();
@@ -63,8 +63,6 @@ public class updateSolrCloudTask {
 		    updateLastIAViewUpdateProcessedTime(pageOfIAViewUpdatesToProcess);
 		}
 	    }
-	} else {
-	    logger.info(".updateSolrCloudWithLatestUpdatesOnCategories: no document to process");
 	}
 
     }
