@@ -6,14 +6,19 @@ import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.SortField.Type;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.slf4j.Logger;
@@ -23,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.annotation.Loggable;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.BrowseAllDocsResponse;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.PaginatedList;
@@ -245,6 +251,61 @@ public class IAViewRepository {
 	} catch (IOException e) {
 	    logger.error(".refreshIndexUsedForCategorisation: exception was raised when trying to refresh the lucene Index");
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
+	}
+    }
+
+    /**
+     * return the total nb of docs in IAView index
+     * 
+     * @return
+     */
+    public int getTotalNbOfDocs() {
+	IndexSearcher searcher = null;
+	try {
+	    searcher = iaviewSearcherManager.acquire();
+	    IndexReader indexReader = searcher.getIndexReader();
+
+	    return indexReader.numDocs();
+	} catch (IOException ioException) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, ioException);
+	} finally {
+	    LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager, searcher);
+	}
+    }
+
+    /**
+     * Finds the top n hits from whole Index where all results are after a
+     * previous result (after)
+     * 
+     * @param after
+     *            the last doc from previous search
+     * @param nDocs
+     *            nb of elements to retrieve in total
+     * @return
+     */
+    public BrowseAllDocsResponse browseAllDocs(ScoreDoc after, int nDocs) {
+	List<String> listOfDocReferences = new ArrayList<String>();
+	IndexSearcher searcher = null;
+	try {
+	    searcher = iaviewSearcherManager.acquire();
+
+	    TopDocs topDocs = searcher.searchAfter(after, new MatchAllDocsQuery(), nDocs, new Sort(new SortField(null,
+		    Type.DOC)));
+	    ScoreDoc scoreDoc = null;
+	    for (int i = 0; i < topDocs.scoreDocs.length; i++) {
+		scoreDoc = topDocs.scoreDocs[i];
+		Document document = searcher.doc(scoreDoc.doc);
+		String docReferenceFromLuceneDocument = LuceneTaxonomyMapper
+			.getDocReferenceFromLuceneDocument(document);
+
+		listOfDocReferences.add(docReferenceFromLuceneDocument);
+	    }
+	    return new BrowseAllDocsResponse(listOfDocReferences, scoreDoc);
+
+	} catch (IOException ioException) {
+	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, ioException);
+	} finally {
+	    LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager, searcher);
 	}
     }
 }

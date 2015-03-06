@@ -2,19 +2,25 @@ package uk.gov.nationalarchives.discovery.taxonomy.batch.actor.supervisor;
 
 import static akka.pattern.Patterns.*;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.lucene.search.ScoreDoc;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.FiniteDuration;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.BrowseAllDocsResponse;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseDocuments;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Ping;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationPOCService;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationWorker;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -22,35 +28,29 @@ import akka.actor.Props;
 import akka.routing.FromConfig;
 import akka.util.Timeout;
 
-//import uk.gov.nationalarchives.discovery.taxonomy.common.actor.poc.CategorisationWorkerRouter.GetNbOfAvailableActors;
-
-/**
- * An actor that can count using an injected CountingService.
- *
- * @note The scope here is prototype since we want to create a new actor
- *       instance for use of this bean.
- */
 @Service
 @ConditionalOnProperty(prefix = "batch.role.", value = { "categorise-all", "categorise-all.supervisor" })
 public class CategorisationSupervisorService {
 
+    private static final Logger logger = LoggerFactory.getLogger(CategorisationSupervisorService.class);
     private static final int LIMIT_OF_RETRIES = 100;
 
-    private static final int NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME = 3;
+    private static final int NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME = 100;
 
-    int indexOfNextElementToCategorise;
     int totalNbOfDocs;
+    private ScoreDoc lastElementRetrieved;
 
-    private final CategorisationPOCService categorisationPOCService;
+    private final IAViewService iaViewService;
 
     private ActorRef categorisationWorkerRouter;
 
     @Autowired
-    public CategorisationSupervisorService(CategorisationPOCService categorisationPOCService, ActorSystem actorSystem) {
-	this.categorisationPOCService = categorisationPOCService;
+    public CategorisationSupervisorService(IAViewService iaViewService, ActorSystem actorSystem) {
+	this.iaViewService = iaViewService;
 
 	this.categorisationWorkerRouter = actorSystem.actorOf(
 		FromConfig.getInstance().props(Props.create(CategorisationWorker.class)), "categorisation-router");
+	lastElementRetrieved = null;
     }
 
     public class CategorisationStatus {
@@ -77,25 +77,38 @@ public class CategorisationSupervisorService {
     }
 
     public void categoriseAllDocuments() {
-	this.indexOfNextElementToCategorise = 0;
-	this.totalNbOfDocs = categorisationPOCService.getTotalNbOfDocs();
+	iaViewService.refreshIAViewIndex();
 
-	System.out.println("CategoriseAllDocuments request");
-	while (categorisationPOCService.hasNextXDocuments(indexOfNextElementToCategorise)) {
+	this.totalNbOfDocs = iaViewService.getTotalNbOfDocs();
+
+	if (totalNbOfDocs == 0) {
+	    throw new TaxonomyException(TaxonomyErrorType.DOC_NOT_FOUND, "The index is empty");
+	}
+
+	logger.info(".categoriseAllDocuments: categorizing {} documents", this.totalNbOfDocs);
+	do {
 	    waitForAvailableWorker();
 
-	    int indexOfNextElement = getIndexOfNextElementThenIncrement(NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME);
-	    System.out.println("nxt element: " + indexOfNextElement);
+	    logger.info(
+		    ".categoriseAllDocuments: submitting request to categorise documents: lastScoreDoc={}, size={}",
+		    this.lastElementRetrieved, NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME);
+	    categoriseNextDocuments();
+	} while (hasDocumentsLeftFromDocIndex());
 
-	    categoriseXNextDocuments(indexOfNextElement);
+    }
+
+    private boolean hasDocumentsLeftFromDocIndex() {
+	if (this.lastElementRetrieved == null) {
+	    return false;
 	}
+	return this.lastElementRetrieved.doc < this.totalNbOfDocs;
     }
 
     public CategorisationStatus getCategorisationStatus() {
-	if (totalNbOfDocs == 0) {
-	    return null;
+	if (this.lastElementRetrieved == null) {
+	    return new CategorisationStatus(100);
 	}
-	int progress = 100 * indexOfNextElementToCategorise / totalNbOfDocs;
+	int progress = 100 * this.lastElementRetrieved.doc / this.totalNbOfDocs;
 	return new CategorisationStatus(progress);
     }
 
@@ -118,23 +131,20 @@ public class CategorisationSupervisorService {
 	return true;
     }
 
-    private void categoriseXNextDocuments(int indexOfNextElement) {
-	List<String> docReferences = categorisationPOCService.getNextXDocuments(indexOfNextElement,
+    /**
+     * This method must be synchronized because lastElementRetrieved must be
+     * updated before the next bunch of documents can be processed
+     */
+    private synchronized void categoriseNextDocuments() {
+	BrowseAllDocsResponse browseAllDocs = iaViewService.browseAllDocs(this.lastElementRetrieved,
 		NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME);
 
-	// ask worker to categorise those docs.
-	categorisationWorkerRouter.tell(new CategoriseDocuments(docReferences.toArray(new String[0])), null);
-    }
+	this.lastElementRetrieved = browseAllDocs.getLastScoreDoc();
 
-    synchronized private int getIndexOfNextElementThenIncrement(int nbOfElementsToProcess) {
-	Integer indexToReturn = new Integer(this.indexOfNextElementToCategorise);
-
-	if (this.totalNbOfDocs > this.indexOfNextElementToCategorise + nbOfElementsToProcess) {
-	    this.indexOfNextElementToCategorise = this.indexOfNextElementToCategorise + nbOfElementsToProcess;
-	} else {
-	    this.indexOfNextElementToCategorise = this.totalNbOfDocs;
+	if (!CollectionUtils.isEmpty(browseAllDocs.getListOfDocReferences())) {
+	    // ask worker to categorise those docs.
+	    categorisationWorkerRouter.tell(
+		    new CategoriseDocuments(browseAllDocs.getListOfDocReferences().toArray(new String[0])), null);
 	}
-
-	return indexToReturn;
     }
 }

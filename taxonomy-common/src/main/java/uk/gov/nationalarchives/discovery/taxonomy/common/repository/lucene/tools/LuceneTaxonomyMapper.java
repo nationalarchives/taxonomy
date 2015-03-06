@@ -12,7 +12,6 @@ import org.springframework.util.StringUtils;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.TrainingDocument;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.TsetInformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.TestDocument;
 
 public class LuceneTaxonomyMapper {
@@ -37,6 +36,16 @@ public class LuceneTaxonomyMapper {
 	assetView.setSERIES(document.get(InformationAssetViewFields.SERIES.toString()));
 	assetView.setSOURCE(document.get(InformationAssetViewFields.SOURCE.toString()));
 	return assetView;
+    }
+
+    /**
+     * Retrieve the doc reference from a lucene document
+     * 
+     * @param document
+     * @return
+     */
+    public static String getDocReferenceFromLuceneDocument(Document document) {
+	return document.get(InformationAssetViewFields.DOCREFERENCE.toString());
     }
 
     public static TestDocument getTestDocumentFromLuceneDocument(Document document) {

@@ -1,5 +1,7 @@
 package uk.gov.nationalarchives.discovery.taxonomy.batch.actor.supervisor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -21,6 +23,8 @@ import akka.actor.Props;
 @ConditionalOnProperty(prefix = "batch.role.", value = { "categorise-all", "categorise-all.supervisor" })
 public class CategorisationSupervisorRunner implements CommandLineRunner {
 
+    private static final Logger logger = LoggerFactory.getLogger(CategorisationSupervisorRunner.class);
+
     private final ActorSystem deadLettersActorSystem;
     private final ActorSystem actorSystem;
     private final CategorisationSupervisorService categorisationSupervisorService;
@@ -37,27 +41,23 @@ public class CategorisationSupervisorRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 	trackDeadLetters();
+	logger.info("START WHOLE CATEGORISATION");
 
-	testPOC(categorisationSupervisorService);
+	runWholeCategorisationInSeparateThread(categorisationSupervisorService);
+
+	CategorisationStatus status = null;
+	do {
+	    Thread.sleep(2000);
+	    status = categorisationSupervisorService.getCategorisationStatus();
+	    logger.info("PROGRESS OF CATEGORISATION: {}", status);
+	} while (status.getProgress() != 100);
+
+	logger.info("CATEGORISATION TERMINATED ON SUPERVISOR SIDE. Wait for slave to complete their tasks", status);
     }
 
     private void trackDeadLetters() {
 	final ActorRef actor = deadLettersActorSystem.actorOf(Props.create(DeadLetterActor.class));
 	actorSystem.eventStream().subscribe(actor, AllDeadLetters.class);
-    }
-
-    private static void testPOC(final CategorisationSupervisorService categorisationSupervisor) throws Exception {
-
-	runWholeCategorisationInSeparateThread(categorisationSupervisor);
-
-	CategorisationStatus status = null;
-	while (status == null || status.getProgress() != 100) {
-	    System.out.println("PROGRESS OF CATEGORISATION: " + status);
-	    Thread.sleep(600);
-	    status = categorisationSupervisor.getCategorisationStatus();
-	}
-	System.out.println("PROGRESS OF CATEGORISATION: " + status);
-
     }
 
     private static Thread runWholeCategorisationInSeparateThread(

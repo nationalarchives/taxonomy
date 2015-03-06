@@ -1,5 +1,7 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.actor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -11,9 +13,7 @@ import akka.actor.UntypedActor;
 @Scope("prototype")
 public class DeadLetterActor extends UntypedActor {
 
-    // LoggingAdapter logger = Logging.getLogger(getContext().system(), this);
-    // private static final Logger logger =
-    // LoggerFactory.getLogger(DeadLetterActor.class);
+    private static final Logger logger = LoggerFactory.getLogger(DeadLetterActor.class);
 
     public DeadLetterActor() {
     }
@@ -23,12 +23,9 @@ public class DeadLetterActor extends UntypedActor {
 	if (message instanceof DeadLetter) {
 	    Object innerMessage = ((DeadLetter) message).message();
 	    if (innerMessage instanceof Pong) {
-		System.out.println(".onReceive: encountered dead Pong");
-		// logger.debug(".onReceive: encountered dead Pong: ", message);
+		logger.debug(".onReceive: encountered dead Pong");
 	    } else {
-		System.out.println(".onReceive: encountered dead letter: " + message);
-		// logger.debug(".onReceive: encountered dead letter: ",
-		// message);
+		logger.debug(".onReceive: encountered dead letter: {}", innerMessage);
 	    }
 	}
     }
