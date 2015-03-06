@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.mapper;
+package uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools;
 
 import java.util.Arrays;
 
@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.TrainingDocument;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.TsetInformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.TestDocument;
 
 public class LuceneTaxonomyMapper {

@@ -10,6 +10,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.Categori
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.IAViewUpdateRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.InformationAssetViewMongoRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,7 +32,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class QueryBasedCategoriserServiceTest {
 
     @Autowired
-    QueryBasedCategoriserServiceImpl categoriserService;
+    CategoriserService categoriserService;
 
     @Autowired
     MongoTestDataSet mongoTestDataSet;
@@ -59,7 +60,8 @@ public class QueryBasedCategoriserServiceTest {
 	iaView.setDOCREFERENCE("C508096");
 	iaView.setTITLE("CHIEF OF STAFF, SUPREME ALLIED COMMAND: Operation \"Round-up\": operational organisation of RAF");
 
-	List<CategorisationResult> categorisationResults = categoriserService.testCategoriseSingle(iaView);
+	List<CategorisationResult> categorisationResults = ((QueryBasedCategoriserServiceImpl) categoriserService)
+		.testCategoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
 	assertThat(categorisationResults.get(0).getName(), is(equalTo("Fishing")));
@@ -71,8 +73,9 @@ public class QueryBasedCategoriserServiceTest {
 	InformationAssetViewMongoRepository informationAssetViewMongoRepositoryMock = Mockito
 		.mock(InformationAssetViewMongoRepository.class);
 	IAViewUpdateRepository iaViewUpdateRepositoryMock = Mockito.mock(IAViewUpdateRepository.class);
-	categoriserService.setIaViewMongoRepository(informationAssetViewMongoRepositoryMock);
-	categoriserService.setIaViewUpdateRepository(iaViewUpdateRepositoryMock);
+	((QueryBasedCategoriserServiceImpl) categoriserService)
+		.setIaViewMongoRepository(informationAssetViewMongoRepositoryMock);
+	((QueryBasedCategoriserServiceImpl) categoriserService).setIaViewUpdateRepository(iaViewUpdateRepositoryMock);
 
 	InformationAssetView iaView = new InformationAssetView();
 	iaView.setCATDOCREF("AIR 37/177");
@@ -82,7 +85,8 @@ public class QueryBasedCategoriserServiceTest {
 	iaView.setDOCREFERENCE("C508096");
 	iaView.setTITLE("CHIEF OF STAFF, SUPREME ALLIED COMMAND: Operation \"Round-up\": operational organisation of RAF");
 
-	List<CategorisationResult> categorisationResults = categoriserService.categoriseSingle(iaView);
+	List<CategorisationResult> categorisationResults = ((QueryBasedCategoriserServiceImpl) categoriserService)
+		.categoriseSingle(iaView);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
 	assertThat(categorisationResults.get(0).getName(), is(equalTo("Fishing")));

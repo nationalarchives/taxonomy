@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.aop;
+package uk.gov.nationalarchives.discovery.taxonomy.common.service.aop;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.tools.TaxonomyHelperTools;
 
@@ -14,11 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-@Aspect
-@Component
+//@Aspect
+//@Component
+//FIXME make test fail since I moved the aop package
 public class MethodLogger {
 
-    @Around("@annotation(uk.gov.nationalarchives.discovery.taxonomy.common.aop.annotation.Loggable) && anyMethod()")
+    @Around("@annotation(uk.gov.nationalarchives.discovery.taxonomy.common.domain.annotation.Loggable) && anyMethod()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
 	long start = TaxonomyHelperTools.startTimer();
 	Object result = point.proceed();

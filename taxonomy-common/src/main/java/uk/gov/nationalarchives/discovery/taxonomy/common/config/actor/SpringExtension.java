@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.actor.common;
+package uk.gov.nationalarchives.discovery.taxonomy.common.config.actor;
 
 import akka.actor.AbstractExtensionId;
 import akka.actor.ExtendedActorSystem;

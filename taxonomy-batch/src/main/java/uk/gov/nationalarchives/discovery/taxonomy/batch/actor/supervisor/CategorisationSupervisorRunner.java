@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import uk.gov.nationalarchives.discovery.taxonomy.batch.actor.supervisor.CategorisationSupervisorService.CategorisationStatus;
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc.DeadLetterActor;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.DeadLetterActor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.AllDeadLetters;

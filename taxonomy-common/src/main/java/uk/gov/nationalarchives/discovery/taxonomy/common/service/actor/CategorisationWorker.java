@@ -1,12 +1,12 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc;
+package uk.gov.nationalarchives.discovery.taxonomy.common.service.actor;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc.domain.CategoriseDocuments;
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc.domain.Ping;
-import uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc.domain.Pong;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseDocuments;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Ping;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Pong;
 import akka.actor.UntypedActor;
 
 /**
