@@ -23,6 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.config.LuceneConfigurationTest;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.TsetInformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 
 @ActiveProfiles("tsetBased")

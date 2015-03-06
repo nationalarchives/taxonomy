@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc;
+package uk.gov.nationalarchives.discovery.taxonomy.common.service.actor;
 
 import java.util.ArrayList;
 import java.util.List;

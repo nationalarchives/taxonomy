@@ -7,9 +7,9 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.TestDocument;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
-import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.LuceneTaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.legacy.LegacySystemRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneTaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.EvaluationReportRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.TestDocumentRepository;

@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.aop.annotation;
+package uk.gov.nationalarchives.discovery.taxonomy.common.domain.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

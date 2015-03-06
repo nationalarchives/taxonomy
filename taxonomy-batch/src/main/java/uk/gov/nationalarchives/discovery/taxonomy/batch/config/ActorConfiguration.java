@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.typesafe.config.ConfigFactory;
 
-import static uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.SpringExtension.*;
+import static uk.gov.nationalarchives.discovery.taxonomy.common.config.actor.SpringExtension.*;
 
 /**
  * Configuration dedicated to the actor based system to categorise all documents

@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.actor.common.poc.domain;
+package uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor;
 
 import java.io.Serializable;
 
