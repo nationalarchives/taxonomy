@@ -37,6 +37,8 @@ public class TaxonomyException extends RuntimeException {
 	StringBuilder builder = new StringBuilder();
 	builder.append("TaxonomyException [taxonomyErrorType=");
 	builder.append(taxonomyErrorType);
+	builder.append(", getMessage()=");
+	builder.append(getMessage());
 	builder.append("]");
 	return builder.toString();
     }

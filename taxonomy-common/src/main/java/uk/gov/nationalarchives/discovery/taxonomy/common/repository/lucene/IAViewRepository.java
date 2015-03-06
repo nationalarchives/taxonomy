@@ -90,9 +90,9 @@ public class IAViewRepository {
 	    TopDocs results = searcher.search(new TermQuery(new Term(
 		    InformationAssetViewFields.DOCREFERENCE.toString(), docReference)), 1);
 	    if (results.totalHits != 1) {
-		throw new TaxonomyException(TaxonomyErrorType.INVALID_PARAMETER, "searchDocByDocReference: there were "
+		throw new TaxonomyException(TaxonomyErrorType.DOC_NOT_FOUND, "searchDocByDocReference: there were "
 			+ results.totalHits + " results for DOCREFERENCE: " + docReference
-			+ " though it should have found only 1 doc");
+			+ " though it should have found 1 doc");
 	    }
 	    hitDoc = searcher.doc(results.scoreDocs[0].doc);
 
