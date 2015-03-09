@@ -21,6 +21,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Ca
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Ping;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -28,6 +29,7 @@ import akka.util.Timeout;
 
 @Service
 @ConditionalOnProperty(prefix = "batch.role.", value = { "categorise-all", "categorise-all.supervisor" })
+@SuppressWarnings("rawtypes")
 public class CategorisationSupervisorService {
 
     private static final Logger logger = LoggerFactory.getLogger(CategorisationSupervisorService.class);
@@ -39,12 +41,15 @@ public class CategorisationSupervisorService {
     private ScoreDoc lastElementRetrieved;
 
     private final IAViewService iaViewService;
+    private final CategoriserService categoriserService;
 
     private ActorRef categorisationWorkerRouter;
 
     @Autowired
-    public CategorisationSupervisorService(IAViewService iaViewService, ActorSystem actorSystem) {
+    public CategorisationSupervisorService(IAViewService iaViewService, ActorSystem actorSystem,
+	    CategoriserService categoriserService) {
 	this.iaViewService = iaViewService;
+	this.categoriserService = categoriserService;
 
 	// FIXME Do not use the router once it generates the actor using spring
 	// provider.
@@ -78,7 +83,7 @@ public class CategorisationSupervisorService {
     }
 
     public void categoriseAllDocuments() {
-	iaViewService.refreshIAViewIndex();
+	categoriserService.refreshTaxonomyIndex();
 
 	this.totalNbOfDocs = iaViewService.getTotalNbOfDocs();
 

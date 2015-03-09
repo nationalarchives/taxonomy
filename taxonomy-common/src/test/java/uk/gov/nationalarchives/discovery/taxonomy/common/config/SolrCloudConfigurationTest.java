@@ -24,8 +24,8 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @EnableConfigurationProperties
 @ComponentScan(basePackages = "uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr")
-@Import({ PropertiesConfiguration.class, SolrConfiguration.class })
-public class SolrConfigurationTest {
+@Import({ PropertiesConfiguration.class, SolrCloudConfiguration.class })
+public class SolrCloudConfigurationTest {
 
     // private static final Logger logger =
     // LoggerFactory.getLogger(SolrConfigurationTest.class);
@@ -37,7 +37,7 @@ public class SolrConfigurationTest {
      * @throws IOException
      * @throws SolrServerException
      */
-    public @Bean SolrServer solrServer() throws SolrServerException, IOException {
+    public @Bean SolrServer solrCloudServer() throws SolrServerException, IOException {
 	FileUtils
 		.deleteQuietly(new File(
 			"/home/jcharlet/_workspace/cat/taxonomy-common/src/test/resources/dataset/solr/iaview_unittest/data/index/write.lock"));

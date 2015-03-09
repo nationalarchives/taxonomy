@@ -27,11 +27,6 @@ public class IAViewServiceImpl implements IAViewService {
 	return iaViewRepository.performSearch(categoryQuery, score, limit, offset);
     }
 
-    @Override
-    public void refreshIAViewIndex() {
-	iaViewRepository.refreshIndexUsedForCategorisation();
-    }
-
     private static final int NB_OF_FAKE_DOCS = 20;
     List<String> docReferences;
 
