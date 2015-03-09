@@ -80,7 +80,8 @@ spring.activemq:
  user***REMOVED***
  password***REMOVED***
  
-solr.host: http://localhost:8983/solr/IAView_subset/
+solr.cloud.host: http://localhost:8983/solr/IAView_subset/
+solr.taxonomy.host: http://localhost:8983/solr/IAVIEWS_SNAPSHOT/
 
 ---
 spring.profiles: tooling
@@ -98,7 +99,8 @@ spring.activemq:
  user***REMOVED***
  password***REMOVED***
  
-solr.host: http://localhost:8983/solr/IAView_subset/  
+solr.cloud.host: http://localhost:8983/solr/IAView_subset/  
+solr.taxonomy.host: 
 
 ---
 spring.profiles: test-platform
@@ -117,5 +119,6 @@ spring.activemq:
  user***REMOVED***
  password***REMOVED***
  
-solr.host: http://localhost:8985/solr/testUpdatesCollection/  
+solr.cloud.host: http://localhost:8985/solr/testUpdatesCollection/  
+solr.taxonomy.host: http://localhost:8985/solr/IAVIEWS_SNAPSHOT/ 
 

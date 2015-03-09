@@ -17,21 +17,21 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucen
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryLight;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.MongoInformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.InformationAssetViewMongoRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrIAViewRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.UpdateSolrService;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrCloudIAViewRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.UpdateSolrCloudService;
 
 @Service
-@ConditionalOnProperty(prefix = "solr.", value = "host")
-public class UpdateSolrServiceImpl implements UpdateSolrService {
+@ConditionalOnProperty(prefix = "solr.cloud.", value = "host")
+public class UpdateSolrCloudServiceImpl implements UpdateSolrCloudService {
 
     private static final String FIELD_MODIFIER_KEY_ADD = "add";
 
     private static final String FIELD_MODIFIER_KEY_SET = "set";
 
-    private static final Logger logger = LoggerFactory.getLogger(UpdateSolrServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(UpdateSolrCloudServiceImpl.class);
 
     @Autowired
-    private SolrIAViewRepository solrIAViewRepository;
+    private SolrCloudIAViewRepository solrIAViewRepository;
 
     @Autowired
     private InformationAssetViewMongoRepository informationAssetViewMongoRepository;

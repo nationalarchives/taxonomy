@@ -6,12 +6,13 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 
 /**
- * Repository dedicated to Solr InformationAssetView collection
+ * Repository dedicated to Solr Cloud (cluster of servers used by Discovery),
+ * InformationAssetView collection
  * 
  * @author jcharlet
  *
  */
-public interface SolrIAViewRepository {
+public interface SolrCloudIAViewRepository {
 
     /**
      * Get an IAView by DocReference

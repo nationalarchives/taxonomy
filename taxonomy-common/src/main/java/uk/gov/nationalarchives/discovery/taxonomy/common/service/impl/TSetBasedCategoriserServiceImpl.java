@@ -294,7 +294,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     }
 
     @Override
-    public void refreshIndexUsedForCategorisation() {
+    public void refreshTaxonomyIndex() {
 	// TODO TSETBASED Auto-generated method stub
     }
 }

@@ -37,6 +37,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.InMem
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.IAViewUpdateRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.InformationAssetViewMongoRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrTaxonomyIAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncQueryBasedTaskManager;
 
@@ -64,6 +65,9 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
     @Autowired
     private AsyncQueryBasedTaskManager asyncTaskManager;
+
+    @Autowired
+    private SolrTaxonomyIAViewRepository solrTaxonomyIAViewRepository;
 
     private static final int PAGE_SIZE = 10;
 
@@ -216,7 +220,8 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     }
 
     @Override
-    public void refreshIndexUsedForCategorisation() {
+    public void refreshTaxonomyIndex() {
+	solrTaxonomyIAViewRepository.commit();
 	iaViewRepository.refreshIndexUsedForCategorisation();
     }
 
