@@ -51,7 +51,7 @@ import org.springframework.util.CollectionUtils;
  * use the More Like This feature of Lucene
  *
  */
-@Service
+@Service("categoriserService")
 @ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useTSetBasedCategoriser")
 public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetBasedCategorisationResult> {
 

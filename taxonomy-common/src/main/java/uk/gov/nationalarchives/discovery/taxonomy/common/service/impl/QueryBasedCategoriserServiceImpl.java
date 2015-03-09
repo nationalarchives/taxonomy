@@ -41,7 +41,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrTax
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncQueryBasedTaskManager;
 
-@Service
+@Service("categoriserService")
 @ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useQueryBasedCategoriser")
 public class QueryBasedCategoriserServiceImpl implements CategoriserService<CategorisationResult> {
 
