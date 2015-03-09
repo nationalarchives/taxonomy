@@ -77,4 +77,5 @@ lucene.index:
 
 logging.config: classpath:log4j.properties
 
-solr.host: http://localhost:8983/solr/iaview_unittest/
+solr.cloud.host: http://localhost:8983/solr/iaview_unittest/
+solr.taxonomy.host:

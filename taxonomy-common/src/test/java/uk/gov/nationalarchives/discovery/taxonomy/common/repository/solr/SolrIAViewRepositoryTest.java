@@ -18,17 +18,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.config.SolrConfigurationTest;
+import uk.gov.nationalarchives.discovery.taxonomy.common.config.SolrCloudConfigurationTest;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SolrConfigurationTest.class)
+@SpringApplicationConfiguration(classes = SolrCloudConfigurationTest.class)
 @Ignore
 public class SolrIAViewRepositoryTest {
 
     private static final String DOCREFERENCE = "C508096";
     @Autowired
-    private SolrIAViewRepository solrIAViewRepository;
+    private SolrCloudIAViewRepository solrIAViewRepository;
 
     @Autowired
     SolrServer solrServer;

@@ -390,7 +390,7 @@
                 <stringProp name="HTTPSampler.response_timeout"></stringProp>
                 <stringProp name="HTTPSampler.protocol"></stringProp>
                 <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                <stringProp name="HTTPSampler.path">/solr/${SOLR_TAXONOMY_COLLECTION}/update?commit=true</stringProp>
+                <stringProp name="HTTPSampler.path">/solr/${SOLR_TAXONOMY_COLLECTION}/update</stringProp>
                 <stringProp name="HTTPSampler.method">POST</stringProp>
                 <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
                 <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -411,7 +411,7 @@
                 </HeaderManager>
                 <hashTree/>
               </hashTree>
-              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check document is available in Taxonomy Solr" enabled="true">
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check document is available in Taxonomy Solr" enabled="false">
                 <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                   <collectionProp name="Arguments.arguments">
                     <elementProp name="q" elementType="HTTPArgument">
@@ -475,7 +475,7 @@
               <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Let Taxonomy Batch run categorisation" enabled="true">
                 <intProp name="ActionProcessor.action">1</intProp>
                 <intProp name="ActionProcessor.target">0</intProp>
-                <stringProp name="ActionProcessor.duration">4000</stringProp>
+                <stringProp name="ActionProcessor.duration">5000</stringProp>
               </TestAction>
               <hashTree/>
               <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check document is categorised in SolrCloud" enabled="true">
@@ -614,6 +614,152 @@
             </hashTree>
             <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="testUpdateDocument" enabled="true"/>
             <hashTree>
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Reset Document in Taxonomy Solr" enabled="true">
+                <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+                <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                  <collectionProp name="Arguments.arguments">
+                    <elementProp name="" elementType="HTTPArgument">
+                      <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                      <stringProp name="Argument.value">[&#xd;
+      {&#xd;
+        &quot;FORMERREFDEP&quot;: &quot;&quot;,&#xd;
+        &quot;FORMERREFPRO&quot;: &quot;&quot;,&#xd;
+        &quot;DOCREFERENCE&quot;: &quot;${UPDATE_IAVIEW_DOCREF}&quot;,&#xd;
+        &quot;id&quot;: &quot;C11107557&quot;,&#xd;
+        &quot;URLPARAMS&quot;: &quot;066/1/C57/C437/C15761/C89073/0/C11107557&quot;,&#xd;
+        &quot;SOURCE&quot;: 100,&#xd;
+        &quot;SOURCELEVEL&quot;: 6,&#xd;
+        &quot;SCHEMA&quot;: &quot;&quot;,&#xd;
+        &quot;DEPARTMENT&quot;: &quot;CO&quot;,&#xd;
+        &quot;SERIES&quot;: &quot;CO 1066&quot;,&#xd;
+        &quot;CATDOCREF&quot;: &quot;CO 1066/8&quot;,&#xd;
+        &quot;CATDOCREFSORT&quot;: &quot;CO 1066/8&quot;,&#xd;
+        &quot;CATDOCREFFILTER&quot;: &quot;C&quot;,&#xd;
+        &quot;SORTCATDOCREF&quot;: &quot;CO###############################1066###############################8000&quot;,&#xd;
+        &quot;TITLE&quot;: &quot;Mau Mau terrorists surrender&quot;,&#xd;
+        &quot;TITLEFILTER&quot;: &quot;M&quot;,&#xd;
+        &quot;REPOSITORYNAMESUGGEST&quot;: [&#xd;
+          &quot;&quot;&#xd;
+        ],&#xd;
+        &quot;SORTTITLE&quot;: &quot;Mau Mau terrorists surrender&quot;,&#xd;
+        &quot;DESCRIPTION&quot;: &quot;Mau Mau terrorists surrender. Poverty&quot;,&#xd;
+        &quot;CONTEXTDESCRIPTION&quot;: &quot;Colonial Office: Kenya Information Service: Photographs. MAU MAU ATROCITY PHOTOGRAPHS.&quot;,&#xd;
+        &quot;NOTE&quot;: &quot;&quot;,&#xd;
+        &quot;ADMINHIST&quot;: &quot;&quot;,&#xd;
+        &quot;ARRANGEMENT&quot;: &quot;&quot;,&#xd;
+        &quot;PLACE_ADDRESS&quot;: &quot;&quot;,&#xd;
+        &quot;PERIODS&quot;: [&#xd;
+          &quot;1950&quot;&#xd;
+        ],&#xd;
+        &quot;STARTDATE&quot;: &quot;1951-01-01T00:00:00Z&quot;,&#xd;
+        &quot;ENDDATE&quot;: &quot;1960-12-31T23:59:59Z&quot;,&#xd;
+        &quot;NUMSTARTDATE&quot;: 19510101,&#xd;
+        &quot;NUMENDDATE&quot;: 19601231,&#xd;
+        &quot;COVERINGDATES&quot;: &quot;1951 Jan 01-1960 Dec 31&quot;,&#xd;
+        &quot;CLOSURECODE&quot;: &quot;30&quot;,&#xd;
+        &quot;CLOSURETYPE&quot;: &quot;N&quot;,&#xd;
+        &quot;CLOSURESTATUS&quot;: &quot;O&quot;,&#xd;
+        &quot;CLOSURE&quot;: &quot;O&quot;,&#xd;
+        &quot;OPENINGDATE&quot;: &quot;0001-01-01T00:00:00Z&quot;,&#xd;
+        &quot;REPOSITORY&quot;: [&#xd;
+          &quot;66 The National Archives&quot;&#xd;
+        ],&#xd;
+        &quot;REPOSITORYNAME&quot;: [&#xd;
+          &quot;The National Archives&quot;&#xd;
+        ],&#xd;
+        &quot;REPOSITORYREF&quot;: [&#xd;
+          &quot;66&quot;&#xd;
+        ],&#xd;
+        &quot;HBCODE&quot;: [&#xd;
+          &quot;TNA&quot;&#xd;
+        ],&#xd;
+        &quot;MAPDESIGNATION&quot;: &quot;&quot;,&#xd;
+        &quot;MAPSCALE&quot;: &quot;&quot;,&#xd;
+        &quot;PHYSICALCOND&quot;: &quot;&quot;&#xd;
+      }&#xd;
+]</stringProp>
+                      <stringProp name="Argument.metadata">=</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </elementProp>
+                <stringProp name="HTTPSampler.domain">${SOLR_TAXONOMY_HOST}</stringProp>
+                <stringProp name="HTTPSampler.port">${SOLR_TAXONOMY_PORT}</stringProp>
+                <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+                <stringProp name="HTTPSampler.response_timeout"></stringProp>
+                <stringProp name="HTTPSampler.protocol"></stringProp>
+                <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                <stringProp name="HTTPSampler.path">/solr/${SOLR_TAXONOMY_COLLECTION}/update?commit=true</stringProp>
+                <stringProp name="HTTPSampler.method">POST</stringProp>
+                <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+                <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+                <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+                <boolProp name="HTTPSampler.monitor">false</boolProp>
+                <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              </HTTPSamplerProxy>
+              <hashTree>
+                <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                  <collectionProp name="HeaderManager.headers">
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">Content-Type</stringProp>
+                      <stringProp name="Header.value">application/json</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </HeaderManager>
+                <hashTree/>
+              </hashTree>
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Reset Document in  Solr Cloud" enabled="true">
+                <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+                <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                  <collectionProp name="Arguments.arguments">
+                    <elementProp name="" elementType="HTTPArgument">
+                      <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                      <stringProp name="Argument.value">[&#xd;
+      {&#xd;
+        &quot;DOCREFERENCE&quot;: &quot;C11107557&quot;,&#xd;
+        &quot;id&quot;: &quot;C11107557&quot;,&#xd;
+        &quot;TAXONOMYID&quot;: [&#xd;
+          &quot;C10124&quot;,&#xd;
+          &quot;C10049&quot;&#xd;
+        ],&#xd;
+        &quot;TAXONOMY&quot;: [&#xd;
+          &quot;C10124 Africa&quot;,&#xd;
+          &quot;C10049 International&quot;&#xd;
+        ]&#xd;
+      }&#xd;
+]</stringProp>
+                      <stringProp name="Argument.metadata">=</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </elementProp>
+                <stringProp name="HTTPSampler.domain">${SOLR_CLOUD_HOST}</stringProp>
+                <stringProp name="HTTPSampler.port">${SOLR_CLOUD_PORT}</stringProp>
+                <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+                <stringProp name="HTTPSampler.response_timeout"></stringProp>
+                <stringProp name="HTTPSampler.protocol"></stringProp>
+                <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                <stringProp name="HTTPSampler.path">/solr/${SOLR_CLOUD_COLLECTION}/update?commit=true</stringProp>
+                <stringProp name="HTTPSampler.method">POST</stringProp>
+                <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+                <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+                <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+                <boolProp name="HTTPSampler.monitor">false</boolProp>
+                <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              </HTTPSamplerProxy>
+              <hashTree>
+                <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                  <collectionProp name="HeaderManager.headers">
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">Content-Type</stringProp>
+                      <stringProp name="Header.value">application/json</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </HeaderManager>
+                <hashTree/>
+              </hashTree>
               <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check document is available in Taxonomy Solr" enabled="true">
                 <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                   <collectionProp name="Arguments.arguments">
@@ -791,7 +937,7 @@
                 <stringProp name="HTTPSampler.response_timeout"></stringProp>
                 <stringProp name="HTTPSampler.protocol"></stringProp>
                 <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                <stringProp name="HTTPSampler.path">/solr/${SOLR_TAXONOMY_COLLECTION}/update?commit=true</stringProp>
+                <stringProp name="HTTPSampler.path">/solr/${SOLR_TAXONOMY_COLLECTION}/update</stringProp>
                 <stringProp name="HTTPSampler.method">POST</stringProp>
                 <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
                 <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -812,7 +958,7 @@
                 </HeaderManager>
                 <hashTree/>
               </hashTree>
-              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check document is updated in Taxonomy Solr" enabled="true">
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check document is updated in Taxonomy Solr" enabled="false">
                 <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                   <collectionProp name="Arguments.arguments">
                     <elementProp name="q" elementType="HTTPArgument">
@@ -885,7 +1031,7 @@
               <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Let Taxonomy Batch run categorisation" enabled="true">
                 <intProp name="ActionProcessor.action">1</intProp>
                 <intProp name="ActionProcessor.target">0</intProp>
-                <stringProp name="ActionProcessor.duration">4000</stringProp>
+                <stringProp name="ActionProcessor.duration">5000</stringProp>
               </TestAction>
               <hashTree/>
               <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Check document is categorised in SolrCloud" enabled="true">
@@ -942,152 +1088,6 @@
                   <boolProp name="Assertion.assume_success">false</boolProp>
                   <intProp name="Assertion.test_type">16</intProp>
                 </ResponseAssertion>
-                <hashTree/>
-              </hashTree>
-              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Reset Document in Taxonomy Solr" enabled="true">
-                <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-                <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-                  <collectionProp name="Arguments.arguments">
-                    <elementProp name="" elementType="HTTPArgument">
-                      <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                      <stringProp name="Argument.value">[&#xd;
-      {&#xd;
-        &quot;FORMERREFDEP&quot;: &quot;&quot;,&#xd;
-        &quot;FORMERREFPRO&quot;: &quot;&quot;,&#xd;
-        &quot;DOCREFERENCE&quot;: &quot;${UPDATE_IAVIEW_DOCREF}&quot;,&#xd;
-        &quot;id&quot;: &quot;C11107557&quot;,&#xd;
-        &quot;URLPARAMS&quot;: &quot;066/1/C57/C437/C15761/C89073/0/C11107557&quot;,&#xd;
-        &quot;SOURCE&quot;: 100,&#xd;
-        &quot;SOURCELEVEL&quot;: 6,&#xd;
-        &quot;SCHEMA&quot;: &quot;&quot;,&#xd;
-        &quot;DEPARTMENT&quot;: &quot;CO&quot;,&#xd;
-        &quot;SERIES&quot;: &quot;CO 1066&quot;,&#xd;
-        &quot;CATDOCREF&quot;: &quot;CO 1066/8&quot;,&#xd;
-        &quot;CATDOCREFSORT&quot;: &quot;CO 1066/8&quot;,&#xd;
-        &quot;CATDOCREFFILTER&quot;: &quot;C&quot;,&#xd;
-        &quot;SORTCATDOCREF&quot;: &quot;CO###############################1066###############################8000&quot;,&#xd;
-        &quot;TITLE&quot;: &quot;Mau Mau terrorists surrender&quot;,&#xd;
-        &quot;TITLEFILTER&quot;: &quot;M&quot;,&#xd;
-        &quot;REPOSITORYNAMESUGGEST&quot;: [&#xd;
-          &quot;&quot;&#xd;
-        ],&#xd;
-        &quot;SORTTITLE&quot;: &quot;Mau Mau terrorists surrender&quot;,&#xd;
-        &quot;DESCRIPTION&quot;: &quot;Mau Mau terrorists surrender. Poverty&quot;,&#xd;
-        &quot;CONTEXTDESCRIPTION&quot;: &quot;Colonial Office: Kenya Information Service: Photographs. MAU MAU ATROCITY PHOTOGRAPHS.&quot;,&#xd;
-        &quot;NOTE&quot;: &quot;&quot;,&#xd;
-        &quot;ADMINHIST&quot;: &quot;&quot;,&#xd;
-        &quot;ARRANGEMENT&quot;: &quot;&quot;,&#xd;
-        &quot;PLACE_ADDRESS&quot;: &quot;&quot;,&#xd;
-        &quot;PERIODS&quot;: [&#xd;
-          &quot;1950&quot;&#xd;
-        ],&#xd;
-        &quot;STARTDATE&quot;: &quot;1951-01-01T00:00:00Z&quot;,&#xd;
-        &quot;ENDDATE&quot;: &quot;1960-12-31T23:59:59Z&quot;,&#xd;
-        &quot;NUMSTARTDATE&quot;: 19510101,&#xd;
-        &quot;NUMENDDATE&quot;: 19601231,&#xd;
-        &quot;COVERINGDATES&quot;: &quot;1951 Jan 01-1960 Dec 31&quot;,&#xd;
-        &quot;CLOSURECODE&quot;: &quot;30&quot;,&#xd;
-        &quot;CLOSURETYPE&quot;: &quot;N&quot;,&#xd;
-        &quot;CLOSURESTATUS&quot;: &quot;O&quot;,&#xd;
-        &quot;CLOSURE&quot;: &quot;O&quot;,&#xd;
-        &quot;OPENINGDATE&quot;: &quot;0001-01-01T00:00:00Z&quot;,&#xd;
-        &quot;REPOSITORY&quot;: [&#xd;
-          &quot;66 The National Archives&quot;&#xd;
-        ],&#xd;
-        &quot;REPOSITORYNAME&quot;: [&#xd;
-          &quot;The National Archives&quot;&#xd;
-        ],&#xd;
-        &quot;REPOSITORYREF&quot;: [&#xd;
-          &quot;66&quot;&#xd;
-        ],&#xd;
-        &quot;HBCODE&quot;: [&#xd;
-          &quot;TNA&quot;&#xd;
-        ],&#xd;
-        &quot;MAPDESIGNATION&quot;: &quot;&quot;,&#xd;
-        &quot;MAPSCALE&quot;: &quot;&quot;,&#xd;
-        &quot;PHYSICALCOND&quot;: &quot;&quot;&#xd;
-      }&#xd;
-]</stringProp>
-                      <stringProp name="Argument.metadata">=</stringProp>
-                    </elementProp>
-                  </collectionProp>
-                </elementProp>
-                <stringProp name="HTTPSampler.domain">${SOLR_TAXONOMY_HOST}</stringProp>
-                <stringProp name="HTTPSampler.port">${SOLR_TAXONOMY_PORT}</stringProp>
-                <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-                <stringProp name="HTTPSampler.response_timeout"></stringProp>
-                <stringProp name="HTTPSampler.protocol"></stringProp>
-                <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                <stringProp name="HTTPSampler.path">/solr/${SOLR_TAXONOMY_COLLECTION}/update?commit=true</stringProp>
-                <stringProp name="HTTPSampler.method">POST</stringProp>
-                <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-                <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-                <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-                <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-                <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
-                <boolProp name="HTTPSampler.monitor">false</boolProp>
-                <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-              </HTTPSamplerProxy>
-              <hashTree>
-                <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-                  <collectionProp name="HeaderManager.headers">
-                    <elementProp name="" elementType="Header">
-                      <stringProp name="Header.name">Content-Type</stringProp>
-                      <stringProp name="Header.value">application/json</stringProp>
-                    </elementProp>
-                  </collectionProp>
-                </HeaderManager>
-                <hashTree/>
-              </hashTree>
-              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Reset Document in  Solr Cloud" enabled="true">
-                <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-                <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-                  <collectionProp name="Arguments.arguments">
-                    <elementProp name="" elementType="HTTPArgument">
-                      <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                      <stringProp name="Argument.value">[&#xd;
-      {&#xd;
-        &quot;DOCREFERENCE&quot;: &quot;C11107557&quot;,&#xd;
-        &quot;id&quot;: &quot;C11107557&quot;,&#xd;
-        &quot;TAXONOMYID&quot;: [&#xd;
-          &quot;C10124&quot;,&#xd;
-          &quot;C10049&quot;&#xd;
-        ],&#xd;
-        &quot;TAXONOMY&quot;: [&#xd;
-          &quot;C10124 Africa&quot;,&#xd;
-          &quot;C10049 International&quot;&#xd;
-        ]&#xd;
-      }&#xd;
-]</stringProp>
-                      <stringProp name="Argument.metadata">=</stringProp>
-                    </elementProp>
-                  </collectionProp>
-                </elementProp>
-                <stringProp name="HTTPSampler.domain">${SOLR_CLOUD_HOST}</stringProp>
-                <stringProp name="HTTPSampler.port">${SOLR_CLOUD_PORT}</stringProp>
-                <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-                <stringProp name="HTTPSampler.response_timeout"></stringProp>
-                <stringProp name="HTTPSampler.protocol"></stringProp>
-                <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                <stringProp name="HTTPSampler.path">/solr/${SOLR_CLOUD_COLLECTION}/update?commit=true</stringProp>
-                <stringProp name="HTTPSampler.method">POST</stringProp>
-                <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-                <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-                <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-                <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-                <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
-                <boolProp name="HTTPSampler.monitor">false</boolProp>
-                <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-              </HTTPSamplerProxy>
-              <hashTree>
-                <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-                  <collectionProp name="HeaderManager.headers">
-                    <elementProp name="" elementType="Header">
-                      <stringProp name="Header.name">Content-Type</stringProp>
-                      <stringProp name="Header.value">application/json</stringProp>
-                    </elementProp>
-                  </collectionProp>
-                </HeaderManager>
                 <hashTree/>
               </hashTree>
             </hashTree>

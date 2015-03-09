@@ -28,13 +28,6 @@ public interface IAViewService {
     PaginatedList<InformationAssetView> performSearch(String query, Double score, Integer limit, Integer offset);
 
     /**
-     * refresh the index used to retrieve IAViews.<br/>
-     * It is for example necessary to call that method if the document to
-     * categorise was indexed right before that call
-     */
-    public void refreshIAViewIndex();
-
-    /**
      * get total nb of IAViews
      * 
      * @return

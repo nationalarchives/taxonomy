@@ -32,6 +32,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class QueryBasedCategoriserServiceTest {
 
     @Autowired
+    @SuppressWarnings("rawtypes")
     CategoriserService categoriserService;
 
     @Autowired

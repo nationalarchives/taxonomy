@@ -293,4 +293,8 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 	return null;
     }
 
+    @Override
+    public void refreshTaxonomyIndex() {
+	// TODO TSETBASED Auto-generated method stub
+    }
 }
