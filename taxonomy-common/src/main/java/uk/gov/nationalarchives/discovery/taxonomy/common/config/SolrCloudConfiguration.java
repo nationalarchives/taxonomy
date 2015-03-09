@@ -9,16 +9,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration dedicated to SolR (to update the categories on the solr index)
+ * Configuration dedicated to Solr Cloud (cluster of servers used by Discovery)
  * 
  * @author jcharlet
  *
  */
 @Configuration
-@ConfigurationProperties(prefix = "solr.")
+@ConfigurationProperties(prefix = "solr.cloud")
 @EnableConfigurationProperties
-@ConditionalOnProperty(prefix = "solr.", value = "host")
-public class SolrConfiguration {
+@ConditionalOnProperty(prefix = "solr.cloud", value = "host")
+public class SolrCloudConfiguration {
 
     private String host;
 
@@ -35,7 +35,7 @@ public class SolrConfiguration {
      * 
      * @return the solrServer bean
      */
-    public @Bean SolrServer solrServer() {
+    public @Bean SolrServer solrCloudServer() {
 	SolrServer server = new HttpSolrServer(host);
 	return server;
     }

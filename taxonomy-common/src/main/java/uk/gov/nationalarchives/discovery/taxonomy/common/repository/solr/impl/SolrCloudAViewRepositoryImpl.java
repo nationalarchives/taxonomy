@@ -18,14 +18,14 @@ import org.springframework.stereotype.Repository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrIAViewRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrCloudIAViewRepository;
 
 @Repository
-@ConditionalOnProperty(prefix = "solr.", value = "host")
-public class SolrIAViewRepositoryImpl implements SolrIAViewRepository {
+@ConditionalOnProperty(prefix = "solr.cloud", value = "host")
+public class SolrCloudAViewRepositoryImpl implements SolrCloudIAViewRepository {
 
     @Autowired
-    private SolrServer solrServer;
+    private SolrServer solrCloudServer;
 
     // private static final Logger logger =
     // LoggerFactory.getLogger(SolrIAViewRepositoryImpl.class);
@@ -58,7 +58,7 @@ public class SolrIAViewRepositoryImpl implements SolrIAViewRepository {
     private SolrDocumentList submitQueryToSolr(SolrParams params) {
 	QueryResponse response;
 	try {
-	    response = solrServer.query(params);
+	    response = solrCloudServer.query(params);
 	} catch (SolrServerException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.SOLR_READ_EXCEPTION, e);
 	}
@@ -77,9 +77,9 @@ public class SolrIAViewRepositoryImpl implements SolrIAViewRepository {
     @Override
     public void save(SolrInputDocument document) {
 	try {
-	    solrServer.add(document);
+	    solrCloudServer.add(document);
 
-	    solrServer.commit();
+	    solrCloudServer.commit();
 	} catch (SolrServerException | IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.SOLR_WRITE_EXCEPTION, e);
 	}
@@ -88,9 +88,9 @@ public class SolrIAViewRepositoryImpl implements SolrIAViewRepository {
     @Override
     public void saveAll(List<SolrInputDocument> documents) {
 	try {
-	    solrServer.add(documents);
+	    solrCloudServer.add(documents);
 
-	    solrServer.commit();
+	    solrCloudServer.commit();
 	} catch (SolrServerException | IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.SOLR_WRITE_EXCEPTION, e);
 	}

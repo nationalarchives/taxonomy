@@ -45,7 +45,7 @@ public class CategoriseDocMessageConsumer {
 	logger.info("received Categorise Document message: {}, docReferences: {}",
 		categoriseDocumentMessage.getMessageId(), categoriseDocumentMessage.getListOfDocReferences());
 
-	categoriserService.refreshIndexUsedForCategorisation();
+	categoriserService.refreshTaxonomyIndex();
 
 	for (String docReference : categoriseDocumentMessage.getListOfDocReferences()) {
 	    try {

@@ -1,13 +1,13 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service;
 
 /**
- * Service dedicated to make updates on Solr Server to apply results from
- * categorisation
+ * Service dedicated to make updates on Solr Cloud (cluster of servers used by
+ * Discovery) to apply results from categorisation
  * 
  * @author jcharlet
  *
  */
-public interface UpdateSolrService {
+public interface UpdateSolrCloudService {
 
     /**
      * update a document with the results of last performed categorisation

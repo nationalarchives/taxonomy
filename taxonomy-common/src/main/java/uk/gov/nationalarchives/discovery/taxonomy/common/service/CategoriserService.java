@@ -53,9 +53,10 @@ public interface CategoriserService<T extends CategorisationResult> {
 
     /**
      * refresh the index used for categorisation.<br/>
+     * implies to commit changes on Solr dedicated server AND update the index
+     * reader on Lucene<br/>
      * It is necessary to call that method if the document to categorise was
      * indexed right before that call
      */
-    public void refreshIndexUsedForCategorisation();
-
+    public void refreshTaxonomyIndex();
 }
