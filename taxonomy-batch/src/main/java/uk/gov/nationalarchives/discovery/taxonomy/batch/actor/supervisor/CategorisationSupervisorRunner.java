@@ -49,7 +49,8 @@ public class CategorisationSupervisorRunner implements CommandLineRunner {
 	do {
 	    Thread.sleep(2000);
 	    status = categorisationSupervisorService.getCategorisationStatus();
-	    logger.info("PROGRESS OF CATEGORISATION: {}", status);
+	    logger.info("PROGRESS OF CATEGORISATION: {}. index of last doc requested: {}", status,
+		    categorisationSupervisorService.getCurrentDocIndex());
 	} while (status.getProgress() != 100);
 
 	logger.info("CATEGORISATION TERMINATED ON SUPERVISOR SIDE. Wait for slave to complete their tasks", status);

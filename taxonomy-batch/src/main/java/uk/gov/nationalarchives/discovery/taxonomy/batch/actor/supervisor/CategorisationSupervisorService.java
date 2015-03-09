@@ -2,8 +2,10 @@ package uk.gov.nationalarchives.discovery.taxonomy.batch.actor.supervisor;
 
 import static akka.pattern.Patterns.*;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.lucene.search.ScoreDoc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +17,6 @@ import org.springframework.util.CollectionUtils;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.FiniteDuration;
-import uk.gov.nationalarchives.discovery.taxonomy.common.config.actor.SpringExtension;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.BrowseAllDocsResponse;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseDocuments;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Ping;
@@ -23,8 +24,11 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exceptio
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationWorker;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.actor.Props;
+import akka.routing.FromConfig;
 import akka.util.Timeout;
 
 @Service
@@ -51,11 +55,9 @@ public class CategorisationSupervisorService {
 	this.iaViewService = iaViewService;
 	this.categoriserService = categoriserService;
 
-	// FIXME Do not use the router once it generates the actor using spring
-	// provider.
 	this.categorisationWorkerRouter = actorSystem.actorOf(
-		SpringExtension.SpringExtProvider.get(actorSystem).props("CategorisationWorker"),
-		"categorisation-router");
+		FromConfig.getInstance().props(Props.create(CategorisationWorker.class)), "categorisation-router");
+
 	lastElementRetrieved = null;
     }
 
@@ -95,9 +97,6 @@ public class CategorisationSupervisorService {
 	do {
 	    waitForAvailableWorker();
 
-	    logger.info(
-		    ".categoriseAllDocuments: submitting request to categorise documents: lastScoreDoc={}, size={}",
-		    this.lastElementRetrieved, NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME);
 	    categoriseNextDocuments();
 	} while (hasDocumentsLeftFromDocIndex());
 
@@ -116,6 +115,10 @@ public class CategorisationSupervisorService {
 	}
 	int progress = 100 * this.lastElementRetrieved.doc / this.totalNbOfDocs;
 	return new CategorisationStatus(progress);
+    }
+
+    public int getCurrentDocIndex() {
+	return lastElementRetrieved.doc;
     }
 
     private void waitForAvailableWorker() {
@@ -147,10 +150,15 @@ public class CategorisationSupervisorService {
 
 	this.lastElementRetrieved = browseAllDocs.getLastScoreDoc();
 
-	if (!CollectionUtils.isEmpty(browseAllDocs.getListOfDocReferences())) {
+	List<String> listOfDocReferences = browseAllDocs.getListOfDocReferences();
+	if (!CollectionUtils.isEmpty(listOfDocReferences)) {
+	    logger.info(
+		    ".categoriseAllDocuments: submitting request to categorise documents: lastScoreDoc={}, size={}, docs={}",
+		    this.lastElementRetrieved, NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME,
+		    ArrayUtils.toString(listOfDocReferences));
+
 	    // ask worker to categorise those docs.
-	    categorisationWorkerRouter.tell(
-		    new CategoriseDocuments(browseAllDocs.getListOfDocReferences().toArray(new String[0])), null);
+	    categorisationWorkerRouter.tell(new CategoriseDocuments(listOfDocReferences.toArray(new String[0])), null);
 	}
     }
 }
