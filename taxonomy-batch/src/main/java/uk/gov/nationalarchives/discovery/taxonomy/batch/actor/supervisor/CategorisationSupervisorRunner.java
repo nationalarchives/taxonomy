@@ -7,12 +7,16 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
-import uk.gov.nationalarchives.discovery.taxonomy.batch.actor.supervisor.CategorisationSupervisorService.CategorisationStatus;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationSupervisorActor;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationSupervisorService;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationWorkerActor;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.DeadLetterActor;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationSupervisorService.CategorisationStatus;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.AllDeadLetters;
 import akka.actor.Props;
+import akka.routing.FromConfig;
 
 ;
 
@@ -43,11 +47,12 @@ public class CategorisationSupervisorRunner implements CommandLineRunner {
 	trackDeadLetters();
 	logger.info("START WHOLE CATEGORISATION");
 
-	runWholeCategorisationInSeparateThread(categorisationSupervisorService);
+	// runWholeCategorisationInSeparateThread(categorisationSupervisorService);
+	actorSystem.actorOf(Props.create(CategorisationSupervisorActor.class), "supervisorActor");
 
 	CategorisationStatus status = null;
 	do {
-	    Thread.sleep(2000);
+	    Thread.sleep(5000);
 	    status = categorisationSupervisorService.getCategorisationStatus();
 	    logger.info("PROGRESS OF CATEGORISATION: {}. index of last doc requested: {}", status,
 		    categorisationSupervisorService.getCurrentDocIndex());
@@ -61,14 +66,14 @@ public class CategorisationSupervisorRunner implements CommandLineRunner {
 	actorSystem.eventStream().subscribe(actor, AllDeadLetters.class);
     }
 
-    private static Thread runWholeCategorisationInSeparateThread(
-	    final CategorisationSupervisorService categorisationSupervisor) {
-	Thread thread = new Thread(new Runnable() {
-	    public void run() {
-		categorisationSupervisor.categoriseAllDocuments();
-	    }
-	});
-	thread.start();
-	return thread;
-    }
+    // private static Thread runWholeCategorisationInSeparateThread(
+    // final CategorisationSupervisorService categorisationSupervisor) {
+    // Thread thread = new Thread(new Runnable() {
+    // public void run() {
+    // categorisationSupervisor.startCategorisation();
+    // }
+    // });
+    // thread.start();
+    // return thread;
+    // }
 }
