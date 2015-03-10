@@ -46,6 +46,9 @@ lucene:
   iaViewMaxCachedMB: 60.0
   defaultTaxonomyField: textnocasnopunc
 
+
+server:
+ port: 0
 ---
 spring.profiles: queryBased
 lucene:
@@ -69,6 +72,7 @@ batch.role:
  categorise-all: true
  categorise-all.supervisor: true
  categorise-all.slave: false
+ categorise-all.slaveName: slave
 
 ---
 spring.profiles: local

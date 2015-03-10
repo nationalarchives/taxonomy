@@ -56,7 +56,9 @@ public class CategorisationSupervisorService {
 	this.categoriserService = categoriserService;
 
 	this.categorisationWorkerRouter = actorSystem.actorOf(
-		FromConfig.getInstance().props(Props.create(CategorisationWorker.class)), "categorisation-router");
+		FromConfig.getInstance().props(Props.create(CategorisationWorker.class))
+		// .withRouter((new FromConfig())), "categorisation-router");
+		, "categorisation-router");
 
 	lastElementRetrieved = null;
     }
@@ -117,8 +119,11 @@ public class CategorisationSupervisorService {
 	return new CategorisationStatus(progress);
     }
 
-    public int getCurrentDocIndex() {
-	return lastElementRetrieved.doc;
+    public Integer getCurrentDocIndex() {
+	if (lastElementRetrieved != null) {
+	    return lastElementRetrieved.doc;
+	}
+	return null;
     }
 
     private void waitForAvailableWorker() {
