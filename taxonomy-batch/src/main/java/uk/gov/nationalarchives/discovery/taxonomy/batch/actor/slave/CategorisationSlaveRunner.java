@@ -5,9 +5,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationWorker;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationSupervisorActor;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationWorkerActor;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.DeadLetterActor;
 import akka.actor.ActorRef;
+import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.actor.AllDeadLetters;
 import akka.actor.Props;
@@ -35,8 +37,13 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 	trackDeadLetters();
-	// actorSystem.actorOf(FromConfig.getInstance().props(Props.create(CategorisationWorker.class)),
-	// "worker");
+	ActorRef workerActor = actorSystem.actorOf(Props.create(CategorisationWorkerActor.class), "workerActor");
+
+	Thread.sleep(2000);
+
+	ActorSelection actorSelection = actorSystem
+		.actorSelection("akka.tcp://supervisor@127.0.0.1:2552/user/supervisorActor");
+	actorSelection.tell(new CategorisationSupervisorActor.Epic(), null);
     }
 
     private void trackDeadLetters() {
