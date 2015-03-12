@@ -9,14 +9,12 @@ import org.springframework.stereotype.Component;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationSupervisorActor;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationSupervisorService;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationWorkerActor;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.DeadLetterActor;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationSupervisorService.CategorisationStatus;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.AllDeadLetters;
 import akka.actor.Props;
-import akka.routing.FromConfig;
 
 ;
 
