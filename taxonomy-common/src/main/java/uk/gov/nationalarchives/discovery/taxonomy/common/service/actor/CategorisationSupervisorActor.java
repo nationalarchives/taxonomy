@@ -1,6 +1,5 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.actor;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,6 +8,11 @@ import org.slf4j.LoggerFactory;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.config.actor.SpringApplicationContext;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseDocuments;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CurrentlyBusy;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Epic;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.GimmeWork;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.RegisterWorker;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.WorkAvailable;
 import akka.actor.ActorRef;
 import akka.actor.Terminated;
 import akka.actor.UntypedActor;
@@ -33,26 +37,6 @@ public class CategorisationSupervisorActor extends UntypedActor {
     String currentEpic = null;
 
     private int categoriseDocsMessageNumber = 0;
-
-    public static class Epic implements Serializable {
-
-    }
-
-    public static class RegisterWorker implements Serializable {
-
-    }
-
-    public static class GimmeWork implements Serializable {
-
-    }
-
-    public static class CurrentlyBusy implements Serializable {
-
-    }
-
-    public static class WorkAvailable implements Serializable {
-
-    }
 
     @Override
     public void onReceive(Object message) throws Exception {
@@ -106,6 +90,10 @@ public class CategorisationSupervisorActor extends UntypedActor {
 	}
     }
 
+    // FIXME 1 design flaw: how to test and mock the service in the actor? can
+    // use
+    // Power Mockito to mock static method but
+    // i should rather find another solution to inject the dependency
     private CategorisationSupervisorService getCategorisationSupervisorService() {
 	return (CategorisationSupervisorService) SpringApplicationContext.getBean("categorisationSupervisorService");
     }

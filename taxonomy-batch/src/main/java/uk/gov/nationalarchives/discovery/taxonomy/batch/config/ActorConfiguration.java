@@ -8,9 +8,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-
 import com.typesafe.config.ConfigFactory;
 
 import static uk.gov.nationalarchives.discovery.taxonomy.common.config.actor.SpringExtension.*;

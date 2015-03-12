@@ -6,8 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.config.actor.SpringApplicationContext;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseDocuments;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Ping;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Pong;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.GimmeWork;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.RegisterWorker;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.WorkAvailable;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import akka.actor.ActorSelection;
 import akka.actor.UntypedActor;
@@ -25,15 +26,15 @@ public class CategorisationWorkerActor extends UntypedActor {
 	super();
 	ActorSelection actorSelection = getContext().actorSelection(
 		"akka.tcp://supervisor@127.0.0.1:2552/user/supervisorActor");
-	actorSelection.tell(new CategorisationSupervisorActor.RegisterWorker(), getSelf());
-	actorSelection.tell(new CategorisationSupervisorActor.GimmeWork(), getSelf());
+	actorSelection.tell(new RegisterWorker(), getSelf());
+	actorSelection.tell(new GimmeWork(), getSelf());
     }
 
     @Override
     public void onReceive(Object message) throws Exception {
-	if (message instanceof CategorisationSupervisorActor.WorkAvailable) {
+	if (message instanceof WorkAvailable) {
 	    getLogger().debug("received WorkAvailable");
-	    getSender().tell(new CategorisationSupervisorActor.GimmeWork(), getSelf());
+	    getSender().tell(new GimmeWork(), getSelf());
 
 	} else if (message instanceof CategoriseDocuments) {
 	    getLogger().debug("received CategoriseDocuments");
@@ -46,9 +47,7 @@ public class CategorisationWorkerActor extends UntypedActor {
 	    }
 	    getLogger().info(".onReceive<  treatment completed");
 
-	    getSender().tell(new CategorisationSupervisorActor.GimmeWork(), getSelf());
-	} else if (message instanceof Ping) {
-	    getSender().tell(new Pong(), getSelf());
+	    getSender().tell(new GimmeWork(), getSelf());
 	} else {
 	    unhandled(message);
 	}

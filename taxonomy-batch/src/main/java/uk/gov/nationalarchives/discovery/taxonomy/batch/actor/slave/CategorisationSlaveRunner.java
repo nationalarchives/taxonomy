@@ -5,7 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationSupervisorActor;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Epic;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationWorkerActor;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.DeadLetterActor;
 import akka.actor.ActorRef;
@@ -13,7 +13,6 @@ import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.actor.AllDeadLetters;
 import akka.actor.Props;
-import akka.routing.FromConfig;
 
 ;
 
@@ -37,13 +36,14 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 	trackDeadLetters();
-	ActorRef workerActor = actorSystem.actorOf(Props.create(CategorisationWorkerActor.class), "workerActor");
+	actorSystem.actorOf(Props.create(CategorisationWorkerActor.class), "workerActor");
 
 	Thread.sleep(2000);
 
+	// FIXME 1 should send new Epic only in first starter slave
 	ActorSelection actorSelection = actorSystem
 		.actorSelection("akka.tcp://supervisor@127.0.0.1:2552/user/supervisorActor");
-	actorSelection.tell(new CategorisationSupervisorActor.Epic(), null);
+	actorSelection.tell(new Epic(), null);
     }
 
     private void trackDeadLetters() {
