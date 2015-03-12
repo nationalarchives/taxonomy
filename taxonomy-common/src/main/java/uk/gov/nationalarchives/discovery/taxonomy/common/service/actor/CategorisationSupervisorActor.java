@@ -1,113 +1,179 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.actor;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.lucene.search.ScoreDoc;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.util.CollectionUtils;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.config.actor.SpringApplicationContext;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.BrowseAllDocsResponse;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseDocuments;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CurrentlyBusy;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Epic;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.GimmeWork;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.RegisterWorker;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.WorkAvailable;
-import akka.actor.ActorRef;
-import akka.actor.Terminated;
-import akka.actor.UntypedActor;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
+import akka.actor.ActorSystem;
 
-/**
- * An actor that can count using an injected CountingService.
- *
- * @note The scope here is prototype since we want to create a new actor
- *       instance for use of this bean.
- */
-// @Configurable(preConstruction = true)
-public class CategorisationSupervisorActor extends UntypedActor {
+@SuppressWarnings("rawtypes")
+@Configurable(preConstruction = true)
+public class CategorisationSupervisorActor extends SupervisorActor {
 
-    private static final String CATEGORISE_ALL = "CATEGORISE_ALL";
+    private static final int NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME = 100;
 
-    // @Autowired
-    // private CategorisationSupervisorService categorisationSupervisorService;
+    private Integer totalNbOfDocs;
+    private ScoreDoc lastElementRetrieved = null;
+    private CategorisationStatusEnum status = CategorisationStatusEnum.NOT_STARTED;
 
-    private Logger logger;
+    @Autowired
+    private IAViewService iaViewService;
+
+    @Autowired
+    private CategoriserService categoriserService;
+
+    @Autowired
+    private ActorSystem actorSystem;
 
     public CategorisationSupervisorActor() {
 	super();
-	logger = LoggerFactory.getLogger(CategorisationSupervisorActor.class);
     }
-
-    Set<ActorRef> workers = new HashSet<ActorRef>();
-
-    String currentEpic = null;
 
     private int categoriseDocsMessageNumber = 0;
+    private static final String CATEGORISE_ALL = "CATEGORISE_ALL";
 
     @Override
-    public void onReceive(Object message) throws Exception {
-	if (message instanceof Epic) {
-	    logger.debug("received Epic");
-	    if (currentEpic != null)
-		getSender().tell(new CurrentlyBusy(), getSelf());
-	    else if (workers.isEmpty())
-		logger.error("Got work but there are no workers registered.");
-	    else {
-		startEpic();
-		for (ActorRef actorRef : workers) {
-		    actorRef.tell(new WorkAvailable(), getSelf());
-		}
-	    }
-	} else if (message instanceof RegisterWorker) {
-	    logger.debug("received RegisterWorker");
-	    logger.info("worker {} registered", getSender());
-	    getContext().watch(getSender());
-	    workers.add(getSender());
+    protected void startEpic() {
+	logger.info("START WHOLE CATEGORISATION");
 
-	} else if (message instanceof Terminated) {
-	    logger.debug("received Terminated");
-	    logger.info("worker {} died - taking off the set of workers", getSender());
-	    workers.remove(getSender());
+	categoriserService.refreshTaxonomyIndex();
 
-	} else if (message instanceof GimmeWork) {
-	    logger.debug("received GimmeWork");
-	    if (currentEpic == null) {
-		logger.info("workers asked for work but we've no more work to do");
-	    } else {
-		giveWork();
-	    }
-	} else {
-	    unhandled(message);
+	this.totalNbOfDocs = iaViewService.getTotalNbOfDocs();
+
+	if (totalNbOfDocs == 0) {
+	    throw new TaxonomyException(TaxonomyErrorType.DOC_NOT_FOUND, "The index is empty");
 	}
-    }
 
-    private void startEpic() {
-	getCategorisationSupervisorService().startCategorisation();
+	logger.info(".categoriseAllDocuments: categorizing {} documents", this.totalNbOfDocs);
+	status = CategorisationStatusEnum.INITIATED;
+	lastElementRetrieved = null;
+
 	categoriseDocsMessageNumber = 0;
 	currentEpic = CATEGORISE_ALL;
     }
 
-    private void giveWork() {
-	if (getCategorisationSupervisorService().hasDocumentsLeftFromDocIndex()) {
-	    String[] nextDocReferences = getCategorisationSupervisorService().getNextDocumentsToCategorise();
+    @Override
+    protected void giveWork() {
+	if (hasDocumentsLeftFromDocIndex()) {
+	    String[] nextDocReferences = getNextDocumentsToCategorise();
 	    if (nextDocReferences == null || nextDocReferences.length == 0) {
 		logger.info("done with current epic");
 		currentEpic = null;
+
+		logger.info("CATEGORISATION TERMINATED ON SUPERVISOR SIDE. Wait for slave to complete their tasks",
+			status);
+		return;
 	    }
 	    categoriseDocsMessageNumber++;
 	    getSender().tell(new CategoriseDocuments(nextDocReferences, categoriseDocsMessageNumber), getSelf());
+
+	    logger.info("PROGRESS OF CATEGORISATION: {}. message number: {}, index of last doc requested: {}",
+		    getCategorisationStatus(), categoriseDocsMessageNumber, getCurrentDocIndex());
 	} else {
 	    logger.info("done with current epic");
 	    currentEpic = null;
 	}
     }
 
-    // FIXME 1 design flaw: how to test and mock the service in the actor? can
-    // use
-    // Power Mockito to mock static method but
-    // i should rather find another solution to inject the dependency
-    private CategorisationSupervisorService getCategorisationSupervisorService() {
-	return (CategorisationSupervisorService) SpringApplicationContext.getBean("categorisationSupervisorService");
+    private enum CategorisationStatusEnum {
+	NOT_STARTED, INITIATED, ONGOING, TERMINATED
     }
 
+    public class CategorisationStatus {
+	public int progress;
+
+	public CategorisationStatus(int progress) {
+	    super();
+	    this.progress = progress;
+	}
+
+	public int getProgress() {
+	    return progress;
+	}
+
+	@Override
+	public String toString() {
+	    StringBuilder builder = new StringBuilder();
+	    builder.append("CategorisationStatus [progress=");
+	    builder.append(progress);
+	    builder.append("]");
+	    return builder.toString();
+	}
+    }
+
+    public boolean hasDocumentsLeftFromDocIndex() {
+	switch (status) {
+	case NOT_STARTED:
+	case INITIATED:
+	case ONGOING:
+	    return true;
+	case TERMINATED:
+	default:
+	    return false;
+	}
+    }
+
+    public CategorisationStatus getCategorisationStatus() {
+	switch (status) {
+	case NOT_STARTED:
+	case INITIATED:
+	    return new CategorisationStatus(0);
+	case ONGOING:
+	    int progress = 100 * this.lastElementRetrieved.doc / this.totalNbOfDocs;
+	    return new CategorisationStatus(progress);
+	case TERMINATED:
+	    return new CategorisationStatus(100);
+	default:
+	    return null;
+	}
+    }
+
+    public Integer getCurrentDocIndex() {
+	if (lastElementRetrieved != null) {
+	    return lastElementRetrieved.doc;
+	}
+	return null;
+    }
+
+    /**
+     * This method must be synchronized because lastElementRetrieved must be
+     * updated before the next bunch of documents can be processed
+     */
+    public synchronized String[] getNextDocumentsToCategorise() {
+	switch (status) {
+	case INITIATED:
+	case ONGOING:
+	    status = CategorisationStatusEnum.ONGOING;
+	    BrowseAllDocsResponse browseAllDocs = iaViewService.browseAllDocs(this.lastElementRetrieved,
+		    NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME);
+
+	    this.lastElementRetrieved = browseAllDocs.getLastScoreDoc();
+
+	    List<String> listOfDocReferences = browseAllDocs.getListOfDocReferences();
+	    if (!CollectionUtils.isEmpty(listOfDocReferences)) {
+		logger.debug(
+			".getNextDocumentsToCategorise: returning new set of docs: lastScoreDoc={}, size={}, docs={}",
+			this.lastElementRetrieved, NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME,
+			ArrayUtils.toString(listOfDocReferences));
+		return listOfDocReferences.toArray(new String[0]);
+	    }
+	    status = CategorisationStatusEnum.TERMINATED;
+	    return null;
+	case NOT_STARTED:
+	case TERMINATED:
+	default:
+	    return null;
+	}
+
+    }
 }

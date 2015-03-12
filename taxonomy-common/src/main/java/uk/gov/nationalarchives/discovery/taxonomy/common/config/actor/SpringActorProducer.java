@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 /**
  * An actor producer that lets Spring create the Actor instances.
  */
+// FIXME to remove?
 public class SpringActorProducer implements IndirectActorProducer {
     final ApplicationContext applicationContext;
     final String actorBeanName;
