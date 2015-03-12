@@ -1,6 +1,6 @@
 package uk.gov.nationalarchives.discovery.taxonomy.batch.config;
 
-import akka.actor.ActorSystem;
+import static uk.gov.nationalarchives.discovery.taxonomy.common.config.actor.SpringExtension.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -8,9 +8,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.typesafe.config.ConfigFactory;
+import org.springframework.context.annotation.EnableLoadTimeWeaving;
+import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 
-import static uk.gov.nationalarchives.discovery.taxonomy.common.config.actor.SpringExtension.*;
+import akka.actor.ActorSystem;
+
+import com.typesafe.config.ConfigFactory;
 
 /**
  * Configuration dedicated to the actor based system to categorise all documents
@@ -18,6 +21,8 @@ import static uk.gov.nationalarchives.discovery.taxonomy.common.config.actor.Spr
 @Configuration
 @ConditionalOnProperty(prefix = "batch.role.", value = "categorise-all")
 @ConfigurationProperties(prefix = "batch.role.categorise-all")
+@EnableSpringConfigured
+@EnableLoadTimeWeaving
 class ActorConfiguration {
 
     // the application context is needed to initialize the Akka Spring Extension

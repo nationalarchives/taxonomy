@@ -23,13 +23,19 @@ import akka.actor.UntypedActor;
  * @note The scope here is prototype since we want to create a new actor
  *       instance for use of this bean.
  */
-@SuppressWarnings("rawtypes")
+// @Configurable(preConstruction = true)
 public class CategorisationSupervisorActor extends UntypedActor {
 
     private static final String CATEGORISE_ALL = "CATEGORISE_ALL";
 
+    // @Autowired
+    // private CategorisationSupervisorService categorisationSupervisorService;
+
+    private Logger logger;
+
     public CategorisationSupervisorActor() {
 	super();
+	logger = LoggerFactory.getLogger(CategorisationSupervisorActor.class);
     }
 
     Set<ActorRef> workers = new HashSet<ActorRef>();
@@ -41,52 +47,58 @@ public class CategorisationSupervisorActor extends UntypedActor {
     @Override
     public void onReceive(Object message) throws Exception {
 	if (message instanceof Epic) {
-	    getLogger().debug("received Epic");
+	    logger.debug("received Epic");
 	    if (currentEpic != null)
 		getSender().tell(new CurrentlyBusy(), getSelf());
 	    else if (workers.isEmpty())
-		getLogger().error("Got work but there are no workers registered.");
+		logger.error("Got work but there are no workers registered.");
 	    else {
-		getCategorisationSupervisorService().startCategorisation();
-		categoriseDocsMessageNumber = 0;
-		currentEpic = CATEGORISE_ALL;
+		startEpic();
 		for (ActorRef actorRef : workers) {
 		    actorRef.tell(new WorkAvailable(), getSelf());
 		}
 	    }
 	} else if (message instanceof RegisterWorker) {
-	    getLogger().debug("received RegisterWorker");
-	    getLogger().info("worker {} registered", getSender());
+	    logger.debug("received RegisterWorker");
+	    logger.info("worker {} registered", getSender());
 	    getContext().watch(getSender());
 	    workers.add(getSender());
 
 	} else if (message instanceof Terminated) {
-	    getLogger().debug("received Terminated");
-	    getLogger().info("worker {} died - taking off the set of workers", getSender());
+	    logger.debug("received Terminated");
+	    logger.info("worker {} died - taking off the set of workers", getSender());
 	    workers.remove(getSender());
 
 	} else if (message instanceof GimmeWork) {
-	    getLogger().debug("received GimmeWork");
+	    logger.debug("received GimmeWork");
 	    if (currentEpic == null) {
-		// if no more work:
-		getLogger().info("workers asked for work but we've no more work to do");
+		logger.info("workers asked for work but we've no more work to do");
 	    } else {
-		if (getCategorisationSupervisorService().hasDocumentsLeftFromDocIndex()) {
-		    String[] nextDocReferences = getCategorisationSupervisorService().getNextDocumentsToCategorise();
-		    if (nextDocReferences == null || nextDocReferences.length == 0) {
-			getLogger().info("done with current epic");
-			currentEpic = null;
-		    }
-		    categoriseDocsMessageNumber++;
-		    getSender()
-			    .tell(new CategoriseDocuments(nextDocReferences, categoriseDocsMessageNumber), getSelf());
-		} else {
-		    getLogger().info("done with current epic");
-		    currentEpic = null;
-		}
+		giveWork();
 	    }
 	} else {
 	    unhandled(message);
+	}
+    }
+
+    private void startEpic() {
+	getCategorisationSupervisorService().startCategorisation();
+	categoriseDocsMessageNumber = 0;
+	currentEpic = CATEGORISE_ALL;
+    }
+
+    private void giveWork() {
+	if (getCategorisationSupervisorService().hasDocumentsLeftFromDocIndex()) {
+	    String[] nextDocReferences = getCategorisationSupervisorService().getNextDocumentsToCategorise();
+	    if (nextDocReferences == null || nextDocReferences.length == 0) {
+		logger.info("done with current epic");
+		currentEpic = null;
+	    }
+	    categoriseDocsMessageNumber++;
+	    getSender().tell(new CategoriseDocuments(nextDocReferences, categoriseDocsMessageNumber), getSelf());
+	} else {
+	    logger.info("done with current epic");
+	    currentEpic = null;
 	}
     }
 
@@ -98,7 +110,4 @@ public class CategorisationSupervisorActor extends UntypedActor {
 	return (CategorisationSupervisorService) SpringApplicationContext.getBean("categorisationSupervisorService");
     }
 
-    private Logger getLogger() {
-	return LoggerFactory.getLogger(CategorisationSupervisorActor.class);
-    }
 }
