@@ -43,7 +43,7 @@ public class CategorisationSupervisorActor extends SupervisorActor {
     private static final String CATEGORISE_ALL = "CATEGORISE_ALL";
 
     @Override
-    protected void startEpic() {
+    public void startEpic() {
 	logger.info("START WHOLE CATEGORISATION");
 
 	categoriserService.refreshTaxonomyIndex();
@@ -63,7 +63,7 @@ public class CategorisationSupervisorActor extends SupervisorActor {
     }
 
     @Override
-    protected void giveWork() {
+    public void giveWork() {
 	if (hasDocumentsLeftFromDocIndex()) {
 	    String[] nextDocReferences = getNextDocumentsToCategorise();
 	    if (nextDocReferences == null || nextDocReferences.length == 0) {
@@ -176,4 +176,13 @@ public class CategorisationSupervisorActor extends SupervisorActor {
 	}
 
     }
+
+    public void setIaViewService(IAViewService iaViewService) {
+	this.iaViewService = iaViewService;
+    }
+
+    public void setCategoriserService(CategoriserService categoriserService) {
+	this.categoriserService = categoriserService;
+    }
+
 }
