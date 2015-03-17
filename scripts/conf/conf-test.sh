@@ -5,7 +5,10 @@ server=***REMOVED***
 
 cliPackageFolder=***REMOVED***taxonomy/packages;
 wsPackageFolder=***REMOVED***taxonomy/packages;
+
 batchPackageFolder=***REMOVED***taxonomy/packages;
+agentPath=***REMOVED***taxonomy/packages/spring-instrument-4.0.7.RELEASE.jar
+
 scriptsFolder=***REMOVED***taxonomy/scripts;
 tmpFolder=/tmp
 

@@ -5,7 +5,10 @@ server=***REMOVED***
 
 cliPackageFolder=/home/jcharlet/apps/taxonomy/package;
 wsPackageFolder=/home/jcharlet/apps/taxonomy/package;
+
 batchPackageFolder=/home/jcharlet/apps/taxonomy/package;
+agentPath=/home/jcharlet/apps/taxonomy/package/spring-instrument-4.0.7.RELEASE.jar
+
 scriptsFolder=/home/jcharlet/apps/taxonomy/scripts;
 tmpFolder=/tmp
 

@@ -5,7 +5,10 @@ server=
 
 cliPackageFolder=/home/jcharlet/_workspace/cat/taxonomy-cli/target
 wsPackageFolder=/home/jcharlet/_workspace/cat/taxonomy-ws/target
+
 batchPackageFolder=/home/jcharlet/_workspace/cat/taxonomy-batch/target
+agentPath=/home/jcharlet/.m2/repository/org/springframework/spring-instrument/4.0.7.RELEASE/spring-instrument-4.0.7.RELEASE.jar
+
 scriptsFolder=
 tmpFolder=
 
