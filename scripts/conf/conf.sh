@@ -5,7 +5,7 @@ server=
 
 cliPackageFolder=/home/jcharlet/_workspace/cat/taxonomy-cli/target
 wsPackageFolder=/home/jcharlet/_workspace/cat/taxonomy-ws/target
-batchPackageFolder=/home/jcharlet/_workspace/cat/taxonomy-ws/target
+batchPackageFolder=/home/jcharlet/_workspace/cat/taxonomy-batch/target
 scriptsFolder=
 tmpFolder=
 

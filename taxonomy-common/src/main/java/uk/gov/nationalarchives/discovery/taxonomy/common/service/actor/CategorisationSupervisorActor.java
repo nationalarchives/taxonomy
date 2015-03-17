@@ -37,6 +37,7 @@ public class CategorisationSupervisorActor extends SupervisorActor {
 
     public CategorisationSupervisorActor() {
 	super();
+	this.logger.info("Initiated Categorisation Supervisor Actor");
     }
 
     private int categoriseDocsMessageNumber = 0;
