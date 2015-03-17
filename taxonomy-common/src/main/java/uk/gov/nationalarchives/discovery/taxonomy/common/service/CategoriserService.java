@@ -59,4 +59,5 @@ public interface CategoriserService<T extends CategorisationResult> {
      * indexed right before that call
      */
     public void refreshTaxonomyIndex();
+
 }
