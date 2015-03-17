@@ -30,7 +30,6 @@ public class ActorConfiguration {
     private ApplicationContext applicationContext;
 
     private boolean supervisor;
-    private String slaveName;
 
     // TODO 2 use cluster to avoid defining by hand who is the master and who he
     // talks to
@@ -43,11 +42,11 @@ public class ActorConfiguration {
 	if (this.supervisor) {
 	    system = ActorSystem.create("supervisor", ConfigFactory.load("supervisor.conf"));
 	} else {
-	    system = ActorSystem.create(slaveName, ConfigFactory.load("slave.conf"));
+	    system = ActorSystem.create("slave", ConfigFactory.load("slave.conf"));
 	}
 
 	// initialize the application context in the Akka Spring Extension
-	SpringExtProvider.get(system).initialize(applicationContext);
+	// SpringExtProvider.get(system).initialize(applicationContext);
 
 	// system.logConfiguration();
 	return system;
@@ -57,16 +56,12 @@ public class ActorConfiguration {
     public ActorSystem deadLettersActorSystem() {
 	ActorSystem system = ActorSystem.create("DeadLetters");
 	// initialize the application context in the Akka Spring Extension
-	SpringExtProvider.get(system).initialize(applicationContext);
+	// SpringExtProvider.get(system).initialize(applicationContext);
 	return system;
     }
 
     public void setSupervisor(boolean supervisor) {
 	this.supervisor = supervisor;
-    }
-
-    public void setSlaveName(String slaveName) {
-	this.slaveName = slaveName;
     }
 
 }
