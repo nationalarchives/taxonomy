@@ -35,7 +35,13 @@ package=
 deploy=
 deployScripts=
 
+# Tutorial on shell script with list of operators for if, while, etc statements:
 # http://linuxcommand.org/lc3_wss0080.php
+if [ -z "$1" ]
+then
+	usage
+    exit
+fi
 while [ "$1" != "" ]; do
     case $1 in
         -p | --package )     
@@ -115,10 +121,15 @@ function_deployTaxonomyPackages () {
 	ssh -t ${server} sudo mv ${tmpFolder}/taxonomy-ws-0.0.1-SNAPSHOT.war ${wsPackageFolder}/
 	ssh -t ${server} sudo mv ${tmpFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar ${batchPackageFolder}/
 	
+	# Deploy Spring agent dedicated to aspect weaving for the batch application
+	scp  /home/jcharlet/.m2/repository/org/springframework/spring-instrument/4.0.7.RELEASE/spring-instrument-4.0.7.RELEASE.jar ${USER}@${server}:$tmpFolder
+	ssh -t ${server} sudo mv ${tmpFolder}/spring-instrument-4.0.7.RELEASE.jar ${batchPackageFolder}/
+	
 	ssh ${server} rm -rf $tmpFolder/taxonomy-*
 	
 	
 }
+
 
 function_deployScripts () {
 	platform=$1;

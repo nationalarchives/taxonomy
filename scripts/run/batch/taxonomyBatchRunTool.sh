@@ -1,5 +1,6 @@
 #!/bin/bash
 cd "$(dirname "$0")"
+source ../../conf/conf.sh;
 
 
 
@@ -33,12 +34,17 @@ usage ()
 	exit
 }
 
-
 applicationArgs=
 jvmArgs=
 batchType=
 
+# Tutorial on shell script with list of operators for if, while, etc statements:
 # http://linuxcommand.org/lc3_wss0080.php
+if [ -z "$1" ]
+then
+	usage
+    exit
+fi
 while [ "$1" != "" ]; do
     case $1 in
         -ja | --jvmArgs )      	shift
@@ -62,13 +68,14 @@ done
 batchTypeBasedJvmArgs=
 batchTypeBasedApplicationArgs=
 
+
 case $batchType in
         master )     
-			batchTypeBasedJvmArgs="-javaagent:/home/jcharlet/.m2/repository/org/springframework/spring-instrument/4.0.7.RELEASE/spring-instrument-4.0.7.RELEASE.jar -Xbootclasspath/a:/home/jcharlet/.m2/repository/org/springframework/spring-instrument/4.0.7.RELEASE/spring-instrument-4.0.7.RELEASE.jar"
+			batchTypeBasedJvmArgs="-javaagent:${agentPath} -Xbootclasspath/a:${agentPath}"
 			batchTypeBasedApplicationArgs="--batch.role.udpate-solr-cloud=false --batch.role.check-categorisation-request-messages=false --batch.role.categorise-all=true --batch.role.categorise-all.supervisor=true --batch.role.categorise-all.slave=false --server.port=0"
             ;;
         slave )      
-			batchTypeBasedJvmArgs="-javaagent:/home/jcharlet/.m2/repository/org/springframework/spring-instrument/4.0.7.RELEASE/spring-instrument-4.0.7.RELEASE.jar -Xbootclasspath/a:/home/jcharlet/.m2/repository/org/springframework/spring-instrument/4.0.7.RELEASE/spring-instrument-4.0.7.RELEASE.jar"
+			batchTypeBasedJvmArgs="-javaagent:${agentPath} -Xbootclasspath/a:${agentPath} -Dakka.remote.netty.tcp.port=0"
 			batchTypeBasedApplicationArgs="--batch.role.udpate-solr-cloud=false --batch.role.check-categorisation-request-messages=false --batch.role.categorise-all=true --batch.role.categorise-all.supervisor=false --batch.role.categorise-all.slave=true --server.port=0"
             ;;
         dailyUpdates )   
@@ -84,7 +91,6 @@ esac
 jvmArgs=$(echo $batchTypeBasedJvmArgs $jvmArgs);
 applicationArgs=$(echo $batchTypeBasedApplicationArgs $applicationArgs);
 
-source ../../conf/conf.sh;
 echo "JVM ARGS: " $jvmArgs
 echo "APP ARGS: " $applicationArgs 
 echo java -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs
