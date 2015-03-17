@@ -76,19 +76,67 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     public List<CategorisationResult> testCategoriseSingle(String docReference) {
 	logger.info(".testCategoriseSingle: docreference:{} ", docReference);
 	return testCategoriseSingle(LuceneTaxonomyMapper.getIAViewFromLuceneDocument(iaViewRepository
-		.searchDocByDocReference(docReference)));
+		.searchDocByDocReference(docReference)), true);
     }
 
-    public List<CategorisationResult> testCategoriseSingle(InformationAssetView iaView) {
+    /**
+     * Low end API to test the categorisation of a document<br/>
+     * the use of retrieveScoreForAllRelevantCategories parameter has a huge
+     * impact on performances:<br/>
+     * should be true when displaying the result of categorisation to a user or
+     * used to run a process where performances are not critical<br/>
+     * should be false when performances are critical: typically, in batch
+     * processes.
+     * 
+     * @param iaView
+     * @param retrieveScoreForAllRelevantCategories
+     * @return
+     */
+    public List<CategorisationResult> testCategoriseSingle(InformationAssetView iaView,
+	    boolean retrieveScoreForAllRelevantCategories) {
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
 
 	List<Category> listOfRelevantCategories = inMemoryiaViewRepository.findRelevantCategoriesForDocument(iaView,
 		categoryRepository.findAll());
 
-	listOfCategoryResults = runCategorisationWithFSDirectory(iaView, listOfRelevantCategories);
+	if (retrieveScoreForAllRelevantCategories) {
+	    listOfCategoryResults = runCategorisationWithFSDirectory(iaView, listOfRelevantCategories);
+	    sortCategorisationResultsByScoreDesc(listOfCategoryResults);
+	} else {
+	    logger.debug(".testCategoriseSingle: runCategorisationWithFSDirectory only on categories with threshold");
+	    List<CategorisationResult> generatedResults = getListOfGeneratedResultsForCategoriesWithoutThreshold(listOfRelevantCategories);
+	    listOfCategoryResults.addAll(generatedResults);
 
-	sortCategorisationResultsByScoreDesc(listOfCategoryResults);
+	    List<Category> listOfMatchingCategoriesWithThreshold = getListOfMatchingCategoriesWithThreshold(listOfRelevantCategories);
+	    List<CategorisationResult> listOfResultsForCategoriesWithThreshold = runCategorisationWithFSDirectory(
+		    iaView, listOfMatchingCategoriesWithThreshold);
+	    listOfCategoryResults.addAll(listOfResultsForCategoriesWithThreshold);
+	}
+
 	return listOfCategoryResults;
+    }
+
+    private List<Category> getListOfMatchingCategoriesWithThreshold(List<Category> listOfRelevantCategories) {
+	List<Category> listOfMatchingCategoriesWithThreshold = new ArrayList<Category>();
+	for (Category category : listOfRelevantCategories) {
+	    if (category.getSc() != 0d) {
+		listOfMatchingCategoriesWithThreshold.add(category);
+	    }
+	}
+	return listOfMatchingCategoriesWithThreshold;
+    }
+
+    private List<CategorisationResult> getListOfGeneratedResultsForCategoriesWithoutThreshold(
+	    List<Category> listOfRelevantCategories) {
+	List<CategorisationResult> listOfGeneratedResultsForCategoriesWithoutThreshold = new ArrayList<CategorisationResult>();
+	for (Category category : listOfRelevantCategories) {
+	    if (category.getSc() == 0d) {
+		CategorisationResult generatedResultForCategoryWithoutThreshold = new CategorisationResult(
+			category.getTtl(), category.getCiaid(), null);
+		listOfGeneratedResultsForCategoriesWithoutThreshold.add(generatedResultForCategoryWithoutThreshold);
+	    }
+	}
+	return listOfGeneratedResultsForCategoriesWithoutThreshold;
     }
 
     @Override
@@ -100,7 +148,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     }
 
     public List<CategorisationResult> categoriseSingle(InformationAssetView iaView) {
-	List<CategorisationResult> listOfCategorisationResults = testCategoriseSingle(iaView);
+	List<CategorisationResult> listOfCategorisationResults = testCategoriseSingle(iaView, false);
 
 	List<CategoryLight> categories = getListOfCategoryLightFromListOfCatResult(listOfCategorisationResults);
 
