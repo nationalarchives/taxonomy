@@ -201,7 +201,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	Filter filter = new TermFilter(new Term(InformationAssetViewFields.DOCREFERENCE.toString(),
 		iaView.getDOCREFERENCE()));
 	for (Category category : listOfRelevantCategories) {
-	    listOfFutureCategoryResults.add(asyncTaskManager.runUnitCategoryQuery(filter, category));
+	    listOfFutureCategoryResults.add(asyncTaskManager.runUnitFSCategoryQuery(filter, category));
 	}
 
 	for (Future<CategorisationResult> futureCatResult : listOfFutureCategoryResults) {

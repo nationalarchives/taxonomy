@@ -19,14 +19,14 @@ import org.slf4j.LoggerFactory;
  * @author jcharlet
  *
  */
-public class RunUnitCategoryQueryTask implements Callable<CategorisationResult> {
+public class RunUnitFSCategoryQueryTask implements Callable<CategorisationResult> {
 
     private Filter filter;
     private Category category;
     private IAViewRepository iaViewRepository;
-    private Logger logger = LoggerFactory.getLogger(RunUnitCategoryQueryTask.class);
+    private Logger logger = LoggerFactory.getLogger(RunUnitFSCategoryQueryTask.class);
 
-    public RunUnitCategoryQueryTask(Filter filter, Category category, IAViewRepository iaViewRepository) {
+    public RunUnitFSCategoryQueryTask(Filter filter, Category category, IAViewRepository iaViewRepository) {
 	super();
 	this.filter = filter;
 	this.category = category;

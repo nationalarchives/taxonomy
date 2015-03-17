@@ -1,24 +1,28 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.async;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.task.RunUnitCategoryQueryTask;
-
 import java.util.concurrent.Future;
 
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.IndexSearcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.task.RunUnitFSCategoryQueryTask;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.task.RunUnitInMemoryCategoryQueryTask;
 
 /**
  * Task manager for Taxonomy WS <br/>
  * responsible for launching asynchronous tasks and providing the needed
  * dependencies
  * 
- * See {@link uk.gov.nationalarchives.discovery.taxonomy.config.AsyncConfiguration}
+ * See
+ * {@link uk.gov.nationalarchives.discovery.taxonomy.config.AsyncConfiguration}
  * 
  * @author jcharlet
  *
@@ -39,8 +43,20 @@ public class AsyncQueryBasedTaskManager {
      * @param filter
      * @param category
      */
-    public Future<CategorisationResult> runUnitCategoryQuery(Filter filter, Category category) {
-	return threadPoolTaskExecutor.submit(new RunUnitCategoryQueryTask(filter, category, this.iaViewRepository));
+    public Future<CategorisationResult> runUnitFSCategoryQuery(Filter filter, Category category) {
+	return threadPoolTaskExecutor.submit(new RunUnitFSCategoryQueryTask(filter, category, this.iaViewRepository));
+    }
+
+    /**
+     * launch asynchronously the @RunUnitSearchTask task
+     * 
+     * @param searcher
+     * @param query
+     * @return
+     */
+    public Future<Category> runUnitInMemoryCategoryQuery(IndexSearcher searcher, Category category,
+	    LuceneHelperTools luceneHelperTools) {
+	return threadPoolTaskExecutor.submit(new RunUnitInMemoryCategoryQueryTask(searcher, category, luceneHelperTools));
     }
 
 }

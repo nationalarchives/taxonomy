@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -13,15 +15,14 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SearcherManager;
-import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -31,8 +32,10 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncQueryBasedTaskManager;
 
 @Repository
+@ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useQueryBasedCategoriser")
 public class InMemoryIAViewRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(InMemoryIAViewRepository.class);
@@ -41,14 +44,18 @@ public class InMemoryIAViewRepository {
 
     private final LuceneHelperTools luceneHelperTools;
 
+    private final AsyncQueryBasedTaskManager asyncTaskManager;
+
     @Value("${lucene.index.version}")
     private String luceneVersion;
 
     @Autowired
-    public InMemoryIAViewRepository(Analyzer iaViewIndexAnalyser, LuceneHelperTools luceneHelperTools) {
+    public InMemoryIAViewRepository(Analyzer iaViewIndexAnalyser, LuceneHelperTools luceneHelperTools,
+	    AsyncQueryBasedTaskManager asyncTaskManager) {
 	super();
 	this.iaViewIndexAnalyser = iaViewIndexAnalyser;
 	this.luceneHelperTools = luceneHelperTools;
+	this.asyncTaskManager = asyncTaskManager;
     }
 
     public List<Category> findRelevantCategoriesForDocument(InformationAssetView iaView,
@@ -62,20 +69,25 @@ public class InMemoryIAViewRepository {
 	    searcherManager = new SearcherManager(ramDirectory, null);
 
 	    searcher = searcherManager.acquire();
-	    for (Category category : categoriesToCheck) {
-		String queryString = category.getQry();
-		try {
-		    Query query = luceneHelperTools.buildSearchQuery(queryString);
-		    TopDocs topDocs = searcher.search(query, 1);
 
-		    if (topDocs.totalHits != 0) {
+	    List<Future<Category>> listOfFutureFoundCategories = new ArrayList<Future<Category>>();
+	    for (Category category : categoriesToCheck) {
+		Future<Category> futureSearchResults = asyncTaskManager.runUnitInMemoryCategoryQuery(searcher,
+			category, luceneHelperTools);
+		listOfFutureFoundCategories.add(futureSearchResults);
+	    }
+
+	    for (Future<Category> futureFoundCategory : listOfFutureFoundCategories) {
+		Category category;
+		try {
+		    category = futureFoundCategory.get();
+		    if (category != null) {
 			listOfRelevantCategories.add(category);
-			logger.debug(".findRelevantCategories: found category {}", category.getTtl());
 		    }
-		} catch (TaxonomyException e) {
-		    logger.debug(
-			    ".findRelevantCategories: an exception occured while parsing category query for category: {}, title: ",
-			    category.getTtl(), e.getMessage());
+		} catch (InterruptedException | ExecutionException e) {
+		    logger.error(
+			    ".findRelevantCategories: an exception occured while retrieving the categorisation result: , exception: {}",
+			    futureFoundCategory.toString(), e);
 		}
 	    }
 	} catch (IOException e) {
