@@ -1,7 +1,5 @@
 package uk.gov.nationalarchives.discovery.taxonomy.batch.config;
 
-import static uk.gov.nationalarchives.discovery.taxonomy.common.config.actor.SpringExtension.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
