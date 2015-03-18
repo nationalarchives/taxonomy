@@ -16,15 +16,7 @@ usage ()
 	echo "								'slave' : Categorise All - Slave	"
 	echo "								'dailyUpdates' : apply daily Updates	"
 	echo "								'updateSolr' : update Solr from Mongo db entries"
-	#echo "	-cm --categorisationMode <categorisationMode>		Select categorisation mode between those: tsetBased, qryBased"	
-	#echo
-	#echo "	-ra --remoteApplication <remoteApplication> 		Run the application using a remote tool: Eclipse debugger, JProfiler"
-	#echo 	
-	#echo "	-ll --logLevel <logLevel> 		Overwrite the default log level for taxonomy classes	"
-	#echo "	-sd --springDebug 		Run Spring in Debug mode (see auto configuration et other useful stuff)"
-	#echo
-	#echo "	-tl --tailLogs		Tail logs for the chosen application	"
-	#echo "	- -- <>	
+	echo
 	echo "	-ja --jvmArgs <jvmArgs>		provide jvm arguments"
 	echo
 	echo "	-aa --applicationArgs <application args>	provide application arguments"
