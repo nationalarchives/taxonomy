@@ -24,7 +24,7 @@ public interface SolrCloudIAViewRepository {
     SolrDocument getByDocReference(String docReference);
 
     /**
-     * save a document in solr and commit it
+     * save a document in solr cloud
      * 
      * @param document
      *            to save
@@ -32,7 +32,7 @@ public interface SolrCloudIAViewRepository {
     void save(SolrInputDocument document);
 
     /**
-     * save a list of documents in Solr and commit it
+     * save a list of documents in Solr cloud
      * 
      * @param documents
      *            to save
