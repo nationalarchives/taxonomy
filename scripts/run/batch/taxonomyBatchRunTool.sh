@@ -80,11 +80,11 @@ case $batchType in
             ;;
         dailyUpdates )   
 			batchTypeBasedJvmArgs=
-			batchTypeBasedApplicationArgs=
+			batchTypeBasedApplicationArgs="--batch.role.udpate-solr-cloud=true --batch.role.check-categorisation-request-messages=true --server.port=0"
             ;;
         updateSolr )   
 			batchTypeBasedJvmArgs=
-			batchTypeBasedApplicationArgs=
+			batchTypeBasedApplicationArgs="--batch.role.udpate-solr-cloud=true --server.port=0"
             ;;
 esac
 

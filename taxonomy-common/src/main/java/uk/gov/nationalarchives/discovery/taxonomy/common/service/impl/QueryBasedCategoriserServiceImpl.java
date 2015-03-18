@@ -69,8 +69,6 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     @Autowired
     private SolrTaxonomyIAViewRepository solrTaxonomyIAViewRepository;
 
-    private static final int PAGE_SIZE = 10;
-
     @Override
     @Loggable
     public List<CategorisationResult> testCategoriseSingle(String docReference) {
@@ -256,9 +254,9 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     }
 
     @Override
-    public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceDate(int pageNumber, Date date) {
+    public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceDate(int pageNumber, int pageSize, Date date) {
 	Sort sort = new Sort(Direction.ASC, IAViewUpdate.CREATIONDATE);
-	PageRequest pageRequest = new PageRequest(0, PAGE_SIZE, sort);
+	PageRequest pageRequest = new PageRequest(pageNumber, pageSize, sort);
 	return iaViewUpdateRepository.findByCreationDateGreaterThan(date, pageRequest);
     }
 

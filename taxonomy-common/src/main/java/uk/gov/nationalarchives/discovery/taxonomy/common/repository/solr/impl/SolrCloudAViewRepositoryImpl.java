@@ -89,8 +89,6 @@ public class SolrCloudAViewRepositoryImpl implements SolrCloudIAViewRepository {
     public void saveAll(List<SolrInputDocument> documents) {
 	try {
 	    solrCloudServer.add(documents);
-
-	    solrCloudServer.commit();
 	} catch (SolrServerException | IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.SOLR_WRITE_EXCEPTION, e);
 	}

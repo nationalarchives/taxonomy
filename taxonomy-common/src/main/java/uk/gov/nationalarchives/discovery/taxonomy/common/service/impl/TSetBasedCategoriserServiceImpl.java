@@ -281,7 +281,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     }
 
     @Override
-    public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceDate(int pageNumber,
+    public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceDate(int pageNumber, int pageSize,
 	    Date lastIAViewUpdateProcessedTime) {
 	// TODO TSETBASED Auto-generated method stub
 	return null;

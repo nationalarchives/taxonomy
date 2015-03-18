@@ -8,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,9 @@ public class updateSolrCloudTask {
 
     private static Date lastIAViewUpdateProcessedTime = null;
 
+    @Value("${batch.update-solr-cloud.page-size}")
+    Integer pageSize;
+
     @Autowired
     public updateSolrCloudTask(CategoriserService categoriserService, UpdateSolrCloudService updateSolrService) {
 	super();
@@ -35,7 +39,7 @@ public class updateSolrCloudTask {
     }
 
     @SuppressWarnings("unchecked")
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 500)
     public void updateSolrCloudWithLatestUpdatesOnCategories() {
 	if (lastIAViewUpdateProcessedTime == null) {
 	    initBatch();
@@ -48,7 +52,8 @@ public class updateSolrCloudTask {
 	    boolean hasNext = true;
 	    while (hasNext) {
 		Page<IAViewUpdate> pageOfIAViewUpdatesToProcess = categoriserService
-			.getPageOfNewCategorisedDocumentsSinceDate(pageNumber, lastIAViewUpdateProcessedTime);
+			.getPageOfNewCategorisedDocumentsSinceDate(pageNumber, this.pageSize,
+				lastIAViewUpdateProcessedTime);
 
 		String[] arrayOfDocReferences = retrieveArrayOfDocRefsFromPageOfIAViewUpdates(pageOfIAViewUpdatesToProcess);
 

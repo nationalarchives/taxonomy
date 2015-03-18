@@ -38,10 +38,11 @@ public interface CategoriserService<T extends CategorisationResult> {
      * get page of IAViewUpdates since date
      * 
      * @param pageNumber
+     * @param pageSize
      * @param lastIAViewUpdateProcessedTime
      * @return
      */
-    public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceDate(int pageNumber,
+    public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceDate(int pageNumber, int pageSize,
 	    Date lastIAViewUpdateProcessedTime);
 
     /**
