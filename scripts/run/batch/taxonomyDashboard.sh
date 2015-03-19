@@ -12,7 +12,9 @@ usage ()
 	echo 
 	echo "	-ts --timeStarted		Time of the start of the process" 
 	echo 
-	echo "	-nb --NbOfDocsAtStart		Number of documents to categorise when the process was started" 
+	echo "	-nb --nbOfDocsAtStart		Number of documents to categorise when the process was started" 
+	echo 
+	echo "	-tbr --timeBetweenRefresh		Time between refresh" 
 	echo 
 	exit
 }
@@ -32,7 +34,10 @@ while [ "$1" != "" ]; do
         						timeStarted=$1
                                 ;;
         -nb | --NbOfDocsAtStart ) shift
-        						
+        						nbOfDocsAtStart=$1
+                                ;;
+        -tbr | --timeBetweenRefresh ) shift
+        						timeBetweenRefresh=$1
                                 ;;
         * )                     usage
                                 exit 1
@@ -41,18 +46,20 @@ while [ "$1" != "" ]; do
 done
 
 
-
-
 clear;
 
 fullStartDate=$(echo ${dateStarted}"T"${timeStarted})
 cmd=$(echo 'db.iaViewUpdates.count({creationDate:{$gte:new ISODate("'${fullStartDate}'")}})');
-lastNbOfDocs=
+
 currentNbOfDocs=
 
+lastNbOfDocsForCurrentTimer=
 listOfMeasures=
 
-timeBetweenRefresh=5
+if [ -z "$timeBetweenRefresh" ]
+then
+	timeBetweenRefresh=10
+fi
 
 while true
 do
@@ -68,14 +75,25 @@ do
 		echo
 	fi
 	
-	if [ -n "$lastNbOfDocs" ]
+	if [ -n "$lastNbOfDocsForCurrentTimer" ]
 	then
-		if [[ $(($currentNbOfDocs - $lastNbOfDocs)) != 0 ]];
+		if [[ $(($currentNbOfDocs - $lastNbOfDocsForCurrentTimer)) != 0 ]];
 		then
-			avgCatSpeed=$(( 1000 * $timeBetweenRefresh / ($currentNbOfDocs - $lastNbOfDocs) ))
+			#### CURRENT AVG SPEED
+			avgCatSpeed=$(( 1000 * $timeBetweenRefresh / ($currentNbOfDocs - $lastNbOfDocsForCurrentTimer) ))
 			echo "Average Categorisation Speed (ms/doc): " $avgCatSpeed
 			echo
 			listOfMeasures=$(echo $avgCatSpeed " ; " $listOfMeasures  )
+			####
+			
+			
+			#### ESTIMATED TIME LEFT
+			if [ -n "$nbOfDocsAtStart" ]
+			then
+				timeLeft=$(bc <<< "scale = 10; ($nbOfDocsAtStart-$currentNbOfDocs)*$avgCatSpeed/(1000*3600*24)")
+				echo "Estimated time left: " $timeLeft " days"
+			fi
+			#######	
 		fi
 	fi
 	
@@ -84,8 +102,69 @@ do
 		echo "Last Measures of the avg cat speed: " $listOfMeasures
 	fi
 	
-	
 	sleep $timeBetweenRefresh
-	lastNbOfDocs=$currentNbOfDocs;
+	lastNbOfDocsForCurrentTimer=$currentNbOfDocs;
 done
 
+
+function_bin (){
+	
+	lastNbOfDocsForCustomTimer=
+	listOfCustomMeasures=
+	timerLengthInSeconds=50
+	startTime=
+	
+	
+	#### AVG SPEED ON THE LAST 60 Seconds
+	if [ -z "$startTime" ]
+	then
+		startTime=`date +%S`
+		lastNbOfDocsForCustomTimer=$currentNbOfDocs
+	fi
+	
+	
+	function_timer $timerLengthInSeconds $startTime
+	timerReturnedValue=$?
+	if [ "$timerReturnedValue" == 1 ]
+	then
+		listOfCustomMeasures=$(( 1000 * $timerLengthInSeconds / ($currentNbOfDocs - $lastNbOfDocsForCustomTimer) ))
+		listOfCustomMeasures=$(echo $listOfCustomMeasures " ; " $listOfCustomMeasures  )
+		
+		startTime=`date +%S`
+		lastNbOfDocsForCustomTimer=$currentNbOfDocs
+	fi
+	#######
+	
+	
+	
+	
+	
+	if [ -n "$listOfCustomMeasures" ]
+	then
+		echo "Last Measures of the avg cat speed (every " $timerLengthInSeconds " secs): " $listOfCustomMeasures
+	fi
+}
+
+
+
+
+function_timer () {
+	timerLengthInSeconds=$1
+	startTime=$2
+	
+	currentTime=`date +%S`
+	spentTime=`expr $currentTime - $startTime`
+	
+	##Handle when startTime between 50 and 59 secs
+	if [ "$spentTime" -lt "0" ]; 
+	then
+		spentTime=$(($spentTime + 60))
+	fi
+	
+	if [ "$spentTime" -lt "$timerLengthInSeconds" ]; 
+	then
+		return "0"
+	else
+		return "1"
+	fi
+}

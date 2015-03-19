@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 public class AsyncTSetBasedTaskManager {
 
     @Autowired
-    ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    ThreadPoolTaskExecutor fsSearchTaskExecutor;
 
     @Autowired
     TrainingSetService trainingSetService;
@@ -42,7 +42,7 @@ public class AsyncTSetBasedTaskManager {
      * @param category
      */
     public void updateTrainingSetDbAndIndex(Category category) {
-	threadPoolTaskExecutor.execute(new UpdateTrainingSetDbAndIndexTask(category, Arrays.asList(trainingSetService,
+	fsSearchTaskExecutor.execute(new UpdateTrainingSetDbAndIndexTask(category, Arrays.asList(trainingSetService,
 		categoryRepository)));
     }
 

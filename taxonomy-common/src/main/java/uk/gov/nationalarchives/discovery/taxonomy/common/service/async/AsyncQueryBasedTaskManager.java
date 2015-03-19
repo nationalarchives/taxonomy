@@ -32,7 +32,10 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.task.RunU
 public class AsyncQueryBasedTaskManager {
 
     @Autowired
-    ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    ThreadPoolTaskExecutor fsSearchTaskExecutor;
+
+    @Autowired
+    ThreadPoolTaskExecutor memorySearchTaskExecutor;
 
     @Autowired
     IAViewRepository iaViewRepository;
@@ -44,7 +47,7 @@ public class AsyncQueryBasedTaskManager {
      * @param category
      */
     public Future<CategorisationResult> runUnitFSCategoryQuery(Filter filter, Category category) {
-	return threadPoolTaskExecutor.submit(new RunUnitFSCategoryQueryTask(filter, category, this.iaViewRepository));
+	return fsSearchTaskExecutor.submit(new RunUnitFSCategoryQueryTask(filter, category, this.iaViewRepository));
     }
 
     /**
@@ -56,7 +59,8 @@ public class AsyncQueryBasedTaskManager {
      */
     public Future<Category> runUnitInMemoryCategoryQuery(IndexSearcher searcher, Category category,
 	    LuceneHelperTools luceneHelperTools) {
-	return threadPoolTaskExecutor.submit(new RunUnitInMemoryCategoryQueryTask(searcher, category, luceneHelperTools));
+	return memorySearchTaskExecutor.submit(new RunUnitInMemoryCategoryQueryTask(searcher, category,
+		luceneHelperTools));
     }
 
 }
