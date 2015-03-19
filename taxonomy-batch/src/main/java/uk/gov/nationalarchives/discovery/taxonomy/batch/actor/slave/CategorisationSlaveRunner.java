@@ -5,6 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseAllDocumentsEpic;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Epic;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationWorkerActor;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.DeadLetterActor;
@@ -35,6 +36,8 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+	Integer afterDocNumber = getAfterDocNumberFromArgs(args);
+
 	trackDeadLetters();
 	actorSystem.actorOf(Props.create(CategorisationWorkerActor.class), "workerActor");
 
@@ -43,7 +46,20 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
 	// FIXME 1 should send new Epic only in first starter slave
 	ActorSelection actorSelection = actorSystem
 		.actorSelection("akka.tcp://supervisor@127.0.0.1:2552/user/supervisorActor");
-	actorSelection.tell(new Epic(), null);
+	if (afterDocNumber == null) {
+	    actorSelection.tell(new CategoriseAllDocumentsEpic(), null);
+	} else {
+	    actorSelection.tell(new CategoriseAllDocumentsEpic(afterDocNumber), null);
+	}
+    }
+
+    private Integer getAfterDocNumberFromArgs(String... args) {
+	for (String argument : args) {
+	    if (argument.contains("-afterDocNumber=")) {
+		return Integer.valueOf(argument.split("=")[1]);
+	    }
+	}
+	return null;
     }
 
     private void trackDeadLetters() {

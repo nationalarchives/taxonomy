@@ -83,7 +83,7 @@ do
 			avgCatSpeed=$(( 1000 * $timeBetweenRefresh / ($currentNbOfDocs - $lastNbOfDocsForCurrentTimer) ))
 			echo "Average Categorisation Speed (ms/doc): " $avgCatSpeed
 			echo
-			listOfMeasures=$(echo $avgCatSpeed " ; " $listOfMeasures  )
+			listOfMeasures=$(echo $avgCatSpeed " ; " $listOfMeasures | cut -d ";" -f -40 )
 			####
 			
 			
@@ -99,7 +99,7 @@ do
 	
 	if [ -n "$listOfMeasures" ]
 	then
-		echo "Last Measures of the avg cat speed: " $listOfMeasures
+		echo "Last Measures of the avg cat speed: " $listOfMeasures 
 	fi
 	
 	sleep $timeBetweenRefresh
