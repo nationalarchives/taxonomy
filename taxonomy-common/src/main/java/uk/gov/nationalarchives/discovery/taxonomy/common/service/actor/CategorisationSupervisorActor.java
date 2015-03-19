@@ -3,12 +3,14 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.service.actor;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.lucene.search.FieldDoc;
 import org.apache.lucene.search.ScoreDoc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.util.CollectionUtils;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.BrowseAllDocsResponse;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseAllDocumentsEpic;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseDocuments;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
@@ -41,48 +43,59 @@ public class CategorisationSupervisorActor extends SupervisorActor {
     }
 
     private int categoriseDocsMessageNumber = 0;
-    private static final String CATEGORISE_ALL = "CATEGORISE_ALL";
 
     @Override
-    public void startEpic() {
-	logger.info("START WHOLE CATEGORISATION");
+    public void startEpic(Object message) {
+	if (message instanceof CategoriseAllDocumentsEpic) {
+	    logger.info("START WHOLE CATEGORISATION");
 
-	categoriserService.refreshTaxonomyIndex();
+	    categoriserService.refreshTaxonomyIndex();
 
-	this.totalNbOfDocs = iaViewService.getTotalNbOfDocs();
+	    this.totalNbOfDocs = iaViewService.getTotalNbOfDocs();
 
-	if (totalNbOfDocs == 0) {
-	    throw new TaxonomyException(TaxonomyErrorType.DOC_NOT_FOUND, "The index is empty");
+	    if (totalNbOfDocs == 0) {
+		throw new TaxonomyException(TaxonomyErrorType.DOC_NOT_FOUND, "The index is empty");
+	    }
+
+	    status = CategorisationStatusEnum.INITIATED;
+
+	    Integer afterDocNumber = ((CategoriseAllDocumentsEpic) message).getAfterDocNumber();
+	    if (afterDocNumber != null) {
+		lastElementRetrieved = new FieldDoc(afterDocNumber, Float.NaN, new Object[] { afterDocNumber });
+		logger.info(".categoriseAllDocuments: categorizing {} documents from doc numbered: {}",
+			this.totalNbOfDocs, afterDocNumber);
+	    } else {
+		lastElementRetrieved = null;
+		logger.info(".categoriseAllDocuments: categorizing {} documents", this.totalNbOfDocs);
+	    }
+
+	    categoriseDocsMessageNumber = 0;
+	    currentEpic = message;
 	}
-
-	logger.info(".categoriseAllDocuments: categorizing {} documents", this.totalNbOfDocs);
-	status = CategorisationStatusEnum.INITIATED;
-	lastElementRetrieved = null;
-
-	categoriseDocsMessageNumber = 0;
-	currentEpic = CATEGORISE_ALL;
     }
 
     @Override
     public void giveWork() {
-	if (hasDocumentsLeftFromDocIndex()) {
-	    String[] nextDocReferences = getNextDocumentsToCategorise();
-	    if (nextDocReferences == null || nextDocReferences.length == 0) {
+	if (currentEpic instanceof CategoriseAllDocumentsEpic) {
+	    if (hasDocumentsLeftFromDocIndex()) {
+		String[] nextDocReferences = getNextDocumentsToCategorise();
+		if (nextDocReferences == null || nextDocReferences.length == 0) {
+		    logger.info("done with current epic");
+		    currentEpic = null;
+
+		    logger.info("CATEGORISATION TERMINATED ON SUPERVISOR SIDE. Wait for slave to complete their tasks",
+			    status);
+		    return;
+		}
+		categoriseDocsMessageNumber++;
+		getSender().tell(new CategoriseDocuments(nextDocReferences, categoriseDocsMessageNumber), getSelf());
+
+		logger.info("PROGRESS OF CATEGORISATION: {}. message number: {}, index of last doc requested: {}",
+			getCategorisationStatus(), categoriseDocsMessageNumber, getCurrentDocIndex());
+	    } else {
 		logger.info("done with current epic");
 		currentEpic = null;
-
-		logger.info("CATEGORISATION TERMINATED ON SUPERVISOR SIDE. Wait for slave to complete their tasks",
-			status);
-		return;
 	    }
-	    categoriseDocsMessageNumber++;
-	    getSender().tell(new CategoriseDocuments(nextDocReferences, categoriseDocsMessageNumber), getSelf());
-
-	    logger.info("PROGRESS OF CATEGORISATION: {}. message number: {}, index of last doc requested: {}",
-		    getCategorisationStatus(), categoriseDocsMessageNumber, getCurrentDocIndex());
-	} else {
-	    logger.info("done with current epic");
-	    currentEpic = null;
 	}
     }
 

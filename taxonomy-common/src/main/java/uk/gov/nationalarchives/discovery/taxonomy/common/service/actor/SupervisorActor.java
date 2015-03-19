@@ -33,7 +33,7 @@ public abstract class SupervisorActor extends UntypedActor {
 
     private Set<ActorRef> workers = new HashSet<ActorRef>();
 
-    protected String currentEpic = null;
+    protected Object currentEpic = null;
 
     @Override
     public void onReceive(Object message) throws Exception {
@@ -44,7 +44,7 @@ public abstract class SupervisorActor extends UntypedActor {
 	    else if (workers.isEmpty())
 		logger.error("Got work but there are no workers registered.");
 	    else {
-		startEpic();
+		startEpic(message);
 		for (ActorRef actorRef : workers) {
 		    actorRef.tell(new WorkAvailable(), getSelf());
 		}
@@ -72,7 +72,7 @@ public abstract class SupervisorActor extends UntypedActor {
 	}
     }
 
-    protected abstract void startEpic();
+    protected abstract void startEpic(Object message);
 
     protected abstract void giveWork();
 

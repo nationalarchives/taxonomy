@@ -9,6 +9,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.config.ActorConfigurationTest;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseAllDocumentsEpic;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
 import akka.actor.ActorSystem;
@@ -38,7 +39,7 @@ public class CategorisationSupervisorActorTest {
 
 	actor.setCategoriserService(categoriserService);
 	actor.setIaViewService(iaViewService);
-	actor.startEpic();
+	actor.startEpic(new CategoriseAllDocumentsEpic());
 
 	Mockito.verify(iaViewService, Mockito.times(1)).getTotalNbOfDocs();
 	Mockito.verify(categoriserService, Mockito.times(1)).refreshTaxonomyIndex();
