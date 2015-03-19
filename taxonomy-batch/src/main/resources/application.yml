@@ -18,9 +18,11 @@ mongo.categories:
  database: taxonomy
 
 async:
- executor:
-  corePoolSize: 3
-  maxPoolSize: 3
+ fsSearch:
+  threadPoolSize: 3
+  queueCapacity: 200
+ memorySearch:
+  threadPoolSize: 5
   queueCapacity: 200
 
 lucene:

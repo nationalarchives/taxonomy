@@ -1,57 +1,50 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
-@ConfigurationProperties(prefix = "async.executor")
-@EnableConfigurationProperties
 public class AsyncConfiguration {
 
-    private Integer corePoolSize;
+    @Value("${async.fsSearch.threadPoolSize}")
+    private Integer fsThreadPoolSize;
 
-    private Integer maxPoolSize;
+    @Value("${async.fsSearch.queueCapacity}")
+    private Integer fsQueueCapacity;
 
-    private Integer queueCapacity;
+    @Value("${async.memorySearch.threadPoolSize}")
+    private Integer memoryThreadPoolSize;
 
-    public Integer getCorePoolSize() {
-	return corePoolSize;
-    }
-
-    public void setCorePoolSize(Integer corePoolSize) {
-	this.corePoolSize = corePoolSize;
-    }
-
-    public Integer getMaxPoolSize() {
-	return maxPoolSize;
-    }
-
-    public void setMaxPoolSize(Integer maxPoolSize) {
-	this.maxPoolSize = maxPoolSize;
-    }
-
-    public Integer getQueueCapacity() {
-	return queueCapacity;
-    }
-
-    public void setQueueCapacity(Integer queueCapacity) {
-	this.queueCapacity = queueCapacity;
-    }
+    @Value("${async.memorySearch.queueCapacity}")
+    private Integer memoryQueueCapacity;
 
     /**
-     * See
-     * {@link org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor}
+     * Executor dedicated to searches against lucene index
      * 
      * @return
      */
-    public @Bean ThreadPoolTaskExecutor threadPoolTaskExecutor() {
+    public @Bean ThreadPoolTaskExecutor fsSearchTaskExecutor() {
 	ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-	executor.setCorePoolSize(corePoolSize);
-	executor.setMaxPoolSize(maxPoolSize);
-	executor.setQueueCapacity(queueCapacity);
+	executor.setCorePoolSize(fsThreadPoolSize);
+	executor.setMaxPoolSize(fsThreadPoolSize);
+	executor.setQueueCapacity(fsQueueCapacity);
+	executor.setThreadNamePrefix("MyExecutor-");
+	executor.initialize();
+	return executor;
+    }
+
+    /**
+     * executor dedicated to searches against in memory index
+     * 
+     * @return
+     */
+    public @Bean ThreadPoolTaskExecutor memorySearchTaskExecutor() {
+	ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+	executor.setCorePoolSize(memoryThreadPoolSize);
+	executor.setMaxPoolSize(memoryThreadPoolSize);
+	executor.setQueueCapacity(memoryQueueCapacity);
 	executor.setThreadNamePrefix("MyExecutor-");
 	executor.initialize();
 	return executor;

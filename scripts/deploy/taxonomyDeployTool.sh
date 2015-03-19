@@ -11,7 +11,7 @@ usage ()
 	echo "DESCRIPTION"
 	echo 
 	echo "	-p --package			run mvn goal to package locally the application"
-	echo "	-s --skipTest			(optional) skip tests while packaging"
+	echo "	-st --skipTest			(optional) skip tests while packaging"
 	echo
 	echo "	-cb --createBackup			create backup of currently deployed packages (BEFORE deployment)"
 	echo "	-bfn --backupFolderName <folderName>			(optional) set name for backup folder"
@@ -47,7 +47,7 @@ while [ "$1" != "" ]; do
         -p | --package )     
         					package=1
                                 ;;
-        -s | --skipTest )    skipTest=1
+        -st | --skipTest )    skipTest=1
                                 ;;
         -d | --deploy )    deploy=1
                                 ;;
