@@ -27,6 +27,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucen
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryLight;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.MongoInformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
@@ -74,7 +75,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     public List<CategorisationResult> testCategoriseSingle(String docReference) {
 	logger.info(".testCategoriseSingle: docreference:{} ", docReference);
 	return testCategoriseSingle(LuceneTaxonomyMapper.getIAViewFromLuceneDocument(iaViewRepository
-		.searchDocByDocReference(docReference)), true);
+		.searchDocByDocReference(docReference)), true, null);
     }
 
     /**
@@ -88,14 +89,23 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
      * 
      * @param iaView
      * @param retrieveScoreForAllRelevantCategories
+     * @param cachedCategories
+     *            on batch processes, to avoid retrieving and parsing all
+     *            category queries, provide cached categories
      * @return
      */
     public List<CategorisationResult> testCategoriseSingle(InformationAssetView iaView,
-	    boolean retrieveScoreForAllRelevantCategories) {
+	    boolean retrieveScoreForAllRelevantCategories, List<CategoryWithLuceneQuery> cachedCategories) {
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
 
-	List<Category> listOfRelevantCategories = inMemoryiaViewRepository.findRelevantCategoriesForDocument(iaView,
-		categoryRepository.findAll());
+	List<Category> listOfRelevantCategories;
+	if (cachedCategories == null) {
+	    listOfRelevantCategories = inMemoryiaViewRepository.findRelevantCategoriesForDocument(iaView,
+		    categoryRepository.findAll());
+	} else {
+	    listOfRelevantCategories = inMemoryiaViewRepository.findRelevantCategoriesForDocument(iaView,
+		    cachedCategories);
+	}
 
 	if (retrieveScoreForAllRelevantCategories) {
 	    listOfCategoryResults = runCategorisationWithFSDirectory(iaView, listOfRelevantCategories);
@@ -145,8 +155,21 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 		.searchDocByDocReference(docReference)));
     }
 
+    @Override
+    public List<CategorisationResult> categoriseSingle(String docReference,
+	    List<CategoryWithLuceneQuery> cachedCategories) {
+	logger.info(".categoriseSingle: docreference:{} ", docReference);
+	return categoriseSingle(LuceneTaxonomyMapper.getIAViewFromLuceneDocument(iaViewRepository
+		.searchDocByDocReference(docReference)), cachedCategories);
+    }
+
     public List<CategorisationResult> categoriseSingle(InformationAssetView iaView) {
-	List<CategorisationResult> listOfCategorisationResults = testCategoriseSingle(iaView, false);
+	return categoriseSingle(iaView, null);
+    }
+
+    public List<CategorisationResult> categoriseSingle(InformationAssetView iaView,
+	    List<CategoryWithLuceneQuery> cachedCategories) {
+	List<CategorisationResult> listOfCategorisationResults = testCategoriseSingle(iaView, false, cachedCategories);
 
 	List<CategoryLight> categories = getListOfCategoryLightFromListOfCatResult(listOfCategorisationResults);
 

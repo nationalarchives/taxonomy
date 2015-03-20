@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
@@ -60,6 +61,15 @@ public class InMemoryIAViewRepository {
 
     public List<Category> findRelevantCategoriesForDocument(InformationAssetView iaView,
 	    Iterable<Category> categoriesToCheck) {
+
+	List<CategoryWithLuceneQuery> categoriesWithQuery = getCategoriesWithParsedQueries(categoriesToCheck);
+
+	return findRelevantCategoriesForDocument(iaView, categoriesWithQuery);
+    }
+
+    public List<Category> findRelevantCategoriesForDocument(InformationAssetView iaView,
+	    List<CategoryWithLuceneQuery> categoriesWithQuery) {
+
 	List<Category> listOfRelevantCategories = new ArrayList<Category>();
 
 	SearcherManager searcherManager = null;
@@ -70,14 +80,14 @@ public class InMemoryIAViewRepository {
 
 	    searcher = searcherManager.acquire();
 
-	    List<Future<Category>> listOfFutureFoundCategories = new ArrayList<Future<Category>>();
-	    for (Category category : categoriesToCheck) {
-		Future<Category> futureSearchResults = asyncTaskManager.runUnitInMemoryCategoryQuery(searcher,
-			category, luceneHelperTools);
+	    List<Future<CategoryWithLuceneQuery>> listOfFutureFoundCategories = new ArrayList<Future<CategoryWithLuceneQuery>>();
+	    for (CategoryWithLuceneQuery category : categoriesWithQuery) {
+		Future<CategoryWithLuceneQuery> futureSearchResults = asyncTaskManager.runUnitInMemoryCategoryQuery(
+			searcher, category);
 		listOfFutureFoundCategories.add(futureSearchResults);
 	    }
 
-	    for (Future<Category> futureFoundCategory : listOfFutureFoundCategories) {
+	    for (Future<CategoryWithLuceneQuery> futureFoundCategory : listOfFutureFoundCategories) {
 		Category category;
 		try {
 		    category = futureFoundCategory.get();
@@ -97,6 +107,16 @@ public class InMemoryIAViewRepository {
 	}
 	return listOfRelevantCategories;
 
+    }
+
+    private List<CategoryWithLuceneQuery> getCategoriesWithParsedQueries(Iterable<Category> categoriesToCheck) {
+	List<CategoryWithLuceneQuery> categoriesWithQuery = new ArrayList<CategoryWithLuceneQuery>();
+	for (Category category : categoriesToCheck) {
+	    CategoryWithLuceneQuery cachedCategory = new CategoryWithLuceneQuery(category,
+		    luceneHelperTools.buildSearchQuery(category.getQry()));
+	    categoriesWithQuery.add(cachedCategory);
+	}
+	return categoriesWithQuery;
     }
 
     private RAMDirectory createRamDirectoryForDocument(InformationAssetView iaView) throws IOException {

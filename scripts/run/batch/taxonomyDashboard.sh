@@ -51,9 +51,11 @@ clear;
 fullStartDate=$(echo ${dateStarted}"T"${timeStarted})
 cmd=$(echo 'db.iaViewUpdates.count({creationDate:{$gte:new ISODate("'${fullStartDate}'")}})');
 
-currentNbOfDocs=
+currentNbOfDocsSnapshot=
+currentTimeSnapshot=
 
-lastNbOfDocsForCurrentTimer=
+lastNbOfDocsSnapshot=
+lastTimeSnasphot=
 listOfMeasures=
 
 if [ -z "$timeBetweenRefresh" ]
@@ -63,7 +65,8 @@ fi
 
 while true
 do
-	currentNbOfDocs=$(mongo taxonomy -eval "$cmd" | tail -1)
+	currentTimeSnapshot=$(date +%s)
+	currentNbOfDocsSnapshot=$(mongo taxonomy -eval "$cmd" | tail -1)
 	
 	clear
 	echo "Categorisation started on " $fullStartDate
@@ -71,16 +74,16 @@ do
 	
 	if [[ $nbOfDocsCategorised != 0 ]]
 	then
-		echo "Nb of docs categorised: " $currentNbOfDocs " (available in Mongo db)"
+		echo "Nb of docs categorised: " $currentNbOfDocsSnapshot " (available in Mongo db)"
 		echo
 	fi
 	
-	if [ -n "$lastNbOfDocsForCurrentTimer" ]
+	if [ -n "$lastNbOfDocsSnapshot" ]
 	then
-		if [[ $(($currentNbOfDocs - $lastNbOfDocsForCurrentTimer)) != 0 ]];
+		if [[ $(($currentNbOfDocsSnapshot - $lastNbOfDocsSnapshot)) != 0 ]];
 		then
 			#### CURRENT AVG SPEED
-			avgCatSpeed=$(( 1000 * $timeBetweenRefresh / ($currentNbOfDocs - $lastNbOfDocsForCurrentTimer) ))
+			avgCatSpeed=$(bc <<< "scale = 10; ( 1000 * ($currentTimeSnapshot - $lastTimeSnasphot) / ($currentNbOfDocsSnapshot - $lastNbOfDocsSnapshot) )")
 			echo "Average Categorisation Speed (ms/doc): " $avgCatSpeed
 			echo
 			listOfMeasures=$(echo $avgCatSpeed " ; " $listOfMeasures | cut -d ";" -f -40 )
@@ -90,7 +93,7 @@ do
 			#### ESTIMATED TIME LEFT
 			if [ -n "$nbOfDocsAtStart" ]
 			then
-				timeLeft=$(bc <<< "scale = 10; ($nbOfDocsAtStart-$currentNbOfDocs)*$avgCatSpeed/(1000*3600*24)")
+				timeLeft=$(bc <<< "scale = 10; ($nbOfDocsAtStart-$currentNbOfDocsSnapshot)*$avgCatSpeed/(1000*3600*24)")
 				echo "Estimated time left: " $timeLeft " days"
 			fi
 			#######	
@@ -103,7 +106,8 @@ do
 	fi
 	
 	sleep $timeBetweenRefresh
-	lastNbOfDocsForCurrentTimer=$currentNbOfDocs;
+	lastNbOfDocsSnapshot=$currentNbOfDocsSnapshot;
+	lastTimeSnasphot=$currentTimeSnapshot;
 done
 
 
@@ -119,7 +123,7 @@ function_bin (){
 	if [ -z "$startTime" ]
 	then
 		startTime=`date +%S`
-		lastNbOfDocsForCustomTimer=$currentNbOfDocs
+		lastNbOfDocsForCustomTimer=$currentNbOfDocsSnapshot
 	fi
 	
 	
@@ -127,11 +131,11 @@ function_bin (){
 	timerReturnedValue=$?
 	if [ "$timerReturnedValue" == 1 ]
 	then
-		listOfCustomMeasures=$(( 1000 * $timerLengthInSeconds / ($currentNbOfDocs - $lastNbOfDocsForCustomTimer) ))
+		listOfCustomMeasures=$(( 1000 * $timerLengthInSeconds / ($currentNbOfDocsSnapshot - $lastNbOfDocsForCustomTimer) ))
 		listOfCustomMeasures=$(echo $listOfCustomMeasures " ; " $listOfCustomMeasures  )
 		
 		startTime=`date +%S`
-		lastNbOfDocsForCustomTimer=$currentNbOfDocs
+		lastNbOfDocsForCustomTimer=$currentNbOfDocsSnapshot
 	fi
 	#######
 	
@@ -152,8 +156,8 @@ function_timer () {
 	timerLengthInSeconds=$1
 	startTime=$2
 	
-	currentTime=`date +%S`
-	spentTime=`expr $currentTime - $startTime`
+	currentTimeSnapshot=`date +%S`
+	spentTime=`expr $currentTimeSnapshot - $startTime`
 	
 	##Handle when startTime between 50 and 59 secs
 	if [ "$spentTime" -lt "0" ]; 

@@ -10,9 +10,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.task.RunUnitFSCategoryQueryTask;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.task.RunUnitInMemoryCategoryQueryTask;
 
@@ -57,10 +57,9 @@ public class AsyncQueryBasedTaskManager {
      * @param query
      * @return
      */
-    public Future<Category> runUnitInMemoryCategoryQuery(IndexSearcher searcher, Category category,
-	    LuceneHelperTools luceneHelperTools) {
-	return memorySearchTaskExecutor.submit(new RunUnitInMemoryCategoryQueryTask(searcher, category,
-		luceneHelperTools));
+    public Future<CategoryWithLuceneQuery> runUnitInMemoryCategoryQuery(IndexSearcher searcher,
+	    CategoryWithLuceneQuery category) {
+	return memorySearchTaskExecutor.submit(new RunUnitInMemoryCategoryQueryTask(searcher, category));
     }
 
 }
