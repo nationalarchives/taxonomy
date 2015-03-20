@@ -1,5 +1,6 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -56,6 +57,23 @@ public class LuceneHelperTools {
 	    }
 	} catch (IOException ioe) {
 	    logger.error("releaseSearcherManagerQuietly failed", ioe);
+	}
+    }
+
+    /**
+     * Close an object without throwing any error<br/>
+     * log if any error occurs
+     * 
+     * @param object
+     */
+    public static void closeCloseableObjectQuietly(Closeable object) {
+	try {
+	    if (object != null) {
+		object.close();
+		object = null;
+	    }
+	} catch (IOException ioe) {
+	    logger.error("closeCloseableObjectQuietly failed", ioe);
 	}
     }
 
