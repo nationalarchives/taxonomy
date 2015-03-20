@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseAllDocumentsEpic;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Epic;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.CategorisationWorkerActor;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.actor.DeadLetterActor;
 import akka.actor.ActorRef;

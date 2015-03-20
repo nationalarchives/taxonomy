@@ -62,7 +62,7 @@ public class QueryBasedCategoriserServiceTest {
 	iaView.setTITLE("CHIEF OF STAFF, SUPREME ALLIED COMMAND: Operation \"Round-up\": operational organisation of RAF");
 
 	List<CategorisationResult> categorisationResults = ((QueryBasedCategoriserServiceImpl) categoriserService)
-		.testCategoriseSingle(iaView, true);
+		.testCategoriseSingle(iaView, true, null);
 	assertThat(categorisationResults, is(notNullValue()));
 	assertThat(categorisationResults, is(not(empty())));
 	assertThat(categorisationResults.get(0).getName(), is(equalTo("Fishing")));

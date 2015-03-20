@@ -1,5 +1,6 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service;
 
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
 
@@ -25,6 +26,16 @@ public interface CategoriserService<T extends CategorisationResult> {
      * @return
      */
     public List<T> categoriseSingle(String docReference);
+
+    /**
+     * Categorise a document and save the found categories
+     * 
+     * @param docReference
+     * @param cachedCategories
+     *            on batch processes, to avoid retrieving and parsing all
+     *            category queries, provide cached categories
+     */
+    public List<T> categoriseSingle(String docReference, List<CategoryWithLuceneQuery> cachedCategories);
 
     /**
      * Check if any document was categorised since one date

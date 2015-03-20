@@ -3,14 +3,12 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.service.async.task;
 import java.util.concurrent.Callable;
 
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 
 /**
  * Task to run a category query against the in memory index
@@ -18,29 +16,23 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools
  * @author jcharlet
  *
  */
-public class RunUnitInMemoryCategoryQueryTask implements Callable<Category> {
+public class RunUnitInMemoryCategoryQueryTask implements Callable<CategoryWithLuceneQuery> {
 
     private Logger logger = LoggerFactory.getLogger(RunUnitInMemoryCategoryQueryTask.class);
 
     private final IndexSearcher searcher;
-    private final Category category;
-    private final LuceneHelperTools luceneHelperTools;
+    private final CategoryWithLuceneQuery category;
 
-    public RunUnitInMemoryCategoryQueryTask(IndexSearcher searcher, Category category,
-	    LuceneHelperTools luceneHelperTools) {
+    public RunUnitInMemoryCategoryQueryTask(IndexSearcher searcher, CategoryWithLuceneQuery category) {
 	super();
 	this.searcher = searcher;
 	this.category = category;
-	this.luceneHelperTools = luceneHelperTools;
     }
 
     @Override
-    public Category call() throws Exception {
-	String queryString = category.getQry();
+    public CategoryWithLuceneQuery call() throws Exception {
 	try {
-	    Query query = luceneHelperTools.buildSearchQuery(queryString);
-
-	    TopDocs searchResults = searcher.search(query, 1);
+	    TopDocs searchResults = searcher.search(category.getParsedQry(), 1);
 
 	    if (searchResults.totalHits != 0) {
 		logger.debug(".call: found category {}", category.getTtl());

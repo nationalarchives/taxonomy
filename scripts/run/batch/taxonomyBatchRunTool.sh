@@ -17,6 +17,8 @@ usage ()
 	echo "								'dailyUpdates' : apply daily Updates	"
 	echo "								'updateSolr' : update Solr from Mongo db entries"
 	echo
+	echo "	-ln --logName <logName>		provide log name"
+	echo
 	echo "	-ja --jvmArgs <jvmArgs>		provide jvm arguments"
 	echo
 	echo "	-aa --applicationArgs <application args>	provide application arguments"
@@ -47,6 +49,9 @@ while [ "$1" != "" ]; do
                                 ;;
         -bt | --batchType )     shift
 								batchType=$1
+                                ;;
+        -ln | --logName )     shift
+								logName=$1
                                 ;;
         -h | --help )           usage
                                 exit
@@ -80,12 +85,20 @@ case $batchType in
             ;;
 esac
 
-jvmArgs=$(echo $batchTypeBasedJvmArgs $jvmArgs);
+
+if [ -z "$logName" ]
+then
+	logName=logging.log
+fi
+logJvmArgs="-Dlogfile.name="$logName
+
+
+jvmArgs=$(echo $batchTypeBasedJvmArgs $logJvmArgs $jvmArgs);
 applicationArgs=$(echo $batchTypeBasedApplicationArgs $applicationArgs);
 
 echo "JVM ARGS: " $jvmArgs
 echo "APP ARGS: " $applicationArgs 
 echo java -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs
-java -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 
-#java -jar -Dspring.profiles.active=${profile} $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs &
-#tail -f ${logsFolder}/batch/*
+java -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs & 
+sleep 3
+tail -f ${logsFolder}/batch/$logName

@@ -2,6 +2,7 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.TSetBasedCategorisationResult;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
@@ -296,5 +297,12 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     @Override
     public void refreshTaxonomyIndex() {
 	// TODO TSETBASED Auto-generated method stub
+    }
+
+    @Override
+    public List<TSetBasedCategorisationResult> categoriseSingle(String docReference,
+	    List<CategoryWithLuceneQuery> cachedCategories) {
+	// TODO TSETBASED Auto-generated method stub
+	return null;
     }
 }
