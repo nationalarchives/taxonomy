@@ -22,7 +22,7 @@ async:
   threadPoolSize: 3
   queueCapacity: 200
  memorySearch:
-  threadPoolSize: 5
+  threadPoolSize: 2
   queueCapacity: 200
 
 lucene:
