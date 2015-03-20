@@ -74,10 +74,10 @@ public class InMemoryIAViewRepository {
 
 	SearcherManager searcherManager = null;
 	IndexSearcher searcher = null;
+	RAMDirectory ramDirectory = null;
 	try {
-	    RAMDirectory ramDirectory = createRamDirectoryForDocument(iaView);
+	    ramDirectory = createRamDirectoryForDocument(iaView);
 	    searcherManager = new SearcherManager(ramDirectory, null);
-
 	    searcher = searcherManager.acquire();
 
 	    List<Future<CategoryWithLuceneQuery>> listOfFutureFoundCategories = new ArrayList<Future<CategoryWithLuceneQuery>>();
@@ -104,6 +104,7 @@ public class InMemoryIAViewRepository {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	} finally {
 	    LuceneHelperTools.releaseSearcherManagerQuietly(searcherManager, searcher);
+	    LuceneHelperTools.closeCloseableObjectQuietly(ramDirectory);
 	}
 	return listOfRelevantCategories;
 

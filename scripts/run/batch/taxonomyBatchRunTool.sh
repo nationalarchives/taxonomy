@@ -29,6 +29,8 @@ usage ()
 	echo
 	echo "	-aa --applicationArgs <application args>	provide application arguments"
 	echo
+	echo "	-jp --jprofiler 	profile with JProfiler"
+	echo
 	echo "	-h --help			display help"
 	echo 
 	exit
@@ -40,6 +42,7 @@ batchType=
 afterDocNumber=
 numberOfSlaves=
 logName=
+jprofiler=
 
 # Tutorial on shell script with list of operators for if, while, etc statements:
 # http://linuxcommand.org/lc3_wss0080.php
@@ -67,6 +70,9 @@ while [ "$1" != "" ]; do
                                 ;;
         -ln | --logName )     shift
 								logName=$1
+                                ;;
+        -jp | --jprofiler )     
+								jprofiler=yes
                                 ;;
         -h | --help )           usage
                                 exit
@@ -122,6 +128,11 @@ runApplication()
 		logName=logging.log
 	fi
 	batchTypeBasedJvmArgs=$(echo $batchTypeBasedJvmArgs "-Dlogfile.name="$logName)
+	
+	if [ -n "$jprofiler" ]
+	then
+		batchTypeBasedJvmArgs=$(echo $batchTypeBasedJvmArgs-Dcom.sun.management.jmxremote -agentpath:/opt/jprofiler8/bin/linux-x64/libjprofilerti.so=port=8080)
+	fi
 	
 	
 	jvmArgs=$(echo $batchTypeBasedJvmArgs $inputJvmArgs);
