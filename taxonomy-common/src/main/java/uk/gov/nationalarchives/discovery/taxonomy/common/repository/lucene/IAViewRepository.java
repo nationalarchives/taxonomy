@@ -2,6 +2,8 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -294,7 +296,8 @@ public class IAViewRepository {
 	    ScoreDoc scoreDoc = null;
 	    for (int i = 0; i < topDocs.scoreDocs.length; i++) {
 		scoreDoc = topDocs.scoreDocs[i];
-		Document document = searcher.doc(scoreDoc.doc);
+		Document document = searcher.doc(scoreDoc.doc,
+			new HashSet<String>(Arrays.asList(InformationAssetViewFields.DOCREFERENCE.toString())));
 		String docReferenceFromLuceneDocument = LuceneTaxonomyMapper
 			.getDocReferenceFromLuceneDocument(document);
 

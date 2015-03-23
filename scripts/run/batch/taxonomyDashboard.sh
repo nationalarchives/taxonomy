@@ -172,3 +172,11 @@ function_timer () {
 		return "1"
 	fi
 }
+
+
+
+# db.iaViews.aggregate([{$match:{}},{$unwind:"$categories"},{$group:{_id:1,totalNbOfFoundCategories:{$sum:1}}}])
+# { "_id" : 1, "totalNbOfFoundCategories" : 53863016 }
+
+# db.iaViews.count({categories:{$size:0}})
+# 779627
