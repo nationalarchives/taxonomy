@@ -99,10 +99,6 @@ public class CategorisationSupervisorActor extends SupervisorActor {
 	}
     }
 
-    private enum CategorisationStatusEnum {
-	NOT_STARTED, INITIATED, ONGOING, TERMINATED
-    }
-
     public class CategorisationStatus {
 	public int progress;
 

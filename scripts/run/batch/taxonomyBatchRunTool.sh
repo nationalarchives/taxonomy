@@ -29,7 +29,10 @@ usage ()
 	echo
 	echo "	-aa --applicationArgs <application args>	provide application arguments"
 	echo
-	echo "	-jp --jprofiler 	profile with JProfiler"
+	echo "	-jp --jProfiler		profile with JProfiler." 
+	echo "	-jpt --jProfilerTarget		If batchType=masterSlaveCluster, select which app to profile:"
+	echo "									'master' to profile master app"
+	echo "									'slave' to profile slave app"
 	echo
 	echo "	-h --help			display help"
 	echo 
@@ -43,6 +46,7 @@ afterDocNumber=
 numberOfSlaves=
 logName=
 jprofiler=
+jProfilerTarget=
 
 # Tutorial on shell script with list of operators for if, while, etc statements:
 # http://linuxcommand.org/lc3_wss0080.php
@@ -71,8 +75,11 @@ while [ "$1" != "" ]; do
         -ln | --logName )     shift
 								logName=$1
                                 ;;
-        -jp | --jprofiler )     
+        -jp | --jProfiler )     
 								jprofiler=yes
+                                ;;
+        -jpt | --jProfilerTarget )   shift  
+								jProfilerTarget=$1
                                 ;;
         -h | --help )           usage
                                 exit
@@ -131,7 +138,11 @@ runApplication()
 	
 	if [ -n "$jprofiler" ]
 	then
-		batchTypeBasedJvmArgs=$(echo $batchTypeBasedJvmArgs-Dcom.sun.management.jmxremote -agentpath:/opt/jprofiler8/bin/linux-x64/libjprofilerti.so=port=8080)
+		if [[ -z "$jProfilerTarget"  || ( -n "$jProfilerTarget"  &&  "$jProfilerTarget" == "$batchType" ) ]]
+		then
+			echo "using JPROFILER"
+			batchTypeBasedJvmArgs=$(echo $batchTypeBasedJvmArgs -Dcom.sun.management.jmxremote -agentpath:/opt/jprofiler8/bin/linux-x64/libjprofilerti.so=port=8080)				
+		fi
 	fi
 	
 	
@@ -168,6 +179,13 @@ case $batchType in
 			tail -f ${logsFolder}/batch/$logName
             ;;
     	masterSlaveCluster )
+    	
+	    	if [ -z "$numberOfSlaves" ]
+			then
+				echo "numberOfSlaves missing"
+				exit
+			fi
+    	
     		echo "Running cluster of master and slaves"
     		
     		echo "Starting Master"
@@ -177,12 +195,19 @@ case $batchType in
     		echo
     		echo
     		
-    		sleep 3
+    		sleep 10
     		for (( slaveNumber=1; slaveNumber<=$numberOfSlaves; slaveNumber++ ))
 			do
 				echo "Starting Slave$slaveNumber"
     			batchType="slave"
 				logName=$(echo "slave"$slaveNumber".log")
+				
+				if [ -n "$jProfilerTarget" ] && [ "$slaveNumber" != "1" ]
+				then
+					jprofiler=""
+					jProfilerTarget=""
+				fi
+				
     			runApplication
     			echo
     			echo
