@@ -38,16 +38,14 @@ public class CategorisationWorkerActor extends UntypedActor {
 
     private List<CategoryWithLuceneQuery> cachedCategories = new ArrayList<CategoryWithLuceneQuery>();
 
-    public CategorisationWorkerActor() {
+    public CategorisationWorkerActor(String supervisorAddress) {
 	super();
 
 	this.logger = LoggerFactory.getLogger(CategorisationWorkerActor.class);
 
 	cacheCategoryQueries();
 
-	// FIXME set supervisor address externally
-	ActorSelection actorSelection = getContext().actorSelection(
-		"akka.tcp://supervisor@127.0.0.1:2552/user/supervisorActor");
+	ActorSelection actorSelection = getContext().actorSelection(supervisorAddress);
 	actorSelection.tell(new RegisterWorker(), getSelf());
 	actorSelection.tell(new GimmeWork(), getSelf());
 

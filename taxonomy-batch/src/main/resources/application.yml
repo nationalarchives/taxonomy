@@ -74,7 +74,9 @@ batch.role:
  categorise-all: false
  categorise-all.supervisor: false
  categorise-all.slave: false
-batch.categorisation-message-size: 100
+batch.categorise-all:
+ message-size: 100
+ supervisor-address: akka.tcp://supervisor@127.0.0.1:2552/user/supervisorActor
 batch.update-solr-cloud.page-size: 100
 
 ---

@@ -25,7 +25,7 @@ public class CategorisationSupervisorRunner implements CommandLineRunner {
     // private static final Logger logger =
     // LoggerFactory.getLogger(CategorisationSupervisorRunner.class);
 
-    @Value("${batch.categorisation-message-size}")
+    @Value("${batch.categorise-all.message-size}")
     private int nbOfDocsToCategoriseAtATime;
 
     private final ActorSystem deadLettersActorSystem;
