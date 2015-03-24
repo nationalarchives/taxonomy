@@ -47,7 +47,6 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
     private static final Logger logger = LoggerFactory.getLogger(QueryBasedCategoriserServiceImpl.class);
 
-    // TODO 6 put all autowired fields in constructors
     private final CategoryRepository categoryRepository;
 
     private final IAViewRepository iaViewRepository;

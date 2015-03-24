@@ -75,16 +75,8 @@ public class EvaluationServiceTest {
 
     @Before
     public void initMocks() throws IOException {
-	evaluationService = new EvaluationServiceImpl();
-
-	evaluationService.setLegacySystemService(getLegacySystemServiceMock());
-
-	evaluationService.setIaviewRepository(getIaViewRepositoryMock());
-
-	evaluationService.setCategoryRepository(categoryRepository);
-	evaluationService.setTestDocumentRepository(testDocumentRepository);
-	evaluationService.setCategoriserService(null);
-	evaluationService.setEvaluationReportRepository(evaluationReportRepository);
+	evaluationService = new EvaluationServiceImpl(categoryRepository, getIaViewRepositoryMock(),
+		testDocumentRepository, evaluationReportRepository, getLegacySystemServiceMock(), null);
     }
 
     @After
@@ -126,7 +118,9 @@ public class EvaluationServiceTest {
     @Test
     public void testRunCategorisationOnTestDataSet() {
 	initTestDocumentRepositoryWithOneElementWithLegacyCategories();
-	evaluationService.setCategoriserService(getCategoriserServiceMock());
+	evaluationService = new EvaluationServiceImpl(categoryRepository, getIaViewRepositoryMock(),
+		testDocumentRepository, evaluationReportRepository, getLegacySystemServiceMock(),
+		getCategoriserServiceMock());
 
 	evaluationService.runCategorisationOnTestDataSet(true);
 

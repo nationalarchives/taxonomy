@@ -12,8 +12,13 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.IAView
 @Repository
 public class IAViewUpdateRepositoryImpl implements IAViewUpdateRepositoryCustom {
 
+    private final MongoTemplate mongoTemplate;
+
     @Autowired
-    private MongoTemplate mongoTemplate;
+    public IAViewUpdateRepositoryImpl(MongoTemplate mongoTemplate) {
+	super();
+	this.mongoTemplate = mongoTemplate;
+    }
 
     @Override
     public IAViewUpdate findLastIAViewUpdate() {

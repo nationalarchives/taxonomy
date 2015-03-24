@@ -37,23 +37,30 @@ public class EvaluationServiceImpl implements EvaluationService {
 
     private static final Logger logger = LoggerFactory.getLogger(EvaluationServiceImpl.class);
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
+
+    private final IAViewRepository iaviewRepository;
+
+    private final TestDocumentRepository testDocumentRepository;
+
+    private final EvaluationReportRepository evaluationReportRepository;
+
+    private final LegacySystemRepository legacySystemService;
+
+    private final CategoriserService categoriserService;
 
     @Autowired
-    private IAViewRepository iaviewRepository;
-
-    @Autowired
-    private TestDocumentRepository testDocumentRepository;
-
-    @Autowired
-    private EvaluationReportRepository evaluationReportRepository;
-
-    @Autowired
-    private LegacySystemRepository legacySystemService;
-
-    @Autowired
-    private CategoriserService categoriserService;
+    public EvaluationServiceImpl(CategoryRepository categoryRepository, IAViewRepository iaviewRepository,
+	    TestDocumentRepository testDocumentRepository, EvaluationReportRepository evaluationReportRepository,
+	    LegacySystemRepository legacySystemService, CategoriserService categoriserService) {
+	super();
+	this.categoryRepository = categoryRepository;
+	this.iaviewRepository = iaviewRepository;
+	this.testDocumentRepository = testDocumentRepository;
+	this.evaluationReportRepository = evaluationReportRepository;
+	this.legacySystemService = legacySystemService;
+	this.categoriserService = categoriserService;
+    }
 
     /*
      * (non-Javadoc)
@@ -216,30 +223,6 @@ public class EvaluationServiceImpl implements EvaluationService {
     private void incrementMapValueForCategory(Map<String, Integer> mapOfOccurencesPerCat, String category) {
 	Integer existingCounter = mapOfOccurencesPerCat.get(category);
 	mapOfOccurencesPerCat.put(category, (existingCounter != null) ? (existingCounter + 1) : 1);
-    }
-
-    public void setLegacySystemService(LegacySystemRepository legacySystemService) {
-	this.legacySystemService = legacySystemService;
-    }
-
-    public void setIaviewRepository(IAViewRepository iaviewRepository) {
-	this.iaviewRepository = iaviewRepository;
-    }
-
-    public void setTestDocumentRepository(TestDocumentRepository testDocumentRepository) {
-	this.testDocumentRepository = testDocumentRepository;
-    }
-
-    public void setCategoryRepository(CategoryRepository categoryRepository) {
-	this.categoryRepository = categoryRepository;
-    }
-
-    public void setCategoriserService(CategoriserService categoriserService) {
-	this.categoriserService = categoriserService;
-    }
-
-    public void setEvaluationReportRepository(EvaluationReportRepository evaluationReportRepository) {
-	this.evaluationReportRepository = evaluationReportRepository;
     }
 
 }

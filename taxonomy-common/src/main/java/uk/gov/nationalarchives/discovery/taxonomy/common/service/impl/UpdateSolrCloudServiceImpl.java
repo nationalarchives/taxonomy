@@ -30,11 +30,17 @@ public class UpdateSolrCloudServiceImpl implements UpdateSolrCloudService {
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateSolrCloudServiceImpl.class);
 
-    @Autowired
-    private SolrCloudIAViewRepository solrIAViewRepository;
+    private final SolrCloudIAViewRepository solrIAViewRepository;
+
+    private final InformationAssetViewMongoRepository informationAssetViewMongoRepository;
 
     @Autowired
-    private InformationAssetViewMongoRepository informationAssetViewMongoRepository;
+    public UpdateSolrCloudServiceImpl(SolrCloudIAViewRepository solrIAViewRepository,
+	    InformationAssetViewMongoRepository informationAssetViewMongoRepository) {
+	super();
+	this.solrIAViewRepository = solrIAViewRepository;
+	this.informationAssetViewMongoRepository = informationAssetViewMongoRepository;
+    }
 
     @Override
     public void updateCategoriesOnIAView(String docReference) {

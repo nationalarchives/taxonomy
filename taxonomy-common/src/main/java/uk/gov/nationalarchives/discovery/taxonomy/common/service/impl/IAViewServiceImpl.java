@@ -18,8 +18,13 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
 @Service
 public class IAViewServiceImpl implements IAViewService {
 
+    private final IAViewRepository iaViewRepository;
+
     @Autowired
-    private IAViewRepository iaViewRepository;
+    public IAViewServiceImpl(IAViewRepository iaViewRepository) {
+	super();
+	this.iaViewRepository = iaViewRepository;
+    }
 
     @Override
     public PaginatedList<InformationAssetView> performSearch(String categoryQuery, Double score, Integer limit,
