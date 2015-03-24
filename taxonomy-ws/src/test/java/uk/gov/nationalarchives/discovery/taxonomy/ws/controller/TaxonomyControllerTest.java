@@ -106,20 +106,13 @@ public class TaxonomyControllerTest {
     }
 
     @Test
-    public final void testPublicationOKandRunning() throws InterruptedException {
+    public final void testPublicationWasSuccesful() throws InterruptedException {
 	Category category = catRepo.findByCiaid(TEST_CATEGORY_CIAID);
 
 	ResponseEntity<String> response = doPublishPostRequestOnWS(category);
 
 	assertThat(response.getBody(), is(notNullValue()));
 	assertThat(response.getBody(), containsString("OK"));
-    }
-
-    @Test
-    public final void testPublicationWasSuccesful() throws InterruptedException {
-	Category category = catRepo.findByCiaid(TEST_CATEGORY_CIAID);
-
-	doPublishPostRequestOnWS(category);
 
 	// Thread.sleep(5000);
 	waitForAsyncPublicationToBeCompleted();
@@ -198,7 +191,7 @@ public class TaxonomyControllerTest {
 	Category category;
 	category = catRepo.findByCiaid(TEST_CATEGORY_CIAID);
 	while (category.getLck() == true) {
-	    Thread.sleep(500);
+	    Thread.sleep(200);
 	    category = catRepo.findByCiaid(TEST_CATEGORY_CIAID);
 	}
     }

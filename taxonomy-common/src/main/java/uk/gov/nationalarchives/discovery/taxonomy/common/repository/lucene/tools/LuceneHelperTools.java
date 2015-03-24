@@ -13,6 +13,7 @@ import org.apache.lucene.search.FilteredQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.store.AlreadyClosedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ public class LuceneHelperTools {
 		iaviewSearcherManager.release(searcher);
 		searcher = null;
 	    }
-	} catch (IOException ioe) {
+	} catch (IOException | AlreadyClosedException ioe) {
 	    logger.error("releaseSearcherManagerQuietly failed", ioe);
 	}
     }
@@ -89,8 +90,8 @@ public class LuceneHelperTools {
 		writer.close();
 		writer = null;
 	    }
-	} catch (IOException ioe) {
-	    logger.error("closeWriterQuietly failed", ioe);
+	} catch (IOException | AlreadyClosedException e) {
+	    logger.error("closeWriterQuietly failed", e);
 	}
     }
 
@@ -105,7 +106,7 @@ public class LuceneHelperTools {
 	    if (tokenStream != null) {
 		tokenStream.close();
 	    }
-	} catch (IOException e) {
+	} catch (IOException | AlreadyClosedException e) {
 	    logger.error("closeWriterQuietly failed", e);
 	}
     }
