@@ -1,6 +1,7 @@
 package uk.gov.nationalarchives.discovery.taxonomy.batch.actor.slave;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,9 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
     private final ActorSystem deadLettersActorSystem;
     private final ActorSystem actorSystem;
 
+    @Value("${batch.categorise-all.supervisor-address}")
+    private String supervisorAddress;
+
     @Autowired
     public CategorisationSlaveRunner(ActorSystem deadLettersActorSystem, ActorSystem actorSystem) {
 	super();
@@ -38,7 +42,7 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
 	Integer afterDocNumber = getAfterDocNumberFromArgs(args);
 
 	trackDeadLetters();
-	actorSystem.actorOf(Props.create(CategorisationWorkerActor.class), "workerActor");
+	actorSystem.actorOf(Props.create(CategorisationWorkerActor.class, supervisorAddress), "workerActor");
 
 	Thread.sleep(2000);
 
