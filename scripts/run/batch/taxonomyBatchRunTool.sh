@@ -98,6 +98,7 @@ masterApplicationArgs="--batch.role.udpate-solr-cloud=false --batch.role.check-c
 slaveJvmArgs="-javaagent:${agentPath} -Xbootclasspath/a:${agentPath} -Dakka.remote.netty.tcp.port=0"
 slaveApplicationArgs="--batch.role.udpate-solr-cloud=false --batch.role.check-categorisation-request-messages=false --batch.role.categorise-all=true --batch.role.categorise-all.supervisor=false --batch.role.categorise-all.slave=true --server.port=0"
 slaveStarterExtraApplicationArgs="--batch.categorise-all.startEpic=true"
+slaveClassicExtraApplicationArgs="--batch.categorise-all.startEpic=false"
 
 dailyUpdatesJvmArgs=
 dailyUpdatesApplicationArgs="--batch.role.udpate-solr-cloud=true --batch.role.check-categorisation-request-messages=true --server.port=0"
@@ -127,6 +128,8 @@ runApplication()
 				if [  "$doesSlaveStartEpic" = true ]
 				then
 					batchTypeBasedApplicationArgs=$(echo $batchTypeBasedApplicationArgs $slaveStarterExtraApplicationArgs);
+				else
+					batchTypeBasedApplicationArgs=$(echo $batchTypeBasedApplicationArgs $slaveClassicExtraApplicationArgs);
 				fi
 				;;
 	        dailyUpdates )   

@@ -29,8 +29,6 @@ public class ActorConfiguration {
 
     private boolean supervisor;
 
-    // TODO 2 use cluster to avoid defining by hand who is the master and who he
-    // talks to
     /**
      * Actor system singleton for this application.
      */

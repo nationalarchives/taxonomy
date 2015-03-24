@@ -1,10 +1,9 @@
 package uk.gov.nationalarchives.discovery.taxonomy.batch.scheduler;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ public class updateSolrCloudTask {
     private final CategoriserService categoriserService;
     private final UpdateSolrCloudService updateSolrService;
 
-    private static Date lastIAViewUpdateProcessedTime = null;
+    private static ObjectId lastIAViewUpdateObjectId = null;
 
     @Value("${batch.update-solr-cloud.page-size}")
     Integer pageSize;
@@ -39,21 +38,21 @@ public class updateSolrCloudTask {
     }
 
     @SuppressWarnings("unchecked")
-    @Scheduled(fixedDelay = 500)
+    @Scheduled(fixedDelayString = "${batch.update-solr-cloud.delay-between-tasks}")
     public void updateSolrCloudWithLatestUpdatesOnCategories() {
-	if (lastIAViewUpdateProcessedTime == null) {
+	if (lastIAViewUpdateObjectId == null) {
 	    initBatch();
 	}
 
-	if (categoriserService.hasNewCategorisedDocumentsSinceDate(lastIAViewUpdateProcessedTime)) {
+	if (categoriserService.hasNewCategorisedDocumentsSinceObjectId(lastIAViewUpdateObjectId)) {
 	    logger.info(".updateSolrCloudWithLatestUpdatesOnCategories: processing documents since: {}",
-		    lastIAViewUpdateProcessedTime);
+		    lastIAViewUpdateObjectId);
 	    int pageNumber = 0;
 	    boolean hasNext = true;
 	    while (hasNext) {
 		Page<IAViewUpdate> pageOfIAViewUpdatesToProcess = categoriserService
-			.getPageOfNewCategorisedDocumentsSinceDate(pageNumber, this.pageSize,
-				lastIAViewUpdateProcessedTime);
+			.getPageOfNewCategorisedDocumentsSinceObjectId(pageNumber, this.pageSize,
+				lastIAViewUpdateObjectId);
 
 		String[] arrayOfDocReferences = retrieveArrayOfDocRefsFromPageOfIAViewUpdates(pageOfIAViewUpdatesToProcess);
 
@@ -66,18 +65,18 @@ public class updateSolrCloudTask {
 		    // Solr are stopped.
 		    // that's interesting but there might be something else to
 		    // do
-		    updateLastIAViewUpdateProcessedTime(pageOfIAViewUpdatesToProcess);
+		    updateLastIAViewUpdateObjectId(pageOfIAViewUpdatesToProcess);
 		}
 	    }
 	}
 
     }
 
-    private void updateLastIAViewUpdateProcessedTime(Page<IAViewUpdate> pageOfIAViewUpdatesToProcess) {
+    private void updateLastIAViewUpdateObjectId(Page<IAViewUpdate> pageOfIAViewUpdatesToProcess) {
 	List<IAViewUpdate> listOfIAViewUpdates = pageOfIAViewUpdatesToProcess.getContent();
 	int indexOfLastElement = listOfIAViewUpdates.size() - 1;
 	IAViewUpdate iaViewUpdate = listOfIAViewUpdates.get(indexOfLastElement);
-	lastIAViewUpdateProcessedTime = iaViewUpdate.getCreationDate();
+	lastIAViewUpdateObjectId = iaViewUpdate.getId();
     }
 
     private String[] retrieveArrayOfDocRefsFromPageOfIAViewUpdates(Page<IAViewUpdate> pageOfIAViewUpdatesToProcess) {
@@ -92,16 +91,10 @@ public class updateSolrCloudTask {
 	IAViewUpdate lastIAViewUpdate = categoriserService.findLastIAViewUpdate();
 	if (lastIAViewUpdate == null) {
 	    logger.warn(".initBatch: no iaViewUpdate found, the collection is currently empty.");
-	    lastIAViewUpdateProcessedTime = generatePastDate();
+	    lastIAViewUpdateObjectId = null;
 	    return;
 	}
 	logger.debug(".initBatch: last document found: {}", lastIAViewUpdate);
-	lastIAViewUpdateProcessedTime = lastIAViewUpdate.getCreationDate();
-    }
-
-    private Date generatePastDate() {
-	Calendar instance = Calendar.getInstance();
-	instance.roll(Calendar.YEAR, -1);
-	return instance.getTime();
+	lastIAViewUpdateObjectId = lastIAViewUpdate.getId();
     }
 }
