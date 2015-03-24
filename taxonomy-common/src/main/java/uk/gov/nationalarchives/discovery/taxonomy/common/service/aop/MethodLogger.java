@@ -1,20 +1,21 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.aop;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.tools.TaxonomyHelperTools;
-
 import java.util.Arrays;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-//@Aspect
-//@Component
-//FIXME 3 make test fail since I moved the aop package
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.tools.TaxonomyHelperTools;
+
+@Aspect
+@Component
 public class MethodLogger {
 
     @Around("@annotation(uk.gov.nationalarchives.discovery.taxonomy.common.domain.annotation.Loggable) && anyMethod()")
