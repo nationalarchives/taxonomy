@@ -24,8 +24,13 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrClo
 @ConditionalOnProperty(prefix = "solr.cloud", value = "host")
 public class SolrCloudAViewRepositoryImpl implements SolrCloudIAViewRepository {
 
+    private final SolrServer solrCloudServer;
+
     @Autowired
-    private SolrServer solrCloudServer;
+    public SolrCloudAViewRepositoryImpl(SolrServer solrCloudServer) {
+	super();
+	this.solrCloudServer = solrCloudServer;
+    }
 
     // private static final Logger logger =
     // LoggerFactory.getLogger(SolrIAViewRepositoryImpl.class);

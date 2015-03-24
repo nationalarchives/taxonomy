@@ -37,6 +37,8 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 
     private static final Logger logger = LoggerFactory.getLogger(TrainingSetServiceImpl.class);
 
+    // TODO TSETBASED 6 put all autowired fields in constructors
+
     @Autowired
     private CategoryRepository categoryRepository;
 

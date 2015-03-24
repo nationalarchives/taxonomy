@@ -15,8 +15,13 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrTax
 @ConditionalOnProperty(prefix = "solr.taxonomy", value = "host")
 public class SolrTaxonomyIAViewRepositoryImpl implements SolrTaxonomyIAViewRepository {
 
+    private final SolrServer solrTaxonomyServer;
+
     @Autowired
-    private SolrServer solrTaxonomyServer;
+    public SolrTaxonomyIAViewRepositoryImpl(SolrServer solrTaxonomyServer) {
+	super();
+	this.solrTaxonomyServer = solrTaxonomyServer;
+    }
 
     @Override
     public void commit() {
