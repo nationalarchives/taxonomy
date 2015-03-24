@@ -74,6 +74,8 @@ batch.role:
 batch.categorise-all:
  message-size: 100
  supervisor-address: akka.tcp://supervisor@127.0.0.1:2552/user/supervisorActor
+ afterDocNumber: 
+ startEpic: true
 batch.update-solr-cloud.page-size: 100
 
 ---

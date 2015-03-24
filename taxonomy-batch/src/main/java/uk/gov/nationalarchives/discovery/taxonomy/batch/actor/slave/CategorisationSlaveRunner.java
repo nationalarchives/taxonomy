@@ -21,7 +21,7 @@ import akka.actor.Props;
  * A main class to start up the application.
  */
 @Component
-@ConditionalOnProperty(prefix = "batch.role.", value = { "categorise-all", "categorise-all.slave" })
+@ConditionalOnProperty(prefix = "batch.role.", value = { "categorise-all.slave" })
 public class CategorisationSlaveRunner implements CommandLineRunner {
 
     private final ActorSystem deadLettersActorSystem;
@@ -32,6 +32,9 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
 
     @Value("${batch.categorise-all.afterDocNumber}")
     private Integer afterDocNumber;
+
+    @Value("${batch.categorise-all.startEpic}")
+    private Boolean startEpic;
 
     @Autowired
     public CategorisationSlaveRunner(ActorSystem deadLettersActorSystem, ActorSystem actorSystem) {
@@ -49,12 +52,13 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
 
 	Thread.sleep(2000);
 
-	// FIXME 1 should send new Epic only in first starter slave
-	ActorSelection actorSelection = actorSystem.actorSelection(supervisorAddress);
-	if (afterDocNumber == null) {
-	    actorSelection.tell(new CategoriseAllDocumentsEpic(), null);
-	} else {
-	    actorSelection.tell(new CategoriseAllDocumentsEpic(this.afterDocNumber), null);
+	if (this.startEpic) {
+	    ActorSelection actorSelection = actorSystem.actorSelection(supervisorAddress);
+	    if (afterDocNumber == null) {
+		actorSelection.tell(new CategoriseAllDocumentsEpic(), null);
+	    } else {
+		actorSelection.tell(new CategoriseAllDocumentsEpic(this.afterDocNumber), null);
+	    }
 	}
     }
 

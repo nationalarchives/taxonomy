@@ -19,7 +19,7 @@ import akka.actor.Props;
  * A main class to start up the application.
  */
 @Component
-@ConditionalOnProperty(prefix = "batch.role.", value = { "categorise-all", "categorise-all.supervisor" })
+@ConditionalOnProperty(prefix = "batch.role.", value = { "categorise-all.supervisor" })
 public class CategorisationSupervisorRunner implements CommandLineRunner {
 
     // private static final Logger logger =
