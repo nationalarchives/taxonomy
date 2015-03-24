@@ -30,6 +30,9 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
     @Value("${batch.categorise-all.supervisor-address}")
     private String supervisorAddress;
 
+    @Value("${batch.categorise-all.afterDocNumber}")
+    private Integer afterDocNumber;
+
     @Autowired
     public CategorisationSlaveRunner(ActorSystem deadLettersActorSystem, ActorSystem actorSystem) {
 	super();
@@ -39,7 +42,7 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-	Integer afterDocNumber = getAfterDocNumberFromArgs(args);
+	// Integer afterDocNumber = getAfterDocNumberFromArgs(args);
 
 	trackDeadLetters();
 	actorSystem.actorOf(Props.create(CategorisationWorkerActor.class, supervisorAddress), "workerActor");
@@ -47,22 +50,12 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
 	Thread.sleep(2000);
 
 	// FIXME 1 should send new Epic only in first starter slave
-	ActorSelection actorSelection = actorSystem
-		.actorSelection("akka.tcp://supervisor@127.0.0.1:2552/user/supervisorActor");
+	ActorSelection actorSelection = actorSystem.actorSelection(supervisorAddress);
 	if (afterDocNumber == null) {
 	    actorSelection.tell(new CategoriseAllDocumentsEpic(), null);
 	} else {
-	    actorSelection.tell(new CategoriseAllDocumentsEpic(afterDocNumber), null);
+	    actorSelection.tell(new CategoriseAllDocumentsEpic(this.afterDocNumber), null);
 	}
-    }
-
-    private Integer getAfterDocNumberFromArgs(String... args) {
-	for (String argument : args) {
-	    if (argument.contains("-afterDocNumber=")) {
-		return Integer.valueOf(argument.split("=")[1]);
-	    }
-	}
-	return null;
     }
 
     private void trackDeadLetters() {
