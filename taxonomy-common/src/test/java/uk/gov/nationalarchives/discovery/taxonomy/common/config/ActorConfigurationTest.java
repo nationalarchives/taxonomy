@@ -1,13 +1,11 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.config;
 
-import static uk.gov.nationalarchives.discovery.taxonomy.common.config.actor.SpringExtension.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableLoadTimeWeaving;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
@@ -21,8 +19,8 @@ import com.typesafe.config.ConfigFactory;
  */
 @Configuration
 @EnableSpringConfigured
-@EnableLoadTimeWeaving
 @ComponentScan(basePackages = "uk.gov.nationalarchives.discovery.taxonomy.common.service.actor")
+@Import({ PropertiesConfiguration.class })
 public class ActorConfigurationTest {
 
     // the application context is needed to initialize the Akka Spring Extension
@@ -37,9 +35,6 @@ public class ActorConfigurationTest {
 	ActorSystem system = null;
 	system = ActorSystem.create("supervisor", ConfigFactory.load("supervisor.conf"));
 
-	// initialize the application context in the Akka Spring Extension
-	SpringExtProvider.get(system).initialize(applicationContext);
-
 	// system.logConfiguration();
 	return system;
     }
@@ -47,8 +42,6 @@ public class ActorConfigurationTest {
     @Bean
     public ActorSystem deadLettersActorSystem() {
 	ActorSystem system = ActorSystem.create("DeadLetters");
-	// initialize the application context in the Akka Spring Extension
-	SpringExtProvider.get(system).initialize(applicationContext);
 	return system;
     }
 
