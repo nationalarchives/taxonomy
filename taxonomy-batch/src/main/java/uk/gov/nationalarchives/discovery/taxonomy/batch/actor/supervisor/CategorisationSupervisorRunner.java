@@ -1,6 +1,7 @@
 package uk.gov.nationalarchives.discovery.taxonomy.batch.actor.supervisor;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,9 @@ public class CategorisationSupervisorRunner implements CommandLineRunner {
     // private static final Logger logger =
     // LoggerFactory.getLogger(CategorisationSupervisorRunner.class);
 
+    @Value("${batch.categorisation-message-size}")
+    private int nbOfDocsToCategoriseAtATime;
+
     private final ActorSystem deadLettersActorSystem;
     private final ActorSystem actorSystem;
 
@@ -38,7 +42,8 @@ public class CategorisationSupervisorRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
 	trackDeadLetters();
 
-	actorSystem.actorOf(Props.create(CategorisationSupervisorActor.class), "supervisorActor");
+	actorSystem.actorOf(Props.create(CategorisationSupervisorActor.class, nbOfDocsToCategoriseAtATime),
+		"supervisorActor");
     }
 
     private void trackDeadLetters() {
