@@ -30,7 +30,7 @@ public class AsyncConfiguration {
 	executor.setCorePoolSize(fsThreadPoolSize);
 	executor.setMaxPoolSize(fsThreadPoolSize);
 	executor.setQueueCapacity(fsQueueCapacity);
-	executor.setThreadNamePrefix("MyExecutor-");
+	executor.setThreadNamePrefix("fsSearchTaskExecutor-");
 	executor.initialize();
 	return executor;
     }
@@ -45,7 +45,7 @@ public class AsyncConfiguration {
 	executor.setCorePoolSize(memoryThreadPoolSize);
 	executor.setMaxPoolSize(memoryThreadPoolSize);
 	executor.setQueueCapacity(memoryQueueCapacity);
-	executor.setThreadNamePrefix("MyExecutor-");
+	executor.setThreadNamePrefix("memorySearchTaskExecutor-");
 	executor.initialize();
 	return executor;
     }
