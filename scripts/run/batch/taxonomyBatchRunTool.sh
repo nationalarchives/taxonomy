@@ -116,7 +116,7 @@ runApplication()
 				
 				if [ -n "$afterDocNumber" ]
 				then
-					batchTypeBasedApplicationArgs=$(echo $batchTypeBasedApplicationArgs "-afterDocNumber="$afterDocNumber)
+					batchTypeBasedApplicationArgs=$(echo $batchTypeBasedApplicationArgs "--batch.categorise-all.afterDocNumber="$afterDocNumber)
 				fi
 				;;
 	        dailyUpdates )   
