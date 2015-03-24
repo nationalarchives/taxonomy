@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +36,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TopDocs;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -274,19 +274,6 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     }
 
     @Override
-    public boolean hasNewCategorisedDocumentsSinceDate(Date lastIAViewUpdateProcessedTime) {
-	// TODO TSETBASED Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceDate(int pageNumber, int pageSize,
-	    Date lastIAViewUpdateProcessedTime) {
-	// TODO TSETBASED Auto-generated method stub
-	return null;
-    }
-
-    @Override
     public IAViewUpdate findLastIAViewUpdate() {
 	// TODO TSETBASED Auto-generated method stub
 	return null;
@@ -300,6 +287,19 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     @Override
     public List<TSetBasedCategorisationResult> categoriseSingle(String docReference,
 	    List<CategoryWithLuceneQuery> cachedCategories) {
+	// TODO TSETBASED Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public boolean hasNewCategorisedDocumentsSinceObjectId(ObjectId id) {
+	// TODO TSETBASED Auto-generated method stub
+	return false;
+    }
+
+    @Override
+    public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceObjectId(int pageNumber, int pageSize,
+	    ObjectId lastProcessedId) {
 	// TODO TSETBASED Auto-generated method stub
 	return null;
     }

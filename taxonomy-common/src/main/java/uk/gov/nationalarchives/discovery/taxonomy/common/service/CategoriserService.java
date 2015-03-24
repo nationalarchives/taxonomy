@@ -4,9 +4,9 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
 
-import java.util.Date;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 
 public interface CategoriserService<T extends CategorisationResult> {
@@ -38,23 +38,23 @@ public interface CategoriserService<T extends CategorisationResult> {
     public List<T> categoriseSingle(String docReference, List<CategoryWithLuceneQuery> cachedCategories);
 
     /**
-     * Check if any document was categorised since one date
+     * Check if any document was categorised since last processed element id
      * 
-     * @param date
+     * @param id
      * @return
      */
-    public boolean hasNewCategorisedDocumentsSinceDate(Date date);
+    boolean hasNewCategorisedDocumentsSinceObjectId(ObjectId id);
 
     /**
-     * get page of IAViewUpdates since date
+     * get page of IAViewUpdates since last processed element
      * 
      * @param pageNumber
      * @param pageSize
-     * @param lastIAViewUpdateProcessedTime
+     * @param lastProcessedId
      * @return
      */
-    public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceDate(int pageNumber, int pageSize,
-	    Date lastIAViewUpdateProcessedTime);
+    Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceObjectId(int pageNumber, int pageSize,
+	    ObjectId lastProcessedId);
 
     /**
      * find last update on categories on iaviews from mongo db

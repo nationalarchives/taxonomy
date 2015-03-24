@@ -12,6 +12,7 @@ import java.util.concurrent.Future;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.TermFilter;
 import org.apache.lucene.search.Filter;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -210,14 +211,14 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	return categories;
     }
 
-    // TODO 4 manage timeout? on the search to lucene and NOT on the task:
+    // TODO manage timeout? on the search to lucene and NOT on the task:
     // impossible anyway to interrupt it this way
     private List<CategorisationResult> runCategorisationWithFSDirectory(InformationAssetView iaView,
 	    List<Category> listOfRelevantCategories) {
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();
 	List<Future<CategorisationResult>> listOfFutureCategoryResults = new ArrayList<Future<CategorisationResult>>();
 
-	// TODO 2 PERF cache filter on current document
+	// TODO PERF cache filter on current document
 	// Filter filter = new CachingWrapperFilter(new QueryWrapperFilter(new
 	// TermQuery(new Term(
 	// InformationAssetViewFields.DOCREFERENCE.toString(),
@@ -254,18 +255,19 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     }
 
     @Override
-    public boolean hasNewCategorisedDocumentsSinceDate(Date date) {
+    public boolean hasNewCategorisedDocumentsSinceObjectId(ObjectId id) {
 	PageRequest pageRequest = new PageRequest(0, 1);
-	Page<IAViewUpdate> pageOfIAViewUpdatesToProcess = iaViewUpdateRepository.findByCreationDateGreaterThan(date,
-		pageRequest);
+	Page<IAViewUpdate> pageOfIAViewUpdatesToProcess = iaViewUpdateRepository.findByIdGreaterThan(id, pageRequest);
 	return pageOfIAViewUpdatesToProcess.hasContent();
     }
 
     @Override
-    public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceDate(int pageNumber, int pageSize, Date date) {
-	Sort sort = new Sort(Direction.ASC, IAViewUpdate.CREATIONDATE);
+    public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceObjectId(int pageNumber, int pageSize, ObjectId id) {
+	Sort sort = new Sort(Direction.ASC, IAViewUpdate.ID_FIELDNAME);
 	PageRequest pageRequest = new PageRequest(pageNumber, pageSize, sort);
-	return iaViewUpdateRepository.findByCreationDateGreaterThan(date, pageRequest);
+	// FIXME Attention 1million duplicates on time: ms accuracy is not
+	// sufficient
+	return iaViewUpdateRepository.findByIdGreaterThan(id, pageRequest);
     }
 
     @Override
