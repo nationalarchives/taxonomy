@@ -22,7 +22,7 @@ import akka.actor.ActorSystem;
 @Configurable(preConstruction = true)
 public class CategorisationSupervisorActor extends SupervisorActor {
 
-    private static final int NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME = 100;
+    private final int nbOfDocsToCategoriseAtATime;
 
     private Integer totalNbOfDocs;
     private ScoreDoc lastElementRetrieved = null;
@@ -37,8 +37,9 @@ public class CategorisationSupervisorActor extends SupervisorActor {
     @Autowired
     private ActorSystem actorSystem;
 
-    public CategorisationSupervisorActor() {
+    public CategorisationSupervisorActor(int nbOfDocsToCategoriseAtATime) {
 	super();
+	this.nbOfDocsToCategoriseAtATime = nbOfDocsToCategoriseAtATime;
 	this.logger.info("Initiated Categorisation Supervisor Actor");
     }
 
@@ -165,7 +166,7 @@ public class CategorisationSupervisorActor extends SupervisorActor {
 	case ONGOING:
 	    status = CategorisationStatusEnum.ONGOING;
 	    BrowseAllDocsResponse browseAllDocs = iaViewService.browseAllDocs(this.lastElementRetrieved,
-		    NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME);
+		    nbOfDocsToCategoriseAtATime);
 
 	    this.lastElementRetrieved = browseAllDocs.getLastScoreDoc();
 
@@ -173,7 +174,7 @@ public class CategorisationSupervisorActor extends SupervisorActor {
 	    if (!CollectionUtils.isEmpty(listOfDocReferences)) {
 		logger.debug(
 			".getNextDocumentsToCategorise: returning new set of docs: lastScoreDoc={}, size={}, docs={}",
-			this.lastElementRetrieved, NB_OF_DOCS_TO_CATEGORISE_AT_A_TIME,
+			this.lastElementRetrieved, nbOfDocsToCategoriseAtATime,
 			ArrayUtils.toString(listOfDocReferences));
 		return listOfDocReferences.toArray(new String[0]);
 	    }

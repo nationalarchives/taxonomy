@@ -74,6 +74,7 @@ batch.role:
  categorise-all: false
  categorise-all.supervisor: false
  categorise-all.slave: false
+batch.categorisation-message-size: 100
 batch.update-solr-cloud.page-size: 100
 
 ---
