@@ -6,4 +6,4 @@ if [ -n "$1" ]
 then
 	action=$1
 fi
-ps aux | grep taxonomy | grep batch | grep $action | awk "{print \$2}"  | xargs kill
+ps aux | grep taxonomy | grep batch | egrep "($action)" | awk "{print \$2}"  | xargs kill

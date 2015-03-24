@@ -45,8 +45,9 @@ batchType=
 afterDocNumber=
 numberOfSlaves=
 logName=
-jprofiler=
+useJprofiler=false
 jProfilerTarget=
+doesSlaveStartEpic=true
 
 # Tutorial on shell script with list of operators for if, while, etc statements:
 # http://linuxcommand.org/lc3_wss0080.php
@@ -76,7 +77,7 @@ while [ "$1" != "" ]; do
 								logName=$1
                                 ;;
         -jp | --jProfiler )     
-								jprofiler=yes
+								useJprofiler=true
                                 ;;
         -jpt | --jProfilerTarget )   shift  
 								jProfilerTarget=$1
@@ -93,10 +94,14 @@ done
 
 masterJvmArgs="-javaagent:${agentPath} -Xbootclasspath/a:${agentPath}"
 masterApplicationArgs="--batch.role.udpate-solr-cloud=false --batch.role.check-categorisation-request-messages=false --batch.role.categorise-all=true --batch.role.categorise-all.supervisor=true --batch.role.categorise-all.slave=false --server.port=0"
+
 slaveJvmArgs="-javaagent:${agentPath} -Xbootclasspath/a:${agentPath} -Dakka.remote.netty.tcp.port=0"
 slaveApplicationArgs="--batch.role.udpate-solr-cloud=false --batch.role.check-categorisation-request-messages=false --batch.role.categorise-all=true --batch.role.categorise-all.supervisor=false --batch.role.categorise-all.slave=true --server.port=0"
+slaveStarterExtraApplicationArgs="--batch.categorise-all.startEpic=true"
+
 dailyUpdatesJvmArgs=
 dailyUpdatesApplicationArgs="--batch.role.udpate-solr-cloud=true --batch.role.check-categorisation-request-messages=true --server.port=0"
+
 updateSolrJvmArgs=
 updateSolrApplicationArgs="--batch.role.udpate-solr-cloud=true --server.port=0"
 
@@ -118,6 +123,11 @@ runApplication()
 				then
 					batchTypeBasedApplicationArgs=$(echo $batchTypeBasedApplicationArgs "--batch.categorise-all.afterDocNumber="$afterDocNumber)
 				fi
+				
+				if [  "$doesSlaveStartEpic" = true ]
+				then
+					batchTypeBasedApplicationArgs=$(echo $batchTypeBasedApplicationArgs $slaveStarterExtraApplicationArgs);
+				fi
 				;;
 	        dailyUpdates )   
 				batchTypeBasedJvmArgs=$dailyUpdatesJvmArgs
@@ -136,7 +146,7 @@ runApplication()
 	fi
 	batchTypeBasedJvmArgs=$(echo $batchTypeBasedJvmArgs "-Dlogfile.name="$logName)
 	
-	if [ -n "$jprofiler" ]
+	if [ "$useJprofiler" = true ]
 	then
 		if [[ -z "$jProfilerTarget"  || ( -n "$jProfilerTarget"  &&  "$jProfilerTarget" == "$batchType" ) ]]
 		then
@@ -202,10 +212,15 @@ case $batchType in
     			batchType="slave"
 				logName=$(echo "slave"$slaveNumber".log")
 				
-				if [ -n "$jProfilerTarget" ] && [ "$slaveNumber" != "1" ]
+				if [ "$slaveNumber" != "1" ]
 				then
-					jprofiler=""
-					jProfilerTarget=""
+					doesSlaveStartEpic=false
+					
+					if [ -n "$jProfilerTarget" ]
+					then
+						useJprofiler=""
+						jProfilerTarget=""
+					fi
 				fi
 				
     			runApplication
