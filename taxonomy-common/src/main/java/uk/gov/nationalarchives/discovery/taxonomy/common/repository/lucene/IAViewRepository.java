@@ -90,7 +90,7 @@ public class IAViewRepository {
      * @param docReference
      * @return
      */
-    public Document searchDocByDocReference(String docReference) {
+    public InformationAssetView searchDocByDocReference(String docReference) {
 	Document hitDoc = null;
 	IndexSearcher searcher = null;
 	try {
@@ -109,7 +109,7 @@ public class IAViewRepository {
 	} finally {
 	    LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager, searcher);
 	}
-	return hitDoc;
+	return LuceneTaxonomyMapper.getIAViewFromLuceneDocument(hitDoc);
     }
 
     @Loggable

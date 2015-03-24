@@ -9,7 +9,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exceptio
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneTaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 
 import java.io.IOException;
@@ -260,8 +259,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     @Override
     public List<TSetBasedCategorisationResult> testCategoriseSingle(String docReference) {
 	logger.info(".testCategoriseSingle: docreference:{} ", docReference);
-	return testCategoriseSingle(LuceneTaxonomyMapper.getIAViewFromLuceneDocument(iaViewRepository
-		.searchDocByDocReference(docReference)));
+	return testCategoriseSingle((iaViewRepository.searchDocByDocReference(docReference)));
     }
 
     @Override

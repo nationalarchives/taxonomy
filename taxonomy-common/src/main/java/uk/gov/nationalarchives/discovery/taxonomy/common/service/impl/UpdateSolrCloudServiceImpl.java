@@ -71,12 +71,6 @@ public class UpdateSolrCloudServiceImpl implements UpdateSolrCloudService {
 	solrIAViewRepository.saveAll(listOfUpdatesToSubmitToSolr);
     }
 
-    @Override
-    public void bulkUpdateCategoriesOnIAViewsOnTimeRange(long start, long end) {
-	// TODO Auto-generated method stub
-
-    }
-
     private SolrInputDocument createDocumentForAtomicUpdate(String docReference, List<CategoryLight> categories) {
 	SolrInputDocument solrInputDocument = new SolrInputDocument();
 	solrInputDocument.addField(InformationAssetViewFields.DOCREFERENCE.toString(), docReference);

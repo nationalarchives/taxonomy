@@ -34,7 +34,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.Categori
 import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.TaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.InMemoryIAViewRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneTaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.IAViewUpdateRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.InformationAssetViewMongoRepository;
@@ -49,33 +48,40 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     private static final Logger logger = LoggerFactory.getLogger(QueryBasedCategoriserServiceImpl.class);
 
     // TODO 6 put all autowired fields in constructors
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
+
+    private final IAViewRepository iaViewRepository;
+
+    private final InMemoryIAViewRepository inMemoryiaViewRepository;
+
+    private final InformationAssetViewMongoRepository iaViewMongoRepository;
+
+    private final IAViewUpdateRepository iaViewUpdateRepository;
+
+    private final AsyncQueryBasedTaskManager asyncTaskManager;
+
+    private final SolrTaxonomyIAViewRepository solrTaxonomyIAViewRepository;
 
     @Autowired
-    private IAViewRepository iaViewRepository;
-
-    @Autowired
-    private InMemoryIAViewRepository inMemoryiaViewRepository;
-
-    @Autowired
-    private InformationAssetViewMongoRepository iaViewMongoRepository;
-
-    @Autowired
-    private IAViewUpdateRepository iaViewUpdateRepository;
-
-    @Autowired
-    private AsyncQueryBasedTaskManager asyncTaskManager;
-
-    @Autowired
-    private SolrTaxonomyIAViewRepository solrTaxonomyIAViewRepository;
+    public QueryBasedCategoriserServiceImpl(CategoryRepository categoryRepository, IAViewRepository iaViewRepository,
+	    InMemoryIAViewRepository inMemoryiaViewRepository,
+	    InformationAssetViewMongoRepository iaViewMongoRepository, IAViewUpdateRepository iaViewUpdateRepository,
+	    AsyncQueryBasedTaskManager asyncTaskManager, SolrTaxonomyIAViewRepository solrTaxonomyIAViewRepository) {
+	super();
+	this.categoryRepository = categoryRepository;
+	this.iaViewRepository = iaViewRepository;
+	this.inMemoryiaViewRepository = inMemoryiaViewRepository;
+	this.iaViewMongoRepository = iaViewMongoRepository;
+	this.iaViewUpdateRepository = iaViewUpdateRepository;
+	this.asyncTaskManager = asyncTaskManager;
+	this.solrTaxonomyIAViewRepository = solrTaxonomyIAViewRepository;
+    }
 
     @Override
     @Loggable
     public List<CategorisationResult> testCategoriseSingle(String docReference) {
 	logger.info(".testCategoriseSingle: docreference:{} ", docReference);
-	return testCategoriseSingle(LuceneTaxonomyMapper.getIAViewFromLuceneDocument(iaViewRepository
-		.searchDocByDocReference(docReference)), true, null);
+	return testCategoriseSingle((iaViewRepository.searchDocByDocReference(docReference)), true, null);
     }
 
     /**
@@ -151,16 +157,14 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     @Loggable
     public List<CategorisationResult> categoriseSingle(String docReference) {
 	logger.info(".categoriseSingle: docreference:{} ", docReference);
-	return categoriseSingle(LuceneTaxonomyMapper.getIAViewFromLuceneDocument(iaViewRepository
-		.searchDocByDocReference(docReference)));
+	return categoriseSingle((iaViewRepository.searchDocByDocReference(docReference)));
     }
 
     @Override
     public List<CategorisationResult> categoriseSingle(String docReference,
 	    List<CategoryWithLuceneQuery> cachedCategories) {
 	logger.info(".categoriseSingle: docreference:{} ", docReference);
-	return categoriseSingle(LuceneTaxonomyMapper.getIAViewFromLuceneDocument(iaViewRepository
-		.searchDocByDocReference(docReference)), cachedCategories);
+	return categoriseSingle((iaViewRepository.searchDocByDocReference(docReference)), cachedCategories);
     }
 
     public List<CategorisationResult> categoriseSingle(InformationAssetView iaView) {
@@ -248,24 +252,6 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 		return b.getScore().compareTo(a.getScore());
 	    }
 	});
-    }
-
-    /**
-     * set repository for testing purpose
-     * 
-     * @param iaViewMongoRepository
-     */
-    public void setIaViewMongoRepository(InformationAssetViewMongoRepository iaViewMongoRepository) {
-	this.iaViewMongoRepository = iaViewMongoRepository;
-    }
-
-    /**
-     * set repository for testing purpose
-     * 
-     * @param iaViewUpdateRepository
-     */
-    public void setIaViewUpdateRepository(IAViewUpdateRepository iaViewUpdateRepository) {
-	this.iaViewUpdateRepository = iaViewUpdateRepository;
     }
 
     @Override
