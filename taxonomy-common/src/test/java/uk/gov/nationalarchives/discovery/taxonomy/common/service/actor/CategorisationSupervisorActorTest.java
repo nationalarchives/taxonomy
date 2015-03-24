@@ -1,11 +1,12 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.actor;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.config.ActorConfigurationTest;
@@ -19,17 +20,21 @@ import akka.testkit.TestActorRef;
 @SuppressWarnings("rawtypes")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ActorConfigurationTest.class)
+@ActiveProfiles("batch")
 public class CategorisationSupervisorActorTest {
+
+    @Value("${batch.categorise-all.message-size}")
+    private int nbOfDocsToCategoriseAtATime;
+
+    @Value("${batch.categorise-all.supervisor-address}")
+    private String supervisorAddress;
 
     @Autowired
     private ActorSystem actorSystem;
 
-    // TODO 5 need to provide javaagent in jvm args to run that test
-    // -javaagent:/home/jcharlet/.m2/repository/org/springframework/spring-instrument/4.0.7.RELEASE/spring-instrument-4.0.7.RELEASE.jar
     @Test
-    @Ignore
     public void testCreateEpic() {
-	final Props props = Props.create(CategorisationSupervisorActor.class);
+	final Props props = Props.create(CategorisationSupervisorActor.class, nbOfDocsToCategoriseAtATime);
 	final TestActorRef<CategorisationSupervisorActor> ref = TestActorRef.create(actorSystem, props, "testA");
 	final CategorisationSupervisorActor actor = ref.underlyingActor();
 
