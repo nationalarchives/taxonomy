@@ -97,3 +97,4 @@ logging.config: classpath:log4j.properties
 
 solr.cloud.host: http://localhost:8983/solr/iaview_unittest/
 solr.taxonomy.host:
+solr.cloud.testcore.path: src/test/resources/dataset/solr
