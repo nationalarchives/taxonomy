@@ -1,17 +1,18 @@
 package uk.gov.nationalarchives.discovery.taxonomy.batch.msg.consumer.message;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CategoriseDocumentMessage {
     private String messageId;
     private List<String> listOfDocReferences;
-    private int nbOfProcessingErrors;
+    private List<String> listOfDocReferencesInError;
 
     public CategoriseDocumentMessage(String messageId, List<String> listOfDocReferences) {
 	super();
 	this.messageId = messageId;
 	this.listOfDocReferences = listOfDocReferences;
-	this.nbOfProcessingErrors = 0;
+	this.listOfDocReferencesInError = new ArrayList<String>();
     }
 
     public String getMessageId() {
@@ -30,16 +31,20 @@ public class CategoriseDocumentMessage {
 	this.listOfDocReferences = listOfDocReferences;
     }
 
-    public int getNbOfProcessingErrors() {
-	return nbOfProcessingErrors;
+    public List<String> getListOfDocReferencesInError() {
+	return listOfDocReferencesInError;
     }
 
-    public void incrementNbOfProcessingErrors() {
-	this.nbOfProcessingErrors++;
+    public void setListOfDocReferencesInError(List<String> listOfDocReferencesInError) {
+	this.listOfDocReferencesInError = listOfDocReferencesInError;
+    }
+
+    public void addDocReferenceInError(String docReferenceInError) {
+	this.listOfDocReferencesInError.add(docReferenceInError);
     }
 
     public boolean hasProcessingErrors() {
-	return this.nbOfProcessingErrors != 0;
+	return !listOfDocReferencesInError.isEmpty();
     }
 
 }

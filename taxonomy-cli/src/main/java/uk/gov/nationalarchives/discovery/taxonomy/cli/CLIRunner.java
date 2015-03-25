@@ -78,9 +78,6 @@ public class CLIRunner implements CommandLineRunner {
     @Autowired
     EvaluationService evaluationService;
 
-    @Autowired
-    ThreadPoolTaskExecutor threadPoolTaskExecutor;
-
     public void run(String... args) throws IOException, ParseException, org.apache.commons.cli.ParseException {
 
 	logger.info("Start cat CLI Runner.");
