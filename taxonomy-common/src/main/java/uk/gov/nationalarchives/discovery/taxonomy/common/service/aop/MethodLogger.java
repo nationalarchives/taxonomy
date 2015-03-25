@@ -14,6 +14,13 @@ import org.springframework.util.CollectionUtils;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.tools.TaxonomyHelperTools;
 
+/**
+ * Aspect that handles logging of methods across all layers when they are
+ * accordingly annotated
+ * 
+ * @author jcharlet
+ *
+ */
 @Aspect
 @Component
 public class MethodLogger {
@@ -26,7 +33,7 @@ public class MethodLogger {
 	long timerDifference = TaxonomyHelperTools.getTimerDifference(start);
 	String responseToLog = CollectionUtils.isEmpty(Arrays.asList(point.getArgs())) ? null : point.getArgs()[0]
 		.toString();
-	if (responseToLog.length() > 20) {
+	if (responseToLog != null && responseToLog.length() > 20) {
 	    responseToLog = responseToLog.substring(0, 20);
 	}
 	if (timerDifference > 1000) {

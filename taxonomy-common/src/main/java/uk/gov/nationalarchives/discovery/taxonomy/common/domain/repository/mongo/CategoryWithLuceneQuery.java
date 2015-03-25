@@ -14,7 +14,7 @@ public class CategoryWithLuceneQuery extends Category implements Serializable {
 
     private static final long serialVersionUID = 1927440661373530509L;
 
-    private Query parsedQry;
+    private transient Query parsedQry;
 
     public CategoryWithLuceneQuery(Category category, Query parsedQry) {
 	super();

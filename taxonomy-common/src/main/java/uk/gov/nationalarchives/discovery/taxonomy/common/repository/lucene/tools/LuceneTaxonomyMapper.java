@@ -141,8 +141,8 @@ public class LuceneTaxonomyMapper {
 		    .getSUBJECTS()), Field.Store.YES));
 	}
 	if (iaViewSample.getSOURCE() != null) {
-	    doc.add(new IntField(InformationAssetViewFields.SOURCE.toString(),
-		    Integer.valueOf(iaViewSample.getSOURCE()), Field.Store.YES));
+	    doc.add(new IntField(InformationAssetViewFields.SOURCE.toString(), Integer.parseInt(iaViewSample
+		    .getSOURCE()), Field.Store.YES));
 	}
 	return doc;
     }
