@@ -228,36 +228,20 @@
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="start DailyUpdates Batch" enabled="true"/>
-        <hashTree>
-          <SystemSampler guiclass="SystemSamplerGui" testclass="SystemSampler" testname="stop DailyUpdates batch" enabled="true">
-            <boolProp name="SystemSampler.checkReturnCode">false</boolProp>
-            <stringProp name="SystemSampler.expectedReturnCode">0</stringProp>
-            <stringProp name="SystemSampler.command">${BATCH_RUN_SCRIPT_LOCATION}/stopBatchDailyUpdates.sh</stringProp>
-            <elementProp name="SystemSampler.arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-            <elementProp name="SystemSampler.environment" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-            <stringProp name="SystemSampler.directory"></stringProp>
-          </SystemSampler>
-          <hashTree/>
-          <SystemSampler guiclass="SystemSamplerGui" testclass="SystemSampler" testname="start batch dailyUpdates" enabled="true">
-            <boolProp name="SystemSampler.checkReturnCode">true</boolProp>
-            <stringProp name="SystemSampler.expectedReturnCode">0</stringProp>
-            <stringProp name="SystemSampler.command">${BATCH_RUN_SCRIPT_LOCATION}/startBatchDailyUpdates.sh</stringProp>
-            <elementProp name="SystemSampler.arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-            <elementProp name="SystemSampler.environment" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-            <stringProp name="SystemSampler.directory"></stringProp>
-            <longProp name="SystemSampler.timeout">60000</longProp>
-          </SystemSampler>
-          <hashTree/>
-        </hashTree>
+        <SystemSampler guiclass="SystemSamplerGui" testclass="SystemSampler" testname="start batch dailyUpdates" enabled="true">
+          <boolProp name="SystemSampler.checkReturnCode">true</boolProp>
+          <stringProp name="SystemSampler.expectedReturnCode">0</stringProp>
+          <stringProp name="SystemSampler.command">${BATCH_RUN_SCRIPT_LOCATION}/startBatchDailyUpdates.sh</stringProp>
+          <elementProp name="SystemSampler.arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <elementProp name="SystemSampler.environment" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="SystemSampler.directory"></stringProp>
+          <longProp name="SystemSampler.timeout">60000</longProp>
+        </SystemSampler>
+        <hashTree/>
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="test dailyUpdates Batch" enabled="true"/>
         <hashTree>
           <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
@@ -346,7 +330,7 @@
             <TestAction guiclass="TestActionGui" testclass="TestAction" testname="wait for Taxonomy Batch run categorisation" enabled="true">
               <intProp name="ActionProcessor.action">1</intProp>
               <intProp name="ActionProcessor.target">0</intProp>
-              <stringProp name="ActionProcessor.duration">4000</stringProp>
+              <stringProp name="ActionProcessor.duration">6000</stringProp>
             </TestAction>
             <hashTree/>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Commit Solr Cloud" enabled="true">
@@ -588,7 +572,7 @@
             <TestAction guiclass="TestActionGui" testclass="TestAction" testname="wait for Taxonomy Batch run categorisation" enabled="true">
               <intProp name="ActionProcessor.action">1</intProp>
               <intProp name="ActionProcessor.target">0</intProp>
-              <stringProp name="ActionProcessor.duration">5000</stringProp>
+              <stringProp name="ActionProcessor.duration">7000</stringProp>
             </TestAction>
             <hashTree/>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Commit Solr Cloud" enabled="true">
@@ -1225,7 +1209,7 @@
             <TestAction guiclass="TestActionGui" testclass="TestAction" testname="wait for Taxonomy Batch run categorisation" enabled="true">
               <intProp name="ActionProcessor.action">1</intProp>
               <intProp name="ActionProcessor.target">0</intProp>
-              <stringProp name="ActionProcessor.duration">5000</stringProp>
+              <stringProp name="ActionProcessor.duration">7000</stringProp>
             </TestAction>
             <hashTree/>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Commit Solr Cloud" enabled="true">
@@ -1355,36 +1339,20 @@
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="start WS" enabled="true"/>
-        <hashTree>
-          <SystemSampler guiclass="SystemSamplerGui" testclass="SystemSampler" testname="stop WS" enabled="true">
-            <boolProp name="SystemSampler.checkReturnCode">false</boolProp>
-            <stringProp name="SystemSampler.expectedReturnCode">0</stringProp>
-            <stringProp name="SystemSampler.command">${BATCH_RUN_SCRIPT_LOCATION}/stopWS.sh</stringProp>
-            <elementProp name="SystemSampler.arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-            <elementProp name="SystemSampler.environment" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-            <stringProp name="SystemSampler.directory"></stringProp>
-          </SystemSampler>
-          <hashTree/>
-          <SystemSampler guiclass="SystemSamplerGui" testclass="SystemSampler" testname="start WS" enabled="true">
-            <boolProp name="SystemSampler.checkReturnCode">true</boolProp>
-            <stringProp name="SystemSampler.expectedReturnCode">0</stringProp>
-            <stringProp name="SystemSampler.command">${BATCH_RUN_SCRIPT_LOCATION}/startWS.sh</stringProp>
-            <elementProp name="SystemSampler.arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-            <elementProp name="SystemSampler.environment" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-            <stringProp name="SystemSampler.directory"></stringProp>
-            <longProp name="SystemSampler.timeout">60000</longProp>
-          </SystemSampler>
-          <hashTree/>
-        </hashTree>
+        <SystemSampler guiclass="SystemSamplerGui" testclass="SystemSampler" testname="start WS" enabled="true">
+          <boolProp name="SystemSampler.checkReturnCode">true</boolProp>
+          <stringProp name="SystemSampler.expectedReturnCode">0</stringProp>
+          <stringProp name="SystemSampler.command">${BATCH_RUN_SCRIPT_LOCATION}/startWS.sh</stringProp>
+          <elementProp name="SystemSampler.arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <elementProp name="SystemSampler.environment" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="SystemSampler.directory"></stringProp>
+          <longProp name="SystemSampler.timeout">60000</longProp>
+        </SystemSampler>
+        <hashTree/>
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="test WS" enabled="true"/>
         <hashTree>
           <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">

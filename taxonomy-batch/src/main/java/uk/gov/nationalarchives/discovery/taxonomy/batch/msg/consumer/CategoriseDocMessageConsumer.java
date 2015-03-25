@@ -25,7 +25,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserServ
  * @author jcharlet
  *
  */
-// TODO 1 ERROR_HANDLING handling of messages in error? log? retry?
 @Component
 public class CategoriseDocMessageConsumer {
 
@@ -56,7 +55,7 @@ public class CategoriseDocMessageConsumer {
 	    try {
 		categoriserService.categoriseSingle(docReference);
 	    } catch (TaxonomyException e) {
-		categoriseDocumentMessage.incrementNbOfProcessingErrors();
+		categoriseDocumentMessage.addDocReferenceInError(docReference);
 		logger.error("an error occured while processing Document: {}, from message: {}", docReference,
 			categoriseDocumentMessage.getMessageId(), e);
 	    }
@@ -64,7 +63,9 @@ public class CategoriseDocMessageConsumer {
 
 	if (categoriseDocumentMessage.hasProcessingErrors()) {
 	    logger.warn("completed treatment for message: {} with {} errors", categoriseDocumentMessage.getMessageId(),
-		    categoriseDocumentMessage.getNbOfProcessingErrors());
+		    categoriseDocumentMessage.getListOfDocReferencesInError().size());
+	    logger.error("DOCREFERENCES THAT COULD NOT BE CATEGORISED: {}",
+		    Arrays.toString(categoriseDocumentMessage.getListOfDocReferencesInError().toArray()));
 	} else {
 	    logger.info("completed treatment for message: {}", categoriseDocumentMessage.getMessageId());
 	}
