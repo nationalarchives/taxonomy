@@ -1,10 +1,5 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
 import org.apache.lucene.search.ScoreDoc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,22 +25,6 @@ public class IAViewServiceImpl implements IAViewService {
     public PaginatedList<InformationAssetView> performSearch(String categoryQuery, Double score, Integer limit,
 	    Integer offset) {
 	return iaViewRepository.performSearch(categoryQuery, score, limit, offset);
-    }
-
-    private static final int NB_OF_FAKE_DOCS = 20;
-    List<String> docReferences;
-
-    @PostConstruct
-    private void initPoc() {
-	this.docReferences = generateDocRefArray();
-    }
-
-    private List<String> generateDocRefArray() {
-	List<String> listOfReferences = new ArrayList<String>();
-	for (int i = 0; i < NB_OF_FAKE_DOCS; i++) {
-	    listOfReferences.add("doc_" + (i + 1));
-	}
-	return listOfReferences;
     }
 
     @Override

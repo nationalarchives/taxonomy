@@ -1,11 +1,5 @@
 package uk.gov.nationalarchives.discovery.taxonomy.cli;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryEvaluationResult;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.EvaluationReport;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.EvaluationService;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.TrainingSetService;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,13 +16,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryEvaluationResult;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.EvaluationReport;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.EvaluationService;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.TrainingSetService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@SuppressWarnings("unused")
 @Component
 public class CLIRunner implements CommandLineRunner {
 
@@ -107,7 +107,7 @@ public class CLIRunner implements CommandLineRunner {
 	    logger.info("update categories scores ");
 	    String minNumber = cmd.getOptionValue(OPTION_MIN_ELEMENTS_PER_CAT);
 	    String maxNumber = cmd.getOptionValue(OPTION_MAX_ELEMENTS_PER_CAT);
-	    trainingSetService.updateCategoriesScores(Integer.valueOf(minNumber), Integer.valueOf(maxNumber));
+	    trainingSetService.updateCategoriesScores(Integer.parseInt(minNumber), Integer.parseInt(maxNumber));
 	}
 
 	if (cmd.hasOption(ACTION_UPDATE)) {

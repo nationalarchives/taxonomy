@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.lucene.document.Document;
@@ -69,7 +70,7 @@ public class EvaluationServiceImpl implements EvaluationService {
      * EvaluationService# createEvaluationTestDataset()
      */
     @Override
-    public void createEvaluationTestDataset(Integer pMinNbOfElementsPerCat) {
+    public void createEvaluationTestDataset(int pMinNbOfElementsPerCat) {
 	logger.info(".createEvaluationTestDataset> empty testDocument collection");
 	testDocumentRepository.deleteAll();
 
@@ -79,7 +80,7 @@ public class EvaluationServiceImpl implements EvaluationService {
 	for (Category category : categoryRepository.findAll()) {
 	    logger.info(".createEvaluationTestDataset: processing category: {}", category.getTtl());
 
-	    Integer nbOfMatchedElementsWithLegacySystem = 0;
+	    int nbOfMatchedElementsWithLegacySystem = 0;
 	    Integer page = 1;
 	    while (nbOfMatchedElementsWithLegacySystem < pMinNbOfElementsPerCat) {
 		Map<String, String[]> mapOfLegacyDocuments = legacySystemService.findLegacyDocumentsByCategory(
@@ -93,15 +94,15 @@ public class EvaluationServiceImpl implements EvaluationService {
 		    break;
 		}
 
-		for (String iaid : mapOfLegacyDocuments.keySet()) {
+		for (Entry<String, String[]> entryOfCategoriesForInformationAssetId : mapOfLegacyDocuments.entrySet()) {
 		    TopDocs topDocs = iaviewRepository.searchIAViewIndexByFieldAndPhrase(
-			    InformationAssetViewFields.DOCREFERENCE.toString(), iaid, 1);
+			    InformationAssetViewFields.DOCREFERENCE.toString(),
+			    entryOfCategoriesForInformationAssetId.getKey(), 1);
 
 		    if (topDocs.totalHits != 0) {
 			Document doc = iaviewRepository.getDoc(topDocs.scoreDocs[0]);
-			TestDocument testDocument = new TestDocument();
-			testDocument = LuceneTaxonomyMapper.getTestDocumentFromLuceneDocument(doc);
-			testDocument.setLegacyCategories(mapOfLegacyDocuments.get(iaid));
+			TestDocument testDocument = LuceneTaxonomyMapper.getTestDocumentFromLuceneDocument(doc);
+			testDocument.setLegacyCategories(entryOfCategoriesForInformationAssetId.getValue());
 			testDocumentRepository.save(testDocument);
 			nbOfMatchedElementsWithLegacySystem++;
 			currentSuccessfulAttempts++;

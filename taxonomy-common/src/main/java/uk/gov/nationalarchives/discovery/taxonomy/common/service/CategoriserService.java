@@ -9,6 +9,13 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 
+/**
+ * Service dedicated to the categorisation of documents
+ * 
+ * @author jcharlet
+ *
+ * @param <T>
+ */
 public interface CategoriserService<T extends CategorisationResult> {
 
     /**

@@ -17,7 +17,7 @@ public interface EvaluationService {
      * @param pMinNbOfElementsPerCat
      *            minimum number of documents to retrieve per category
      */
-    public void createEvaluationTestDataset(Integer pMinNbOfElementsPerCat);
+    public void createEvaluationTestDataset(int pMinNbOfElementsPerCat);
 
     /**
      * run categorisation on Test Documents and populate their category fields

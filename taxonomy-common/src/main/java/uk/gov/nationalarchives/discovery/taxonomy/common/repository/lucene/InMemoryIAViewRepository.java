@@ -186,7 +186,7 @@ public class InMemoryIAViewRepository {
 	}
 	if (iaView.getSOURCE() != null) {
 	    listOfUnmodifiedFields.add(new IntField(InformationAssetViewFields.SOURCE.toString(), Integer
-		    .valueOf(iaView.getSOURCE()), Field.Store.NO));
+		    .parseInt(iaView.getSOURCE()), Field.Store.NO));
 	}
 	return listOfUnmodifiedFields;
     }
