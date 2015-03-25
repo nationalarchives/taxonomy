@@ -265,8 +265,6 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceObjectId(int pageNumber, int pageSize, ObjectId id) {
 	Sort sort = new Sort(Direction.ASC, IAViewUpdate.ID_FIELDNAME);
 	PageRequest pageRequest = new PageRequest(pageNumber, pageSize, sort);
-	// FIXME Attention 1million duplicates on time: ms accuracy is not
-	// sufficient
 	return iaViewUpdateRepository.findByIdGreaterThan(id, pageRequest);
     }
 

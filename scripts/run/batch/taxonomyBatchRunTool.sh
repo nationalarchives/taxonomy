@@ -34,6 +34,7 @@ usage ()
 	echo "									'master' to profile master app"
 	echo "									'slave' to profile slave app"
 	echo
+	echo "	-dndl --doNotDisplayLogs	Do not show logs once the application is started"
 	echo "	-h --help			display help"
 	echo 
 	exit
@@ -85,6 +86,9 @@ while [ "$1" != "" ]; do
         -h | --help )           usage
                                 exit
                                 ;;
+		-dndl | --doNotDisplayLogs )
+								displayLogs=false
+								;;
         * )                     usage
                                 exit 1
     esac
@@ -166,30 +170,43 @@ runApplication()
 	echo
 	echo "APP ARGS: " $applicationArgs 
 	echo
-	echo java -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs
-	java -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs & 
+	echo nohup java -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 2>> /dev/null >> /dev/null & 
+	nohup java -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 2>> /dev/null >> /dev/null & 
 }
 
 case $batchType in
         master )     
 			runApplication
-			sleep 3
-			tail -f ${logsFolder}/batch/$logName
+			if [ "$displayLogs" = true ]
+			then
+				sleep 3
+				tail -f ${logsFolder}/batch/$logName
+			fi
             ;;
         slave )    
 			runApplication
-			sleep 3
-			tail -f ${logsFolder}/batch/$logName
+			if [ "$displayLogs" = true ]
+			then
+				sleep 3
+				tail -f ${logsFolder}/batch/$logName
+			fi
             ;;
         dailyUpdates )   
 			runApplication
-			sleep 3
-			tail -f ${logsFolder}/batch/$logName
+			if [ "$displayLogs" = true ]
+			then
+				sleep 3
+				tail -f ${logsFolder}/batch/$logName
+			fi
             ;;
         updateSolr )   
 			runApplication
 			sleep 3
-			tail -f ${logsFolder}/batch/$logName
+			if [ "$displayLogs" = true ]
+			then
+				sleep 3
+				tail -f ${logsFolder}/batch/$logName
+			fi
             ;;
     	masterSlaveCluster )
     	
@@ -208,7 +225,7 @@ case $batchType in
     		echo
     		echo
     		
-    		sleep 10
+    		sleep 5
     		for (( slaveNumber=1; slaveNumber<=$numberOfSlaves; slaveNumber++ ))
 			do
 				echo "Starting Slave$slaveNumber"
@@ -229,10 +246,12 @@ case $batchType in
     			runApplication
     			echo
     			echo
-    			sleep 2
 			done
-			tail -f ${logsFolder}/batch/master.log
 			
+			if [ "$displayLogs" = true ]
+			then
+    			sleep 2
+				tail -f ${logsFolder}/batch/master.log
+			fi
     		;;
 esac
-
