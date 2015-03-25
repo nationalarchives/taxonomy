@@ -1,6 +1,6 @@
 package uk.gov.nationalarchives.discovery.taxonomy.ws.model;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
 
 public class TaxonomyErrorResponse {
     private TaxonomyErrorType error;

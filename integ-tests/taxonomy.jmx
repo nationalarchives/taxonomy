@@ -212,7 +212,7 @@
           </ConfigTestElement>
           <hashTree/>
         </hashTree>
-        <SystemSampler guiclass="SystemSamplerGui" testclass="SystemSampler" testname="run unit test and package project" enabled="true">
+        <SystemSampler guiclass="SystemSamplerGui" testclass="SystemSampler" testname="run unit test and package project" enabled="false">
           <boolProp name="SystemSampler.checkReturnCode">true</boolProp>
           <stringProp name="SystemSampler.expectedReturnCode">0</stringProp>
           <stringProp name="SystemSampler.command">${BATCH_RUN_SCRIPT_LOCATION}/mvnPackage.sh</stringProp>
@@ -265,7 +265,7 @@
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="SystemSampler.directory"></stringProp>
-          <longProp name="SystemSampler.timeout">60000</longProp>
+          <longProp name="SystemSampler.timeout">80000</longProp>
         </SystemSampler>
         <hashTree/>
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="test dailyUpdates Batch" enabled="true"/>
@@ -1376,7 +1376,7 @@
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="SystemSampler.directory"></stringProp>
-          <longProp name="SystemSampler.timeout">60000</longProp>
+          <longProp name="SystemSampler.timeout">80000</longProp>
         </SystemSampler>
         <hashTree/>
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="test WS" enabled="true"/>
@@ -1523,7 +1523,7 @@
         </SystemSampler>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Test CLI" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Test CLI" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>

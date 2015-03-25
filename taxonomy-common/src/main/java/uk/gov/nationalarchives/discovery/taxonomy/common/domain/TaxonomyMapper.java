@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.mapper;
+package uk.gov.nationalarchives.discovery.taxonomy.common.domain;
 
 import java.util.Date;
 

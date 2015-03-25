@@ -3,6 +3,7 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import uk.gov.nationalarchives.discovery.taxonomy.common.config.ServiceConfigurationTest;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.TaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryEvaluationResult;
@@ -10,7 +11,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.TestDocument;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.PaginatedList;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.TSetBasedCategorisationResult;
-import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.TaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.legacy.LegacySystemRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.LuceneTestTrainingDataSet;
