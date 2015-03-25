@@ -1,12 +1,12 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryEvaluationResult;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.EvaluationReport;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.TestDocument;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.legacy.LegacySystemRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneTaxonomyMapper;

@@ -30,15 +30,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.annotation.Loggable;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.BrowseAllDocsResponse;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.PaginatedList;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneTaxonomyMapper;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.tools.TaxonomyHelperTools;
 
 /**
  * Repository dedicated the the retrieval, storage, search of IAViews on the
@@ -134,8 +133,6 @@ public class IAViewRepository {
 
     public PaginatedList<InformationAssetView> performSearch(String queryString, Double mimimumScore, Integer limit,
 	    Integer offset) {
-	long startTimer = TaxonomyHelperTools.startTimer();
-
 	PaginatedList<InformationAssetView> paginatedListOfIAViews = new PaginatedList<InformationAssetView>(limit,
 		offset, mimimumScore);
 	List<InformationAssetView> docs = new ArrayList<InformationAssetView>();
@@ -147,8 +144,7 @@ public class IAViewRepository {
 	    Query finalQuery = luceneHelperTools.buildSearchQueryWithFiltersIfNecessary(queryString, null);
 
 	    TopDocs topDocs = isearcher.search(finalQuery, offset + limit);
-	    logger.debug(".performSearch: found {} total hits, time: {}", topDocs.totalHits,
-		    TaxonomyHelperTools.getTimerDifference(startTimer));
+	    logger.debug(".performSearch: found {} total hits", topDocs.totalHits);
 
 	    if (mimimumScore != null) {
 		Integer nbOfElementsAboveScore = getNbOfElementsAboveScore(mimimumScore, isearcher, finalQuery);

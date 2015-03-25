@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.TaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.annotation.Loggable;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
@@ -32,7 +33,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.MongoInformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
-import uk.gov.nationalarchives.discovery.taxonomy.common.mapper.TaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.InMemoryIAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;

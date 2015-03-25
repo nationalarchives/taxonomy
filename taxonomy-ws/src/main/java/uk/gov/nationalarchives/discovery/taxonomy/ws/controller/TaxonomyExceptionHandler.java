@@ -1,7 +1,7 @@
 package uk.gov.nationalarchives.discovery.taxonomy.ws.controller;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyException;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.ws.model.TaxonomyErrorResponse;
 
 import org.apache.lucene.queryparser.classic.ParseException;

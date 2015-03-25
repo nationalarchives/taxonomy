@@ -2,11 +2,11 @@ package uk.gov.nationalarchives.discovery.taxonomy.ws.controller;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.TrainingDocument;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.PaginatedList;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepositoryTest;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;

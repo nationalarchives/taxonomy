@@ -12,8 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.tools.TaxonomyHelperTools;
-
 /**
  * Aspect that handles logging of methods across all layers when they are
  * accordingly annotated
@@ -25,12 +23,19 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.service.tools.TaxonomyH
 @Component
 public class MethodLogger {
 
+    /**
+     * Log the time spent by a method (for performance analysis)
+     * 
+     * @param point
+     * @return
+     * @throws Throwable
+     */
     @Around("@annotation(uk.gov.nationalarchives.discovery.taxonomy.common.domain.annotation.Loggable) && anyMethod()")
-    public Object around(ProceedingJoinPoint point) throws Throwable {
-	long start = TaxonomyHelperTools.startTimer();
+    public Object logTimeSpentByAMethod(ProceedingJoinPoint point) throws Throwable {
+	long start = startTimer();
 	Object result = point.proceed();
 	Logger logger = LoggerFactory.getLogger(point.getSignature().getDeclaringType());
-	long timerDifference = TaxonomyHelperTools.getTimerDifference(start);
+	long timerDifference = getTimerDifference(start);
 	String responseToLog = CollectionUtils.isEmpty(Arrays.asList(point.getArgs())) ? null : point.getArgs()[0]
 		.toString();
 	if (responseToLog != null && responseToLog.length() > 20) {
@@ -55,4 +60,13 @@ public class MethodLogger {
     public void anyMethod() {
     }
 
+    public static long startTimer() {
+	long start_time = System.nanoTime();
+	return start_time;
+    }
+
+    public static long getTimerDifference(long start_time) {
+	long end_time = startTimer();
+	return Math.round((end_time - start_time) / 1e6);
+    }
 }

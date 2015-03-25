@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.exception;
+package uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception;
 
 public enum TaxonomyErrorType {
 
