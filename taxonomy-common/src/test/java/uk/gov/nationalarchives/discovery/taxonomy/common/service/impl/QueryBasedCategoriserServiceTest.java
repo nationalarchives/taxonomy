@@ -32,7 +32,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.Inform
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrTaxonomyIAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncQueryBasedTaskManager;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncQueryBasedServiceTaskManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("queryBased")
@@ -86,7 +86,7 @@ public class QueryBasedCategoriserServiceTest {
 	QueryBasedCategoriserServiceImpl categoriserService = new QueryBasedCategoriserServiceImpl(
 		Mockito.mock(CategoryRepository.class), createIaViewRepositoryMock(),
 		createInMemoryIAViewRepositoryMock(), informationAssetViewMongoRepositoryMock,
-		iaViewUpdateRepositoryMock, Mockito.mock(AsyncQueryBasedTaskManager.class),
+		iaViewUpdateRepositoryMock, Mockito.mock(AsyncQueryBasedServiceTaskManager.class),
 		Mockito.mock(SolrTaxonomyIAViewRepository.class));
 
 	List<CategorisationResult> categorisationResults = categoriserService.categoriseSingle("C508096");

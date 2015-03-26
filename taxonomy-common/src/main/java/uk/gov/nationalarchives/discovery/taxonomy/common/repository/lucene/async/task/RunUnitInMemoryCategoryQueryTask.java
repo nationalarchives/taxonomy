@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.service.async.task;
+package uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.async.task;
 
 import java.util.concurrent.Callable;
 

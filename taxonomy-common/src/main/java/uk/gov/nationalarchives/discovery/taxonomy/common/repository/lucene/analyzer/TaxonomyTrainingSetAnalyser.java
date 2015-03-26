@@ -84,7 +84,7 @@ public final class TaxonomyTrainingSetAnalyser extends Analyzer {
 
     @Override
     public void close() {
-	LuceneHelperTools.closeTokenStreamQuietly(result);
+	LuceneHelperTools.closeCloseableObjectQuietly(result);
 	super.close();
     }
 

@@ -32,8 +32,8 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucen
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.async.AsyncQueryBasedLuceneTaskManager;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncQueryBasedTaskManager;
 
 @Repository
 @ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useQueryBasedCategoriser")
@@ -45,14 +45,14 @@ public class InMemoryIAViewRepository {
 
     private final LuceneHelperTools luceneHelperTools;
 
-    private final AsyncQueryBasedTaskManager asyncTaskManager;
+    private final AsyncQueryBasedLuceneTaskManager asyncTaskManager;
 
     @Value("${lucene.index.version}")
     private String luceneVersion;
 
     @Autowired
     public InMemoryIAViewRepository(Analyzer iaViewIndexAnalyser, LuceneHelperTools luceneHelperTools,
-	    AsyncQueryBasedTaskManager asyncTaskManager) {
+	    AsyncQueryBasedLuceneTaskManager asyncTaskManager) {
 	super();
 	this.iaViewIndexAnalyser = iaViewIndexAnalyser;
 	this.luceneHelperTools = luceneHelperTools;

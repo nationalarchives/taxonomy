@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.service.actor;
+package uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

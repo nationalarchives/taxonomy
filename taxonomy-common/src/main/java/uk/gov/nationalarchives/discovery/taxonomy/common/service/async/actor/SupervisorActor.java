@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.common.service.actor;
+package uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor;
 
 import java.util.HashSet;
 import java.util.Set;

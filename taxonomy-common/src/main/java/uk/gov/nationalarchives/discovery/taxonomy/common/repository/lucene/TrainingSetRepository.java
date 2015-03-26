@@ -96,7 +96,7 @@ public class TrainingSetRepository {
 	} catch (ParseException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
-	    LuceneHelperTools.closeIndexWriterQuietly(writer);
+	    LuceneHelperTools.closeCloseableObjectQuietly(writer);
 	}
     }
 
@@ -124,7 +124,7 @@ public class TrainingSetRepository {
 	} catch (ParseException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
-	    LuceneHelperTools.closeIndexWriterQuietly(writer);
+	    LuceneHelperTools.closeCloseableObjectQuietly(writer);
 	}
     }
 }
