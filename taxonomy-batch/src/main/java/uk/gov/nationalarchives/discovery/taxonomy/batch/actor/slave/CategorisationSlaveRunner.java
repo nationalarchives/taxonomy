@@ -63,17 +63,17 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
 	// Integer afterDocNumber = getAfterDocNumberFromArgs(args);
 
 	trackDeadLetters();
-	actorSystem.actorOf(Props.create(CategorisationWorkerActor.class, supervisorAddress, categoriserService,
-		luceneHelperTools, categoryRepository), "workerActor");
+	ActorRef worker = actorSystem.actorOf(Props.create(CategorisationWorkerActor.class, supervisorAddress,
+		categoriserService, luceneHelperTools, categoryRepository), "workerActor");
 
 	Thread.sleep(2000);
 
 	if (this.startEpic) {
-	    ActorSelection actorSelection = actorSystem.actorSelection(supervisorAddress);
+	    ActorSelection supervisorReference = actorSystem.actorSelection(supervisorAddress);
 	    if (afterDocNumber == null) {
-		actorSelection.tell(new CategoriseAllDocumentsEpic(), null);
+		supervisorReference.tell(new CategoriseAllDocumentsEpic(), worker);
 	    } else {
-		actorSelection.tell(new CategoriseAllDocumentsEpic(this.afterDocNumber), null);
+		supervisorReference.tell(new CategoriseAllDocumentsEpic(this.afterDocNumber), worker);
 	    }
 	}
     }

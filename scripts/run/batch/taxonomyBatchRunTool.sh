@@ -30,7 +30,7 @@ usage ()
 	echo "	-aa --applicationArgs <application args>	provide application arguments"
 	echo
 	echo "	-jp --jProfiler		profile with JProfiler." 
-	echo "	-jpt --jProfilerTarget		If batchType=masterSlaveCluster, select which app to profile:"
+	echo "	-jpt --jProfilerTarget	<jProfilerTarget>	If --jProfiler AND batchType=masterSlaveCluster, select which app to profile:"
 	echo "									'master' to profile master app"
 	echo "									'slave' to profile slave app"
 	echo
@@ -49,6 +49,7 @@ logName=
 useJprofiler=false
 jProfilerTarget=
 doesSlaveStartEpic=true
+displayLogs=true
 
 # Tutorial on shell script with list of operators for if, while, etc statements:
 # http://linuxcommand.org/lc3_wss0080.php
@@ -225,7 +226,7 @@ case $batchType in
     		echo
     		echo
     		
-    		sleep 5
+    		sleep 8
     		for (( slaveNumber=1; slaveNumber<=$numberOfSlaves; slaveNumber++ ))
 			do
 				echo "Starting Slave$slaveNumber"

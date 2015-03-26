@@ -75,7 +75,7 @@ batch.role:
  categorise-all.supervisor: false
  categorise-all.slave: false
 batch.categorise-all:
- message-size: 100
+ message-size: 1000
  supervisor-address: akka.tcp://supervisor@127.0.0.1:2552/user/supervisorActor
  afterDocNumber: 
  startEpic: true
