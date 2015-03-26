@@ -7,6 +7,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseAllDocumentsEpic;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor.CategorisationWorkerActor;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor.DeadLetterActor;
 import akka.actor.ActorRef;
@@ -18,14 +21,21 @@ import akka.actor.Props;
 ;
 
 /**
- * A main class to start up the application.
+ * Slave Batch that works on categorising all documents<br/>
+ * main task is to start the worker (slave) actor
+ * 
+ * @see CategorisationWorkerActor
  */
 @Component
 @ConditionalOnProperty(prefix = "batch.role.", value = { "categorise-all.slave" })
+@SuppressWarnings("rawtypes")
 public class CategorisationSlaveRunner implements CommandLineRunner {
 
     private final ActorSystem deadLettersActorSystem;
     private final ActorSystem actorSystem;
+    private final CategoriserService categoriserService;
+    private final LuceneHelperTools luceneHelperTools;
+    private final CategoryRepository categoryRepository;
 
     @Value("${batch.categorise-all.supervisor-address}")
     private String supervisorAddress;
@@ -37,10 +47,15 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
     private Boolean startEpic;
 
     @Autowired
-    public CategorisationSlaveRunner(ActorSystem deadLettersActorSystem, ActorSystem actorSystem) {
+    public CategorisationSlaveRunner(ActorSystem deadLettersActorSystem, ActorSystem actorSystem,
+	    CategoriserService categoriserService, LuceneHelperTools luceneHelperTools,
+	    CategoryRepository categoryRepository) {
 	super();
 	this.deadLettersActorSystem = deadLettersActorSystem;
 	this.actorSystem = actorSystem;
+	this.categoriserService = categoriserService;
+	this.luceneHelperTools = luceneHelperTools;
+	this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -48,7 +63,8 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
 	// Integer afterDocNumber = getAfterDocNumberFromArgs(args);
 
 	trackDeadLetters();
-	actorSystem.actorOf(Props.create(CategorisationWorkerActor.class, supervisorAddress), "workerActor");
+	actorSystem.actorOf(Props.create(CategorisationWorkerActor.class, supervisorAddress, categoriserService,
+		luceneHelperTools, categoryRepository), "workerActor");
 
 	Thread.sleep(2000);
 

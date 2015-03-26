@@ -6,7 +6,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor.CategorisationSupervisorActor;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor.CategorisationWorkerActor;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor.DeadLetterActor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -16,10 +19,14 @@ import akka.actor.Props;
 ;
 
 /**
- * A main class to start up the application.
+ * Supervisor Batch that works on categorising all documents<br/>
+ * main task is to start the supervisor actor
+ * 
+ * @see CategorisationSupervisorActor
  */
 @Component
 @ConditionalOnProperty(prefix = "batch.role.", value = { "categorise-all.supervisor" })
+@SuppressWarnings("rawtypes")
 public class CategorisationSupervisorRunner implements CommandLineRunner {
 
     // private static final Logger logger =
@@ -30,20 +37,25 @@ public class CategorisationSupervisorRunner implements CommandLineRunner {
 
     private final ActorSystem deadLettersActorSystem;
     private final ActorSystem actorSystem;
+    private final IAViewService iaViewService;
+    private final CategoriserService categoriserService;
 
     @Autowired
-    public CategorisationSupervisorRunner(ActorSystem deadLettersActorSystem, ActorSystem actorSystem) {
+    public CategorisationSupervisorRunner(ActorSystem deadLettersActorSystem, ActorSystem actorSystem,
+	    IAViewService iaViewService, CategoriserService categoriserService) {
 	super();
 	this.deadLettersActorSystem = deadLettersActorSystem;
 	this.actorSystem = actorSystem;
+	this.iaViewService = iaViewService;
+	this.categoriserService = categoriserService;
     }
 
     @Override
     public void run(String... args) throws Exception {
 	trackDeadLetters();
 
-	actorSystem.actorOf(Props.create(CategorisationSupervisorActor.class, nbOfDocsToCategoriseAtATime),
-		"supervisorActor");
+	actorSystem.actorOf(Props.create(CategorisationSupervisorActor.class, nbOfDocsToCategoriseAtATime,
+		iaViewService, categoriserService), "supervisorActor");
     }
 
     private void trackDeadLetters() {

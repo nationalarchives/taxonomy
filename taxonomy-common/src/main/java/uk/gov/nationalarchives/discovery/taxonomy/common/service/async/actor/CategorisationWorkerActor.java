@@ -6,8 +6,6 @@ import java.util.List;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
@@ -22,24 +20,24 @@ import akka.actor.ActorSelection;
 import akka.actor.UntypedActor;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-@Configurable(preConstruction = true)
 public class CategorisationWorkerActor extends UntypedActor {
 
-    @Autowired
-    private CategoriserService categoriserService;
+    private final CategoriserService categoriserService;
 
-    @Autowired
-    private LuceneHelperTools luceneHelperTools;
+    private final LuceneHelperTools luceneHelperTools;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     private Logger logger;
 
     private List<CategoryWithLuceneQuery> cachedCategories = new ArrayList<CategoryWithLuceneQuery>();
 
-    public CategorisationWorkerActor(String supervisorAddress) {
+    public CategorisationWorkerActor(String supervisorAddress, CategoriserService categoriserService,
+	    LuceneHelperTools luceneHelperTools, CategoryRepository categoryRepository) {
 	super();
+	this.categoriserService = categoriserService;
+	this.luceneHelperTools = luceneHelperTools;
+	this.categoryRepository = categoryRepository;
 
 	this.logger = LoggerFactory.getLogger(CategorisationWorkerActor.class);
 
@@ -48,7 +46,6 @@ public class CategorisationWorkerActor extends UntypedActor {
 	ActorSelection actorSelection = getContext().actorSelection(supervisorAddress);
 	actorSelection.tell(new RegisterWorker(), getSelf());
 	actorSelection.tell(new GimmeWork(), getSelf());
-
     }
 
     private void cacheCategoryQueries() {
@@ -79,10 +76,6 @@ public class CategorisationWorkerActor extends UntypedActor {
 	} else {
 	    unhandled(message);
 	}
-    }
-
-    public void setCategoriserService(CategoriserService categoriserService) {
-	this.categoriserService = categoriserService;
     }
 
 }

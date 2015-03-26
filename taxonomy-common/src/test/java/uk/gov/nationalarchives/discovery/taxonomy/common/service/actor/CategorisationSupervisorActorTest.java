@@ -35,16 +35,15 @@ public class CategorisationSupervisorActorTest {
 
     @Test
     public void testCreateEpic() {
-	final Props props = Props.create(CategorisationSupervisorActor.class, nbOfDocsToCategoriseAtATime);
-	final TestActorRef<CategorisationSupervisorActor> ref = TestActorRef.create(actorSystem, props, "testA");
-	final CategorisationSupervisorActor actor = ref.underlyingActor();
-
 	CategoriserService categoriserService = Mockito.mock(CategoriserService.class);
 	IAViewService iaViewService = Mockito.mock(IAViewService.class);
 	Mockito.when(iaViewService.getTotalNbOfDocs()).thenReturn(10);
 
-	actor.setCategoriserService(categoriserService);
-	actor.setIaViewService(iaViewService);
+	final Props props = Props.create(CategorisationSupervisorActor.class, nbOfDocsToCategoriseAtATime,
+		iaViewService, categoriserService);
+	final TestActorRef<CategorisationSupervisorActor> ref = TestActorRef.create(actorSystem, props, "testA");
+	final CategorisationSupervisorActor actor = ref.underlyingActor();
+
 	actor.startEpic(new CategoriseAllDocumentsEpic());
 
 	Mockito.verify(iaViewService, Mockito.times(1)).getTotalNbOfDocs();
