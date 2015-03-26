@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor.CategorisationSupervisorActor;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor.CategorisationWorkerActor;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor.DeadLetterActor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;

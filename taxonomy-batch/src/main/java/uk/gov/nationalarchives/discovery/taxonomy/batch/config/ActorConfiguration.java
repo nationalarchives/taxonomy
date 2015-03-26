@@ -37,9 +37,6 @@ public class ActorConfiguration {
 	    system = ActorSystem.create("slave", ConfigFactory.load("slave.conf"));
 	}
 
-	// initialize the application context in the Akka Spring Extension
-	// SpringExtProvider.get(system).initialize(applicationContext);
-
 	// system.logConfiguration();
 	return system;
     }
@@ -47,8 +44,6 @@ public class ActorConfiguration {
     @Bean
     public ActorSystem deadLettersActorSystem() {
 	ActorSystem system = ActorSystem.create("DeadLetters");
-	// initialize the application context in the Akka Spring Extension
-	// SpringExtProvider.get(system).initialize(applicationContext);
 	return system;
     }
 

@@ -150,11 +150,7 @@ public class CategorisationSupervisorActor extends SupervisorActor {
 	return null;
     }
 
-    /**
-     * This method must be synchronized because lastElementRetrieved must be
-     * updated before the next bunch of documents can be processed
-     */
-    public synchronized String[] getNextDocumentsToCategorise() {
+    public String[] getNextDocumentsToCategorise() {
 	switch (status) {
 	case INITIATED:
 	case ONGOING:

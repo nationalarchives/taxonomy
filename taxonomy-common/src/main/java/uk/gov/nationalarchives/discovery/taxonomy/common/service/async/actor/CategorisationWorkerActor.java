@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseDocuments;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CurrentlyBusy;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.GimmeWork;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.RegisterWorker;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.WorkAvailable;
@@ -58,7 +59,9 @@ public class CategorisationWorkerActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
-	if (message instanceof WorkAvailable) {
+	if (message instanceof CurrentlyBusy) {
+	    this.logger.warn("Supervisor is currently busy.");
+	} else if (message instanceof WorkAvailable) {
 	    this.logger.debug("received WorkAvailable");
 	    getSender().tell(new GimmeWork(), getSelf());
 
