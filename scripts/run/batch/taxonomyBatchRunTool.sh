@@ -96,10 +96,10 @@ while [ "$1" != "" ]; do
 done
 
 
-masterJvmArgs="-javaagent:${agentPath} -Xbootclasspath/a:${agentPath}"
+masterJvmArgs=
 masterApplicationArgs="--batch.role.udpate-solr-cloud=false --batch.role.check-categorisation-request-messages=false --batch.role.categorise-all=true --batch.role.categorise-all.supervisor=true --batch.role.categorise-all.slave=false --server.port=0"
 
-slaveJvmArgs="-javaagent:${agentPath} -Xbootclasspath/a:${agentPath} -Dakka.remote.netty.tcp.port=0"
+slaveJvmArgs="-Dakka.remote.netty.tcp.port=0"
 slaveApplicationArgs="--batch.role.udpate-solr-cloud=false --batch.role.check-categorisation-request-messages=false --batch.role.categorise-all=true --batch.role.categorise-all.supervisor=false --batch.role.categorise-all.slave=true --server.port=0"
 slaveStarterExtraApplicationArgs="--batch.categorise-all.startEpic=true"
 slaveClassicExtraApplicationArgs="--batch.categorise-all.startEpic=false"

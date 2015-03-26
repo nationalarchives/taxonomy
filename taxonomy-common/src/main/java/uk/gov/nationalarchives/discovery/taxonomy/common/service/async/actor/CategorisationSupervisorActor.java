@@ -5,8 +5,6 @@ import java.util.List;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.lucene.search.FieldDoc;
 import org.apache.lucene.search.ScoreDoc;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.util.CollectionUtils;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
@@ -16,10 +14,8 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Ca
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseDocuments;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
-import akka.actor.ActorSystem;
 
 @SuppressWarnings("rawtypes")
-@Configurable(preConstruction = true)
 public class CategorisationSupervisorActor extends SupervisorActor {
 
     private final int nbOfDocsToCategoriseAtATime;
@@ -28,18 +24,16 @@ public class CategorisationSupervisorActor extends SupervisorActor {
     private ScoreDoc lastElementRetrieved = null;
     private CategorisationStatusEnum status = CategorisationStatusEnum.NOT_STARTED;
 
-    @Autowired
-    private IAViewService iaViewService;
+    private final IAViewService iaViewService;
 
-    @Autowired
-    private CategoriserService categoriserService;
+    private final CategoriserService categoriserService;
 
-    @Autowired
-    private ActorSystem actorSystem;
-
-    public CategorisationSupervisorActor(int nbOfDocsToCategoriseAtATime) {
+    public CategorisationSupervisorActor(int nbOfDocsToCategoriseAtATime, IAViewService iaViewService,
+	    CategoriserService categoriserService) {
 	super();
 	this.nbOfDocsToCategoriseAtATime = nbOfDocsToCategoriseAtATime;
+	this.iaViewService = iaViewService;
+	this.categoriserService = categoriserService;
 	this.logger.info("Initiated Categorisation Supervisor Actor");
     }
 
@@ -186,14 +180,6 @@ public class CategorisationSupervisorActor extends SupervisorActor {
 	    return null;
 	}
 
-    }
-
-    public void setIaViewService(IAViewService iaViewService) {
-	this.iaViewService = iaViewService;
-    }
-
-    public void setCategoriserService(CategoriserService categoriserService) {
-	this.categoriserService = categoriserService;
     }
 
 }

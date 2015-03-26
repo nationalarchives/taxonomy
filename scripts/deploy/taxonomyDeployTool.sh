@@ -121,9 +121,6 @@ function_deployTaxonomyPackages () {
 	ssh -t ${server} sudo mv ${tmpFolder}/taxonomy-ws-0.0.1-SNAPSHOT.war ${wsPackageFolder}/
 	ssh -t ${server} sudo mv ${tmpFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar ${batchPackageFolder}/
 	
-	# Deploy Spring agent dedicated to aspect weaving for the batch application
-	scp  /home/jcharlet/.m2/repository/org/springframework/spring-instrument/4.0.7.RELEASE/spring-instrument-4.0.7.RELEASE.jar ${USER}@${server}:$tmpFolder
-	ssh -t ${server} sudo mv ${tmpFolder}/spring-instrument-4.0.7.RELEASE.jar ${batchPackageFolder}/
 	
 	ssh ${server} rm -rf $tmpFolder/taxonomy-*
 	

@@ -6,8 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableLoadTimeWeaving;
-import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 
 import akka.actor.ActorSystem;
 
@@ -19,8 +17,6 @@ import com.typesafe.config.ConfigFactory;
 @Configuration
 @ConditionalOnProperty(prefix = "batch.role.", value = "categorise-all")
 @ConfigurationProperties(prefix = "batch.role.categorise-all")
-@EnableSpringConfigured
-@EnableLoadTimeWeaving
 public class ActorConfiguration {
 
     // the application context is needed to initialize the Akka Spring Extension
