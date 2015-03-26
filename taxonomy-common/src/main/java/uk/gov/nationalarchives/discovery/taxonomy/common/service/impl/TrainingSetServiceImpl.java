@@ -12,7 +12,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.TrainingSetService;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncTSetBasedTaskManager;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncTSetBasedServiceTaskManager;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -67,7 +67,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     private Integer maxTrainingDocsPerCategory;
 
     @Autowired
-    AsyncTSetBasedTaskManager asyncExecutor;
+    AsyncTSetBasedServiceTaskManager asyncExecutor;
 
     /*
      * (non-Javadoc)
@@ -193,7 +193,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	} catch (java.text.ParseException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
-	    LuceneHelperTools.closeIndexWriterQuietly(writer);
+	    LuceneHelperTools.closeCloseableObjectQuietly(writer);
 	}
 	logger.info(".deleteAndUpdateTraingSetIndexForCategory: operation completed");
     }
@@ -227,7 +227,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	} catch (java.text.ParseException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
-	    LuceneHelperTools.closeIndexWriterQuietly(writer);
+	    LuceneHelperTools.closeCloseableObjectQuietly(writer);
 	}
 	logger.info("index training set ended");
 
@@ -332,7 +332,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 
 	lockPublicationOnCategory(category);
 
-	asyncExecutor.updateTrainingSetDbAndIndex(category);
+	asyncExecutor.updateTrainingSetDbAndIndex(category, this);
     }
 
     private void checkLockOnCategory(Category category) {

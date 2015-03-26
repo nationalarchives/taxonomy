@@ -77,7 +77,7 @@ public class LuceneTestTrainingDataSet {
 	} catch (java.text.ParseException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
-	    LuceneHelperTools.closeIndexWriterQuietly(writer);
+	    LuceneHelperTools.closeCloseableObjectQuietly(writer);
 	}
     }
 

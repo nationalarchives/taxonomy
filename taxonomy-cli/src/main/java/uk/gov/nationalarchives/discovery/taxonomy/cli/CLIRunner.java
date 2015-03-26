@@ -28,7 +28,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.service.TrainingSetServ
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@SuppressWarnings("unused")
 @Component
 public class CLIRunner implements CommandLineRunner {
 

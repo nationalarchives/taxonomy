@@ -4,8 +4,6 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Filter;
@@ -50,10 +48,10 @@ public class LuceneHelperTools {
      * @param searcherManager
      * @param searcher
      */
-    public static void releaseSearcherManagerQuietly(SearcherManager iaviewSearcherManager, IndexSearcher searcher) {
+    public static void releaseSearcherManagerQuietly(SearcherManager searcherManager, IndexSearcher searcher) {
 	try {
 	    if (searcher != null) {
-		iaviewSearcherManager.release(searcher);
+		searcherManager.release(searcher);
 		searcher = null;
 	    }
 	} catch (IOException | AlreadyClosedException ioe) {
@@ -75,39 +73,6 @@ public class LuceneHelperTools {
 	    }
 	} catch (IOException ioe) {
 	    logger.error("closeCloseableObjectQuietly failed", ioe);
-	}
-    }
-
-    /**
-     * Close a writer without throwing any error<br/>
-     * log if any error occurs
-     * 
-     * @param writer
-     */
-    public static void closeIndexWriterQuietly(IndexWriter writer) {
-	try {
-	    if (writer != null) {
-		writer.close();
-		writer = null;
-	    }
-	} catch (IOException | AlreadyClosedException e) {
-	    logger.error("closeWriterQuietly failed", e);
-	}
-    }
-
-    /**
-     * Close a tokenStream without throwing any error<br/>
-     * log if any error occurs
-     * 
-     * @param tokenStream
-     */
-    public static void closeTokenStreamQuietly(TokenStream tokenStream) {
-	try {
-	    if (tokenStream != null) {
-		tokenStream.close();
-	    }
-	} catch (IOException | AlreadyClosedException e) {
-	    logger.error("closeWriterQuietly failed", e);
 	}
     }
 

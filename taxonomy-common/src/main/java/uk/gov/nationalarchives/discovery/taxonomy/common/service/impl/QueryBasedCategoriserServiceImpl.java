@@ -40,7 +40,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.IAView
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.InformationAssetViewMongoRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrTaxonomyIAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncQueryBasedTaskManager;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncQueryBasedServiceTaskManager;
 
 @Service("categoriserService")
 @ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useQueryBasedCategoriser")
@@ -58,7 +58,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
     private final IAViewUpdateRepository iaViewUpdateRepository;
 
-    private final AsyncQueryBasedTaskManager asyncTaskManager;
+    private final AsyncQueryBasedServiceTaskManager asyncTaskManager;
 
     private final SolrTaxonomyIAViewRepository solrTaxonomyIAViewRepository;
 
@@ -66,7 +66,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     public QueryBasedCategoriserServiceImpl(CategoryRepository categoryRepository, IAViewRepository iaViewRepository,
 	    InMemoryIAViewRepository inMemoryiaViewRepository,
 	    InformationAssetViewMongoRepository iaViewMongoRepository, IAViewUpdateRepository iaViewUpdateRepository,
-	    AsyncQueryBasedTaskManager asyncTaskManager, SolrTaxonomyIAViewRepository solrTaxonomyIAViewRepository) {
+	    AsyncQueryBasedServiceTaskManager asyncTaskManager, SolrTaxonomyIAViewRepository solrTaxonomyIAViewRepository) {
 	super();
 	this.categoryRepository = categoryRepository;
 	this.iaViewRepository = iaViewRepository;
