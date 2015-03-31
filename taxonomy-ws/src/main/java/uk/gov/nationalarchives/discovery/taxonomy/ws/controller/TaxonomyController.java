@@ -1,5 +1,18 @@
 package uk.gov.nationalarchives.discovery.taxonomy.ws.controller;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
@@ -12,23 +25,8 @@ import uk.gov.nationalarchives.discovery.taxonomy.ws.model.PublishRequest;
 import uk.gov.nationalarchives.discovery.taxonomy.ws.model.SearchIAViewRequest;
 import uk.gov.nationalarchives.discovery.taxonomy.ws.model.TestCategoriseSingleRequest;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @RestController
-@EnableAutoConfiguration
 @RequestMapping("/taxonomy")
 public class TaxonomyController {
 

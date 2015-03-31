@@ -15,10 +15,10 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.stereotype.Component;
 
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 
 @Configuration
-@EnableMongoRepositories
+@EnableMongoRepositories(basePackages = "uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo")
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 @EnableConfigurationProperties
 @Component
@@ -66,9 +66,8 @@ public class MongoConfiguration {
      * @return
      * @throws Exception
      */
-    @SuppressWarnings("deprecation")
     public @Bean MongoDbFactory mongoDbFactory() throws Exception {
-	return new SimpleMongoDbFactory(new Mongo(host, port), database);
+	return new SimpleMongoDbFactory(new MongoClient(host, port), database);
     }
 
     public @Bean MongoTemplate mongoTemplate() throws Exception {
@@ -80,17 +79,14 @@ public class MongoConfiguration {
 	return new MongoTemplate(mongoDbFactory(), converter);
     }
 
-    @SuppressWarnings("deprecation")
-    public @Bean MongoDbFactory categoriesMongoDbFactory() throws Exception {
-	return new SimpleMongoDbFactory(new Mongo(categoriesHost, categoriesPort), database);
-    }
-
     public @Bean MongoTemplate categoriesMongoTemplate() throws Exception {
-	MappingMongoConverter converter = new MappingMongoConverter(
-		new DefaultDbRefResolver(categoriesMongoDbFactory()), new MongoMappingContext());
+	MongoDbFactory categoriesMongoDbFactory = new SimpleMongoDbFactory(new MongoClient(categoriesHost,
+		categoriesPort), database);
+	MappingMongoConverter converter = new MappingMongoConverter(new DefaultDbRefResolver(categoriesMongoDbFactory),
+		new MongoMappingContext());
 	// remove _class
 	converter.setTypeMapper(new DefaultMongoTypeMapper(null));
 
-	return new MongoTemplate(categoriesMongoDbFactory(), converter);
+	return new MongoTemplate(categoriesMongoDbFactory, converter);
     }
 }

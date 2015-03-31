@@ -1,6 +1,7 @@
 #!/bin/bash
 echo LOAD CONF LOCAL
 
+javaBinary=/usr/java/jdk1.8.0_40/bin/java
 server=
 
 cliPackageFolder=/home/jcharlet/_workspace/cat/taxonomy-cli/target

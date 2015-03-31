@@ -5,9 +5,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.Train
 import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface TrainingDocumentRepository extends CrudRepository<TrainingDocument, Long>,
 	TrainingDocumentRepositoryCustom {
 

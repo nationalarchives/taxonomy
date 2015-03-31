@@ -1,16 +1,14 @@
 package uk.gov.nationalarchives.discovery.taxonomy;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrTaxonomyIAViewRepository;
 
-@ComponentScan
-@EnableAutoConfiguration
+@SpringBootApplication
 @PropertySource("application.yml")
 public class WSApplication {
 
