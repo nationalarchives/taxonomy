@@ -2,20 +2,6 @@ package uk.gov.nationalarchives.discovery.taxonomy.ws.controller;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.TrainingDocument;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.PaginatedList;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepositoryTest;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.ws.model.PublishRequest;
-import uk.gov.nationalarchives.discovery.taxonomy.ws.model.SearchIAViewRequest;
-import uk.gov.nationalarchives.discovery.taxonomy.ws.model.TaxonomyErrorResponse;
-import uk.gov.nationalarchives.discovery.taxonomy.ws.model.TestCategoriseSingleRequest;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -32,11 +18,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
+
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.TrainingDocument;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.PaginatedList;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepositoryTest;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.ws.model.PublishRequest;
+import uk.gov.nationalarchives.discovery.taxonomy.ws.model.SearchIAViewRequest;
+import uk.gov.nationalarchives.discovery.taxonomy.ws.model.TaxonomyErrorResponse;
+import uk.gov.nationalarchives.discovery.taxonomy.ws.model.TestCategoriseSingleRequest;
 
 @ActiveProfiles("tsetBased")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -161,10 +165,17 @@ public class TaxonomyControllerTest {
 
     @Test
     public final void testTestCategoriseSingleDocumentWithMissingDescriptionAndDocRef() {
+	HttpHeaders headers = new HttpHeaders();
+	headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+	headers.setContentType((MediaType.APPLICATION_JSON));
+
 	TestCategoriseSingleRequest request = new TestCategoriseSingleRequest();
 	request.setTitle("TRINITY Church of England School.");
+	HttpEntity<TestCategoriseSingleRequest> requestEntity = new HttpEntity<TestCategoriseSingleRequest>(request,
+		headers);
+
 	ResponseEntity<TaxonomyErrorResponse> response = restTemplate.postForEntity(WS_URL
-		+ WS_PATH_TEST_CATEGORISE_SINGLE, request, TaxonomyErrorResponse.class);
+		+ WS_PATH_TEST_CATEGORISE_SINGLE, requestEntity, TaxonomyErrorResponse.class);
 
 	assertThat(response.getBody(), is(notNullValue()));
 	assertThat(response.getBody().getError(), equalTo(TaxonomyErrorType.INVALID_PARAMETER));

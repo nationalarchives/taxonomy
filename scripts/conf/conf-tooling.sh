@@ -1,6 +1,7 @@
 #!/bin/bash
 echo LOAD CONF TOOLING
 
+javaBinary=***REMOVED***java-1.8.0-oracle.x64/bin/java
 server=***REMOVED***
 
 cliPackageFolder=/home/jcharlet/apps/taxonomy/package;

@@ -1,5 +1,6 @@
 spring.profiles.active: queryBased,local
 
+spring.dao.exceptiontranslation.enabled: false
 logging.level.uk.gov.nationalarchives.discovery.taxonomy: DEBUG
 
 spring:

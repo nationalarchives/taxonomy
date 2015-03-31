@@ -70,6 +70,7 @@ do
 	
 	clear
 	echo "Categorisation started on " $fullStartDate
+	echo "Current time: " $(date)
 	echo "refreshing every $timeBetweenRefresh seconds"
 	
 	if [[ $nbOfDocsCategorised != 0 ]]

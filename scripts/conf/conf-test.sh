@@ -1,6 +1,7 @@
 #!/bin/bash
 echo LOAD CONF TEST
 
+javaBinary=***REMOVED***java-1.8.0-oracle.x64/bin/java
 server=***REMOVED***
 
 cliPackageFolder=***REMOVED***taxonomy/packages;

@@ -54,7 +54,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
     private final InMemoryIAViewRepository inMemoryiaViewRepository;
 
-    private final InformationAssetViewMongoRepository iaViewMongoRepository;
+    private final InformationAssetViewMongoRepository informationAssetViewMongoRepository;
 
     private final IAViewUpdateRepository iaViewUpdateRepository;
 
@@ -65,15 +65,16 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     @Autowired
     public QueryBasedCategoriserServiceImpl(CategoryRepository categoryRepository, IAViewRepository iaViewRepository,
 	    InMemoryIAViewRepository inMemoryiaViewRepository,
-	    InformationAssetViewMongoRepository iaViewMongoRepository, IAViewUpdateRepository iaViewUpdateRepository,
-	    AsyncQueryBasedServiceTaskManager asyncTaskManager, SolrTaxonomyIAViewRepository solrTaxonomyIAViewRepository) {
+	    InformationAssetViewMongoRepository informationAssetViewMongoRepository,
+	    IAViewUpdateRepository iaViewUpdateRepository, AsyncQueryBasedServiceTaskManager asyncQueryBasedServiceTaskManager,
+	    SolrTaxonomyIAViewRepository solrTaxonomyIAViewRepository) {
 	super();
 	this.categoryRepository = categoryRepository;
 	this.iaViewRepository = iaViewRepository;
 	this.inMemoryiaViewRepository = inMemoryiaViewRepository;
-	this.iaViewMongoRepository = iaViewMongoRepository;
+	this.informationAssetViewMongoRepository = informationAssetViewMongoRepository;
 	this.iaViewUpdateRepository = iaViewUpdateRepository;
-	this.asyncTaskManager = asyncTaskManager;
+	this.asyncTaskManager = asyncQueryBasedServiceTaskManager;
 	this.solrTaxonomyIAViewRepository = solrTaxonomyIAViewRepository;
     }
 
@@ -199,7 +200,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	MongoInformationAssetView mongoIAViewFromLuceneIAView = TaxonomyMapper.getMongoIAViewFromLuceneIAView(iaView,
 		creationDate);
 	mongoIAViewFromLuceneIAView.setCategories(categories);
-	iaViewMongoRepository.save(mongoIAViewFromLuceneIAView);
+	informationAssetViewMongoRepository.save(mongoIAViewFromLuceneIAView);
     }
 
     private List<CategoryLight> getListOfCategoryLightFromListOfCatResult(
