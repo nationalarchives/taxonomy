@@ -1,7 +1,5 @@
 spring.profiles.active: queryBased,local
 
-logging.level.uk.gov.nationalarchives.discovery.taxonomy: DEBUG
-
 spring:
  data:
   mongodb:
@@ -48,6 +46,13 @@ lucene:
   iaViewMaxCachedMB: 60.0
   defaultTaxonomyField: textnocasnopunc
 
+#ENVIRONMENT RELATED
+mongo.categories.host: ${taxonomy.cli.application.yml.mongo.categories.host}
+
+lucene.index:
+ iaviewCollectionPath: ${taxonomy.cli.application.yml.lucene.index.iaviewcollectionpath} 
+ trainingSetCollectionPath: ${taxonomy.cli.application.yml.lucene.index.trainingsetcollectionpath} 
+  
 ---
 spring.profiles: queryBased
 lucene:
@@ -61,43 +66,16 @@ lucene:
  categoriser:
   useTSetBasedCategoriser: true
   useQueryBasedCategoriser: false
-
+  
 ---
 spring.profiles: local
 
-mongo.categories.host: localhost
-
-lucene.index:
- iaviewCollectionPath: /mnt/search_indexes/index_20150217/data/index
- trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
-  
-logging.config: classpath:log4j.properties
-
----
-spring.profiles: tooling
-
-mongo.categories.host: ***REMOVED***.***REMOVED***
-   
-lucene.index:
- iaviewCollectionPath: ***REMOVED***solr/collection5/data/index
- trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
-
-logging.config: classpath:log4j-tooling.properties
-
----
-spring.profiles: test-platform
-
-mongo.categories.host: ***REMOVED***.***REMOVED***
-   
-lucene.index:
- iaviewCollectionPath: ***REMOVED***solr/collection1/data/index
- trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
-
-logging.config: "classpath:log4j-test.properties"
-logging.level.uk.gov.nationalarchives.discovery.taxonomy: INFO
-
-spring.activemq:
- broker-url: tcp://localhost:8984
- user***REMOVED***
- password***REMOVED***
-  
+# fake profile for development purpose only
+#
+# either set in your IDE environment variables for the application Env related variables using that convention:
+# 		TAXONOMY_APPLICATION_KEY=value 
+# 		(replace dots from vars here by underscores and make it upper case)
+# 	OR create a file application-local.yml locally with those env related variables filled with proper values
+#
+# Do the same for logging configuration
+# 	If you chose the 2nd solution, add this in your yml file: "logging.config: classpath:log4j2-local.json"

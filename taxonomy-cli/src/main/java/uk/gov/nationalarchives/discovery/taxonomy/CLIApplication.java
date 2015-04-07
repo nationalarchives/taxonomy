@@ -15,7 +15,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrTax
 
 @ComponentScan
 @EnableAutoConfiguration
-@PropertySource("application.yml")
+@PropertySource(value = { "application.yml" })
 public class CLIApplication {
 
     public static void main(String[] args) throws IOException, ParseException {

@@ -80,8 +80,8 @@ public class CLIRunner implements CommandLineRunner {
     public void run(String... args) throws IOException, ParseException, org.apache.commons.cli.ParseException {
 
 	logger.info("Start cat CLI Runner.");
-	logger.info("mongo host: {}", host);
-	logger.info("mongo Index path: {}", iaviewCollectionPath);
+	logger.debug("mongo host: {}", host);
+	logger.debug("mongo Index path: {}", iaviewCollectionPath);
 
 	final String[] cliArgs = filterInputToGetOnlyCliArguments(args);
 
@@ -91,7 +91,7 @@ public class CLIRunner implements CommandLineRunner {
 	CommandLine cmd = parser.parse(options, cliArgs);
 
 	if (cliArgs.length > 0) {
-	    logger.info("args: {} ", Arrays.asList(cliArgs).toString());
+	    logger.debug("args: {} ", Arrays.asList(cliArgs).toString());
 	} else {
 	    logger.warn("no valid argument provided");
 	    logger.info("Stop cat CLI Runner.");
