@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "export app env var"
 fileDir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd $fileDir
 

@@ -1,6 +1,7 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 source ../../conf/conf.sh;
+source ../../conf/exportAppEnvVar.sh taxonomy-batch;
 
 
 
@@ -171,7 +172,7 @@ runApplication()
 	echo
 	echo "APP ARGS: " $applicationArgs 
 	echo
-	echo nohup $javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 2>> /dev/null >> /dev/null & 
+	echo "nohup $javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 2>> /dev/null >> /dev/null &" 
 	nohup $javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 2>> /dev/null >> /dev/null & 
 }
 
