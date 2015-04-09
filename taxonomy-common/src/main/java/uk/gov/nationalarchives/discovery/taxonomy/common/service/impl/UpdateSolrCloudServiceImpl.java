@@ -24,8 +24,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.service.UpdateSolrCloud
 @ConditionalOnProperty(prefix = "solr.cloud.", value = "host")
 public class UpdateSolrCloudServiceImpl implements UpdateSolrCloudService {
 
-    private static final String FIELD_MODIFIER_KEY_ADD = "add";
-
     private static final String FIELD_MODIFIER_KEY_SET = "set";
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateSolrCloudServiceImpl.class);
@@ -80,12 +78,16 @@ public class UpdateSolrCloudServiceImpl implements UpdateSolrCloudService {
     private SolrInputDocument createDocumentForAtomicUpdate(String docReference, List<CategoryLight> categories) {
 	SolrInputDocument solrInputDocument = new SolrInputDocument();
 	solrInputDocument.addField(InformationAssetViewFields.DOCREFERENCE.toString(), docReference);
+	List<String> listOfCiaidAndTtls = new ArrayList<String>();
+	List<String> listOfCiaids = new ArrayList<String>();
 	for (CategoryLight category : categories) {
-	    addFieldToSolrInputDocument(InformationAssetViewFields.TAXONOMY.toString(), category.getCiaidAndTtl(),
-		    solrInputDocument);
-	    addFieldToSolrInputDocument(InformationAssetViewFields.TAXONOMYID.toString(), category.getCiaid(),
-		    solrInputDocument);
+	    listOfCiaidAndTtls.add(category.getCiaidAndTtl());
+	    listOfCiaids.add(category.getCiaid());
 	}
+	addMultiValuedFieldToSolrInputDocument(InformationAssetViewFields.TAXONOMY.toString(), listOfCiaidAndTtls,
+		solrInputDocument);
+	addMultiValuedFieldToSolrInputDocument(InformationAssetViewFields.TAXONOMYID.toString(), listOfCiaids,
+		solrInputDocument);
 	resetFieldOnSolrDocument(InformationAssetViewFields.TAXONOMY.toString(), solrInputDocument);
 	resetFieldOnSolrDocument(InformationAssetViewFields.TAXONOMYID.toString(), solrInputDocument);
 	return solrInputDocument;
@@ -97,9 +99,10 @@ public class UpdateSolrCloudServiceImpl implements UpdateSolrCloudService {
 	solrInputDocument.addField(fieldToReset, removeFieldModifier);
     }
 
-    private void addFieldToSolrInputDocument(String fieldKey, String fieldValue, SolrInputDocument solrInputDocument) {
-	Map<String, Object> addFieldModifier = new HashMap<>(1);
-	addFieldModifier.put(FIELD_MODIFIER_KEY_ADD, fieldValue);
-	solrInputDocument.addField(fieldKey, addFieldModifier);
+    private void addMultiValuedFieldToSolrInputDocument(String fieldKey, List<String> fieldValues,
+	    SolrInputDocument solrInputDocument) {
+	Map<String, List<String>> setFieldModifier = new HashMap<String, List<String>>();
+	setFieldModifier.put(FIELD_MODIFIER_KEY_SET, fieldValues);
+	solrInputDocument.addField(fieldKey, setFieldModifier);
     }
 }
