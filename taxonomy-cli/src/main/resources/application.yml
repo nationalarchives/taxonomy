@@ -46,13 +46,31 @@ lucene:
   iaViewMaxCachedMB: 60.0
   defaultTaxonomyField: textnocasnopunc
 
-#ENVIRONMENT RELATED
-mongo.categories.host: ${taxonomy.cli.application.yml.mongo.categories.host}
+logging.config: classpath:log4j2-conf.json
+
+
+#################################
+#      ENVIRONMENT RELATED      #
+#################################
+
+mongo.categories.host: ${taxonomy.batch.application.yml.mongo.categories.host}
 
 lucene.index:
- iaviewCollectionPath: ${taxonomy.cli.application.yml.lucene.index.iaviewcollectionpath} 
- trainingSetCollectionPath: ${taxonomy.cli.application.yml.lucene.index.trainingsetcollectionpath} 
+ iaviewCollectionPath: ${taxonomy.batch.application.yml.lucene.index.iaviewcollectionpath} 
+ trainingSetCollectionPath: ${taxonomy.batch.application.yml.lucene.index.trainingsetcollectionpath} 
   
+spring.activemq:
+ broker-url: ${taxonomy.batch.application.yml.spring.activemq.broker.url} 
+ user: ${taxonomy.batch.application.yml.spring.activemq.user} 
+ password: ${taxonomy.batch.application.yml.spring.activemq.password} 
+ 
+solr.cloud.host: ${taxonomy.batch.application.yml.solr.cloud.host} 
+solr.taxonomy.host: ${taxonomy.batch.application.yml.solr.taxonomy.host} 
+
+#################################
+#       SPECIFIC PROFILES       #
+#################################  
+
 ---
 spring.profiles: queryBased
 lucene:
@@ -66,7 +84,7 @@ lucene:
  categoriser:
   useTSetBasedCategoriser: true
   useQueryBasedCategoriser: false
-  
+
 ---
 spring.profiles: local
 

@@ -105,7 +105,5 @@ lucene.index:
  iaviewCollectionPath: ../taxonomy-common/src/test/resources/dataset/lucene/iaviews
  trainingSetCollectionPath: ../taxonomy-common/src/test/resources/dataset/lucene/trainingset
 
-logging.config: classpath:log4j.properties
-
 server:
  port: 8085

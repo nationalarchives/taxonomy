@@ -41,6 +41,16 @@
 					<testTarget>1.8</testTarget>
 				</configuration>
 			</plugin>
+			<!-- To prevent including local config files when packaging locally (from dev pc) -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/*-local.*</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 

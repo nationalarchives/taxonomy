@@ -15,6 +15,6 @@ tmpFolder=/tmp
 logsFolder=***REMOVED***taxonomy/logs;
 iaViewIndexFolder=***REMOVED***solr/collection1/data/index;
 
-profile=test-platform,queryBased
+profile=queryBased
 mongoDbHostName=***REMOVED***.***REMOVED***
 port=8983

@@ -4,17 +4,10 @@
       "properties": {
          "property": {
             "name":"FileNameAndPath",
-            "value":"${env:TAXONOMY_CLI_LOG4J_PROPERTIES_LOG4J_APPENDER_FILE_FILE}"
+            "value":"${env:TAXONOMY_CLI_LOG4J_PROPERTIES_LOG4J_APPENDER_FILE_FILEPATH}/${sys:logfile.name}"
          }
       },
       "appenders": {
-         "Console": {
-            "name":"Console",
-            "target":"SYSTEM_OUT",
-            "PatternLayout": {
-               "pattern":"%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"
-            }
-         },
          "RollingFile":{
          	"name":"File",
          	"fileName":"${FileNameAndPath}",
@@ -22,27 +15,27 @@
             "PatternLayout": {
                "pattern":"%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"
             },
-            "SizeBasedTriggeringPolicy": 
-            	{ "size": "5 MB" },
-            "DefaultRolloverStrategy": 
-            	{ "max": "10" }            
+            "SizeBasedTriggeringPolicy": { 
+            	"size":"${env:TAXONOMY_BATCH_LOG4J_PROPERTIES_SIZEBASEDTRIGGERINGPOLICY_SIZE}" 
+            	},
+            "DefaultRolloverStrategy": { 
+            	"max":"${env:TAXONOMY_BATCH_LOG4J_PROPERTIES_DEFAULTROLLOVERSTRATEGY_MAX}" 
+            	}            
          }
       },
       "loggers": {
 		"logger": {
 			"name":"uk.gov.nationalarchives.discovery.taxonomy",
-			"level":"${env:TAXONOMY_CLI_LOG4J_PROPERTIES_TAXONOMY_LEVEL}",
-			"appender-ref": {
-               "ref":"Console"
-            },
+			"level":"${env:TAXONOMY_BATCH_LOG4J_PROPERTIES_TAXONOMY_LEVEL}",
+			"additivity":"false",
 			"appender-ref": {
                "ref":"File"
             }
 		},
          "root": {
             "level":"WARN",
-            "appender-ref": {
-               "ref":"Console"
+			"appender-ref": {
+               "ref":"File"
             }
          }
       }

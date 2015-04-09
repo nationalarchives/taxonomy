@@ -1,0 +1,41 @@
+{
+   "configuration": {
+      "name": "Default",
+      "properties": {
+         "property": {
+            "name":"FileNameAndPath",
+            "value":"${env:TAXONOMY_WS_LOG4J_PROPERTIES_LOG4J_APPENDER_FILE_FILE}"
+         }
+      },
+      "appenders": {
+         "RollingFile":{
+         	"name":"File",
+         	"fileName":"${FileNameAndPath}",
+         	"filePattern":"${FileNameAndPath}-%d{yyyy-MM-dd}-%i",
+            "PatternLayout": {
+               "pattern":"%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"
+            },
+            "SizeBasedTriggeringPolicy": 
+            	{ "size":"${env:TAXONOMY_WS_LOG4J_PROPERTIES_SIZEBASEDTRIGGERINGPOLICY_SIZE}" },
+            "DefaultRolloverStrategy": 
+            	{ "max":"${env:TAXONOMY_WS_LOG4J_PROPERTIES_DEFAULTROLLOVERSTRATEGY_MAX}" }            
+         }
+      },
+      "loggers": {
+		"logger": {
+			"name":"uk.gov.nationalarchives.discovery.taxonomy",
+			"level":"${env:TAXONOMY_WS_LOG4J_PROPERTIES_TAXONOMY_LEVEL}",
+			"additivity":"false",
+			"appender-ref": {
+               "ref":"File"
+            }
+		},
+         "root": {
+            "level":"WARN",
+			"appender-ref": {
+               "ref":"File"
+            }
+         }
+      }
+   }
+}

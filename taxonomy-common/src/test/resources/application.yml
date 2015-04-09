@@ -93,8 +93,6 @@ lucene.index:
  iaviewCollectionPath: src/test/resources/dataset/lucene/iaviews
  trainingSetCollectionPath: src/test/resources/dataset/lucene/trainingset
 
-logging.config: classpath:log4j.properties
-
 solr.cloud.host: http://localhost:8983/solr/iaview_unittest/
 solr.taxonomy.host:
 solr.cloud.testcore.path: src/test/resources/dataset/solr

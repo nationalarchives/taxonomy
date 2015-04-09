@@ -15,6 +15,6 @@ tmpFolder=/tmp
 logsFolder=/home/jcharlet/apps/taxonomy/logs;
 iaViewIndexFolder=***REMOVED***solr/collection2/data/index;
 
-profile=tooling,queryBased
+profile=queryBased
 mongoDbHostName=***REMOVED***.***REMOVED***
 port=9001

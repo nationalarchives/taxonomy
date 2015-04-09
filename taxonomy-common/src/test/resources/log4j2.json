@@ -1,0 +1,30 @@
+{
+   "configuration": {
+      "name": "Default",
+      "appenders": {
+         "Console": {
+            "name":"Console",
+            "target":"SYSTEM_OUT",
+            "PatternLayout": {
+               "pattern":"%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"
+            }
+         }
+      },
+      "loggers": {
+		"logger": {
+			"name":"uk.gov.nationalarchives.discovery.taxonomy",
+			"level":"INFO",
+			"additivity":"false",
+			"appender-ref": {
+               "ref":"Console"
+            }
+		},
+         "root": {
+            "level":"WARN",
+            "appender-ref": {
+               "ref":"Console"
+            }
+         }
+      }
+   }
+}

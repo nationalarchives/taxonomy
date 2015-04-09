@@ -1,8 +1,5 @@
 spring.profiles.active: queryBased,local
 
-spring.dao.exceptiontranslation.enabled: false
-logging.level.uk.gov.nationalarchives.discovery.taxonomy: DEBUG
-
 spring:
  data:
   mongodb:
@@ -49,6 +46,26 @@ lucene:
   iaViewMaxCachedMB: 60.0
   defaultTaxonomyField: textnocasnopunc
 
+logging.config: classpath:log4j2-conf.json
+
+
+#################################
+#      ENVIRONMENT RELATED      #
+#################################
+
+mongo.categories.host: ${taxonomy.ws.application.yml.mongo.categories.host}
+
+lucene.index:
+ iaviewCollectionPath: ${taxonomy.ws.application.yml.lucene.index.iaviewcollectionpath} 
+ trainingSetCollectionPath: ${taxonomy.ws.application.yml.lucene.index.trainingsetcollectionpath}
+  
+server.port: ${taxonomy.ws.application.yml.server.port}
+
+
+#################################
+#       SPECIFIC PROFILES       #
+#################################  
+
 ---
 spring.profiles: queryBased
 lucene:
@@ -66,47 +83,12 @@ lucene:
 ---
 spring.profiles: local
 
-mongo.categories.host: localhost
-
-lucene.index:
- iaviewCollectionPath: /mnt/search_indexes/index_20150217/data/index
- trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
-  
-logging.config: classpath:log4j.properties
-
-server:
- port: 8090
- 
----
-spring.profiles: tooling
-
-mongo.categories.host: ***REMOVED***.***REMOVED***
-   
-lucene.index:
- iaviewCollectionPath: ***REMOVED***solr/collection5/data/index
- trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
-
-logging.config: classpath:log4j-tooling.properties
-  
-server:
- port: 9001
-
----
-spring.profiles: test-platform
-
-mongo.categories.host: ***REMOVED***.***REMOVED***
-   
-lucene.index:
- iaviewCollectionPath: ***REMOVED***solr/collection1/data/index
- trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
-
-logging.config: "classpath:log4j-test.properties"
-logging.level.uk.gov.nationalarchives.discovery.taxonomy: INFO
-
-spring.activemq:
- broker-url: tcp://localhost:8984
- user***REMOVED***
- password***REMOVED***
-  
-server:
- port: 8983
+# fake profile for development purpose only
+#
+# either set in your IDE environment variables for the application Env related variables using that convention:
+# 		TAXONOMY_APPLICATION_KEY=value 
+# 		(replace dots from vars here by underscores and make it upper case)
+# 	OR create a file application-local.yml locally with those env related variables filled with proper values
+#
+# Do the same for logging configuration
+# 	If you chose the 2nd solution, add this in your yml file: "logging.config: classpath:log4j2-local.json"
