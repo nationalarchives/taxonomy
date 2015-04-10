@@ -63,34 +63,6 @@ lucene:
   useQueryBasedCategoriser: false
 
 ---
-spring.profiles: local
-
-mongo.categories.host: localhost
-
-lucene.index:
- iaviewCollectionPath: /mnt/search_indexes/index_20150217/data/index
- trainingSetCollectionPath: /opt/solr/solr/collection2/data/index
-  
-logging.config: classpath:log4j.properties
-
-server:
- port: 8090
- 
----
-spring.profiles: tooling
-
-mongo.categories.host: localhost
-   
-lucene.index:
- iaviewCollectionPath: ***REMOVED***solr/collection5/data/index
- trainingSetCollectionPath: ***REMOVED***solr/collection2/data/index
-
-logging.config: classpath:log4j-tooling.properties
-  
-server:
- port: 9001
- 
----
 spring.profiles: test
 
 spring.data:
