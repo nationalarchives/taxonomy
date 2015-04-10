@@ -1,5 +1,5 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
-source ../../conf/scripts/exportGlobalEnvVar.sh;
+source ../../conf/exportEnvVar.sh taxonomy-global;
 tail -f ${logsFolder}/ws/logging.log

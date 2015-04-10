@@ -4,7 +4,7 @@
       "properties": {
          "property": {
             "name":"FileNameAndPath",
-            "value":"${env:TAXONOMY_CLI_LOG4J_PROPERTIES_LOG4J_APPENDER_FILE_FILEPATH}/${sys:logfile.name}"
+            "value":"${env:TAXONOMY_BATCH_LOG4J_PROPERTIES_LOG4J_APPENDER_FILE_FILEPATH}${sys:logfile.name}"
          }
       },
       "appenders": {
