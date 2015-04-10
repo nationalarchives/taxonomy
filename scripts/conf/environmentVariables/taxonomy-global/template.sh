@@ -1,21 +1,21 @@
 #!/bin/bash
 echo load conf global local
-confFolder=/home/jcharlet/_workspace/sysdev-config/applications
+confFolder=/path/to/conf
 
-javaBinary=/usr/java/jdk1.8.0_40/bin/java
+javaBinary=/path/to/java
 server=local
 
-cliPackageFolder=/home/jcharlet/_workspace/cat/taxonomy-cli/target
-wsPackageFolder=/home/jcharlet/_workspace/cat/taxonomy-ws/target
+cliPackageFolder=/path/to/package
+wsPackageFolder=/path/to/package
 
-batchPackageFolder=/home/jcharlet/_workspace/cat/taxonomy-batch/target
+batchPackageFolder=/path/to/package
 
 scriptsFolder=
 tmpFolder=/tmp
 
-logsFolder=/home/jcharlet/apps/taxonomy/logs
-iaViewIndexFolder=/mnt/search_indexes/index_20150217
+logsFolder=/path/to/logs
+iaViewIndexFolder=/path/to/index
 
 profile=queryBased
 mongoDbHostName=localhost
-port=8090
+port=8080
