@@ -23,6 +23,11 @@ public class CLIApplication {
 	SpringApplication.exit(application, new ExitCodeGenerator[0]);
     }
 
+    // FIXME a better approach would be to init categoriserService here with
+    // @Bean annotation and depending on the presence of SolrRepo, use a
+    // catService constructor that uses it or without
+    // see
+    // http://stackoverflow.com/questions/19225115/how-to-do-conditional-auto-wiring-in-spring
     /**
      * This bean is used in categoriserService but dedicated method is not
      * useful for the CLI

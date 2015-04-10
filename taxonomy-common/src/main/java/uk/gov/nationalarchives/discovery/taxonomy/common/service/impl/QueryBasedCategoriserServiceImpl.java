@@ -66,7 +66,8 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     public QueryBasedCategoriserServiceImpl(CategoryRepository categoryRepository, IAViewRepository iaViewRepository,
 	    InMemoryIAViewRepository inMemoryiaViewRepository,
 	    InformationAssetViewMongoRepository informationAssetViewMongoRepository,
-	    IAViewUpdateRepository iaViewUpdateRepository, AsyncQueryBasedServiceTaskManager asyncQueryBasedServiceTaskManager,
+	    IAViewUpdateRepository iaViewUpdateRepository,
+	    AsyncQueryBasedServiceTaskManager asyncQueryBasedServiceTaskManager,
 	    SolrTaxonomyIAViewRepository solrTaxonomyIAViewRepository) {
 	super();
 	this.categoryRepository = categoryRepository;

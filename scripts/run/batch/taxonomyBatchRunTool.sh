@@ -1,7 +1,6 @@
 #!/bin/bash
 cd "$(dirname "$0")"
-source ../../conf/conf.sh;
-source ../../conf/exportAppEnvVar.sh taxonomy-batch;
+source ../../conf/scripts/exportAppEnvVar.sh taxonomy-batch;
 
 
 
