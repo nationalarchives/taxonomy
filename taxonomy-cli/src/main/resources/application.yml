@@ -48,7 +48,7 @@ lucene:
 
 logging.config: classpath:log4j2-conf.json
 
-
+  
 #################################
 #      ENVIRONMENT RELATED      #
 #################################
@@ -59,6 +59,11 @@ lucene.index:
  iaviewCollectionPath: ${taxonomy.cli.application.yml.lucene.index.iaviewcollectionpath} 
  trainingSetCollectionPath: ${taxonomy.cli.application.yml.lucene.index.trainingsetcollectionpath} 
  
+legacySystem:
+ hostUrl: ${taxonomy.cli.application.yml.legacySystem.hostUrl} 
+ proxy: 
+  host: ${taxonomy.cli.application.yml.legacySystem.proxy.host} 
+  port: ${taxonomy.cli.application.yml.legacySystem.proxy.port} 
 #################################
 #       SPECIFIC PROFILES       #
 #################################  

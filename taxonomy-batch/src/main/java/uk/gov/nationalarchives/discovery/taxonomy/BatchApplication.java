@@ -5,9 +5,12 @@ import java.text.ParseException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.legacy.impl.LegacySystemRepositoryImpl;
 
 @Configuration
 @ComponentScan
@@ -19,4 +22,14 @@ public class BatchApplication {
 	SpringApplication.run(BatchApplication.class, args);
     }
 
+    /**
+     * This bean is used in EvaluationService but dedicated method is not useful
+     * for the batch
+     * 
+     * @return
+     */
+    @Bean
+    LegacySystemRepositoryImpl legacySystemRepository() {
+	return null;
+    };
 }

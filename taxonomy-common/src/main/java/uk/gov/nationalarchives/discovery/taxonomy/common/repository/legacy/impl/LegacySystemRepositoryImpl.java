@@ -15,6 +15,8 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -30,20 +32,27 @@ import org.springframework.web.client.RestTemplate;
  *
  */
 @Repository
+@ConditionalOnProperty(prefix = "legacySystem.", value = "hostUrl")
 public class LegacySystemRepositoryImpl implements LegacySystemRepository {
     private static final Logger logger = LoggerFactory.getLogger(EvaluationServiceImpl.class);
 
-    private String legacySystemHostUrl = "http://test.legacy.discovery.nationalarchives.gov.uk/DiscoveryAPI/json/";
+    @Value("${legacySystem.hostUrl}")
+    private String legacySystemHostUrl;
+
+    @Value("${legacySystem.proxy.port}")
+    private int proxyPort;
+
+    @Value("${legacySystem.proxy.host}")
+    private String proxyHost;
+
     private String legacySystemSearchExactUrl = "search/{page}/exact={catdocref}";
     private String legacySystemSearchQueryUrl = "search/{page}/query={queryValue}";
-    private int proxyPort = 8080;
-    private String proxyUrl = "***REMOVED***.***REMOVED***";
 
     /*
      * (non-Javadoc)
      * 
-     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.LegacySystemService#
-     * getLegacyCategoriesForCatDocRef(java.lang.String)
+     * @see uk.gov.nationalarchives.discovery.taxonomy.common.service.impl.
+     * LegacySystemService# getLegacyCategoriesForCatDocRef(java.lang.String)
      */
     @Override
     public String[] getLegacyCategoriesForCatDocRef(String pCatdocref) {
@@ -69,7 +78,7 @@ public class LegacySystemRepositoryImpl implements LegacySystemRepository {
 
     private ResponseEntity<LegacySearchResponse> submitSearchRequest(String url, String parameterValue, int page) {
 	SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-	requestFactory.setProxy(new Proxy(Type.HTTP, new InetSocketAddress(proxyUrl, proxyPort)));
+	requestFactory.setProxy(new Proxy(Type.HTTP, new InetSocketAddress(proxyHost, proxyPort)));
 	try {
 	    RestTemplate restTemplate = new RestTemplate(requestFactory);
 	    ResponseEntity<LegacySearchResponse> entityResponse = restTemplate.getForEntity(legacySystemHostUrl + url,
