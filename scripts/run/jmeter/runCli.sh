@@ -1,4 +1,4 @@
 #!/bin/bash
-cd "$(dirname "$0")"
-source ../../conf/conf.sh;
+currentDirectory=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd );
+cd $currentDirectory;
 source ../cli/runCli.sh -help

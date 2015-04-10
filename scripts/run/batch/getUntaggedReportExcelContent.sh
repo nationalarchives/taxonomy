@@ -1,7 +1,6 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
-source ../../conf/conf.sh;
 echo ""
 echo ""
 echo ""
