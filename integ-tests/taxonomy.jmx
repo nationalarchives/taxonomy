@@ -143,75 +143,17 @@
           </Arguments>
           <hashTree/>
         </hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TEST" enabled="false"/>
-        <hashTree>
-          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="SOLR_TAXONOMY_HOST" elementType="Argument">
-                <stringProp name="Argument.name">SOLR_TAXONOMY_HOST</stringProp>
-                <stringProp name="Argument.value">***REMOVED***</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="SOLR_TAXONOMY_PORT" elementType="Argument">
-                <stringProp name="Argument.name">SOLR_TAXONOMY_PORT</stringProp>
-                <stringProp name="Argument.value">8985</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="SOLR_TAXONOMY_COLLECTION" elementType="Argument">
-                <stringProp name="Argument.name">SOLR_TAXONOMY_COLLECTION</stringProp>
-                <stringProp name="Argument.value">IAVIEWS_SNAPSHOT</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="SOLR_CLOUD_HOST" elementType="Argument">
-                <stringProp name="Argument.name">SOLR_CLOUD_HOST</stringProp>
-                <stringProp name="Argument.value">***REMOVED***</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="SOLR_CLOUD_PORT" elementType="Argument">
-                <stringProp name="Argument.name">SOLR_CLOUD_PORT</stringProp>
-                <stringProp name="Argument.value">8985</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="SOLR_CLOUD_COLLECTION" elementType="Argument">
-                <stringProp name="Argument.name">SOLR_CLOUD_COLLECTION</stringProp>
-                <stringProp name="Argument.value">testUpdatesCollection</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="ACTIVEMQ_HOST" elementType="Argument">
-                <stringProp name="Argument.name">ACTIVEMQ_HOST</stringProp>
-                <stringProp name="Argument.value">***REMOVED***</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="ACTIVEMQ_PORT" elementType="Argument">
-                <stringProp name="Argument.name">ACTIVEMQ_PORT</stringProp>
-                <stringProp name="Argument.value">8984</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="ACTIVEMQ_QUEUE_CATEGORISEDOC" elementType="Argument">
-                <stringProp name="Argument.name">ACTIVEMQ_QUEUE_CATEGORISEDOC</stringProp>
-                <stringProp name="Argument.value">CATEGORISE.DOCUMENTS</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </Arguments>
-          <hashTree/>
-          <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="PROXY" enabled="true">
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain"></stringProp>
-            <stringProp name="HTTPSampler.port"></stringProp>
-            <stringProp name="HTTPSampler.proxyHost">http://***REMOVED***.***REMOVED***:</stringProp>
-            <stringProp name="HTTPSampler.proxyPort">8080</stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path"></stringProp>
-            <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
-          </ConfigTestElement>
-          <hashTree/>
-        </hashTree>
+        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="TEST Config (move to root)" enabled="false">
+          <stringProp name="delimiter">;</stringProp>
+          <stringProp name="fileEncoding">UTF-8</stringProp>
+          <stringProp name="filename">/home/jcharlet/_workspace/sysdev-config/conf/jmeter/taxonomy/test.csv</stringProp>
+          <boolProp name="quotedData">true</boolProp>
+          <boolProp name="recycle">true</boolProp>
+          <stringProp name="shareMode">shareMode.all</stringProp>
+          <boolProp name="stopThread">false</boolProp>
+          <stringProp name="variableNames">SOLR_TAXONOMY_HOST,SOLR_TAXONOMY_PORT,SOLR_TAXONOMY_COLLECTION,SOLR_CLOUD_HOST,SOLR_CLOUD_PORT,SOLR_CLOUD_COLLECTION,ACTIVEMQ_HOST,ACTIVEMQ_PORT,ACTIVEMQ_QUEUE_CATEGORISEDOC,WS_TAXONOMY_HOST,WS_TAXONOMY_PORT,WS_TAXONOMY_PATH</stringProp>
+        </CSVDataSet>
+        <hashTree/>
         <SystemSampler guiclass="SystemSamplerGui" testclass="SystemSampler" testname="run unit test and package project" enabled="false">
           <boolProp name="SystemSampler.checkReturnCode">true</boolProp>
           <stringProp name="SystemSampler.expectedReturnCode">0</stringProp>
@@ -238,9 +180,15 @@
           <stringProp name="SystemSampler.directory"></stringProp>
         </SystemSampler>
         <hashTree/>
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="true">
+          <boolProp name="displayJMeterProperties">true</boolProp>
+          <boolProp name="displayJMeterVariables">true</boolProp>
+          <boolProp name="displaySystemProperties">false</boolProp>
+        </DebugSampler>
+        <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Test WS" enabled="false">
-        <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Test WS" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
@@ -458,8 +406,14 @@
           <stringProp name="SystemSampler.directory"></stringProp>
         </SystemSampler>
         <hashTree/>
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="true">
+          <boolProp name="displayJMeterProperties">true</boolProp>
+          <boolProp name="displayJMeterVariables">true</boolProp>
+          <boolProp name="displaySystemProperties">false</boolProp>
+        </DebugSampler>
+        <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Test CLI" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Test CLI" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -485,7 +439,7 @@
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="SystemSampler.directory"></stringProp>
-          <longProp name="SystemSampler.timeout">60000</longProp>
+          <longProp name="SystemSampler.timeout">100000</longProp>
         </SystemSampler>
         <hashTree>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Check Help was displayed" enabled="true">
@@ -499,6 +453,12 @@
           </ResponseAssertion>
           <hashTree/>
         </hashTree>
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="true">
+          <boolProp name="displayJMeterProperties">true</boolProp>
+          <boolProp name="displayJMeterVariables">true</boolProp>
+          <boolProp name="displaySystemProperties">false</boolProp>
+        </DebugSampler>
+        <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Test Batches" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
@@ -515,7 +475,7 @@
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="test dailyUpdates Batch" enabled="false"/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="test dailyUpdates Batch" enabled="true"/>
         <hashTree>
           <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments">
@@ -1674,6 +1634,12 @@
           </SystemSampler>
           <hashTree/>
         </hashTree>
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="true">
+          <boolProp name="displayJMeterProperties">true</boolProp>
+          <boolProp name="displayJMeterVariables">true</boolProp>
+          <boolProp name="displaySystemProperties">false</boolProp>
+        </DebugSampler>
+        <hashTree/>
       </hashTree>
       <PostThreadGroup guiclass="PostThreadGroupGui" testclass="PostThreadGroup" testname="FINALLY stop all taxonomy services" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
