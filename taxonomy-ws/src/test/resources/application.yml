@@ -79,7 +79,7 @@ server:
 ---
 spring.profiles: tooling
 
-mongo.categories.host: ***REMOVED***.***REMOVED***
+mongo.categories.host: localhost
    
 lucene.index:
  iaviewCollectionPath: ***REMOVED***solr/collection5/data/index
