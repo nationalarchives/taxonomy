@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.legacy.impl.LegacySystemRepositoryImpl;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrTaxonomyIAViewRepository;
 
 @SpringBootApplication
@@ -31,5 +32,16 @@ public class WSApplication {
     public SolrTaxonomyIAViewRepository solrTaxonomyIAViewRepository() {
 	return null;
     }
+
+    /**
+     * This bean is used in EvaluationService but dedicated method is not useful
+     * for the WS
+     * 
+     * @return
+     */
+    @Bean
+    LegacySystemRepositoryImpl legacySystemRepository() {
+	return null;
+    };
 
 }
