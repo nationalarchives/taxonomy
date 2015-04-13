@@ -3,7 +3,6 @@ spring.profiles.active: queryBased,local,batch
 spring:
  data:
   mongodb:
-   host: localhost
    port: 27017
    database: taxonomy
 
@@ -68,6 +67,13 @@ spring.activemq:
 solr.cloud.host: ${taxonomy.batch.application.yml.solr.cloud.host} 
 solr.taxonomy.host: ${taxonomy.batch.application.yml.solr.taxonomy.host} 
 
+
+batch.categorise-all:
+ supervisor-hostname: ${taxonomy.batch.application.yml.batch.categorise.all.supervisor.hostname} 
+ supervisor-port: ${taxonomy.batch.application.yml.batch.categorise.all.supervisor.port} 
+
+spring.data.mongodb.host: ${taxonomy.batch.application.yml.spring.data.mongodb.host}
+
 #################################
 #       SPECIFIC PROFILES       #
 #################################  
@@ -97,7 +103,6 @@ batch.role:
  categorise-all.slave: false
 batch.categorise-all:
  message-size: 1000
- supervisor-address: akka.tcp://supervisor@127.0.0.1:2552/user/supervisorActor
  afterDocNumber: 
  startEpic: true
 batch.update-solr-cloud:

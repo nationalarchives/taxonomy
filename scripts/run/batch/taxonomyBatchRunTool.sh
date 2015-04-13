@@ -15,6 +15,7 @@ usage ()
 	echo "								'master' : Categorise All - Master	"
 	echo "								'slave' : Categorise All - Slave	"
 	echo "								'masterSlaveCluster' : Categorise All - Master + Cluster of n slaves"
+	echo "								'remoteSlaveCluster' : Categorise All - Cluster of n slaves for remote master"
 	echo "								'dailyUpdates' : apply daily Updates	"
 	echo "								'updateSolr' : update Solr from Mongo db entries"
 	echo
@@ -226,7 +227,7 @@ case $batchType in
     		echo
     		echo
     		
-    		sleep 8
+    		sleep 6
     		for (( slaveNumber=1; slaveNumber<=$numberOfSlaves; slaveNumber++ ))
 			do
 				echo "Starting Slave$slaveNumber"
@@ -244,6 +245,7 @@ case $batchType in
 					fi
 				fi
 				
+    			sleep 1
     			runApplication
     			echo
     			echo
@@ -253,6 +255,45 @@ case $batchType in
 			then
     			sleep 2
 				tail -f ${logsFolder}/batch/master.log
+			fi
+    		;;
+    	remoteSlaveCluster )
+    	
+	    	if [ -z "$numberOfSlaves" ]
+			then
+				echo "numberOfSlaves missing"
+				exit
+			fi
+    	
+    		echo "Running cluster of slaves for remote master"
+    		
+    		for (( slaveNumber=1; slaveNumber<=$numberOfSlaves; slaveNumber++ ))
+			do
+				echo "Starting Slave$slaveNumber"
+    			batchType="slave"
+				logName=$(echo "slave"$slaveNumber".log")
+				
+				if [ "$slaveNumber" != "1" ]
+				then
+					doesSlaveStartEpic=false
+					
+					if [ -n "$jProfilerTarget" ]
+					then
+						useJprofiler=""
+						jProfilerTarget=""
+					fi
+				fi
+				
+    			sleep 1
+    			runApplication
+    			echo
+    			echo
+			done
+			
+			if [ "$displayLogs" = true ]
+			then
+    			sleep 2
+				tail -f ${logsFolder}/batch/slave1.log
 			fi
     		;;
 esac

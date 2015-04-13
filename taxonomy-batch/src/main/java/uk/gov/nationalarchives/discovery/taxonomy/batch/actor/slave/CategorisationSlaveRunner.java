@@ -37,8 +37,11 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
     private final LuceneHelperTools luceneHelperTools;
     private final CategoryRepository categoryRepository;
 
-    @Value("${batch.categorise-all.supervisor-address}")
-    private String supervisorAddress;
+    @Value("${batch.categorise-all.supervisor-hostname}")
+    private String supervisorHostname;
+
+    @Value("${batch.categorise-all.supervisor-port}")
+    private String supervisorPort;
 
     @Value("${batch.categorise-all.afterDocNumber}")
     private Integer afterDocNumber;
@@ -63,6 +66,8 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
 	// Integer afterDocNumber = getAfterDocNumberFromArgs(args);
 
 	trackDeadLetters();
+	String supervisorAddress = "akka.tcp://supervisor@" + supervisorHostname + ":" + supervisorPort
+		+ "/user/supervisorActor";
 	ActorRef worker = actorSystem.actorOf(Props.create(CategorisationWorkerActor.class, supervisorAddress,
 		categoriserService, luceneHelperTools, categoryRepository), "workerActor");
 
