@@ -2,7 +2,7 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor;
 
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.lucene.search.FieldDoc;
 import org.apache.lucene.search.ScoreDoc;
 import org.springframework.util.CollectionUtils;

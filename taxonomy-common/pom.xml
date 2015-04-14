@@ -123,26 +123,12 @@
 			</exclusions>
 		</dependency>
 
-		<!-- Dependency needed to use EmbeddedSolrServer in unit test cases -->
 		<dependency>
-			<artifactId>solr-core</artifactId>
-			<groupId>org.apache.solr</groupId>
-			<version>${lucene.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>log4j</artifactId>
-					<groupId>log4j</groupId>
-				</exclusion>
-			</exclusions>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
 		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>compile</scope>
-		</dependency>
+
 
 		<!-- for retro compatibility with dependencies that use log4j instead of 
 			log4j2 -->
