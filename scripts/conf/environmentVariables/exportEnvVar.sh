@@ -9,6 +9,6 @@ for module in "${@:1}"
 do
 	set -a
 	#source environmentVariables/${module}/$(hostname).sh
-	source ../../../sysdev-config/conf/environmentVariables/${module}/$(hostname).sh
+	source ../../../../sysdev-config/conf/environmentVariables/${module}/$(hostname).sh
 	set +a
 done
