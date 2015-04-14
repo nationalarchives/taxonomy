@@ -48,7 +48,7 @@
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="TEST Config" enabled="false">
         <stringProp name="delimiter">;</stringProp>
         <stringProp name="fileEncoding">UTF-8</stringProp>
-        <stringProp name="filename">/home/jcharlet/_workspace/sysdev-config/conf/jmeter/taxonomy/test.csv</stringProp>
+        <stringProp name="filename">/home/jcharlet/_workspace/sysdev-config/conf/appConfFiles/jmeter/taxonomy/test-platform.csv</stringProp>
         <boolProp name="quotedData">true</boolProp>
         <boolProp name="recycle">true</boolProp>
         <stringProp name="shareMode">shareMode.all</stringProp>
