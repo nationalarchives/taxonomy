@@ -270,7 +270,7 @@ case $batchType in
 			fi
     		;;
     	remoteSlaveCluster )
-    	
+    		source ../../conf/environmentVariables/exportEnvVar.sh taxonomy-batch-remote-slave;
 	    	if [ -z "$numberOfSlaves" ]
 			then
 				echo "numberOfSlaves missing"
