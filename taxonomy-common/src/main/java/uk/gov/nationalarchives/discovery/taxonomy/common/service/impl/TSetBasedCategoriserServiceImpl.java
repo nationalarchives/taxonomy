@@ -25,7 +25,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TopDocs;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -291,13 +290,13 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     }
 
     @Override
-    public boolean hasNewCategorisedDocumentsSinceObjectId(ObjectId id) {
+    public boolean hasNewCategorisedDocumentsSinceDocument(IAViewUpdate iaViewUpdate) {
 	// TODO TSETBASED Auto-generated method stub
 	return false;
     }
 
     @Override
-    public List<IAViewUpdate> getNewCategorisedDocumentsSinceObjectId(int limit, ObjectId lastProcessedId) {
+    public List<IAViewUpdate> getNewCategorisedDocumentsSinceObjectId(int limit, IAViewUpdate iaViewUpdate) {
 	// TODO TSETBASED Auto-generated method stub
 	return null;
     }

@@ -2,8 +2,6 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.service;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
@@ -44,21 +42,21 @@ public interface CategoriserService<T extends CategorisationResult> {
     public List<T> categoriseSingle(String docReference, List<CategoryWithLuceneQuery> cachedCategories);
 
     /**
-     * Check if any document was categorised since last processed element id
+     * Check if any document was categorised since last processed element
      * 
-     * @param id
+     * @param iaViewUpdate
      * @return
      */
-    boolean hasNewCategorisedDocumentsSinceObjectId(ObjectId id);
+    boolean hasNewCategorisedDocumentsSinceDocument(IAViewUpdate iaViewUpdate);
 
     /**
-     * get new categorised documents since object id
+     * get new categorised documents since last processed element
      * 
      * @param limit
-     * @param lastProcessedId
+     * @param lastIAaViewUpdate
      * @return
      */
-    List<IAViewUpdate> getNewCategorisedDocumentsSinceObjectId(int limit, ObjectId lastProcessedId);
+    List<IAViewUpdate> getNewCategorisedDocumentsSinceObjectId(int limit, IAViewUpdate lastIAaViewUpdate);
 
     /**
      * find last update on categories on iaviews from mongo db

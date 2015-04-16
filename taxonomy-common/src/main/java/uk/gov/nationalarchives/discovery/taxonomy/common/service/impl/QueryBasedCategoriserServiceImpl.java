@@ -12,7 +12,6 @@ import java.util.concurrent.Future;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.TermFilter;
 import org.apache.lucene.search.Filter;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -253,14 +252,14 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     }
 
     @Override
-    public boolean hasNewCategorisedDocumentsSinceObjectId(ObjectId id) {
-	List<IAViewUpdate> IAViewUpdateToProcess = iaViewUpdateRepository.findByIdGreaterThan(id, 1);
+    public boolean hasNewCategorisedDocumentsSinceDocument(IAViewUpdate iaViewUpdate) {
+	List<IAViewUpdate> IAViewUpdateToProcess = iaViewUpdateRepository.findByDocumentMoreRecentThan(iaViewUpdate, 1);
 	return !IAViewUpdateToProcess.isEmpty();
     }
 
     @Override
-    public List<IAViewUpdate> getNewCategorisedDocumentsSinceObjectId(int limit, ObjectId id) {
-	return iaViewUpdateRepository.findByIdGreaterThan(id, limit);
+    public List<IAViewUpdate> getNewCategorisedDocumentsSinceObjectId(int limit, IAViewUpdate lastIAViewUpdate) {
+	return iaViewUpdateRepository.findByDocumentMoreRecentThan(lastIAViewUpdate, limit);
     }
 
     @Override

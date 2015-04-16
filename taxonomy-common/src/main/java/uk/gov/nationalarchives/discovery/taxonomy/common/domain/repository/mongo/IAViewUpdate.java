@@ -18,7 +18,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "iaViewUpdates")
 public class IAViewUpdate {
 
-    public static final String ID_FIELDNAME = "_id";
+    public static final String FIELD_ID = "_id";
+    public static final String FIELD_CREATIONDATE = "creationDate";
+    public static final String FIELD_DOCREFERENCE = "docReference";
 
     @Id
     private ObjectId id;
@@ -32,6 +34,15 @@ public class IAViewUpdate {
 
     public IAViewUpdate() {
 	super();
+    }
+
+    public IAViewUpdate(IAViewUpdate other) {
+	super();
+	this.id = other.id;
+	this.creationDate = other.creationDate;
+	this.docReference = other.docReference;
+	this.categories = other.categories;
+	this.catDocRef = other.catDocRef;
     }
 
     public String getDocReference() {
