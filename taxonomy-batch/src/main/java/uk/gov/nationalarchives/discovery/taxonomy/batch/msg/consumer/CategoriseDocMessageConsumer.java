@@ -7,6 +7,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.TextMessage;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,8 @@ public class CategoriseDocMessageConsumer {
 	CategoriseDocumentMessage categoriseDocumentMessage = getCategoriseDocumentMessageFromMessage(message);
 
 	logger.info("received Categorise Document message: {}, docReferences: {}",
-		categoriseDocumentMessage.getMessageId(), categoriseDocumentMessage.getListOfDocReferences());
+		categoriseDocumentMessage.getMessageId(),
+		ArrayUtils.toString(categoriseDocumentMessage.getListOfDocReferences()));
 
 	categoriserService.refreshTaxonomyIndex();
 

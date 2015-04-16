@@ -1,5 +1,5 @@
 #!/bin/bash
-cd "$(dirname "$0")"
+cd $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd );
 source ../../conf/environmentVariables/exportEnvVar.sh taxonomy-global taxonomy-batch;
 
 
@@ -107,7 +107,7 @@ slaveStarterExtraApplicationArgs="--batch.categorise-all.startEpic=true"
 slaveClassicExtraApplicationArgs="--batch.categorise-all.startEpic=false"
 
 dailyUpdatesJvmArgs=
-dailyUpdatesApplicationArgs="--batch.role.udpate-solr-cloud=true --batch.role.check-categorisation-request-messages=true --server.port=0"
+dailyUpdatesApplicationArgs="--batch.role.check-categorisation-request-messages=true --server.port=0"
 
 updateSolrJvmArgs=
 updateSolrApplicationArgs="--batch.role.udpate-solr-cloud=true --server.port=0"
