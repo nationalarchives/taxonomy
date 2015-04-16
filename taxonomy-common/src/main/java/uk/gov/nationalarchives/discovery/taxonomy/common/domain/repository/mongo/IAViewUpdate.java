@@ -18,7 +18,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "iaViewUpdates")
 public class IAViewUpdate {
 
-    public static final String ID_FIELDNAME = "id";
+    public static final String ID_FIELDNAME = "_id";
 
     @Id
     private ObjectId id;

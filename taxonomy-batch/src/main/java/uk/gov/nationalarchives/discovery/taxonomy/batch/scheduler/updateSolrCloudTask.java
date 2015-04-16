@@ -1,6 +1,5 @@
 package uk.gov.nationalarchives.discovery.taxonomy.batch.scheduler;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -8,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -26,9 +24,10 @@ public class updateSolrCloudTask {
     private final UpdateSolrCloudService updateSolrService;
 
     private static ObjectId lastIAViewUpdateObjectId = null;
+    private static String lastIAViewUpdateObjectDocReference = null;
 
-    @Value("${batch.update-solr-cloud.page-size}")
-    Integer pageSize;
+    @Value("${batch.update-solr-cloud.bulk-update-size}")
+    Integer bulkUpdateSize;
 
     @Autowired
     public updateSolrCloudTask(CategoriserService categoriserService, UpdateSolrCloudService updateSolrService) {
@@ -38,7 +37,7 @@ public class updateSolrCloudTask {
     }
 
     @SuppressWarnings("unchecked")
-    @Scheduled(fixedDelayString = "${batch.update-solr-cloud.delay-between-tasks}")
+    @Scheduled(fixedRateString = "${batch.update-solr-cloud.rate-between-updates}")
     public void updateSolrCloudWithLatestUpdatesOnCategories() {
 	if (lastIAViewUpdateObjectId == null) {
 	    initBatch();
@@ -46,45 +45,21 @@ public class updateSolrCloudTask {
 
 	if (categoriserService.hasNewCategorisedDocumentsSinceObjectId(lastIAViewUpdateObjectId)) {
 	    logger.info(".updateSolrCloudWithLatestUpdatesOnCategories: processing documents since: {}",
-		    lastIAViewUpdateObjectId);
-	    int pageNumber = 0;
-	    boolean hasNext = true;
-	    while (hasNext) {
-		Page<IAViewUpdate> pageOfIAViewUpdatesToProcess = categoriserService
-			.getPageOfNewCategorisedDocumentsSinceObjectId(pageNumber, this.pageSize,
-				lastIAViewUpdateObjectId);
+		    lastIAViewUpdateObjectDocReference);
+	    List<IAViewUpdate> listOfIAViewUpdatesToProcess = categoriserService
+		    .getNewCategorisedDocumentsSinceObjectId(bulkUpdateSize, lastIAViewUpdateObjectId);
 
-		String[] arrayOfDocReferences = retrieveArrayOfDocRefsFromPageOfIAViewUpdates(pageOfIAViewUpdatesToProcess);
+	    updateSolrService.bulkUpdateCategoriesOnIAViews(listOfIAViewUpdatesToProcess);
 
-		updateSolrService.bulkUpdateCategoriesOnIAViews(arrayOfDocReferences);
-
-		if (hasNext = pageOfIAViewUpdatesToProcess.hasNext()) {
-		    pageNumber++;
-		} else {
-		    // TODO 1 ERROR_HANDLING if an element fails, updates to
-		    // Solr are stopped.
-		    // that's interesting but there might be something else to
-		    // do
-		    updateLastIAViewUpdateObjectId(pageOfIAViewUpdatesToProcess);
-		}
-	    }
+	    updateLastIAViewUpdateObjectId(listOfIAViewUpdatesToProcess);
 	}
 
     }
 
-    private void updateLastIAViewUpdateObjectId(Page<IAViewUpdate> pageOfIAViewUpdatesToProcess) {
-	List<IAViewUpdate> listOfIAViewUpdates = pageOfIAViewUpdatesToProcess.getContent();
-	int indexOfLastElement = listOfIAViewUpdates.size() - 1;
-	IAViewUpdate iaViewUpdate = listOfIAViewUpdates.get(indexOfLastElement);
+    private void updateLastIAViewUpdateObjectId(List<IAViewUpdate> listOfIAViewUpdates) {
+	IAViewUpdate iaViewUpdate = listOfIAViewUpdates.get(listOfIAViewUpdates.size() - 1);
+	lastIAViewUpdateObjectDocReference = iaViewUpdate.getDocReference();
 	lastIAViewUpdateObjectId = iaViewUpdate.getId();
-    }
-
-    private String[] retrieveArrayOfDocRefsFromPageOfIAViewUpdates(Page<IAViewUpdate> pageOfIAViewUpdatesToProcess) {
-	List<String> listOfDocReferences = new ArrayList<String>();
-	for (IAViewUpdate iaViewUpdate : pageOfIAViewUpdatesToProcess.getContent()) {
-	    listOfDocReferences.add(iaViewUpdate.getDocReference());
-	}
-	return listOfDocReferences.toArray(new String[0]);
     }
 
     private void initBatch() {

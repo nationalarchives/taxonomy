@@ -106,8 +106,9 @@ batch.categorise-all:
  afterDocNumber: 
  startEpic: true
 batch.update-solr-cloud:
- page-size: 1000
- delay-between-tasks: 2000
+ bulk-update-size: 1000
+ rate-between-updates: 2000
+solr.cloud.commitwithin: 10000
 
 ---
 spring.profiles: local

@@ -1,13 +1,12 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
-
 import java.util.List;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.domain.Page;
+
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
 
 /**
  * Service dedicated to the categorisation of documents
@@ -53,15 +52,13 @@ public interface CategoriserService<T extends CategorisationResult> {
     boolean hasNewCategorisedDocumentsSinceObjectId(ObjectId id);
 
     /**
-     * get page of IAViewUpdates since last processed element
+     * get new categorised documents since object id
      * 
-     * @param pageNumber
-     * @param pageSize
+     * @param limit
      * @param lastProcessedId
      * @return
      */
-    Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceObjectId(int pageNumber, int pageSize,
-	    ObjectId lastProcessedId);
+    List<IAViewUpdate> getNewCategorisedDocumentsSinceObjectId(int limit, ObjectId lastProcessedId);
 
     /**
      * find last update on categories on iaviews from mongo db

@@ -1,16 +1,5 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.TSetBasedCategorisationResult;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Field;
@@ -42,9 +31,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.TSetBasedCategorisationResult;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
+import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 
 /**
  * class dedicated to the categorisation of documents<br/>
@@ -298,8 +297,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     }
 
     @Override
-    public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceObjectId(int pageNumber, int pageSize,
-	    ObjectId lastProcessedId) {
+    public List<IAViewUpdate> getNewCategorisedDocumentsSinceObjectId(int limit, ObjectId lastProcessedId) {
 	// TODO TSETBASED Auto-generated method stub
 	return null;
     }

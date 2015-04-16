@@ -12,6 +12,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.SolrParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
@@ -25,6 +26,9 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrClo
 public class SolrCloudAViewRepositoryImpl implements SolrCloudIAViewRepository {
 
     private final SolrServer solrCloudServer;
+
+    @Value("${solr.cloud.commitwithin}")
+    Integer timeInMs;
 
     @Autowired
     public SolrCloudAViewRepositoryImpl(SolrServer solrCloudServer) {
@@ -93,7 +97,7 @@ public class SolrCloudAViewRepositoryImpl implements SolrCloudIAViewRepository {
     @Override
     public void saveAll(List<SolrInputDocument> documents) {
 	try {
-	    solrCloudServer.add(documents);
+	    solrCloudServer.add(documents, timeInMs);
 	} catch (SolrServerException | IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.SOLR_WRITE_EXCEPTION, e);
 	}

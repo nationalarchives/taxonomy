@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryLight;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.MongoInformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.InformationAssetViewMongoRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrCloudIAViewRepository;
@@ -59,20 +60,28 @@ public class UpdateSolrCloudServiceImpl implements UpdateSolrCloudService {
     }
 
     @Override
-    public void bulkUpdateCategoriesOnIAViews(String[] docReferences) {
-	logger.info(".updateCategoriesOnIAView: {}", Arrays.toString(docReferences));
+    public void bulkUpdateCategoriesOnIAViews(List<IAViewUpdate> listOfIAViewUpdatesToProcess) {
+	logger.info(".updateCategoriesOnIAView: {}",
+		Arrays.toString(retrieveArrayOfDocRefsFromListOfIAViewUpdates(listOfIAViewUpdatesToProcess)));
 	List<SolrInputDocument> listOfUpdatesToSubmitToSolr = new ArrayList<SolrInputDocument>();
 
-	for (String docReference : docReferences) {
+	for (IAViewUpdate iaViewUpdate : listOfIAViewUpdatesToProcess) {
 
-	    List<CategoryLight> categories = retrieveCategoriesForIAView(docReference);
-
-	    SolrInputDocument document = createDocumentForAtomicUpdate(docReference, categories);
+	    SolrInputDocument document = createDocumentForAtomicUpdate(iaViewUpdate.getDocReference(),
+		    iaViewUpdate.getCategories());
 
 	    listOfUpdatesToSubmitToSolr.add(document);
 	}
 
 	solrIAViewRepository.saveAll(listOfUpdatesToSubmitToSolr);
+    }
+
+    private String[] retrieveArrayOfDocRefsFromListOfIAViewUpdates(List<IAViewUpdate> listOfIAViewUpdatesToProcess) {
+	List<String> listOfDocReferences = new ArrayList<String>();
+	for (IAViewUpdate iaViewUpdate : listOfIAViewUpdatesToProcess) {
+	    listOfDocReferences.add(iaViewUpdate.getDocReference());
+	}
+	return listOfDocReferences.toArray(new String[0]);
     }
 
     private SolrInputDocument createDocumentForAtomicUpdate(String docReference, List<CategoryLight> categories) {

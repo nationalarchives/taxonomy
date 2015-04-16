@@ -17,10 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.TaxonomyMapper;
@@ -258,16 +254,13 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
     @Override
     public boolean hasNewCategorisedDocumentsSinceObjectId(ObjectId id) {
-	PageRequest pageRequest = new PageRequest(0, 1);
-	Page<IAViewUpdate> pageOfIAViewUpdatesToProcess = iaViewUpdateRepository.findByIdGreaterThan(id, pageRequest);
-	return pageOfIAViewUpdatesToProcess.hasContent();
+	List<IAViewUpdate> IAViewUpdateToProcess = iaViewUpdateRepository.findByIdGreaterThan(id, 1);
+	return !IAViewUpdateToProcess.isEmpty();
     }
 
     @Override
-    public Page<IAViewUpdate> getPageOfNewCategorisedDocumentsSinceObjectId(int pageNumber, int pageSize, ObjectId id) {
-	Sort sort = new Sort(Direction.ASC, IAViewUpdate.ID_FIELDNAME);
-	PageRequest pageRequest = new PageRequest(pageNumber, pageSize, sort);
-	return iaViewUpdateRepository.findByIdGreaterThan(id, pageRequest);
+    public List<IAViewUpdate> getNewCategorisedDocumentsSinceObjectId(int limit, ObjectId id) {
+	return iaViewUpdateRepository.findByIdGreaterThan(id, limit);
     }
 
     @Override

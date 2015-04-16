@@ -96,3 +96,4 @@ lucene.index:
 solr.cloud.host: 
 solr.taxonomy.host:
 solr.cloud.testcore.path: 
+solr.cloud.commitwithin: 
