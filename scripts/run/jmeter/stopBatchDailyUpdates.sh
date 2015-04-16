@@ -1,3 +1,3 @@
 #!/bin/bash
-cd "$(dirname "$0")"
+cd $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd );
 source ../batch/stopBatch.sh "-taxonomyDailyUpdatesJmeter"
