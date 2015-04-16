@@ -36,6 +36,7 @@ usage ()
 	echo "									'slave' to profile slave app"
 	echo
 	echo "	-dndl --doNotDisplayLogs	Do not show logs once the application is started"
+	echo "	-ric --runInConsole			Run the application in console (do not use nohup to run it async)"
 	echo "	-h --help			display help"
 	echo 
 	exit
@@ -51,6 +52,7 @@ useJprofiler=false
 jProfilerTarget=
 doesSlaveStartEpic=true
 displayLogs=true
+runInConsole=false
 
 # Tutorial on shell script with list of operators for if, while, etc statements:
 # http://linuxcommand.org/lc3_wss0080.php
@@ -90,6 +92,9 @@ while [ "$1" != "" ]; do
                                 ;;
 		-dndl | --doNotDisplayLogs )
 								displayLogs=false
+								;;
+		-ric | --runInConsole )
+								runInConsole=true
 								;;
         * )                     usage
                                 exit 1
@@ -172,8 +177,15 @@ runApplication()
 	echo
 	echo "APP ARGS: " $applicationArgs 
 	echo
-	echo "nohup $javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 2>> /dev/null >> /dev/null &" 
-	nohup $javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 2>> /dev/null >> /dev/null & 
+
+
+	if [ "$runInConsole" = true ]
+	then
+		$javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs
+	else
+		echo "nohup $javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 2>> /dev/null >> /dev/null &" 
+		nohup $javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 2>> /dev/null >> /dev/null &	
+	fi
 }
 
 case $batchType in
