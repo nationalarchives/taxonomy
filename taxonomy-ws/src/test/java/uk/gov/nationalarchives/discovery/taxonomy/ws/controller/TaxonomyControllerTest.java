@@ -53,8 +53,6 @@ public class TaxonomyControllerTest {
 
     private static final String WS_URL = "http://localhost:8085/";
 
-    private static final String WS_PATH_HEALTH = "health";
-
     private static final String WS_PATH_SEARCH = "taxonomy/search";
 
     private static final String WS_PATH_PUBLISH = "taxonomy/publish";
@@ -89,12 +87,6 @@ public class TaxonomyControllerTest {
     @After
     public void emptyDataSet() throws IOException {
 	mongoTestDataSet.dropDatabase();
-    }
-
-    @Test
-    public final void testWSisUp() {
-	String responseBody = restTemplate.getForEntity(WS_URL + WS_PATH_HEALTH, String.class).getBody();
-	assertThat(responseBody, containsString("UP"));
     }
 
     @SuppressWarnings("rawtypes")
