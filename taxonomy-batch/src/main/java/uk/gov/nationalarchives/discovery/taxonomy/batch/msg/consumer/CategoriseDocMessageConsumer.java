@@ -11,6 +11,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import uk.gov.nationalarchives.discovery.taxonomy.batch.msg.consumer.message.CategoriseDocumentMessage;
@@ -27,6 +28,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserServ
  *
  */
 @Component
+@ConditionalOnProperty(prefix = "batch.role.", value = "check-categorisation-request-messages")
 public class CategoriseDocMessageConsumer {
 
     private final CategoriserService<CategorisationResult> categoriserService;
