@@ -39,7 +39,8 @@ public class IAViewUpdateRepositoryImpl implements IAViewUpdateRepositoryCustom 
 	query.with(new Sort(new Order(Sort.Direction.ASC, IAViewUpdate.FIELD_CREATIONDATE)));
 	List<IAViewUpdate> listOfIAViewUpdatesToProcess = mongoTemplate.find(query, IAViewUpdate.class);
 	// FIXME findByDocumentEqualOrMoreRecentThan: this way to browse the
-	// collection is wrong but does the job
+	// collection is wrong but does the job. Results in some documents being
+	// updates twice
 	removeLastIaViewUpdateFromList(lastIAViewUpdate, listOfIAViewUpdatesToProcess);
 	return listOfIAViewUpdatesToProcess;
     }

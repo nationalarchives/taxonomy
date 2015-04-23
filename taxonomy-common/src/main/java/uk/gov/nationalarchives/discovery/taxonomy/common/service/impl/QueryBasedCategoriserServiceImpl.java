@@ -208,8 +208,6 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	return categories;
     }
 
-    // TODO manage timeout? on the search to lucene and NOT on the task:
-    // impossible anyway to interrupt it this way
     private List<CategorisationResult> runCategorisationWithFSDirectory(InformationAssetView iaView,
 	    List<Category> listOfRelevantCategories) {
 	List<CategorisationResult> listOfCategoryResults = new ArrayList<CategorisationResult>();

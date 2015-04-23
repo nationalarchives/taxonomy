@@ -104,10 +104,10 @@ done
 
 
 masterJvmArgs=
-masterApplicationArgs="--batch.role.udpate-solr-cloud=false --batch.role.check-categorisation-request-messages=false --batch.role.categorise-all=true --batch.role.categorise-all.supervisor=true --batch.role.categorise-all.slave=false --server.port=0"
+masterApplicationArgs="--batch.role.categorise-all=true --batch.role.categorise-all.supervisor=true --server.port=0"
 
 slaveJvmArgs="-Dakka.remote.netty.tcp.port=0"
-slaveApplicationArgs="--batch.role.udpate-solr-cloud=false --batch.role.check-categorisation-request-messages=false --batch.role.categorise-all=true --batch.role.categorise-all.supervisor=false --batch.role.categorise-all.slave=true --server.port=0"
+slaveApplicationArgs="--batch.role.categorise-all=true --batch.role.categorise-all.slave=true --server.port=0"
 slaveStarterExtraApplicationArgs="--batch.categorise-all.startEpic=true"
 slaveClassicExtraApplicationArgs="--batch.categorise-all.startEpic=false"
 
@@ -190,6 +190,10 @@ runApplication()
 
 case $batchType in
         master )     
+			if [ -z "$logName" ]
+			then
+				logName=master.log
+			fi
 			runApplication
 			if [ "$displayLogs" = true ]
 			then
@@ -198,6 +202,10 @@ case $batchType in
 			fi
             ;;
         slave )    
+			if [ -z "$logName" ]
+			then
+				logName=slave.log
+			fi
 			runApplication
 			if [ "$displayLogs" = true ]
 			then
@@ -205,7 +213,11 @@ case $batchType in
 				tail -f ${logsFolder}/batch/$logName
 			fi
             ;;
-        dailyUpdates )   
+        dailyUpdates )  
+			if [ -z "$logName" ]
+			then
+				logName=dailyUpdates.log
+			fi 
 			runApplication
 			if [ "$displayLogs" = true ]
 			then
@@ -214,6 +226,10 @@ case $batchType in
 			fi
             ;;
         updateSolr )   
+			if [ -z "$logName" ]
+			then
+				logName=updateSolr.log
+			fi 
 			runApplication
 			sleep 3
 			if [ "$displayLogs" = true ]

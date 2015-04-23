@@ -7,6 +7,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseDocuments;
@@ -71,7 +72,11 @@ public class CategorisationWorkerActor extends UntypedActor {
 	    this.logger.info(".onReceive> {}  categorising those: {}", getSelf().hashCode(),
 		    ArrayUtils.toString(docReferences));
 	    for (String docReference : docReferences) {
-		this.categoriserService.categoriseSingle(docReference, cachedCategories);
+		try {
+		    this.categoriserService.categoriseSingle(docReference, cachedCategories);
+		} catch (TaxonomyException e) {
+		    logger.error("an error occured while processing Document: {}", docReference, e);
+		}
 	    }
 	    this.logger.info(".onReceive<  treatment completed");
 
