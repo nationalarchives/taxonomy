@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>uk.gov.nationalarchives.discovery</groupId>
 		<artifactId>taxonomy</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>1.0.0</version>
 	</parent>
 	<artifactId>taxonomy-cli</artifactId>
 	<name>Categorisation CLI</name>
