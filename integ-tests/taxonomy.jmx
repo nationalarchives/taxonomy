@@ -803,7 +803,7 @@
             <TestAction guiclass="TestActionGui" testclass="TestAction" testname="wait for Taxonomy Batch run categorisation" enabled="true">
               <intProp name="ActionProcessor.action">1</intProp>
               <intProp name="ActionProcessor.target">0</intProp>
-              <stringProp name="ActionProcessor.duration">7000</stringProp>
+              <stringProp name="ActionProcessor.duration">10000</stringProp>
             </TestAction>
             <hashTree/>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Commit Solr Cloud" enabled="true">

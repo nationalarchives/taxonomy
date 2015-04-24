@@ -182,11 +182,11 @@ runApplication()
 
 	if [ "$runInConsole" = true ]
 	then
-		$javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs
+		$javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-${taxonomyJarVersion}.jar $applicationArgs
 	else
-		echo "nohup $javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 2>> /dev/null >> /dev/null &" 
-		nohup $javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 2>> /dev/null >> /dev/null &
-		#$javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 	
+		echo "nohup $javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-${taxonomyJarVersion}.jar $applicationArgs 2>> /dev/null >> /dev/null &" 
+		nohup $javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-${taxonomyJarVersion}.jar $applicationArgs 2>> /dev/null >> /dev/null &
+		#$javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-${taxonomyJarVersion}.jar $applicationArgs 	
 	fi
 }
 
