@@ -47,7 +47,7 @@ public class IAViewUpdateRepositoryImpl implements IAViewUpdateRepositoryCustom 
 	Query query = new Query(new Criteria().andOperator(
 		Criteria.where(IAViewUpdate.FIELD_CREATIONDATE).gte(lastIAViewUpdate.getCreationDate()), Criteria
 			.where(IAViewUpdate.FIELD_CREATIONDATE).lt(nowMinus2seconds)));
-
+	
 	query.limit(limit + 1);
 	query.with(new Sort(new Order(Sort.Direction.ASC, IAViewUpdate.FIELD_CREATIONDATE)));
 	List<IAViewUpdate> listOfIAViewUpdatesToProcess = mongoTemplate.find(query, IAViewUpdate.class);

@@ -78,7 +78,7 @@ public class CategorisationSupervisorActor extends SupervisorActor {
 		    logger.info("done with current epic");
 		    currentEpic = null;
 
-		    logger.info("CATEGORISATION TERMINATED ON SUPERVISOR SIDE. Wait for slave to complete their tasks",
+		    logger.info("CATEGORISATION TERMINATED ON SUPERVISOR SIDE. Wait for worker to complete their tasks",
 			    status);
 		    return;
 		}

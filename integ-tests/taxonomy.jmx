@@ -600,7 +600,7 @@
             <TestAction guiclass="TestActionGui" testclass="TestAction" testname="wait for Taxonomy Batch run categorisation" enabled="true">
               <intProp name="ActionProcessor.action">1</intProp>
               <intProp name="ActionProcessor.target">0</intProp>
-              <stringProp name="ActionProcessor.duration">5000</stringProp>
+              <stringProp name="ActionProcessor.duration">7000</stringProp>
             </TestAction>
             <hashTree/>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Commit Solr Cloud" enabled="true">
@@ -609,7 +609,9 @@
                 <collectionProp name="Arguments.arguments">
                   <elementProp name="" elementType="HTTPArgument">
                     <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                    <stringProp name="Argument.value">&lt;commit waitSearcher=&quot;true&quot;/&gt;</stringProp>
+                    <stringProp name="Argument.value">{&#xd;
+	&quot;commit&quot;:{}&#xd;
+}</stringProp>
                     <stringProp name="Argument.metadata">=</stringProp>
                   </elementProp>
                 </collectionProp>
@@ -635,7 +637,7 @@
                 <collectionProp name="HeaderManager.headers">
                   <elementProp name="" elementType="Header">
                     <stringProp name="Header.name">Content-Type</stringProp>
-                    <stringProp name="Header.value">application/xml</stringProp>
+                    <stringProp name="Header.value">application/json</stringProp>
                   </elementProp>
                 </collectionProp>
               </HeaderManager>
@@ -801,7 +803,7 @@
             <TestAction guiclass="TestActionGui" testclass="TestAction" testname="wait for Taxonomy Batch run categorisation" enabled="true">
               <intProp name="ActionProcessor.action">1</intProp>
               <intProp name="ActionProcessor.target">0</intProp>
-              <stringProp name="ActionProcessor.duration">5000</stringProp>
+              <stringProp name="ActionProcessor.duration">7000</stringProp>
             </TestAction>
             <hashTree/>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Commit Solr Cloud" enabled="true">
@@ -1390,7 +1392,7 @@
             <TestAction guiclass="TestActionGui" testclass="TestAction" testname="wait for Taxonomy Batch run categorisation" enabled="true">
               <intProp name="ActionProcessor.action">1</intProp>
               <intProp name="ActionProcessor.target">0</intProp>
-              <stringProp name="ActionProcessor.duration">7000</stringProp>
+              <stringProp name="ActionProcessor.duration">10000</stringProp>
             </TestAction>
             <hashTree/>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Commit Solr Cloud" enabled="true">

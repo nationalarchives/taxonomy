@@ -51,7 +51,7 @@ public class ActorConfiguration {
 	    system = ActorSystem.create("supervisor",
 		    ConfigFactory.parseMap(akkaParameters).withFallback(ConfigFactory.load("supervisor.conf")));
 	} else {
-	    system = ActorSystem.create("slave", ConfigFactory.load("slave.conf"));
+	    system = ActorSystem.create("worker", ConfigFactory.load("worker.conf"));
 	}
 
 	// system.logConfiguration();

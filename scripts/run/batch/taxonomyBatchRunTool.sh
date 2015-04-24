@@ -12,17 +12,17 @@ usage ()
 	echo "DESCRIPTION"
 	echo 
 	echo "	-bt --batchType <applicationName> 		Run the batch app among the following types:" 
-	echo "								'master' : Categorise All - Master	"
-	echo "								'slave' : Categorise All - Slave	"
-	echo "								'masterSlaveCluster' : Categorise All - Master + Cluster of n slaves"
-	echo "								'remoteSlaveCluster' : Categorise All - Cluster of n slaves for remote master"
+	echo "								'supervisor' : Categorise All - Supervisor	"
+	echo "								'worker' : Categorise All - Worker	"
+	echo "								'supervisorWorkerCluster' : Categorise All - Supervisor + Cluster of n workers"
+	echo "								'remoteWorkerCluster' : Categorise All - Cluster of n workers for remote supervisor"
 	echo "								'dailyUpdates' : apply daily Updates	"
 	echo "								'updateSolr' : update Solr from Mongo db entries"
 	echo
-	echo "	-adn --afterDocNumber <logName>		specific to Slave: after doc number"
+	echo "	-adn --afterDocNumber <logName>		specific to Worker: after doc number"
 	echo "								to restart categorisation after services were stopped"
 	echo
-	echo "	-ns --numberOfSlaves <logName>		Specific to MasterSlaveCluster: number of slaves instantiated"
+	echo "	-ns --numberOfWorkers <logName>		Specific to SupervisorWorkerCluster: number of workers instantiated"
 	echo
 	echo "	-ln --logName <logName>		provide log name"
 	echo
@@ -31,9 +31,9 @@ usage ()
 	echo "	-aa --applicationArgs <application args>	provide application arguments"
 	echo
 	echo "	-jp --jProfiler		profile with JProfiler." 
-	echo "	-jpt --jProfilerTarget	<jProfilerTarget>	If --jProfiler AND batchType=masterSlaveCluster, select which app to profile:"
-	echo "									'master' to profile master app"
-	echo "									'slave' to profile slave app"
+	echo "	-jpt --jProfilerTarget	<jProfilerTarget>	If --jProfiler AND batchType=supervisorWorkerCluster, select which app to profile:"
+	echo "									'supervisor' to profile supervisor app"
+	echo "									'worker' to profile worker app"
 	echo
 	echo "	-dndl --doNotDisplayLogs	Do not show logs once the application is started"
 	echo "	-ric --runInConsole			Run the application in console (do not use nohup to run it async)"
@@ -46,11 +46,11 @@ inputApplicationArgs=
 inputJvmArgs=
 batchType=
 afterDocNumber=
-numberOfSlaves=
+numberOfWorkers=
 logName=
 useJprofiler=false
 jProfilerTarget=
-doesSlaveStartEpic=true
+doesWorkerStartEpic=true
 displayLogs=true
 runInConsole=false
 
@@ -72,8 +72,8 @@ while [ "$1" != "" ]; do
         -bt | --batchType )     shift
 								batchType=$1
                                 ;;
-        -ns | --numberOfSlaves )     shift
-								numberOfSlaves=$1
+        -ns | --numberOfWorkers )     shift
+								numberOfWorkers=$1
                                 ;;
         -adn | --afterDocNumber )     shift
 								afterDocNumber=$1
@@ -103,13 +103,13 @@ while [ "$1" != "" ]; do
 done
 
 
-masterJvmArgs=
-masterApplicationArgs="--batch.role.categorise-all=true --batch.role.categorise-all.supervisor=true --server.port=0"
+supervisorJvmArgs=
+supervisorApplicationArgs="--batch.role.categorise-all=true --batch.role.categorise-all.supervisor=true --server.port=0"
 
-slaveJvmArgs="-Dakka.remote.netty.tcp.port=0"
-slaveApplicationArgs="--batch.role.categorise-all=true --batch.role.categorise-all.slave=true --server.port=0"
-slaveStarterExtraApplicationArgs="--batch.categorise-all.startEpic=true"
-slaveClassicExtraApplicationArgs="--batch.categorise-all.startEpic=false"
+workerJvmArgs="-Dakka.remote.netty.tcp.port=0"
+workerApplicationArgs="--batch.role.categorise-all=true --batch.role.categorise-all.worker=true --server.port=0"
+workerStarterExtraApplicationArgs="--batch.categorise-all.startEpic=true"
+workerClassicExtraApplicationArgs="--batch.categorise-all.startEpic=false"
 
 dailyUpdatesJvmArgs=
 dailyUpdatesApplicationArgs="--batch.role.check-categorisation-request-messages=true --server.port=0"
@@ -123,24 +123,24 @@ runApplication()
 	batchTypeBasedJvmArgs=
 	batchTypeBasedApplicationArgs=
 	case $batchType in
-	        master )     
-				batchTypeBasedJvmArgs=$masterJvmArgs
-				batchTypeBasedApplicationArgs=$masterApplicationArgs
+	        supervisor )     
+				batchTypeBasedJvmArgs=$supervisorJvmArgs
+				batchTypeBasedApplicationArgs=$supervisorApplicationArgs
 	            ;;
-	        slave )    
-				batchTypeBasedJvmArgs=$slaveJvmArgs
-				batchTypeBasedApplicationArgs=$slaveApplicationArgs
+	        worker )    
+				batchTypeBasedJvmArgs=$workerJvmArgs
+				batchTypeBasedApplicationArgs=$workerApplicationArgs
 				
 				if [ -n "$afterDocNumber" ]
 				then
 					batchTypeBasedApplicationArgs=$(echo $batchTypeBasedApplicationArgs "--batch.categorise-all.afterDocNumber="$afterDocNumber)
 				fi
 				
-				if [  "$doesSlaveStartEpic" = true ]
+				if [  "$doesWorkerStartEpic" = true ]
 				then
-					batchTypeBasedApplicationArgs=$(echo $batchTypeBasedApplicationArgs $slaveStarterExtraApplicationArgs);
+					batchTypeBasedApplicationArgs=$(echo $batchTypeBasedApplicationArgs $workerStarterExtraApplicationArgs);
 				else
-					batchTypeBasedApplicationArgs=$(echo $batchTypeBasedApplicationArgs $slaveClassicExtraApplicationArgs);
+					batchTypeBasedApplicationArgs=$(echo $batchTypeBasedApplicationArgs $workerClassicExtraApplicationArgs);
 				fi
 				;;
 	        dailyUpdates )   
@@ -159,6 +159,7 @@ runApplication()
 		logName=logging.log
 	fi
 	batchTypeBasedJvmArgs=$(echo $batchTypeBasedJvmArgs "-Dlogfile.name="$logName)
+	touch ${logsFolder}/batch/$logName;
 	
 	if [ "$useJprofiler" = true ]
 	then
@@ -184,15 +185,16 @@ runApplication()
 		$javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs
 	else
 		echo "nohup $javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 2>> /dev/null >> /dev/null &" 
-		nohup $javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 2>> /dev/null >> /dev/null &	
+		nohup $javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 2>> /dev/null >> /dev/null &
+		#$javaBinary -jar -Dspring.profiles.active=${profile},batch $jvmArgs ${batchPackageFolder}/taxonomy-batch-0.0.1-SNAPSHOT.jar $applicationArgs 	
 	fi
 }
 
 case $batchType in
-        master )     
+        supervisor )     
 			if [ -z "$logName" ]
 			then
-				logName=master.log
+				logName=supervisor.log
 			fi
 			runApplication
 			if [ "$displayLogs" = true ]
@@ -201,10 +203,10 @@ case $batchType in
 				tail -f ${logsFolder}/batch/$logName
 			fi
             ;;
-        slave )    
+        worker )    
 			if [ -z "$logName" ]
 			then
-				logName=slave.log
+				logName=worker.log
 			fi
 			runApplication
 			if [ "$displayLogs" = true ]
@@ -238,33 +240,33 @@ case $batchType in
 				tail -f ${logsFolder}/batch/$logName
 			fi
             ;;
-    	masterSlaveCluster )
+    	supervisorWorkerCluster )
     	
-	    	if [ -z "$numberOfSlaves" ]
+	    	if [ -z "$numberOfWorkers" ]
 			then
-				echo "numberOfSlaves missing"
+				echo "numberOfWorkers missing"
 				exit
 			fi
     	
-    		echo "Running cluster of master and slaves"
+    		echo "Running cluster of supervisor and workers"
     		
-    		echo "Starting Master"
-    		batchType="master"
-			logName="master.log"
+    		echo "Starting Supervisor"
+    		batchType="supervisor"
+			logName="supervisor.log"
     		runApplication
     		echo
     		echo
     		
     		sleep 6
-    		for (( slaveNumber=1; slaveNumber<=$numberOfSlaves; slaveNumber++ ))
+    		for (( workerNumber=1; workerNumber<=$numberOfWorkers; workerNumber++ ))
 			do
-				echo "Starting Slave$slaveNumber"
-    			batchType="slave"
-				logName=$(echo "slave"$slaveNumber".log")
+				echo "Starting Worker$workerNumber"
+    			batchType="worker"
+				logName=$(echo "worker"$workerNumber".log")
 				
-				if [ "$slaveNumber" != "1" ]
+				if [ "$workerNumber" != "1" ]
 				then
-					doesSlaveStartEpic=false
+					doesWorkerStartEpic=false
 					
 					if [ -n "$jProfilerTarget" ]
 					then
@@ -282,28 +284,28 @@ case $batchType in
 			if [ "$displayLogs" = true ]
 			then
     			sleep 2
-				tail -f ${logsFolder}/batch/master.log
+				tail -f ${logsFolder}/batch/supervisor.log
 			fi
     		;;
-    	remoteSlaveCluster )
-    		source ../../conf/environmentVariables/exportEnvVar.sh taxonomy-batch-remote-slave;
-	    	if [ -z "$numberOfSlaves" ]
+    	remoteWorkerCluster )
+    		source ../../conf/environmentVariables/exportEnvVar.sh taxonomy-batch-remote-worker;
+	    	if [ -z "$numberOfWorkers" ]
 			then
-				echo "numberOfSlaves missing"
+				echo "numberOfWorkers missing"
 				exit
 			fi
     	
-    		echo "Running cluster of slaves for remote master"
+    		echo "Running cluster of workers for remote supervisor"
     		
-    		for (( slaveNumber=1; slaveNumber<=$numberOfSlaves; slaveNumber++ ))
+    		for (( workerNumber=1; workerNumber<=$numberOfWorkers; workerNumber++ ))
 			do
-				echo "Starting Slave$slaveNumber"
-    			batchType="slave"
-				logName=$(echo "slave"$slaveNumber".log")
+				echo "Starting Worker$workerNumber"
+    			batchType="worker"
+				logName=$(echo "worker"$workerNumber".log")
 				
-				if [ "$slaveNumber" != "1" ]
+				if [ "$workerNumber" != "1" ]
 				then
-					doesSlaveStartEpic=false
+					doesWorkerStartEpic=false
 					
 					if [ -n "$jProfilerTarget" ]
 					then
@@ -321,7 +323,7 @@ case $batchType in
 			if [ "$displayLogs" = true ]
 			then
     			sleep 2
-				tail -f ${logsFolder}/batch/slave1.log
+				tail -f ${logsFolder}/batch/worker1.log
 			fi
     		;;
 esac

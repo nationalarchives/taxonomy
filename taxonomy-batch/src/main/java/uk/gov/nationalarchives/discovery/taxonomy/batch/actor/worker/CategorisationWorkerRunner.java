@@ -1,4 +1,4 @@
-package uk.gov.nationalarchives.discovery.taxonomy.batch.actor.slave;
+package uk.gov.nationalarchives.discovery.taxonomy.batch.actor.worker;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,15 +21,15 @@ import akka.actor.Props;
 ;
 
 /**
- * Slave Batch that works on categorising all documents<br/>
- * main task is to start the worker (slave) actor
+ * Worker Batch that works on categorising all documents<br/>
+ * main task is to start the worker (worker) actor
  * 
  * @see CategorisationWorkerActor
  */
 @Component
-@ConditionalOnProperty(prefix = "batch.role.", value = { "categorise-all.slave" })
+@ConditionalOnProperty(prefix = "batch.role.", value = { "categorise-all.worker" })
 @SuppressWarnings("rawtypes")
-public class CategorisationSlaveRunner implements CommandLineRunner {
+public class CategorisationWorkerRunner implements CommandLineRunner {
 
     private final ActorSystem deadLettersActorSystem;
     private final ActorSystem actorSystem;
@@ -50,7 +50,7 @@ public class CategorisationSlaveRunner implements CommandLineRunner {
     private Boolean startEpic;
 
     @Autowired
-    public CategorisationSlaveRunner(ActorSystem deadLettersActorSystem, ActorSystem actorSystem,
+    public CategorisationWorkerRunner(ActorSystem deadLettersActorSystem, ActorSystem actorSystem,
 	    CategoriserService categoriserService, LuceneHelperTools luceneHelperTools,
 	    CategoryRepository categoryRepository) {
 	super();

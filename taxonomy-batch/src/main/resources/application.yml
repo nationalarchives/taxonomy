@@ -100,7 +100,7 @@ batch.role:
  check-categorisation-request-messages: false
  categorise-all: false
  categorise-all.supervisor: false
- categorise-all.slave: false
+ categorise-all.worker: false
 batch.categorise-all:
  message-size: 1000
  afterDocNumber: 
