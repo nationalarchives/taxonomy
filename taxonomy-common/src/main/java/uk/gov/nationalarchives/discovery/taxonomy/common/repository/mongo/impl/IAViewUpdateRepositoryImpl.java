@@ -1,5 +1,7 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.impl;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +35,19 @@ public class IAViewUpdateRepositoryImpl implements IAViewUpdateRepositoryCustom 
     }
 
     @Override
-    public List<IAViewUpdate> findByDocumentMoreRecentThan(IAViewUpdate lastIAViewUpdate, Integer limit) {
-	Query query = new Query(Criteria.where(IAViewUpdate.FIELD_CREATIONDATE).gte(lastIAViewUpdate.getCreationDate()));
+    public List<IAViewUpdate> findWhereMoreRecentThanDocumentAndUntil5SecondsInPast(IAViewUpdate lastIAViewUpdate,
+	    Integer limit) {
+	// FIXME to ensure there is no data lost when commiting from several
+	// servers that might have different clocks, I came up with this
+	// solution. Not ideal though.
+	Calendar instance = Calendar.getInstance();
+	instance.add(Calendar.SECOND, -5);
+	Date nowMinus2seconds = instance.getTime();
+
+	Query query = new Query(new Criteria().andOperator(
+		Criteria.where(IAViewUpdate.FIELD_CREATIONDATE).gte(lastIAViewUpdate.getCreationDate()), Criteria
+			.where(IAViewUpdate.FIELD_CREATIONDATE).lt(nowMinus2seconds)));
+
 	query.limit(limit + 1);
 	query.with(new Sort(new Order(Sort.Direction.ASC, IAViewUpdate.FIELD_CREATIONDATE)));
 	List<IAViewUpdate> listOfIAViewUpdatesToProcess = mongoTemplate.find(query, IAViewUpdate.class);

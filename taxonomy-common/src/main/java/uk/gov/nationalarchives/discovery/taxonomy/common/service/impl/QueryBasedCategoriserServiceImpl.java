@@ -251,13 +251,13 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 
     @Override
     public boolean hasNewCategorisedDocumentsSinceDocument(IAViewUpdate iaViewUpdate) {
-	List<IAViewUpdate> IAViewUpdateToProcess = iaViewUpdateRepository.findByDocumentMoreRecentThan(iaViewUpdate, 1);
+	List<IAViewUpdate> IAViewUpdateToProcess = iaViewUpdateRepository.findWhereMoreRecentThanDocumentAndUntil5SecondsInPast(iaViewUpdate, 1);
 	return !IAViewUpdateToProcess.isEmpty();
     }
 
     @Override
     public List<IAViewUpdate> getNewCategorisedDocumentsSinceObjectId(int limit, IAViewUpdate lastIAViewUpdate) {
-	return iaViewUpdateRepository.findByDocumentMoreRecentThan(lastIAViewUpdate, limit);
+	return iaViewUpdateRepository.findWhereMoreRecentThanDocumentAndUntil5SecondsInPast(lastIAViewUpdate, limit);
     }
 
     @Override

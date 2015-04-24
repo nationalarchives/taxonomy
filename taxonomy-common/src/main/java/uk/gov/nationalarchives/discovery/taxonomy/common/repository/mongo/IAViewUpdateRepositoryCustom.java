@@ -21,5 +21,5 @@ public interface IAViewUpdateRepositoryCustom {
      * @param limit
      * @return
      */
-    List<IAViewUpdate> findByDocumentMoreRecentThan(IAViewUpdate lastIAViewUpdate, Integer limit);
+    List<IAViewUpdate> findWhereMoreRecentThanDocumentAndUntil5SecondsInPast(IAViewUpdate lastIAViewUpdate, Integer limit);
 }
