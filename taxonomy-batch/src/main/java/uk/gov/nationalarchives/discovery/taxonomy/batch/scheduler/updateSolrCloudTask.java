@@ -2,6 +2,8 @@ package uk.gov.nationalarchives.discovery.taxonomy.batch.scheduler;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +38,30 @@ public class updateSolrCloudTask {
 	this.updateSolrService = updateSolrService;
     }
 
+    @PostConstruct
+    private void initBatch() {
+	IAViewUpdate lastIAViewUpdate = categoriserService.findLastIAViewUpdate();
+	if (lastIAViewUpdate == null) {
+	    logger.warn(".initBatch: no iaViewUpdate found, the collection is currently empty.");
+	    lastIAViewUpdate = null;
+	    return;
+	}
+	logger.debug(".initBatch: last document found: {}", lastIAViewUpdate.getDocReference());
+	this.lastIAViewUpdate = new IAViewUpdate(lastIAViewUpdate);
+    }
+
     @SuppressWarnings("unchecked")
     @Scheduled(fixedRateString = "${batch.update-solr-cloud.rate-between-updates}")
     public void updateSolrCloudWithLatestUpdatesOnCategories() {
-	if (lastIAViewUpdate == null) {
-	    initBatch();
-	}
-
 	if (categoriserService.hasNewCategorisedDocumentsSinceDocument(lastIAViewUpdate)) {
-	    logger.info(".updateSolrCloudWithLatestUpdatesOnCategories: processing documents since: {} {}",
-		    lastIAViewUpdate.getDocReference(), lastIAViewUpdate.getCreationDate());
+	    if (lastIAViewUpdate == null) {
+		logger.info(".updateSolrCloudWithLatestUpdatesOnCategories: processing new documents");
+	    } else {
+		logger.info(".updateSolrCloudWithLatestUpdatesOnCategories: processing documents since: {} {}",
+			lastIAViewUpdate.getDocReference(), lastIAViewUpdate.getCreationDate());
+	    }
 	    List<IAViewUpdate> listOfIAViewUpdatesToProcess = categoriserService
-		    .getNewCategorisedDocumentsSinceObjectId(bulkUpdateSize, lastIAViewUpdate);
+		    .getNewCategorisedDocumentsSinceDocument(bulkUpdateSize, lastIAViewUpdate);
 
 	    updateSolrService.bulkUpdateCategoriesOnIAViews(listOfIAViewUpdatesToProcess);
 
@@ -59,16 +73,5 @@ public class updateSolrCloudTask {
     private void updateLastIAViewUpdateObjectId(List<IAViewUpdate> listOfIAViewUpdates) {
 	IAViewUpdate iaViewUpdate = listOfIAViewUpdates.get(listOfIAViewUpdates.size() - 1);
 	lastIAViewUpdate = iaViewUpdate;
-    }
-
-    private void initBatch() {
-	IAViewUpdate lastIAViewUpdate = categoriserService.findLastIAViewUpdate();
-	if (lastIAViewUpdate == null) {
-	    logger.warn(".initBatch: no iaViewUpdate found, the collection is currently empty.");
-	    lastIAViewUpdate = null;
-	    return;
-	}
-	logger.debug(".initBatch: last document found: {}", lastIAViewUpdate.getDocReference());
-	this.lastIAViewUpdate = new IAViewUpdate(lastIAViewUpdate);
     }
 }

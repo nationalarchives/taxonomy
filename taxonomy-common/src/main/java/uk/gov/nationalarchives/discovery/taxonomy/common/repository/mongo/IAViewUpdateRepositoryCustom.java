@@ -1,5 +1,6 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo;
 
+import java.util.Date;
 import java.util.List;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
@@ -14,12 +15,14 @@ public interface IAViewUpdateRepositoryCustom {
     IAViewUpdate findLastIAViewUpdate();
 
     /**
-     * find elements with element more recent than the one provided, limit the
-     * number of results
+     * find elements where date is greater than or equal to first parameter AND
+     * lower than second parameter<br/>
+     * if one parameter is empty, it will not be taken into account in the query
      * 
-     * @param id
+     * @param gteDate
+     * @param ltDate
      * @param limit
      * @return
      */
-    List<IAViewUpdate> findWhereMoreRecentThanDocumentAndUntil5SecondsInPast(IAViewUpdate lastIAViewUpdate, Integer limit);
+    List<IAViewUpdate> findWhereDateGreaterThanEqualAndLowerThan(Date gteDate, Date ltDate, Integer limit);
 }

@@ -296,7 +296,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     }
 
     @Override
-    public List<IAViewUpdate> getNewCategorisedDocumentsSinceObjectId(int limit, IAViewUpdate iaViewUpdate) {
+    public List<IAViewUpdate> getNewCategorisedDocumentsSinceDocument(int limit, IAViewUpdate iaViewUpdate) {
 	// TODO TSETBASED Auto-generated method stub
 	return null;
     }

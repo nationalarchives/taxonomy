@@ -1,6 +1,6 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.impl;
 
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,38 +35,19 @@ public class IAViewUpdateRepositoryImpl implements IAViewUpdateRepositoryCustom 
     }
 
     @Override
-    public List<IAViewUpdate> findWhereMoreRecentThanDocumentAndUntil5SecondsInPast(IAViewUpdate lastIAViewUpdate,
-	    Integer limit) {
-	// FIXME to ensure there is no data lost when commiting from several
-	// servers that might have different clocks, I came up with this
-	// solution. Not ideal though.
-	Calendar instance = Calendar.getInstance();
-	instance.add(Calendar.SECOND, -5);
-	Date nowMinus2seconds = instance.getTime();
+    public List<IAViewUpdate> findWhereDateGreaterThanEqualAndLowerThan(Date gteDate, Date ltDate, Integer limit) {
+	List<Criteria> listOfCriterias = new ArrayList<Criteria>();
+	if (gteDate != null) {
+	    listOfCriterias.add(Criteria.where(IAViewUpdate.FIELD_CREATIONDATE).gte(gteDate));
+	}
+	if (ltDate != null) {
+	    listOfCriterias.add(Criteria.where(IAViewUpdate.FIELD_CREATIONDATE).lt(ltDate));
+	}
+	Query query = new Query(new Criteria().andOperator(listOfCriterias.toArray(new Criteria[0])));
 
-	Query query = new Query(new Criteria().andOperator(
-		Criteria.where(IAViewUpdate.FIELD_CREATIONDATE).gte(lastIAViewUpdate.getCreationDate()), Criteria
-			.where(IAViewUpdate.FIELD_CREATIONDATE).lt(nowMinus2seconds)));
-	
 	query.limit(limit + 1);
 	query.with(new Sort(new Order(Sort.Direction.ASC, IAViewUpdate.FIELD_CREATIONDATE)));
-	List<IAViewUpdate> listOfIAViewUpdatesToProcess = mongoTemplate.find(query, IAViewUpdate.class);
-	// FIXME findByDocumentEqualOrMoreRecentThan: this way to browse the
-	// collection is wrong but does the job. Results in some documents being
-	// updates twice
-	removeLastIaViewUpdateFromList(lastIAViewUpdate, listOfIAViewUpdatesToProcess);
-	return listOfIAViewUpdatesToProcess;
-    }
-
-    private void removeLastIaViewUpdateFromList(IAViewUpdate lastIAViewUpdate,
-	    List<IAViewUpdate> listOfIAViewUpdatesToProcess) {
-	for (IAViewUpdate iaViewUpdate : listOfIAViewUpdatesToProcess) {
-	    if (iaViewUpdate.getDocReference().equals(lastIAViewUpdate.getDocReference())) {
-		listOfIAViewUpdatesToProcess.remove(iaViewUpdate);
-	    }
-	    break;
-	}
-
+	return mongoTemplate.find(query, IAViewUpdate.class);
     }
 
 }

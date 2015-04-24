@@ -42,7 +42,9 @@ public interface CategoriserService<T extends CategorisationResult> {
     public List<T> categoriseSingle(String docReference, List<CategoryWithLuceneQuery> cachedCategories);
 
     /**
-     * Check if any document was categorised since last processed element
+     * Check if any document was categorised since last processed element<br/>
+     * if no last document (parameter null), it will check if there is any new
+     * doc
      * 
      * @param iaViewUpdate
      * @return
@@ -50,13 +52,14 @@ public interface CategoriserService<T extends CategorisationResult> {
     boolean hasNewCategorisedDocumentsSinceDocument(IAViewUpdate iaViewUpdate);
 
     /**
-     * get new categorised documents since last processed element
+     * get new categorised documents since last processed element<br/>
+     * if no last document (parameter null), it will get if there is any new doc
      * 
      * @param limit
      * @param lastIAaViewUpdate
      * @return
      */
-    List<IAViewUpdate> getNewCategorisedDocumentsSinceObjectId(int limit, IAViewUpdate lastIAaViewUpdate);
+    List<IAViewUpdate> getNewCategorisedDocumentsSinceDocument(int limit, IAViewUpdate lastIAaViewUpdate);
 
     /**
      * find last update on categories on iaviews from mongo db
