@@ -20,17 +20,21 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.Categori
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.PaginatedList;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.TrainingSetService;
-import uk.gov.nationalarchives.discovery.taxonomy.ws.model.PublishRequest;
 import uk.gov.nationalarchives.discovery.taxonomy.ws.model.SearchIAViewRequest;
 import uk.gov.nationalarchives.discovery.taxonomy.ws.model.TestCategoriseSingleRequest;
 
+/**
+ * WS for Taxonomy GUI:<br/>
+ * provides methods to retrieve results from search queries and test
+ * categorisation on documents
+ * 
+ * @author jcharlet
+ *
+ */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @RestController
 @RequestMapping("/taxonomy")
 public class TaxonomyController {
-
-    private static final String STATUS_OK_JSON_RESPONSE = "{\"status\":\"OK\"}";
 
     private static final String APPLICATION_JSON = "application/json";
     private static final Logger logger = LoggerFactory.getLogger(TaxonomyController.class);
@@ -41,9 +45,14 @@ public class TaxonomyController {
     @Autowired
     CategoriserService categoriser;
 
-    @Autowired
-    TrainingSetService trainingSetService;
-
+    /**
+     * Endpoint: search for InformationAssetViews in lucene index using a
+     * category query and other parameters
+     * 
+     * @param searchRequest
+     * @return paginated list of found information asset views
+     * @throws Exception
+     */
     @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ResponseBody
     PaginatedList<InformationAssetView> searchIAView(@RequestBody SearchIAViewRequest searchRequest) throws Exception {
@@ -74,17 +83,12 @@ public class TaxonomyController {
 	return listOfIAViews;
     }
 
-    @RequestMapping(value = "/publish", method = RequestMethod.POST, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
-    @ResponseBody
-    String publish(@RequestBody(required = true) PublishRequest publishRequest) {
-	logger.info("/publish > {}", publishRequest.toString());
-
-	trainingSetService.publishUpdateOnCategory(publishRequest.getCiaid());
-
-	logger.info("/publish < {}", STATUS_OK_JSON_RESPONSE);
-	return STATUS_OK_JSON_RESPONSE;
-    }
-
+    /**
+     * Endpoint: test the categorisation of an information asset view
+     * 
+     * @param testCategoriseSingleRequest
+     * @return the list of categorisation results
+     */
     @RequestMapping(value = "/testCategoriseSingle", method = RequestMethod.POST, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ResponseBody
     List<CategorisationResult> testCategoriseSingle(@RequestBody TestCategoriseSingleRequest testCategoriseSingleRequest) {

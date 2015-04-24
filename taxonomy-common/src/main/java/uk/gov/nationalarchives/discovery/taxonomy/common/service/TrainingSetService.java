@@ -6,6 +6,12 @@ import java.io.IOException;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 
+/**
+ * Service dedicated to the management of the training set
+ * 
+ * @author jcharlet
+ *
+ */
 public interface TrainingSetService {
 
     /**

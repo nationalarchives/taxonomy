@@ -1,5 +1,11 @@
 package uk.gov.nationalarchives.discovery.taxonomy.ws.model;
 
+/**
+ * request object for a search on Taxonomy WS
+ * 
+ * @author jcharlet
+ *
+ */
 public class SearchIAViewRequest {
     private String categoryQuery;
 

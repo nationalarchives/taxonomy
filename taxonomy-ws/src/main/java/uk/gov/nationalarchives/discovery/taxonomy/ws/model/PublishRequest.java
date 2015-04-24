@@ -2,6 +2,12 @@ package uk.gov.nationalarchives.discovery.taxonomy.ws.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Request object for the publish method on Taxonomy WS
+ * 
+ * @author jcharlet
+ *
+ */
 public class PublishRequest {
     @JsonProperty(value = "CIAID")
     private String ciaid;

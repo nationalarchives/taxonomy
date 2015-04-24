@@ -55,7 +55,7 @@ public class TaxonomyControllerTest {
 
     private static final String WS_PATH_SEARCH = "taxonomy/search";
 
-    private static final String WS_PATH_PUBLISH = "taxonomy/publish";
+    private static final String WS_PATH_PUBLISH = "taxonomy/tset/publish";
 
     // private static final Logger logger =
     // LoggerFactory.getLogger(TestTaxonomyController.class);
