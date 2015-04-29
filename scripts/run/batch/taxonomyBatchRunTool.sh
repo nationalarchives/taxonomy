@@ -112,7 +112,7 @@ workerStarterExtraApplicationArgs="--batch.categorise-all.startEpic=true"
 workerClassicExtraApplicationArgs="--batch.categorise-all.startEpic=false"
 
 dailyUpdatesJvmArgs=
-dailyUpdatesApplicationArgs="--batch.role.check-categorisation-request-messages=true --server.port=0"
+dailyUpdatesApplicationArgs="--batch.role.check-categorisation-request-messages=true --batch.role.delete-documents-request-messages=true --server.port=0"
 
 updateSolrJvmArgs=
 updateSolrApplicationArgs="--batch.role.udpate-solr-cloud=true --server.port=0"

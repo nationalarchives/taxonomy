@@ -95,9 +95,11 @@ lucene:
 ---
 spring.profiles: batch
 spring.activemq.categorise-doc-queue-name: CATEGORISE.DOCUMENTS
+spring.activemq.delete-doc-queue-name: DELETE.DOCUMENTS
 batch.role:
  udpate-solr-cloud: false
  check-categorisation-request-messages: false
+ delete-documents-request-messages: false
  categorise-all: false
  categorise-all.supervisor: false
  categorise-all.worker: false

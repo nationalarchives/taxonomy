@@ -50,4 +50,10 @@ public class IAViewUpdateRepositoryImpl implements IAViewUpdateRepositoryCustom 
 	return mongoTemplate.find(query, IAViewUpdate.class);
     }
 
+    @Override
+    public void findAndRemoveByDocReference(String docReference) {
+	Query query = new Query(Criteria.where(IAViewUpdate.FIELD_DOCREFERENCE).is(docReference));
+	mongoTemplate.remove(query, IAViewUpdate.class);
+    }
+
 }

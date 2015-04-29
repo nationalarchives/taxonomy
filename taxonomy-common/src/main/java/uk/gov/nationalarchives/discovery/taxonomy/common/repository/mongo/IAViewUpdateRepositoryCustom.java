@@ -5,6 +5,12 @@ import java.util.List;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
 
+/**
+ * Custom repository for IAViewUpdates, containing methods to implememt manually
+ * 
+ * @author jcharlet
+ *
+ */
 public interface IAViewUpdateRepositoryCustom {
 
     /**
@@ -25,4 +31,11 @@ public interface IAViewUpdateRepositoryCustom {
      * @return
      */
     List<IAViewUpdate> findWhereDateGreaterThanEqualAndLowerThan(Date gteDate, Date ltDate, Integer limit);
+
+    /**
+     * find a document by docReference and remove it
+     * 
+     * @param docReference
+     */
+    void findAndRemoveByDocReference(String docReference);
 }

@@ -19,23 +19,23 @@ import uk.gov.nationalarchives.discovery.taxonomy.batch.msg.consumer.CategoriseD
  */
 @Configuration
 @ConditionalOnProperty(prefix = "batch.role.", value = "check-categorisation-request-messages")
-class MsgConfiguration {
+class CategorisationMsgConfiguration {
 
     @Value("${spring.activemq.categorise-doc-queue-name}")
     String categoriseDocumentsQueueName;
 
     @Bean
-    MessageListenerAdapter adapter(CategoriseDocMessageConsumer categoriseDocMessageConsumer) {
+    MessageListenerAdapter categorisationListenerAdapter(CategoriseDocMessageConsumer categoriseDocMessageConsumer) {
 	MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(categoriseDocMessageConsumer);
 	messageListenerAdapter.setMessageConverter(null);
 	return messageListenerAdapter;
     }
 
     @Bean
-    DefaultMessageListenerContainer container(MessageListenerAdapter messageListener,
+    DefaultMessageListenerContainer categorisationContainer(MessageListenerAdapter categorisationListenerAdapter,
 	    ConnectionFactory connectionFactory) {
 	DefaultMessageListenerContainer container = new DefaultMessageListenerContainer();
-	container.setMessageListener(messageListener);
+	container.setMessageListener(categorisationListenerAdapter);
 	container.setConnectionFactory(connectionFactory);
 	container.setDestinationName(categoriseDocumentsQueueName);
 	return container;

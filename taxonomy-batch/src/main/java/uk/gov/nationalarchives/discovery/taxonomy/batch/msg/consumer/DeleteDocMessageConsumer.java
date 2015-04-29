@@ -13,28 +13,34 @@ import org.springframework.stereotype.Component;
 
 import uk.gov.nationalarchives.discovery.taxonomy.batch.msg.consumer.message.TaxonomyDocumentMessageHolder;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.IAViewUpdateRepository;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.InformationAssetViewMongoRepository;
 
 /**
- * Consumer dedicated to handling all Categorisation requests sent to activeMQ
- * dedicated queue
+ * Consumer dedicated to handling all Deletion requests sent to activeMQ
+ * dedicated queue: whenever a document has to be deleted from index, a message
+ * is sent and processed in that batch to make sure the specified documents are
+ * removed from mongo collections so that if mongo collections must be directly
+ * used to update solr, no empty document will be created
  * 
  * @author jcharlet
  *
  */
 @Component
-@ConditionalOnProperty(prefix = "batch.role.", value = "check-categorisation-request-messages")
-public class CategoriseDocMessageConsumer extends TaxonomyDocMessageConsumer {
+@ConditionalOnProperty(prefix = "batch.role.", value = "delete-documents-request-messages")
+public class DeleteDocMessageConsumer extends TaxonomyDocMessageConsumer {
 
-    private final CategoriserService<CategorisationResult> categoriserService;
+    private final InformationAssetViewMongoRepository informationAssetViewMongoRepository;
+    private final IAViewUpdateRepository iaViewUpdateRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(CategoriseDocMessageConsumer.class);
+    private static final Logger logger = LoggerFactory.getLogger(DeleteDocMessageConsumer.class);
 
     @Autowired
-    public CategoriseDocMessageConsumer(CategoriserService<CategorisationResult> categoriserService) {
+    public DeleteDocMessageConsumer(InformationAssetViewMongoRepository informationAssetViewMongoRepository,
+	    IAViewUpdateRepository iaViewUpdateRepository) {
 	super();
-	this.categoriserService = categoriserService;
+	this.informationAssetViewMongoRepository = informationAssetViewMongoRepository;
+	this.iaViewUpdateRepository = iaViewUpdateRepository;
     }
 
     @Override
@@ -46,15 +52,13 @@ public class CategoriseDocMessageConsumer extends TaxonomyDocMessageConsumer {
 
 	TaxonomyDocumentMessageHolder categoriseDocumentMessage = getTaxonomyDocumentMessageFromMessage(message);
 
-	logger.info("received Categorise Document message: {}, docReferences: {}",
+	logger.info("received Delete Document message: {}, docReferences: {}",
 		categoriseDocumentMessage.getMessageId(),
 		ArrayUtils.toString(categoriseDocumentMessage.getListOfDocReferences()));
 
-	categoriserService.refreshTaxonomyIndex();
-
 	for (String docReference : categoriseDocumentMessage.getListOfDocReferences()) {
 	    try {
-		categoriserService.categoriseSingle(docReference);
+		removeDocumentFromMongoByDocReference(docReference);
 	    } catch (TaxonomyException e) {
 		categoriseDocumentMessage.addDocReferenceInError(docReference);
 		logger.error("an error occured while processing Document: {}, from message: {}", docReference,
@@ -65,11 +69,16 @@ public class CategoriseDocMessageConsumer extends TaxonomyDocMessageConsumer {
 	if (categoriseDocumentMessage.hasProcessingErrors()) {
 	    logger.warn("completed treatment for message: {} with {} errors", categoriseDocumentMessage.getMessageId(),
 		    categoriseDocumentMessage.getListOfDocReferencesInError().size());
-	    logger.error("DOCREFERENCES THAT COULD NOT BE CATEGORISED: {}",
+	    logger.error("DOCREFERENCES that raise an issue while deleting: {}",
 		    Arrays.toString(categoriseDocumentMessage.getListOfDocReferencesInError().toArray()));
 	} else {
 	    logger.info("completed treatment for message: {}", categoriseDocumentMessage.getMessageId());
 	}
+    }
+
+    private void removeDocumentFromMongoByDocReference(String docReference) {
+	informationAssetViewMongoRepository.delete(docReference);
+	iaViewUpdateRepository.findAndRemoveByDocReference(docReference);
     }
 
 }

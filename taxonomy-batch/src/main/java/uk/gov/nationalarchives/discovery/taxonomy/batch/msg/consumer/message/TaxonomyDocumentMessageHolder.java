@@ -3,12 +3,19 @@ package uk.gov.nationalarchives.discovery.taxonomy.batch.msg.consumer.message;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoriseDocumentMessage {
+/**
+ * Holder for taxonomy queue messages: stores messageId, list of elements to
+ * process, list of elements in error
+ * 
+ * @author jcharlet
+ *
+ */
+public class TaxonomyDocumentMessageHolder {
     private String messageId;
     private List<String> listOfDocReferences;
     private List<String> listOfDocReferencesInError;
 
-    public CategoriseDocumentMessage(String messageId, List<String> listOfDocReferences) {
+    public TaxonomyDocumentMessageHolder(String messageId, List<String> listOfDocReferences) {
 	super();
 	this.messageId = messageId;
 	this.listOfDocReferences = listOfDocReferences;
