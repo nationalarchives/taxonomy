@@ -1,5 +1,6 @@
 package uk.gov.nationalarchives.discovery.taxonomy.common.service;
 
+import java.util.Date;
 import java.util.List;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
@@ -42,24 +43,14 @@ public interface CategoriserService<T extends CategorisationResult> {
     public List<T> categoriseSingle(String docReference, List<CategoryWithLuceneQuery> cachedCategories);
 
     /**
-     * Check if any document was categorised since last processed element<br/>
-     * if no last document (parameter null), it will check if there is any new
-     * doc
+     * get new categorised documents since date if parameters are null, it will
+     * look for any document
      * 
-     * @param iaViewUpdate
-     * @return
-     */
-    boolean hasNewCategorisedDocumentsSinceDocument(IAViewUpdate iaViewUpdate);
-
-    /**
-     * get new categorised documents since last processed element<br/>
-     * if no last document (parameter null), it will get if there is any new doc
-     * 
+     * @param date
      * @param limit
-     * @param lastIAaViewUpdate
      * @return
      */
-    List<IAViewUpdate> getNewCategorisedDocumentsSinceDocument(int limit, IAViewUpdate lastIAaViewUpdate);
+    List<IAViewUpdate> getNewCategorisedDocumentsAfterDate(Date date, int limit);
 
     /**
      * find last update on categories on iaviews from mongo db
@@ -76,5 +67,14 @@ public interface CategoriserService<T extends CategorisationResult> {
      * indexed right before that call
      */
     public void refreshTaxonomyIndex();
+
+    /**
+     * get new categorised documents since document
+     * 
+     * @param afterIAViewUpdate
+     * @param limit
+     * @return
+     */
+    List<IAViewUpdate> getNewCategorisedDocumentsAfterDocument(IAViewUpdate afterIAViewUpdate, int limit);
 
 }

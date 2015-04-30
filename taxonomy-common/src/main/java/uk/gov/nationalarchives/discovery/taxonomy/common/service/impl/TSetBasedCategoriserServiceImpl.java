@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -290,14 +291,15 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     }
 
     @Override
-    public boolean hasNewCategorisedDocumentsSinceDocument(IAViewUpdate iaViewUpdate) {
-	// TODO TSETBASED Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public List<IAViewUpdate> getNewCategorisedDocumentsSinceDocument(int limit, IAViewUpdate iaViewUpdate) {
+    public List<IAViewUpdate> getNewCategorisedDocumentsAfterDate(Date date, int limit) {
 	// TODO TSETBASED Auto-generated method stub
 	return null;
     }
+
+    @Override
+    public List<IAViewUpdate> getNewCategorisedDocumentsAfterDocument(IAViewUpdate afterIAViewUpdate, int limit) {
+	// TODO TSETBASED Auto-generated method stub
+	return null;
+    }
+
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
@@ -53,21 +54,24 @@ public class updateSolrCloudTask {
     @SuppressWarnings("unchecked")
     @Scheduled(fixedRateString = "${batch.update-solr-cloud.rate-between-updates}")
     public void updateSolrCloudWithLatestUpdatesOnCategories() {
-	if (categoriserService.hasNewCategorisedDocumentsSinceDocument(lastIAViewUpdate)) {
-	    if (lastIAViewUpdate == null) {
-		logger.info(".updateSolrCloudWithLatestUpdatesOnCategories: processing new documents");
-	    } else {
-		logger.info(".updateSolrCloudWithLatestUpdatesOnCategories: processing documents since: {} {}",
-			lastIAViewUpdate.getDocReference(), lastIAViewUpdate.getCreationDate());
-	    }
-	    List<IAViewUpdate> listOfIAViewUpdatesToProcess = categoriserService
-		    .getNewCategorisedDocumentsSinceDocument(bulkUpdateSize, lastIAViewUpdate);
+	List<IAViewUpdate> listOfIAViewUpdatesToProcess = getNewCategorisedDocuments();
 
-	    updateSolrService.bulkUpdateCategoriesOnIAViews(listOfIAViewUpdatesToProcess);
-
-	    updateLastIAViewUpdateObjectId(listOfIAViewUpdatesToProcess);
+	if (CollectionUtils.isEmpty(listOfIAViewUpdatesToProcess)) {
+	    return;
 	}
 
+	updateSolrService.bulkUpdateCategoriesOnIAViews(listOfIAViewUpdatesToProcess);
+
+	updateLastIAViewUpdateObjectId(listOfIAViewUpdatesToProcess);
+
+    }
+
+    private List getNewCategorisedDocuments() {
+	if (lastIAViewUpdate != null) {
+	    return categoriserService.getNewCategorisedDocumentsAfterDocument(lastIAViewUpdate, bulkUpdateSize);
+	} else {
+	    return categoriserService.getNewCategorisedDocumentsAfterDate(null, bulkUpdateSize);
+	}
     }
 
     private void updateLastIAViewUpdateObjectId(List<IAViewUpdate> listOfIAViewUpdates) {

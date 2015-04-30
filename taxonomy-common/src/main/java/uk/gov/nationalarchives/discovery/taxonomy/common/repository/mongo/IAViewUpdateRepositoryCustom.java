@@ -21,16 +21,16 @@ public interface IAViewUpdateRepositoryCustom {
     IAViewUpdate findLastIAViewUpdate();
 
     /**
-     * find elements where date is greater than or equal to first parameter AND
-     * lower than second parameter<br/>
+     * find elements which created after given document, AND after given date<br/>
      * if one parameter is empty, it will not be taken into account in the query
      * 
-     * @param gteDate
+     * @param afterIAViewUpdate
      * @param ltDate
      * @param limit
      * @return
      */
-    List<IAViewUpdate> findWhereDateGreaterThanEqualAndLowerThan(Date gteDate, Date ltDate, Integer limit);
+    List<IAViewUpdate> findDocumentsCreatedAfterDocumentAndCreatedBeforeDate(IAViewUpdate afterIAViewUpdate,
+	    Date ltDate, Integer limit);
 
     /**
      * find a document by docReference and remove it
@@ -38,4 +38,17 @@ public interface IAViewUpdateRepositoryCustom {
      * @param docReference
      */
     void findAndRemoveByDocReference(String docReference);
+
+    /**
+     * find elements where date is after than first parameter, AND date before
+     * than second parameter<br/>
+     * if one parameter is empty, it will not be taken into account in the query
+     * 
+     * @param gteDate
+     * @param ltDate
+     * @param limit
+     * @return
+     */
+    List<IAViewUpdate> findDocumentsCreatedAfterDateAndCreatedBeforeDate(Date gtDate, Date ltDate, Integer limit);
+
 }

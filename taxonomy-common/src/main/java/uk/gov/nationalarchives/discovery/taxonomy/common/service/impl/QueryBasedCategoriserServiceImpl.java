@@ -250,42 +250,33 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     }
 
     @Override
-    public boolean hasNewCategorisedDocumentsSinceDocument(IAViewUpdate iaViewUpdate) {
-	List<IAViewUpdate> listOfIAViewUpdatesToProcess = getNewCategorisedDocumentsSinceDocument(1, iaViewUpdate);
-	return !listOfIAViewUpdatesToProcess.isEmpty();
-    }
+    public List<IAViewUpdate> getNewCategorisedDocumentsAfterDocument(IAViewUpdate afterIAViewUpdate, int limit) {
+	Date nowMinus2seconds = getDateWithNSecondsInPast();
 
-    @Override
-    public List<IAViewUpdate> getNewCategorisedDocumentsSinceDocument(int limit, IAViewUpdate iaViewUpdate) {
-	// FIXME to ensure there is no data lost when commiting from several
-	// servers that might have different clocks, I came up with this
-	// solution. Not ideal though.
-	Calendar instance = Calendar.getInstance();
-	instance.add(Calendar.SECOND, -5);
-	Date nowMinus2seconds = instance.getTime();
-
-	Date creationDate = (iaViewUpdate != null) ? iaViewUpdate.getCreationDate() : null;
 	List<IAViewUpdate> listOfIAViewUpdatesToProcess = iaViewUpdateRepository
-		.findWhereDateGreaterThanEqualAndLowerThan(creationDate, nowMinus2seconds, limit);
+		.findDocumentsCreatedAfterDocumentAndCreatedBeforeDate(afterIAViewUpdate, nowMinus2seconds, limit);
 
-	// FIXME findByDocumentEqualOrMoreRecentThan: this way to browse the
-	// collection is wrong but does the job. Results in some documents being
-	// updates twice
-	if (iaViewUpdate != null) {
-	    removeLastIaViewUpdateFromList(iaViewUpdate, listOfIAViewUpdatesToProcess);
-	}
 	return listOfIAViewUpdatesToProcess;
     }
 
-    private void removeLastIaViewUpdateFromList(IAViewUpdate lastIAViewUpdate,
-	    List<IAViewUpdate> listOfIAViewUpdatesToProcess) {
-	for (IAViewUpdate iaViewUpdate : listOfIAViewUpdatesToProcess) {
-	    if (iaViewUpdate.getDocReference().equals(lastIAViewUpdate.getDocReference())) {
-		listOfIAViewUpdatesToProcess.remove(iaViewUpdate);
-	    }
-	    break;
-	}
+    @Override
+    public List<IAViewUpdate> getNewCategorisedDocumentsAfterDate(Date date, int limit) {
+	// FIXME to ensure there is no data lost when commiting from several
+	// servers that might have different clocks, I came up with this
+	// solution. Not ideal though.
+	Date pastDate = getDateWithNSecondsInPast();
 
+	List<IAViewUpdate> listOfIAViewUpdatesToProcess = iaViewUpdateRepository
+		.findDocumentsCreatedAfterDateAndCreatedBeforeDate(date, pastDate, limit);
+
+	return listOfIAViewUpdatesToProcess;
+    }
+
+    private Date getDateWithNSecondsInPast() {
+	Calendar instance = Calendar.getInstance();
+	instance.add(Calendar.SECOND, -5);
+	Date nowMinus2seconds = instance.getTime();
+	return nowMinus2seconds;
     }
 
     @Override

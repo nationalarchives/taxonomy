@@ -35,10 +35,10 @@ public class IAViewUpdateRepositoryImpl implements IAViewUpdateRepositoryCustom 
     }
 
     @Override
-    public List<IAViewUpdate> findWhereDateGreaterThanEqualAndLowerThan(Date gteDate, Date ltDate, Integer limit) {
+    public List<IAViewUpdate> findDocumentsCreatedAfterDateAndCreatedBeforeDate(Date gtDate, Date ltDate, Integer limit) {
 	List<Criteria> listOfCriterias = new ArrayList<Criteria>();
-	if (gteDate != null) {
-	    listOfCriterias.add(Criteria.where(IAViewUpdate.FIELD_CREATIONDATE).gte(gteDate));
+	if (gtDate != null) {
+	    listOfCriterias.add(Criteria.where(IAViewUpdate.FIELD_CREATIONDATE).gt(gtDate));
 	}
 	if (ltDate != null) {
 	    listOfCriterias.add(Criteria.where(IAViewUpdate.FIELD_CREATIONDATE).lt(ltDate));
@@ -46,7 +46,28 @@ public class IAViewUpdateRepositoryImpl implements IAViewUpdateRepositoryCustom 
 	Query query = new Query(new Criteria().andOperator(listOfCriterias.toArray(new Criteria[0])));
 
 	query.limit(limit + 1);
-	query.with(new Sort(new Order(Sort.Direction.ASC, IAViewUpdate.FIELD_CREATIONDATE)));
+	query.with(new Sort(new Order(Sort.Direction.ASC, IAViewUpdate.FIELD_CREATIONDATE), new Order(
+		Sort.Direction.ASC, IAViewUpdate.FIELD_DOCREFERENCE)));
+	return mongoTemplate.find(query, IAViewUpdate.class);
+    }
+
+    @Override
+    public List<IAViewUpdate> findDocumentsCreatedAfterDocumentAndCreatedBeforeDate(IAViewUpdate afterIAViewUpdate,
+	    Date ltDate, Integer limit) {
+	List<Criteria> listOfCriterias = new ArrayList<Criteria>();
+	listOfCriterias.add(new Criteria().orOperator(
+		Criteria.where(IAViewUpdate.FIELD_CREATIONDATE).gt(afterIAViewUpdate.getCreationDate()),
+		new Criteria().andOperator(
+			Criteria.where(IAViewUpdate.FIELD_CREATIONDATE).gte(afterIAViewUpdate.getCreationDate()),
+			Criteria.where(IAViewUpdate.FIELD_DOCREFERENCE).gt(afterIAViewUpdate.getDocReference()))));
+	if (ltDate != null) {
+	    listOfCriterias.add(Criteria.where(IAViewUpdate.FIELD_CREATIONDATE).lt(ltDate));
+	}
+	Query query = new Query(new Criteria().andOperator(listOfCriterias.toArray(new Criteria[0])));
+
+	query.limit(limit + 1);
+	query.with(new Sort(new Order(Sort.Direction.ASC, IAViewUpdate.FIELD_CREATIONDATE), new Order(
+		Sort.Direction.ASC, IAViewUpdate.FIELD_DOCREFERENCE)));
 	return mongoTemplate.find(query, IAViewUpdate.class);
     }
 
