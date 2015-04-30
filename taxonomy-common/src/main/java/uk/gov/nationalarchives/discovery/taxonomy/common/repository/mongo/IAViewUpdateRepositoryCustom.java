@@ -40,8 +40,7 @@ public interface IAViewUpdateRepositoryCustom {
     void findAndRemoveByDocReference(String docReference);
 
     /**
-     * find elements where date is after than first parameter, AND date before
-     * than second parameter<br/>
+     * find elements from (including) date, AND before second date provided<br/>
      * if one parameter is empty, it will not be taken into account in the query
      * 
      * @param gteDate
@@ -49,6 +48,6 @@ public interface IAViewUpdateRepositoryCustom {
      * @param limit
      * @return
      */
-    List<IAViewUpdate> findDocumentsCreatedAfterDateAndCreatedBeforeDate(Date gtDate, Date ltDate, Integer limit);
+    List<IAViewUpdate> findDocumentsCreatedFromDateAndCreatedBeforeDate(Date gteDate, Date ltDate, Integer limit);
 
 }

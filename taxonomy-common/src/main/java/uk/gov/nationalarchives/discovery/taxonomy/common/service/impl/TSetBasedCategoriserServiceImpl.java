@@ -291,7 +291,7 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
     }
 
     @Override
-    public List<IAViewUpdate> getNewCategorisedDocumentsAfterDate(Date date, int limit) {
+    public List<IAViewUpdate> getNewCategorisedDocumentsFromDate(Date date, int limit) {
 	// TODO TSETBASED Auto-generated method stub
 	return null;
     }

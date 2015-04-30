@@ -24,6 +24,8 @@ usage ()
 	echo
 	echo "	-ns --numberOfWorkers <logName>		Specific to SupervisorWorkerCluster: number of workers instantiated"
 	echo
+	echo "	-sd --startDate <dateAsProvidedByMong>		Specific to UpdateSolr: provide date from which to browse iaViewUpdates collection and update Solr "
+	echo
 	echo "	-ln --logName <logName>		provide log name"
 	echo
 	echo "	-ja --jvmArgs <jvmArgs>		provide jvm arguments"
@@ -53,6 +55,7 @@ jProfilerTarget=
 doesWorkerStartEpic=true
 displayLogs=true
 runInConsole=false
+startDate=
 
 # Tutorial on shell script with list of operators for if, while, etc statements:
 # http://linuxcommand.org/lc3_wss0080.php
@@ -77,6 +80,9 @@ while [ "$1" != "" ]; do
                                 ;;
         -adn | --afterDocNumber )     shift
 								afterDocNumber=$1
+                                ;;
+        -sd | --startDate )     shift
+								startDate=$1
                                 ;;
         -ln | --logName )     shift
 								logName=$1
@@ -150,6 +156,11 @@ runApplication()
 	        updateSolr )   
 				batchTypeBasedJvmArgs=$updateSolrJvmArgs
 				batchTypeBasedApplicationArgs=$updateSolrApplicationArgs
+				
+				if [ -n "$startDate" ]
+				then
+					batchTypeBasedApplicationArgs=$(echo $batchTypeBasedApplicationArgs "--batch.update-solr-cloud.start-date="$startDate)
+				fi
 	            ;;
 	esac
 	

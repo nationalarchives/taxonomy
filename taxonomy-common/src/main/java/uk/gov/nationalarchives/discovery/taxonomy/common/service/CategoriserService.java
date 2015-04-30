@@ -43,14 +43,14 @@ public interface CategoriserService<T extends CategorisationResult> {
     public List<T> categoriseSingle(String docReference, List<CategoryWithLuceneQuery> cachedCategories);
 
     /**
-     * get new categorised documents since date if parameters are null, it will
-     * look for any document
+     * get new categorised documents from (including) date <br/>
+     * if parameters are null, it will look for any document
      * 
      * @param date
      * @param limit
      * @return
      */
-    List<IAViewUpdate> getNewCategorisedDocumentsAfterDate(Date date, int limit);
+    List<IAViewUpdate> getNewCategorisedDocumentsFromDate(Date fromDate, int limit);
 
     /**
      * find last update on categories on iaviews from mongo db

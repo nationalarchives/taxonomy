@@ -35,10 +35,10 @@ public class IAViewUpdateRepositoryImpl implements IAViewUpdateRepositoryCustom 
     }
 
     @Override
-    public List<IAViewUpdate> findDocumentsCreatedAfterDateAndCreatedBeforeDate(Date gtDate, Date ltDate, Integer limit) {
+    public List<IAViewUpdate> findDocumentsCreatedFromDateAndCreatedBeforeDate(Date gtDate, Date ltDate, Integer limit) {
 	List<Criteria> listOfCriterias = new ArrayList<Criteria>();
 	if (gtDate != null) {
-	    listOfCriterias.add(Criteria.where(IAViewUpdate.FIELD_CREATIONDATE).gt(gtDate));
+	    listOfCriterias.add(Criteria.where(IAViewUpdate.FIELD_CREATIONDATE).gte(gtDate));
 	}
 	if (ltDate != null) {
 	    listOfCriterias.add(Criteria.where(IAViewUpdate.FIELD_CREATIONDATE).lt(ltDate));

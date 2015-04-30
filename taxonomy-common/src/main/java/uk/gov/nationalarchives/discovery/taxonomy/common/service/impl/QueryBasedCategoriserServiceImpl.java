@@ -260,14 +260,14 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     }
 
     @Override
-    public List<IAViewUpdate> getNewCategorisedDocumentsAfterDate(Date date, int limit) {
+    public List<IAViewUpdate> getNewCategorisedDocumentsFromDate(Date date, int limit) {
 	// FIXME to ensure there is no data lost when commiting from several
 	// servers that might have different clocks, I came up with this
 	// solution. Not ideal though.
 	Date pastDate = getDateWithNSecondsInPast();
 
 	List<IAViewUpdate> listOfIAViewUpdatesToProcess = iaViewUpdateRepository
-		.findDocumentsCreatedAfterDateAndCreatedBeforeDate(date, pastDate, limit);
+		.findDocumentsCreatedFromDateAndCreatedBeforeDate(date, pastDate, limit);
 
 	return listOfIAViewUpdatesToProcess;
     }
