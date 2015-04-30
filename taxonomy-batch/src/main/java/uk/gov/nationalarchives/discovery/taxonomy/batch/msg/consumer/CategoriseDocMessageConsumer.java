@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import uk.gov.nationalarchives.discovery.taxonomy.batch.msg.consumer.message.TaxonomyDocumentMessageHolder;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
@@ -57,8 +58,13 @@ public class CategoriseDocMessageConsumer extends TaxonomyDocMessageConsumer {
 		categoriserService.categoriseSingle(docReference);
 	    } catch (TaxonomyException e) {
 		categoriseDocumentMessage.addDocReferenceInError(docReference);
-		logger.error("an error occured while processing Document: {}, from message: {}", docReference,
-			categoriseDocumentMessage.getMessageId(), e);
+		if (TaxonomyErrorType.DOC_NOT_FOUND.equals(e.getTaxonomyErrorType())) {
+		    logger.error("an error occured while processing Document: {}, from message: {}", docReference,
+			    categoriseDocumentMessage.getMessageId());
+		} else {
+		    logger.error("an error occured while processing Document: {}, from message: {}", docReference,
+			    categoriseDocumentMessage.getMessageId(), e);
+		}
 	    }
 	}
 
