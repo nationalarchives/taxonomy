@@ -53,7 +53,7 @@
         <boolProp name="recycle">true</boolProp>
         <stringProp name="shareMode">shareMode.all</stringProp>
         <boolProp name="stopThread">false</boolProp>
-        <stringProp name="variableNames">SOLR_TAXONOMY_HOST,SOLR_TAXONOMY_PORT,SOLR_TAXONOMY_COLLECTION,SOLR_CLOUD_HOST,SOLR_CLOUD_PORT,SOLR_CLOUD_COLLECTION,ACTIVEMQ_HOST,ACTIVEMQ_PORT,ACTIVEMQ_QUEUE_CATEGORISEDOC,WS_TAXONOMY_HOST,WS_TAXONOMY_PORT,WS_TAXONOMY_PATH</stringProp>
+        <stringProp name="variableNames">SOLR_TAXONOMY_HOST,SOLR_TAXONOMY_PORT,SOLR_TAXONOMY_COLLECTION,SOLR_CLOUD_HOST,SOLR_CLOUD_PORT,SOLR_CLOUD_COLLECTION,ACTIVEMQ_HOST,ACTIVEMQ_PORT,ACTIVEMQ_QUEUE_CATEGORISEDOC,WS_TAXONOMY_HOST,WS_TAXONOMY_PORT,WS_TAXONOMY_PATH,MONGO_URL</stringProp>
       </CSVDataSet>
       <hashTree/>
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="app2 Config" enabled="false">
@@ -64,7 +64,7 @@
         <boolProp name="recycle">true</boolProp>
         <stringProp name="shareMode">shareMode.all</stringProp>
         <boolProp name="stopThread">false</boolProp>
-        <stringProp name="variableNames">SOLR_TAXONOMY_HOST,SOLR_TAXONOMY_PORT,SOLR_TAXONOMY_COLLECTION,SOLR_CLOUD_HOST,SOLR_CLOUD_PORT,SOLR_CLOUD_COLLECTION,ACTIVEMQ_HOST,ACTIVEMQ_PORT,ACTIVEMQ_QUEUE_CATEGORISEDOC,WS_TAXONOMY_HOST,WS_TAXONOMY_PORT,WS_TAXONOMY_PATH</stringProp>
+        <stringProp name="variableNames">SOLR_TAXONOMY_HOST,SOLR_TAXONOMY_PORT,SOLR_TAXONOMY_COLLECTION,SOLR_CLOUD_HOST,SOLR_CLOUD_PORT,SOLR_CLOUD_COLLECTION,ACTIVEMQ_HOST,ACTIVEMQ_PORT,ACTIVEMQ_QUEUE_CATEGORISEDOC,WS_TAXONOMY_HOST,WS_TAXONOMY_PORT,WS_TAXONOMY_PATH,MONGO_URL</stringProp>
       </CSVDataSet>
       <hashTree/>
       <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="LOCAL Config" enabled="true">
@@ -151,6 +151,11 @@
                 <stringProp name="Argument.value">CATEGORISE.DOCUMENTS</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
+              <elementProp name="ACTIVEMQ_QUEUE_DELETEDOC" elementType="Argument">
+                <stringProp name="Argument.name">ACTIVEMQ_QUEUE_DELETEDOC</stringProp>
+                <stringProp name="Argument.value">DELETE.DOCUMENTS</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
             </collectionProp>
           </Arguments>
           <hashTree/>
@@ -169,6 +174,16 @@
               <elementProp name="WS_TAXONOMY_PATH" elementType="Argument">
                 <stringProp name="Argument.name">WS_TAXONOMY_PATH</stringProp>
                 <stringProp name="Argument.value">taxonomy</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </Arguments>
+          <hashTree/>
+          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Mongo" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="MONGO_URL" elementType="Argument">
+                <stringProp name="Argument.name">MONGO_URL</stringProp>
+                <stringProp name="Argument.value">localhost</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -477,6 +492,16 @@
                 <stringProp name="Argument.value">C1807170X</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
+              <elementProp name="TIME_TO_WAIT_FOR_CATEGORISATION" elementType="Argument">
+                <stringProp name="Argument.name">TIME_TO_WAIT_FOR_CATEGORISATION</stringProp>
+                <stringProp name="Argument.value">15000</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="DELETE_IAVIEW_DOCREF" elementType="Argument">
+                <stringProp name="Argument.name">DELETE_IAVIEW_DOCREF</stringProp>
+                <stringProp name="Argument.value">C11107557</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
             </collectionProp>
           </Arguments>
           <hashTree/>
@@ -600,7 +625,7 @@
             <TestAction guiclass="TestActionGui" testclass="TestAction" testname="wait for Taxonomy Batch run categorisation" enabled="true">
               <intProp name="ActionProcessor.action">1</intProp>
               <intProp name="ActionProcessor.target">0</intProp>
-              <stringProp name="ActionProcessor.duration">7000</stringProp>
+              <stringProp name="ActionProcessor.duration">${TIME_TO_WAIT_FOR_CATEGORISATION}</stringProp>
             </TestAction>
             <hashTree/>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Commit Solr Cloud" enabled="true">
@@ -803,7 +828,7 @@
             <TestAction guiclass="TestActionGui" testclass="TestAction" testname="wait for Taxonomy Batch run categorisation" enabled="true">
               <intProp name="ActionProcessor.action">1</intProp>
               <intProp name="ActionProcessor.target">0</intProp>
-              <stringProp name="ActionProcessor.duration">10000</stringProp>
+              <stringProp name="ActionProcessor.duration">${TIME_TO_WAIT_FOR_CATEGORISATION}</stringProp>
             </TestAction>
             <hashTree/>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Commit Solr Cloud" enabled="true">
@@ -1392,7 +1417,7 @@
             <TestAction guiclass="TestActionGui" testclass="TestAction" testname="wait for Taxonomy Batch run categorisation" enabled="true">
               <intProp name="ActionProcessor.action">1</intProp>
               <intProp name="ActionProcessor.target">0</intProp>
-              <stringProp name="ActionProcessor.duration">10000</stringProp>
+              <stringProp name="ActionProcessor.duration">${TIME_TO_WAIT_FOR_CATEGORISATION}</stringProp>
             </TestAction>
             <hashTree/>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Commit Solr Cloud" enabled="true">
@@ -1491,6 +1516,155 @@
               </ResponseAssertion>
               <hashTree/>
             </hashTree>
+          </hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="test Remove Document" enabled="true"/>
+          <hashTree>
+            <MongoSourceElement guiclass="TestBeanGUI" testclass="MongoSourceElement" testname="MongoDB Source Config" enabled="true">
+              <boolProp name="autoConnectRetry">false</boolProp>
+              <intProp name="connectTimeout">0</intProp>
+              <stringProp name="connection">${MONGO_URL}</stringProp>
+              <intProp name="connectionsPerHost">10</intProp>
+              <boolProp name="continueOnInsertError">false</boolProp>
+              <boolProp name="fsync">false</boolProp>
+              <longProp name="maxAutoConnectRetryTime">0</longProp>
+              <intProp name="maxWaitTime">120000</intProp>
+              <boolProp name="safe">false</boolProp>
+              <boolProp name="socketKeepAlive">false</boolProp>
+              <intProp name="socketTimeout">0</intProp>
+              <stringProp name="source">taxonomyMongoDb</stringProp>
+              <intProp name="threadsAllowedToBlockForConnectionMultiplier">5</intProp>
+              <boolProp name="waitForJournaling">false</boolProp>
+              <intProp name="writeOperationNumberOfServers">0</intProp>
+              <intProp name="writeOperationTimeout">0</intProp>
+            </MongoSourceElement>
+            <hashTree/>
+            <MongoScriptSampler guiclass="TestBeanGUI" testclass="MongoScriptSampler" testname="reset documents in Mongo iaViewUpdates and iaViews collections" enabled="true">
+              <stringProp name="database">taxonomy</stringProp>
+              <stringProp name="password"></stringProp>
+              <stringProp name="source">taxonomyMongoDb</stringProp>
+              <stringProp name="username"></stringProp>
+              <stringProp name="script">db.iaViewUpdates.insert([{ &quot;_id&quot; : ObjectId(&quot;5542545ce4b012a72be11ad1&quot;), &quot;creationDate&quot; : ISODate(&quot;2015-04-30T16:12:12.328Z&quot;), &quot;docReference&quot; : &quot;C11107557&quot;, &quot;categories&quot; : [ { &quot;ciaid&quot; : &quot;C10084&quot;, &quot;ttl&quot; : &quot;Poverty&quot; }, { &quot;ciaid&quot; : &quot;C10124&quot;, &quot;ttl&quot; : &quot;Africa&quot; }, { &quot;ciaid&quot; : &quot;C10049&quot;, &quot;ttl&quot; : &quot;International&quot; } ], &quot;catDocRef&quot; : &quot;CO 1066/8&quot; },
+{ &quot;_id&quot; : ObjectId(&quot;55425e41e4b0adcb315ac05c&quot;), &quot;creationDate&quot; : ISODate(&quot;2015-04-30T16:54:25.458Z&quot;), &quot;docReference&quot; : &quot;C11107557&quot;, &quot;categories&quot; : [ { &quot;ciaid&quot; : &quot;C10084&quot;, &quot;ttl&quot; : &quot;Poverty&quot; }, { &quot;ciaid&quot; : &quot;C10124&quot;, &quot;ttl&quot; : &quot;Africa&quot; }, { &quot;ciaid&quot; : &quot;C10049&quot;, &quot;ttl&quot; : &quot;International&quot; } ], &quot;catDocRef&quot; : &quot;CO 1066/8&quot; },
+{ &quot;_id&quot; : ObjectId(&quot;55425eace4b0adcb315ac05e&quot;), &quot;creationDate&quot; : ISODate(&quot;2015-04-30T16:56:12.048Z&quot;), &quot;docReference&quot; : &quot;C11107557&quot;, &quot;categories&quot; : [ { &quot;ciaid&quot; : &quot;C10084&quot;, &quot;ttl&quot; : &quot;Poverty&quot; }, { &quot;ciaid&quot; : &quot;C10124&quot;, &quot;ttl&quot; : &quot;Africa&quot; }, { &quot;ciaid&quot; : &quot;C10049&quot;, &quot;ttl&quot; : &quot;International&quot; } ], &quot;catDocRef&quot; : &quot;CO 1066/8&quot; }]
+);
+db.iaViews.find({ &quot;_id&quot; : &quot;C11107557&quot;, &quot;creationDate&quot; : ISODate(&quot;2015-04-30T16:56:12.048Z&quot;), &quot;categories&quot; : [ { &quot;ciaid&quot; : &quot;C10084&quot;, &quot;ttl&quot; : &quot;Poverty&quot; }, { &quot;ciaid&quot; : &quot;C10124&quot;, &quot;ttl&quot; : &quot;Africa&quot; }, { &quot;ciaid&quot; : &quot;C10049&quot;, &quot;ttl&quot; : &quot;International&quot; } ], &quot;catDocRef&quot; : &quot;CO 1066/8&quot;, &quot;series&quot; : &quot;CO 1066&quot; }
+)</stringProp>
+            </MongoScriptSampler>
+            <hashTree/>
+            <MongoScriptSampler guiclass="TestBeanGUI" testclass="MongoScriptSampler" testname="Check document is available in Mongo iaViews" enabled="true">
+              <stringProp name="database">taxonomy</stringProp>
+              <stringProp name="password"></stringProp>
+              <stringProp name="source">taxonomyMongoDb</stringProp>
+              <stringProp name="username"></stringProp>
+              <stringProp name="script">db.iaViews.findOne({_id:&quot;${DELETE_IAVIEW_DOCREF}&quot;});</stringProp>
+            </MongoScriptSampler>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="should return doc with correct catdocref" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="1556790165"> &quot;catDocRef&quot; : &quot;CO 1066/8&quot;</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">2</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+            <MongoScriptSampler guiclass="TestBeanGUI" testclass="MongoScriptSampler" testname="Check document is available in Mongo iaViewUpdates " enabled="true">
+              <stringProp name="database">taxonomy</stringProp>
+              <stringProp name="password"></stringProp>
+              <stringProp name="source">taxonomyMongoDb</stringProp>
+              <stringProp name="username"></stringProp>
+              <stringProp name="script">db.iaViewUpdates.findOne({docReference:&quot;${DELETE_IAVIEW_DOCREF}&quot;});</stringProp>
+            </MongoScriptSampler>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="should return doc with correct catdocref" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="1556790165"> &quot;catDocRef&quot; : &quot;CO 1066/8&quot;</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">2</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+            <PublisherSampler guiclass="JMSPublisherGui" testclass="PublisherSampler" testname="send deleteRequest message to Active MQ" enabled="true">
+              <stringProp name="jms.jndi_properties">false</stringProp>
+              <stringProp name="jms.initial_context_factory">org.apache.activemq.jndi.ActiveMQInitialContextFactory</stringProp>
+              <stringProp name="jms.provider_url">tcp://${ACTIVEMQ_HOST}:${ACTIVEMQ_PORT}</stringProp>
+              <stringProp name="jms.connection_factory">ConnectionFactory</stringProp>
+              <stringProp name="jms.topic">dynamicQueues/${ACTIVEMQ_QUEUE_DELETEDOC}</stringProp>
+              <stringProp name="jms.expiration">10000</stringProp>
+              <stringProp name="jms.priority">0</stringProp>
+              <stringProp name="jms.security_principle"></stringProp>
+              <stringProp name="jms.security_credentials"></stringProp>
+              <stringProp name="jms.text_message">${DELETE_IAVIEW_DOCREF}</stringProp>
+              <stringProp name="jms.input_file"></stringProp>
+              <stringProp name="jms.random_path"></stringProp>
+              <stringProp name="jms.config_choice">jms_use_text</stringProp>
+              <stringProp name="jms.config_msg_type">jms_text_message</stringProp>
+              <stringProp name="jms.iterations">1</stringProp>
+              <boolProp name="jms.authenticate">false</boolProp>
+              <elementProp name="jms.jmsProperties" elementType="JMSProperties">
+                <collectionProp name="JMSProperties.properties"/>
+              </elementProp>
+              <boolProp name="jms.destination_static">false</boolProp>
+            </PublisherSampler>
+            <hashTree/>
+            <TestAction guiclass="TestActionGui" testclass="TestAction" testname="wait for Taxonomy Batch to delete document" enabled="true">
+              <intProp name="ActionProcessor.action">1</intProp>
+              <intProp name="ActionProcessor.target">0</intProp>
+              <stringProp name="ActionProcessor.duration">${TIME_TO_WAIT_FOR_CATEGORISATION}</stringProp>
+            </TestAction>
+            <hashTree/>
+            <MongoScriptSampler guiclass="TestBeanGUI" testclass="MongoScriptSampler" testname="Check document is not available in Mongo iaViewUpdates " enabled="true">
+              <stringProp name="database">taxonomy</stringProp>
+              <stringProp name="password"></stringProp>
+              <stringProp name="source">taxonomyMongoDb</stringProp>
+              <stringProp name="username"></stringProp>
+              <stringProp name="script">db.iaViewUpdates.findOne({docReference:&quot;${DELETE_IAVIEW_DOCREF}&quot;});</stringProp>
+            </MongoScriptSampler>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="should return no doc" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="3548">ok</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+            <MongoScriptSampler guiclass="TestBeanGUI" testclass="MongoScriptSampler" testname="Check document is not available in Mongo iaViews" enabled="true">
+              <stringProp name="database">taxonomy</stringProp>
+              <stringProp name="password"></stringProp>
+              <stringProp name="source">taxonomyMongoDb</stringProp>
+              <stringProp name="username"></stringProp>
+              <stringProp name="script">db.iaViews.findOne({_id:&quot;${DELETE_IAVIEW_DOCREF}&quot;});</stringProp>
+            </MongoScriptSampler>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="should return no doc" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="3548">ok</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+            <MongoScriptSampler guiclass="TestBeanGUI" testclass="MongoScriptSampler" testname="reset documents in Mongo iaViewUpdates and iaViews collections" enabled="true">
+              <stringProp name="database">taxonomy</stringProp>
+              <stringProp name="password"></stringProp>
+              <stringProp name="source">taxonomyMongoDb</stringProp>
+              <stringProp name="username"></stringProp>
+              <stringProp name="script">db.iaViewUpdates.insert([{ &quot;_id&quot; : ObjectId(&quot;5542545ce4b012a72be11ad1&quot;), &quot;creationDate&quot; : ISODate(&quot;2015-04-30T16:12:12.328Z&quot;), &quot;docReference&quot; : &quot;C11107557&quot;, &quot;categories&quot; : [ { &quot;ciaid&quot; : &quot;C10084&quot;, &quot;ttl&quot; : &quot;Poverty&quot; }, { &quot;ciaid&quot; : &quot;C10124&quot;, &quot;ttl&quot; : &quot;Africa&quot; }, { &quot;ciaid&quot; : &quot;C10049&quot;, &quot;ttl&quot; : &quot;International&quot; } ], &quot;catDocRef&quot; : &quot;CO 1066/8&quot; },
+{ &quot;_id&quot; : ObjectId(&quot;55425e41e4b0adcb315ac05c&quot;), &quot;creationDate&quot; : ISODate(&quot;2015-04-30T16:54:25.458Z&quot;), &quot;docReference&quot; : &quot;C11107557&quot;, &quot;categories&quot; : [ { &quot;ciaid&quot; : &quot;C10084&quot;, &quot;ttl&quot; : &quot;Poverty&quot; }, { &quot;ciaid&quot; : &quot;C10124&quot;, &quot;ttl&quot; : &quot;Africa&quot; }, { &quot;ciaid&quot; : &quot;C10049&quot;, &quot;ttl&quot; : &quot;International&quot; } ], &quot;catDocRef&quot; : &quot;CO 1066/8&quot; },
+{ &quot;_id&quot; : ObjectId(&quot;55425eace4b0adcb315ac05e&quot;), &quot;creationDate&quot; : ISODate(&quot;2015-04-30T16:56:12.048Z&quot;), &quot;docReference&quot; : &quot;C11107557&quot;, &quot;categories&quot; : [ { &quot;ciaid&quot; : &quot;C10084&quot;, &quot;ttl&quot; : &quot;Poverty&quot; }, { &quot;ciaid&quot; : &quot;C10124&quot;, &quot;ttl&quot; : &quot;Africa&quot; }, { &quot;ciaid&quot; : &quot;C10049&quot;, &quot;ttl&quot; : &quot;International&quot; } ], &quot;catDocRef&quot; : &quot;CO 1066/8&quot; }]
+);
+db.iaViews.find({ &quot;_id&quot; : &quot;C11107557&quot;, &quot;creationDate&quot; : ISODate(&quot;2015-04-30T16:56:12.048Z&quot;), &quot;categories&quot; : [ { &quot;ciaid&quot; : &quot;C10084&quot;, &quot;ttl&quot; : &quot;Poverty&quot; }, { &quot;ciaid&quot; : &quot;C10124&quot;, &quot;ttl&quot; : &quot;Africa&quot; }, { &quot;ciaid&quot; : &quot;C10049&quot;, &quot;ttl&quot; : &quot;International&quot; } ], &quot;catDocRef&quot; : &quot;CO 1066/8&quot;, &quot;series&quot; : &quot;CO 1066&quot; }
+)</stringProp>
+            </MongoScriptSampler>
+            <hashTree/>
           </hashTree>
           <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Env LOCAL" enabled="true">
             <stringProp name="IfController.condition">&quot;${env}&quot;==&quot;local&quot;</stringProp>

@@ -45,6 +45,9 @@ public class updateSolrCloudTask {
     @Value("${batch.update-solr-cloud.start-date}")
     String startDateString;
 
+    @Value("${batch.update-solr-cloud.nb-of-seconds-in-past}")
+    private int nbOfSecondsInPast;
+
     @Autowired
     public updateSolrCloudTask(CategoriserService categoriserService, UpdateSolrCloudService updateSolrService) {
 	super();
@@ -86,20 +89,23 @@ public class updateSolrCloudTask {
 
     private List getNewCategorisedDocuments() {
 	if (lastIAViewUpdate != null) {
-	    return categoriserService.getNewCategorisedDocumentsAfterDocument(lastIAViewUpdate, bulkUpdateSize);
+	    return categoriserService.getNewCategorisedDocumentsAfterDocumentAndUpToNSecondsInPast(lastIAViewUpdate,
+		    nbOfSecondsInPast, bulkUpdateSize);
 	} else if (!StringUtils.isEmpty(startDateString)) {
 	    DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
 	    df.setCalendar(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
 	    Date startDate;
 	    try {
 		startDate = df.parse(startDateString);
-		return categoriserService.getNewCategorisedDocumentsFromDate(startDate, bulkUpdateSize);
+		return categoriserService.getNewCategorisedDocumentsFromDateToNSecondsInPast(startDate,
+			nbOfSecondsInPast, bulkUpdateSize);
 	    } catch (ParseException e) {
 		throw new TaxonomyException(TaxonomyErrorType.INVALID_PARAMETER,
 			"the start date provided has wrong format");
 	    }
 	} else {
-	    return categoriserService.getNewCategorisedDocumentsFromDate(null, bulkUpdateSize);
+	    return categoriserService.getNewCategorisedDocumentsFromDateToNSecondsInPast(null, nbOfSecondsInPast,
+		    bulkUpdateSize);
 	}
     }
 

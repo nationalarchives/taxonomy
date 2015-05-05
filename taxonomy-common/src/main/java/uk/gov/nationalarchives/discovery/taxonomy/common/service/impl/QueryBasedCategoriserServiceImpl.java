@@ -250,21 +250,20 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
     }
 
     @Override
-    public List<IAViewUpdate> getNewCategorisedDocumentsAfterDocument(IAViewUpdate afterIAViewUpdate, int limit) {
-	Date nowMinus2seconds = getDateWithNSecondsInPast();
+    public List<IAViewUpdate> getNewCategorisedDocumentsAfterDocumentAndUpToNSecondsInPast(
+	    IAViewUpdate afterIAViewUpdate, int nbOfSecondsInPast, int limit) {
+	Date nowMinusNseconds = getDateWithNSecondsInPast(nbOfSecondsInPast);
 
 	List<IAViewUpdate> listOfIAViewUpdatesToProcess = iaViewUpdateRepository
-		.findDocumentsCreatedAfterDocumentAndCreatedBeforeDate(afterIAViewUpdate, nowMinus2seconds, limit);
+		.findDocumentsCreatedAfterDocumentAndCreatedBeforeDate(afterIAViewUpdate, nowMinusNseconds, limit);
 
 	return listOfIAViewUpdatesToProcess;
     }
 
     @Override
-    public List<IAViewUpdate> getNewCategorisedDocumentsFromDate(Date date, int limit) {
-	// FIXME to ensure there is no data lost when commiting from several
-	// servers that might have different clocks, I came up with this
-	// solution. Not ideal though.
-	Date pastDate = getDateWithNSecondsInPast();
+    public List<IAViewUpdate> getNewCategorisedDocumentsFromDateToNSecondsInPast(Date date, int nbOfSecondsInPast,
+	    int limit) {
+	Date pastDate = getDateWithNSecondsInPast(nbOfSecondsInPast);
 
 	List<IAViewUpdate> listOfIAViewUpdatesToProcess = iaViewUpdateRepository
 		.findDocumentsCreatedFromDateAndCreatedBeforeDate(date, pastDate, limit);
@@ -272,11 +271,11 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	return listOfIAViewUpdatesToProcess;
     }
 
-    private Date getDateWithNSecondsInPast() {
+    private Date getDateWithNSecondsInPast(int nbOfSeconds) {
 	Calendar instance = Calendar.getInstance();
-	instance.add(Calendar.SECOND, -5);
-	Date nowMinus2seconds = instance.getTime();
-	return nowMinus2seconds;
+	instance.add(Calendar.SECOND, -nbOfSeconds);
+	Date nowMinusNseconds = instance.getTime();
+	return nowMinusNseconds;
     }
 
     @Override

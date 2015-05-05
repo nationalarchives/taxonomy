@@ -43,14 +43,18 @@ public interface CategoriserService<T extends CategorisationResult> {
     public List<T> categoriseSingle(String docReference, List<CategoryWithLuceneQuery> cachedCategories);
 
     /**
-     * get new categorised documents from (including) date <br/>
-     * if parameters are null, it will look for any document
+     * get new categorised documents from (including) date to nb of seconds in
+     * past<br/>
+     * if date is null, it will look for any document
      * 
      * @param date
+     * @param nbOfSecondsInPast
+     *            using this parameter we do not risk missing documents that
+     *            were added from different servers
      * @param limit
      * @return
      */
-    List<IAViewUpdate> getNewCategorisedDocumentsFromDate(Date fromDate, int limit);
+    List<IAViewUpdate> getNewCategorisedDocumentsFromDateToNSecondsInPast(Date date, int nbOfSecondsInPast, int limit);
 
     /**
      * find last update on categories on iaviews from mongo db
@@ -69,12 +73,17 @@ public interface CategoriserService<T extends CategorisationResult> {
     public void refreshTaxonomyIndex();
 
     /**
-     * get new categorised documents since document
+     * get new categorised documents since document and up to nb of seconds in
+     * past
      * 
      * @param afterIAViewUpdate
+     * @param nbOfSecondsInPast
+     *            using this parameter we do not risk missing documents that
+     *            were added from different servers
      * @param limit
      * @return
      */
-    List<IAViewUpdate> getNewCategorisedDocumentsAfterDocument(IAViewUpdate afterIAViewUpdate, int limit);
+    List<IAViewUpdate> getNewCategorisedDocumentsAfterDocumentAndUpToNSecondsInPast(IAViewUpdate afterIAViewUpdate,
+	    int nbOfSecondsInPast, int limit);
 
 }

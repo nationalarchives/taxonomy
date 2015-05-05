@@ -111,6 +111,7 @@ batch.update-solr-cloud:
  bulk-update-size: 1000
  rate-between-updates: 2000
  start-date: 
+ nb-of-seconds-in-past: 5
 solr.cloud.commitwithin: 10000
 
 ---
