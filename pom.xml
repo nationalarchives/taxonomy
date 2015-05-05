@@ -67,4 +67,9 @@
 		</snapshotRepository>
 	</distributionManagement>
 
+	<scm>
+		<url>https://github.com/jcharlet/cat-app</url>
+		<connection>scm:git:git://github.com/jcharlet/cat-app.git</connection>
+		<developerConnection>scm:git:git@github.com:jcharlet/cat-app.git</developerConnection>
+	</scm>
 </project>
