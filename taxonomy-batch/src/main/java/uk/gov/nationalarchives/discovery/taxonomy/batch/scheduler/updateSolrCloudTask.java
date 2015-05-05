@@ -57,7 +57,7 @@ public class updateSolrCloudTask {
 
     @PostConstruct
     private void initBatch() {
-	if (startDateString == null) {
+	if (StringUtils.isEmpty(startDateString)) {
 	    IAViewUpdate lastIAViewUpdate = categoriserService.findLastIAViewUpdate();
 	    if (lastIAViewUpdate == null) {
 		logger.warn(".initBatch: no iaViewUpdate found, the collection is currently empty.");
