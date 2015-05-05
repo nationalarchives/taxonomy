@@ -18,6 +18,7 @@ usage ()
 	echo "								'remoteWorkerCluster' : Categorise All - Cluster of n workers for remote supervisor"
 	echo "								'dailyUpdates' : apply daily Updates	"
 	echo "								'updateSolr' : update Solr from Mongo db entries"
+	echo "								'updateSolrTestIndex' : update Solr Test Index as stated in conf file"
 	echo
 	echo "	-adn --afterDocNumber <logName>		specific to Worker: after doc number"
 	echo "								to restart categorisation after services were stopped"
@@ -162,6 +163,10 @@ runApplication()
 					batchTypeBasedApplicationArgs=$(echo $batchTypeBasedApplicationArgs "--batch.update-solr-cloud.start-date="$startDate)
 				fi
 	            ;;
+	        updateSolrTestIndex )   
+				batchTypeBasedJvmArgs=$updateSolrJvmArgs
+				batchTypeBasedApplicationArgs=$updateSolrApplicationArgs
+	            ;;
 	esac
 	
 	
@@ -238,6 +243,20 @@ case $batchType in
 				tail -f ${logsFolder}/batch/$logName
 			fi
             ;;
+        updateSolrTestIndex )  
+    		source ../../conf/environmentVariables/exportEnvVar.sh taxonomy-batch-update-solr-test-index;
+			if [ -z "$logName" ]
+			then
+				logName=updateSolrTestIndex.log
+			fi 
+			runApplication
+			sleep 3
+			if [ "$displayLogs" = true ]
+			then
+				sleep 3
+				tail -f ${logsFolder}/batch/$logName
+			fi
+            ;;
         updateSolr )   
 			if [ -z "$logName" ]
 			then
@@ -299,7 +318,7 @@ case $batchType in
 			fi
     		;;
     	remoteWorkerCluster )
-    		source ../../conf/environmentVariables/exportEnvVar.sh taxonomy-batch-remote-worker;
+    		source ../../conf/environmentVariables/exportEnvVar.sh taxonomy-batch-cat-all-remote-worker;
 	    	if [ -z "$numberOfWorkers" ]
 			then
 				echo "numberOfWorkers missing"
