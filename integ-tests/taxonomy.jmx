@@ -45,130 +45,6 @@
         <stringProp name="TestPlan.comments">	</stringProp>
       </ResultCollector>
       <hashTree/>
-      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="Empty Config" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">1</stringProp>
-        </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
-        <longProp name="ThreadGroup.start_time">1427280842000</longProp>
-        <longProp name="ThreadGroup.end_time">1427280842000</longProp>
-        <boolProp name="ThreadGroup.scheduler">false</boolProp>
-        <stringProp name="ThreadGroup.duration"></stringProp>
-        <stringProp name="ThreadGroup.delay"></stringProp>
-      </SetupThreadGroup>
-      <hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Variables" enabled="true"/>
-        <hashTree>
-          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Jmeter Conf" enabled="true">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="env" elementType="Argument">
-                <stringProp name="Argument.name">env</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </Arguments>
-          <hashTree/>
-          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Shell scripts" enabled="true">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="BATCH_RUN_SCRIPT_LOCATION" elementType="Argument">
-                <stringProp name="Argument.name">BATCH_RUN_SCRIPT_LOCATION</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </Arguments>
-          <hashTree/>
-          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Batch app" enabled="true">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="SOLR_TAXONOMY_HOST" elementType="Argument">
-                <stringProp name="Argument.name">SOLR_TAXONOMY_HOST</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="SOLR_TAXONOMY_PORT" elementType="Argument">
-                <stringProp name="Argument.name">SOLR_TAXONOMY_PORT</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="SOLR_TAXONOMY_COLLECTION" elementType="Argument">
-                <stringProp name="Argument.name">SOLR_TAXONOMY_COLLECTION</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="SOLR_CLOUD_HOST" elementType="Argument">
-                <stringProp name="Argument.name">SOLR_CLOUD_HOST</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="SOLR_CLOUD_PORT" elementType="Argument">
-                <stringProp name="Argument.name">SOLR_CLOUD_PORT</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="SOLR_CLOUD_COLLECTION" elementType="Argument">
-                <stringProp name="Argument.name">SOLR_CLOUD_COLLECTION</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="ACTIVEMQ_HOST" elementType="Argument">
-                <stringProp name="Argument.name">ACTIVEMQ_HOST</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="ACTIVEMQ_PORT" elementType="Argument">
-                <stringProp name="Argument.name">ACTIVEMQ_PORT</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="ACTIVEMQ_QUEUE_CATEGORISEDOC" elementType="Argument">
-                <stringProp name="Argument.name">ACTIVEMQ_QUEUE_CATEGORISEDOC</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="ACTIVEMQ_QUEUE_DELETEDOC" elementType="Argument">
-                <stringProp name="Argument.name">ACTIVEMQ_QUEUE_DELETEDOC</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </Arguments>
-          <hashTree/>
-          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="WS app" enabled="true">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="WS_TAXONOMY_HOST" elementType="Argument">
-                <stringProp name="Argument.name">WS_TAXONOMY_HOST</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="WS_TAXONOMY_PORT" elementType="Argument">
-                <stringProp name="Argument.name">WS_TAXONOMY_PORT</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="WS_TAXONOMY_PATH" elementType="Argument">
-                <stringProp name="Argument.name">WS_TAXONOMY_PATH</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </Arguments>
-          <hashTree/>
-          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Mongo" enabled="true">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="MONGO_URL" elementType="Argument">
-                <stringProp name="Argument.name">MONGO_URL</stringProp>
-                <stringProp name="Argument.value"></stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </Arguments>
-          <hashTree/>
-        </hashTree>
-      </hashTree>
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="app1 Config" enabled="false">
         <stringProp name="delimiter">;</stringProp>
         <stringProp name="fileEncoding">UTF-8</stringProp>
@@ -298,16 +174,6 @@
               <elementProp name="WS_TAXONOMY_PATH" elementType="Argument">
                 <stringProp name="Argument.name">WS_TAXONOMY_PATH</stringProp>
                 <stringProp name="Argument.value">taxonomy</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </Arguments>
-          <hashTree/>
-          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Mongo" enabled="true">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="MONGO_URL" elementType="Argument">
-                <stringProp name="Argument.name">MONGO_URL</stringProp>
-                <stringProp name="Argument.value">localhost</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -1651,7 +1517,7 @@
               <MongoSourceElement guiclass="TestBeanGUI" testclass="MongoSourceElement" testname="MongoDB Source Config" enabled="true">
                 <boolProp name="autoConnectRetry">true</boolProp>
                 <intProp name="connectTimeout">0</intProp>
-                <stringProp name="connection">${MONGO_URL}</stringProp>
+                <stringProp name="connection">localhost</stringProp>
                 <intProp name="connectionsPerHost">10</intProp>
                 <boolProp name="continueOnInsertError">false</boolProp>
                 <boolProp name="fsync">false</boolProp>

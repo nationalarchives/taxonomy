@@ -7,3 +7,5 @@ bin/
 maven-status/
 packageAndDeploy.sh
 *-local*
+*.iml
+.idea
