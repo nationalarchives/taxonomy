@@ -169,7 +169,7 @@
           <hashTree/>
         </hashTree>
       </hashTree>
-      <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="app1 Config" enabled="true">
+      <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="app1 Config" enabled="false">
         <stringProp name="delimiter">;</stringProp>
         <stringProp name="fileEncoding">UTF-8</stringProp>
         <stringProp name="filename">/home/jcharlet/_workspace/sysdev-config/conf/appConfFiles/jmeter/taxonomy/app1-conf.csv</stringProp>
@@ -191,7 +191,7 @@
         <stringProp name="variableNames">SOLR_TAXONOMY_HOST,SOLR_TAXONOMY_PORT,SOLR_TAXONOMY_COLLECTION,SOLR_CLOUD_HOST,SOLR_CLOUD_PORT,SOLR_CLOUD_COLLECTION,ACTIVEMQ_HOST,ACTIVEMQ_PORT,ACTIVEMQ_QUEUE_CATEGORISEDOC,ACTIVEMQ_QUEUE_DELETEDOC,WS_TAXONOMY_HOST,WS_TAXONOMY_PORT,WS_TAXONOMY_PATH,MONGO_URL</stringProp>
       </CSVDataSet>
       <hashTree/>
-      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="LOCAL Config" enabled="false">
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="LOCAL Config" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>

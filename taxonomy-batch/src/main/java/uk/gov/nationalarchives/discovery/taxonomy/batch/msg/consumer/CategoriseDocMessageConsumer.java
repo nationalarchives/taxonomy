@@ -59,8 +59,9 @@ public class CategoriseDocMessageConsumer extends TaxonomyDocMessageConsumer {
 	    } catch (TaxonomyException e) {
 		categoriseDocumentMessage.addDocReferenceInError(docReference);
 		if (TaxonomyErrorType.DOC_NOT_FOUND.equals(e.getTaxonomyErrorType())) {
-		    logger.error("an error occured while processing Document: {}, from message: {}", docReference,
-			    categoriseDocumentMessage.getMessageId());
+		    logger.error(
+			    "document could not be processed because it was not found in the index: {}, from message: {}",
+			    docReference, categoriseDocumentMessage.getMessageId());
 		} else {
 		    logger.error("an error occured while processing Document: {}, from message: {}", docReference,
 			    categoriseDocumentMessage.getMessageId(), e);
