@@ -13,10 +13,6 @@ spring:
    repositories:
     enabled: true
 
-mongo.categories:
- port: 27017
- database: taxonomy
-
 async:
  fsSearch:
   threadPoolSize: 3
@@ -87,7 +83,10 @@ spring.data:
    trainingset: src/test/resources/dataset/mongo/trainingset.json
    categories: src/test/resources/dataset/mongo/taxonomy.json
 
-mongo.categories.host: localhost
+mongo.categories:
+ database: taxonomy
+ hosts: localhost
+ ports: 27017
  
 lucene.index:
  iaviewCollectionPath: src/test/resources/dataset/lucene/iaviews

@@ -10,10 +10,6 @@ spring:
    repositories:
     enabled: true
 
-mongo.categories:
- port: 27017
- database: taxonomy
-
 async:
  fsSearch:
   threadPoolSize: 3
@@ -51,7 +47,10 @@ logging.config: classpath:log4j2-conf.json
 #      ENVIRONMENT RELATED      #
 #################################
 
-mongo.categories.host: ${taxonomy.batch.application.yml.mongo.categories.host}
+mongo.categories:
+ database: taxonomy
+ hosts: ${taxonomy.batch.application.yml.mongo.categories.hosts}
+ ports: ${taxonomy.batch.application.yml.mongo.categories.ports}
 
 lucene.index:
  iaviewCollectionPath: ${taxonomy.batch.application.yml.lucene.index.iaviewcollectionpath} 

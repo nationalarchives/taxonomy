@@ -48,7 +48,7 @@
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="app1 Config" enabled="false">
         <stringProp name="delimiter">;</stringProp>
         <stringProp name="fileEncoding">UTF-8</stringProp>
-        <stringProp name="filename">/home/jcharlet/_workspace/sysdev-config/conf/appConfFiles/jmeter/taxonomy/app1-conf.csv</stringProp>
+        <stringProp name="filename">/home/jcharlet/_workspace/sysdev-config/conf/toolConfiguration/jmeter/taxonomy/app1-conf.csv</stringProp>
         <boolProp name="quotedData">true</boolProp>
         <boolProp name="recycle">true</boolProp>
         <stringProp name="shareMode">shareMode.all</stringProp>
@@ -59,7 +59,7 @@
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="app2 Config" enabled="false">
         <stringProp name="delimiter">;</stringProp>
         <stringProp name="fileEncoding">UTF-8</stringProp>
-        <stringProp name="filename">/home/jcharlet/_workspace/sysdev-config/conf/appConfFiles/jmeter/taxonomy/app2-conf.csv</stringProp>
+        <stringProp name="filename">/home/jcharlet/_workspace/sysdev-config/conf/toolConfiguration/jmeter/taxonomy/app2-conf.csv</stringProp>
         <boolProp name="quotedData">true</boolProp>
         <boolProp name="recycle">true</boolProp>
         <stringProp name="shareMode">shareMode.all</stringProp>
