@@ -68,8 +68,8 @@
 	</distributionManagement>
 
 	<scm>
-		<url>https://github.com/jcharlet/cat-app</url>
-		<connection>scm:git:https://github.com/jcharlet/cat-app.git</connection>
-		<developerConnection>scm:git:git@github.com:jcharlet/cat-app.git</developerConnection>
+		<url>https://github.com/nationalarchives/taxonomy</url>
+		<connection>scm:git:https://github.com/nationalarchives/taxonomy.git</connection>
+		<developerConnection>scm:git:git@github.com:nationalarchives/taxonomy.git</developerConnection>
 	</scm>
 </project>
