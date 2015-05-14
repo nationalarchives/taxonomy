@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>uk.gov.nationalarchives.discovery</groupId>
 		<artifactId>taxonomy</artifactId>
-		<version>1.0.3</version>
+		<version>1.0.4-SNAPSHOT</version>
 	</parent>
 	<artifactId>taxonomy-common</artifactId>
 	<name>Categorisation Common Service</name>
