@@ -69,7 +69,7 @@
 
 	<scm>
 		<url>https://github.com/nationalarchives/taxonomy</url>
-		<connection>scm:git:https://git@github.com/nationalarchives/taxonomy.git</connection>
-		<developerConnection>scm:git:https://git@github.com/nationalarchives/taxonomy.git</developerConnection>
+		<connection>scm:git:git://github.com:nationalarchives/taxonomy.git</connection>
+		<developerConnection>scm:git:git@github.com:nationalarchives/taxonomy.git</developerConnection>
 	</scm>
 </project>
