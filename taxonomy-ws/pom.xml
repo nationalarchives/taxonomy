@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>uk.gov.nationalarchives.discovery</groupId>
 		<artifactId>taxonomy</artifactId>
-		<version>1.0.4-SNAPSHOT</version>
+		<version>1.0.3</version>
 	</parent>
 	<artifactId>taxonomy-ws</artifactId>
 	<name>Categorisation Web Service</name>
