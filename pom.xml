@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.gov.nationalarchives.discovery</groupId>
 	<artifactId>taxonomy</artifactId>
-	<version>1.0.4-SNAPSHOT</version>
+	<version>1.0.4</version>
 	<name>Categorisation Application</name>
 	<packaging>pom</packaging>
 
@@ -70,6 +70,6 @@
 		<url>https://github.com/nationalarchives/taxonomy</url>
 		<connection>scm:git:git://github.com:nationalarchives/taxonomy.git</connection>
 		<developerConnection>scm:git:git@github.com:nationalarchives/taxonomy.git</developerConnection>
-	  <tag>HEAD</tag>
+	  <tag>taxonomy-1.0.4</tag>
   </scm>
 </project>
