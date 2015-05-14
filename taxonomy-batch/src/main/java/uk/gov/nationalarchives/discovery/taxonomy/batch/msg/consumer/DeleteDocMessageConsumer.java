@@ -50,29 +50,29 @@ public class DeleteDocMessageConsumer extends TaxonomyDocMessageConsumer {
 	    return;
 	}
 
-	TaxonomyDocumentMessageHolder categoriseDocumentMessage = getTaxonomyDocumentMessageFromMessage(message);
+	TaxonomyDocumentMessageHolder deleteDocumentMessage = getTaxonomyDocumentMessageFromMessage(message);
 
 	logger.info("received Delete Document message: {}, docReferences: {}",
-		categoriseDocumentMessage.getMessageId(),
-		ArrayUtils.toString(categoriseDocumentMessage.getListOfDocReferences()));
+		deleteDocumentMessage.getMessageId(),
+		ArrayUtils.toString(deleteDocumentMessage.getListOfDocReferences()));
 
-	for (String docReference : categoriseDocumentMessage.getListOfDocReferences()) {
+	for (String docReference : deleteDocumentMessage.getListOfDocReferences()) {
 	    try {
 		removeDocumentFromMongoByDocReference(docReference);
 	    } catch (TaxonomyException e) {
-		categoriseDocumentMessage.addDocReferenceInError(docReference);
+		deleteDocumentMessage.addDocReferenceInError(docReference);
 		logger.error("an error occured while processing Document: {}, from message: {}", docReference,
-			categoriseDocumentMessage.getMessageId(), e);
+			deleteDocumentMessage.getMessageId(), e);
 	    }
 	}
 
-	if (categoriseDocumentMessage.hasProcessingErrors()) {
-	    logger.warn("completed treatment for message: {} with {} errors", categoriseDocumentMessage.getMessageId(),
-		    categoriseDocumentMessage.getListOfDocReferencesInError().size());
+	if (deleteDocumentMessage.hasProcessingErrors()) {
+	    logger.warn("completed treatment for message: {} with {} errors", deleteDocumentMessage.getMessageId(),
+		    deleteDocumentMessage.getListOfDocReferencesInError().size());
 	    logger.error("DOCREFERENCES that raise an issue while deleting: {}",
-		    Arrays.toString(categoriseDocumentMessage.getListOfDocReferencesInError().toArray()));
+		    Arrays.toString(deleteDocumentMessage.getListOfDocReferencesInError().toArray()));
 	} else {
-	    logger.info("completed treatment for message: {}", categoriseDocumentMessage.getMessageId());
+	    logger.info("completed treatment for message: {}", deleteDocumentMessage.getMessageId());
 	}
     }
 
