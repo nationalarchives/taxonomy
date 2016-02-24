@@ -8,35 +8,19 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MatchAllDocsQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.SearcherManager;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.*;
 import org.apache.lucene.search.SortField.Type;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.annotation.Loggable;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
@@ -46,6 +30,12 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucen
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.PaginatedList;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneTaxonomyMapper;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Repository dedicated the the retrieval, storage, search of IAViews on the
@@ -315,4 +305,6 @@ public class IAViewRepository {
 	    LuceneHelperTools.releaseSearcherManagerQuietly(iaviewSearcherManager, searcher);
 	}
     }
+
+
 }

@@ -8,5 +8,6 @@ maven-status/
 packageAndDeploy.sh
 *-local*
 *.iml
-.idea
+.idea/
+.idea_old/
 taxonomy.iml

@@ -21,7 +21,8 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo
  * @author jcharlet
  *
  */
-public interface InformationAssetViewMongoRepository extends CrudRepository<MongoInformationAssetView, String> {
+public interface InformationAssetViewMongoRepository extends CrudRepository<MongoInformationAssetView, String>,
+        InformationAssetViewMongoRepositoryCustom {
 
     /**
      * find by doc reference

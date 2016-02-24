@@ -14,6 +14,8 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucen
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.PaginatedList;
 
+import java.util.List;
+
 /**
  * Service dedicated to the retrieval of IAViews
  * 
@@ -48,10 +50,18 @@ public interface IAViewService {
      * 
      * @param after
      *            the last doc from previous search
-     * @param nDocs
+     * @param size
      *            nb of elements to retrieve in total
      * @return
      */
     BrowseAllDocsResponse browseAllDocs(ScoreDoc after, int size);
 
+    /**
+     * finds the untagged documents in a series
+     * @param seriesIaid
+     * @param limit
+     * @param offset
+     * @return
+     */
+    PaginatedList<InformationAssetView> findUntaggedDocumentsBySeries(String seriesIaid, Integer limit, Integer offset);
 }

@@ -8,14 +8,6 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.ws.controller;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +26,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.TrainingDocument;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
@@ -49,6 +40,12 @@ import uk.gov.nationalarchives.discovery.taxonomy.ws.model.PublishRequest;
 import uk.gov.nationalarchives.discovery.taxonomy.ws.model.SearchIAViewRequest;
 import uk.gov.nationalarchives.discovery.taxonomy.ws.model.TaxonomyErrorResponse;
 import uk.gov.nationalarchives.discovery.taxonomy.ws.model.TestCategoriseSingleRequest;
+
+import java.io.IOException;
+import java.util.*;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @ActiveProfiles("tsetBased")
 @RunWith(SpringJUnit4ClassRunner.class)

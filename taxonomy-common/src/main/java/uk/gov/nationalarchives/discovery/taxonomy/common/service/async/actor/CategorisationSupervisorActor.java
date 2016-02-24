@@ -8,13 +8,10 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor;
 
-import java.util.List;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.lucene.search.FieldDoc;
 import org.apache.lucene.search.ScoreDoc;
 import org.springframework.util.CollectionUtils;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.BrowseAllDocsResponse;
@@ -23,7 +20,10 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.Ca
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
 
+import java.util.List;
+
 @SuppressWarnings("rawtypes")
+//TODO JCT shutdown application when categorisation all batch ended
 public class CategorisationSupervisorActor extends SupervisorActor {
 
     private final int nbOfDocsToCategoriseAtATime;

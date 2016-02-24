@@ -34,6 +34,7 @@ import java.util.List;
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 @EnableConfigurationProperties
 @Component
+//TODO JCT ensure index when app starts
 public class MongoConfiguration {
 
     private String host;
