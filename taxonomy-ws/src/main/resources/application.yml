@@ -37,7 +37,7 @@ lucene:
   maxShingleSize: 0
   useStopFilter: false
   useSynonymFilter: true
-  queryFilterSourceValues: 100,200
+  queryFilterSourceValues: ${taxonomy.ws.application.yml.lucene.index.queryFilterSourceValues}
   iaViewMaxMergeSizeMB: 5.0
   iaViewMaxCachedMB: 60.0
   defaultTaxonomyField: textnocasnopunc
