@@ -8,11 +8,8 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.impl;
 
-import java.io.IOException;
-import java.util.List;
-
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -23,23 +20,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrCloudIAViewRepository;
 
+import java.io.IOException;
+import java.util.List;
+
 @Repository
 @ConditionalOnProperty(prefix = "solr.cloud", value = "host")
 public class SolrCloudAViewRepositoryImpl implements SolrCloudIAViewRepository {
 
-    private final SolrServer solrCloudServer;
+    private final SolrClient solrCloudServer;
 
     @Value("${solr.cloud.commitwithin}")
     Integer timeInMs;
 
     @Autowired
-    public SolrCloudAViewRepositoryImpl(SolrServer solrCloudServer) {
+    public SolrCloudAViewRepositoryImpl(SolrClient solrCloudServer) {
 	super();
 	this.solrCloudServer = solrCloudServer;
     }
@@ -76,7 +75,7 @@ public class SolrCloudAViewRepositoryImpl implements SolrCloudIAViewRepository {
 	QueryResponse response;
 	try {
 	    response = solrCloudServer.query(params);
-	} catch (SolrServerException e) {
+	} catch (Exception e) {
 	    throw new TaxonomyException(TaxonomyErrorType.SOLR_READ_EXCEPTION, e);
 	}
 	SolrDocumentList results = response.getResults();

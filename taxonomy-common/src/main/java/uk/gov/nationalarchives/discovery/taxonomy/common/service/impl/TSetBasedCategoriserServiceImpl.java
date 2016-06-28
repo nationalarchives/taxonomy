@@ -8,19 +8,6 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
@@ -28,12 +15,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queries.mlt.MoreLikeThis;
 import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.SearcherManager;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +23,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
@@ -52,6 +33,11 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.TSetBase
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * class dedicated to the categorisation of documents<br/>
@@ -135,7 +121,8 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 	    moreLikeThis.setFieldNames(fieldsToAnalyse.split(","));
 	    moreLikeThis.setBoost(true);
 
-	    BooleanQuery fullQuery = new BooleanQuery();
+        BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
+
 
 	    for (String fieldName : fieldsToAnalyse.split(",")) {
 		String value = document.get(fieldName);
@@ -160,9 +147,10 @@ public class TSetBasedCategoriserServiceImpl implements CategoriserService<TSetB
 			break;
 		    }
 		    Query query = moreLikeThis.like(fieldName, new StringReader(value));
-		    fullQuery.add(query, Occur.SHOULD);
+            queryBuilder.add(query, Occur.SHOULD);
 		}
 	    }
+        BooleanQuery fullQuery = queryBuilder.build();
 
 	    TopDocs topDocs = searcher.search(fullQuery, this.maximumSimilarElements);
 	    logger.debug(".runMlt: found {} total hits, processed at maximum {} hits", topDocs.totalHits,

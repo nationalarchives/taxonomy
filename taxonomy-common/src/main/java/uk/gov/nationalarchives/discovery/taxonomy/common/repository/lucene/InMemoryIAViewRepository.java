@@ -8,13 +8,6 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -25,15 +18,12 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
@@ -42,6 +32,12 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.async.AsyncQueryBasedLuceneTaskManager;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @Repository
 @ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useQueryBasedCategoriser")
@@ -54,9 +50,6 @@ public class InMemoryIAViewRepository {
     private final LuceneHelperTools luceneHelperTools;
 
     private final AsyncQueryBasedLuceneTaskManager asyncTaskManager;
-
-    @Value("${lucene.index.version}")
-    private String luceneVersion;
 
     @Autowired
     public InMemoryIAViewRepository(Analyzer iaViewIndexAnalyser, LuceneHelperTools luceneHelperTools,
@@ -134,12 +127,8 @@ public class InMemoryIAViewRepository {
 	// Make an writer to create the index
 
 	IndexWriter writer;
-	try {
-	    writer = new IndexWriter(ramDirectory, new IndexWriterConfig(Version.parseLeniently(luceneVersion),
-		    this.iaViewIndexAnalyser));
-	} catch (ParseException e) {
-	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
-	}
+    writer = new IndexWriter(ramDirectory, new IndexWriterConfig(
+        this.iaViewIndexAnalyser));
 
 	// Add some Document objects containing quotes
 	writer.addDocument(getLuceneDocumentFromIaVIew(iaView));

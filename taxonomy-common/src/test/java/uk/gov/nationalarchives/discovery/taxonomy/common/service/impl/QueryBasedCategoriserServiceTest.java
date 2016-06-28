@@ -8,24 +8,15 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.config.ServiceConfigurationTest;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
@@ -42,6 +33,13 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrTax
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncQueryBasedServiceTaskManager;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("queryBased")
 @SpringApplicationConfiguration(classes = ServiceConfigurationTest.class)
@@ -54,9 +52,6 @@ public class QueryBasedCategoriserServiceTest {
 
     @Autowired
     MongoTestDataSet mongoTestDataSet;
-
-    @Value("${lucene.index.version}")
-    private String luceneVersion;
 
     @Before
     public void initDataSet() throws IOException {

@@ -8,26 +8,25 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.impl;
 
-import java.io.IOException;
-
-import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrTaxonomyIAViewRepository;
+
+import java.io.IOException;
 
 @Repository
 @ConditionalOnProperty(prefix = "solr.taxonomy", value = "host")
 public class SolrTaxonomyIAViewRepositoryImpl implements SolrTaxonomyIAViewRepository {
 
-    private final SolrServer solrTaxonomyServer;
+    private final SolrClient solrTaxonomyServer;
 
     @Autowired
-    public SolrTaxonomyIAViewRepositoryImpl(SolrServer solrTaxonomyServer) {
+    public SolrTaxonomyIAViewRepositoryImpl(SolrClient solrTaxonomyServer) {
 	super();
 	this.solrTaxonomyServer = solrTaxonomyServer;
     }

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
+import uk.gov.nationalarchives.discovery.taxonomy.common.config.solr.SolrTaxonomyConfiguration;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.legacy.impl.LegacySystemRepositoryImpl;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.MongoConfigurationTest;
 
@@ -21,7 +21,8 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.MongoC
 @Configuration
 @ComponentScan(basePackages = { "uk.gov.nationalarchives.discovery.taxonomy.common.service",
 	"uk.gov.nationalarchives.discovery.taxonomy.common.repository" })
-@Import(value = { LuceneConfigurationTest.class, MongoConfigurationTest.class, AsyncConfiguration.class })
+@Import(value = { SolrTaxonomyConfiguration.class, LuceneConfigurationTest.class, MongoConfigurationTest.class,
+        AsyncConfiguration.class })
 public class ServiceConfigurationTest {
 
     /**

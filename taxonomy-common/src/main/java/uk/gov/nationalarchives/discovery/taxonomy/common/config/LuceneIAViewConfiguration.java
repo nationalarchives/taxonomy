@@ -18,18 +18,12 @@ import org.apache.lucene.analysis.util.ResourceLoader;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queries.ChainedFilter;
-import org.apache.lucene.queries.TermFilter;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NRTCachingDirectory;
 import org.apache.lucene.util.BytesRefBuilder;
 import org.apache.lucene.util.NumericUtils;
-import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -45,12 +39,10 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analy
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextNoCasNoPuncAnalyser;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -86,8 +78,8 @@ public class LuceneIAViewConfiguration {
 
     public @Bean Directory iaViewDirectory() throws IOException {
         logger.info("lucene index location: {}", iaviewCollectionPath );
-	Directory fsDir = FSDirectory.open(new File(iaviewCollectionPath));
-	return new NRTCachingDirectory(fsDir, iaViewMaxMergeSizeMB, iaViewMaxCachedMB);
+        Directory fsDir = FSDirectory.open(Paths.get(iaviewCollectionPath));
+        return new NRTCachingDirectory(fsDir, iaViewMaxMergeSizeMB, iaViewMaxCachedMB);
     }
 
     public @Bean IndexReader iaViewIndexReader() throws IOException {
@@ -197,20 +189,20 @@ public class LuceneIAViewConfiguration {
     private Map<String, Analyzer> getMapOfAnalyzersForAnalyzerType(AnalyzerType query) throws ParseException {
 	Map<String, Analyzer> mapOfAnalyzerPerField = new HashMap<String, Analyzer>();
 
-	IAViewTextGenAnalyser textGenAnalyser = new IAViewTextGenAnalyser(Version.parseLeniently(version),
-		synonymFilterFactory(), wordDelimiterFilterFactory(), query);
+	IAViewTextGenAnalyser textGenAnalyser = new IAViewTextGenAnalyser(
+            synonymFilterFactory(), wordDelimiterFilterFactory(), query);
 	textGenAnalyser.setPositionIncrementGap(100);
 	mapOfAnalyzerPerField.put(InformationAssetViewFields.CATDOCREF.toString(), textGenAnalyser);
 	mapOfAnalyzerPerField.put(InformationAssetViewFields.DESCRIPTION.toString(), textGenAnalyser);
 	mapOfAnalyzerPerField.put(InformationAssetViewFields.TITLE.toString(), textGenAnalyser);
 
 	IAViewTextNoCasNoPuncAnalyser textNoCasNoPuncAnalyser = new IAViewTextNoCasNoPuncAnalyser(
-		Version.parseLeniently(version), synonymFilterFactory(), wordDelimiterFilterFactory(), query);
+            synonymFilterFactory(), wordDelimiterFilterFactory(), query);
 	textNoCasNoPuncAnalyser.setPositionIncrementGap(100);
 	mapOfAnalyzerPerField.put(InformationAssetViewFields.textnocasnopunc.toString(), textNoCasNoPuncAnalyser);
 
 	IAViewTextCasNoPuncAnalyser textCasNoPuncAnalyser = new IAViewTextCasNoPuncAnalyser(
-		Version.parseLeniently(version), synonymFilterFactory(), wordDelimiterFilterFactory(), query);
+            synonymFilterFactory(), wordDelimiterFilterFactory(), query);
 	textCasNoPuncAnalyser.setPositionIncrementGap(100);
 	mapOfAnalyzerPerField.put(InformationAssetViewFields.textcasnopunc.toString(), textCasNoPuncAnalyser);
 
@@ -230,8 +222,10 @@ public class LuceneIAViewConfiguration {
      * 
      * @return
      */
-    public @Bean Filter catalogueFilter() {
-	if (!StringUtils.isEmpty(queryFilterSourceValues)) {
+    public
+    @Bean
+    Query catalogueFilter() {
+        if (!StringUtils.isEmpty(queryFilterSourceValues)) {
 
 	    String[] arrayOfSourceValues = queryFilterSourceValues.split(",");
 
@@ -244,20 +238,20 @@ public class LuceneIAViewConfiguration {
 	return null;
     }
 
-    private Filter getChainOfSourceFiltersForValues(String[] arrayOfSourceValues) {
-	List<Filter> chainOfFilters = new ArrayList<Filter>();
-	for (String sourceValue : arrayOfSourceValues) {
-	    TermFilter sourceFilter = getSourceFilterForValue(sourceValue);
-	    chainOfFilters.add(sourceFilter);
-	}
-	return new ChainedFilter(chainOfFilters.toArray(new Filter[0]), ChainedFilter.OR);
+    private Query getChainOfSourceFiltersForValues(String[] arrayOfSourceValues) {
+        BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
+        for (String sourceValue : arrayOfSourceValues) {
+            Query sourceFilter = getSourceFilterForValue(sourceValue);
+            queryBuilder.add(sourceFilter, BooleanClause.Occur.MUST);
+        }
+        return queryBuilder.build();
     }
 
-    private TermFilter getSourceFilterForValue(String sourceValue) {
-	Integer intCatalogueSourceValue = Integer.valueOf(sourceValue);
+    private Query getSourceFilterForValue(String sourceValue) {
+        Integer intCatalogueSourceValue = Integer.valueOf(sourceValue);
 	BytesRefBuilder bytes = new BytesRefBuilder();
 	NumericUtils.intToPrefixCoded(intCatalogueSourceValue, 0, bytes);
-	TermFilter termFilter = new TermFilter(new Term(InformationAssetViewFields.SOURCE.toString(), bytes.get()));
+	TermQuery termFilter = new TermQuery(new Term(InformationAssetViewFields.SOURCE.toString(), bytes.get()));
 	return termFilter;
     }
 

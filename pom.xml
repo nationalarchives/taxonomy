@@ -6,22 +6,23 @@
 	<name>Categorisation Application</name>
 	<packaging>pom</packaging>
 
+    <properties>
+        <java.version>1.8</java.version>
+        <lucene.version>5.5.1</lucene.version>
+    </properties>
+
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.2.2.RELEASE</version>
+		<version>1.3.5.RELEASE</version>
 	</parent>
-
-	<properties>
-		<java.version>1.8</java.version>
-	</properties>
 
 
 	<modules>
-		<module>taxonomy-cli</module>
-		<module>taxonomy-ws</module>
-		<module>taxonomy-common</module>
+        <module>taxonomy-common</module>
+        <module>taxonomy-cli</module>
+        <module>taxonomy-ws</module>
 		<module>taxonomy-batch</module>
 	</modules>
 
@@ -34,10 +35,10 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<testSource>1.8</testSource>
-					<testTarget>1.8</testTarget>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<testSource>${java.version}</testSource>
+					<testTarget>${java.version}</testTarget>
 				</configuration>
 			</plugin>
 			<!-- To prevent including local config files when packaging locally (from dev pc) -->

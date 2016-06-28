@@ -8,6 +8,17 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.store.Directory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.TrainingDocument;
@@ -25,19 +36,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncTSet
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.util.Version;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
 
 @Service
 @ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useTSetBasedCategoriser")
@@ -67,9 +65,6 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 
     @Value("${lucene.index.trainingSetCollectionPath}")
     private String trainingSetCollectionPath;
-
-    @Value("${lucene.index.version}")
-    private String luceneVersion;
 
     @Value("${lucene.index.maxTrainingDocsPerCategory}")
     private Integer maxTrainingDocsPerCategory;
@@ -186,8 +181,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
     public void deleteAndUpdateTraingSetIndexForCategory(Category category) {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.parseLeniently(luceneVersion),
-		    trainingSetAnalyser));
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(trainingSetAnalyser));
 
 	    trainingSetRepository.deleteTrainingDocumentsForCategory(writer, category);
 
@@ -198,8 +192,6 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	} catch (IOException e) {
 	    logger.error(".deleteAndUpdateTraingSetIndexForCategory: an exception occured {}", e.getMessage());
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
-	} catch (java.text.ParseException e) {
-	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
 	    LuceneHelperTools.closeCloseableObjectQuietly(writer);
 	}
@@ -217,8 +209,7 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	logger.info("index training set");
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.parseLeniently(luceneVersion),
-		    trainingSetAnalyser));
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(trainingSetAnalyser));
 
 	    writer.deleteAll();
 
@@ -232,8 +223,6 @@ public class TrainingSetServiceImpl implements TrainingSetService {
 	    writer.commit();
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
-	} catch (java.text.ParseException e) {
-	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
 	    LuceneHelperTools.closeCloseableObjectQuietly(writer);
 	}

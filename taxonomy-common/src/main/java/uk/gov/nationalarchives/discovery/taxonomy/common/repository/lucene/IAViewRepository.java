@@ -19,7 +19,6 @@ import org.apache.lucene.search.SortField.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.annotation.Loggable;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
@@ -48,9 +47,6 @@ import java.util.List;
 public class IAViewRepository {
 
     private SearcherManager iaviewSearcherManager;
-
-    @Value("${lucene.index.version}")
-    private String luceneVersion;
 
     private final Analyzer iaViewSearchAnalyser;
 
@@ -110,7 +106,7 @@ public class IAViewRepository {
     }
 
     @Loggable
-    public TopDocs performSearchWithoutAnyPostProcessing(String queryString, Filter filter, Double mimimumScore,
+    public TopDocs performSearchWithoutAnyPostProcessing(String queryString, Query filter, Double mimimumScore,
 	    Integer limit, Integer offset) {
 
 	IndexSearcher isearcher = null;

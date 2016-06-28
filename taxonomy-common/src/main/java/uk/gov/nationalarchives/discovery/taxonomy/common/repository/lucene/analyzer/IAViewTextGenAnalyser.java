@@ -8,8 +8,6 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer;
 
-import java.io.Reader;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
@@ -19,10 +17,8 @@ import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.miscellaneous.WordDelimiterFilterFactory;
 import org.apache.lucene.analysis.standard.ClassicTokenizer;
 import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
-import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.AnalyzerType;
 
 /**
@@ -34,8 +30,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucen
 public final class IAViewTextGenAnalyser extends Analyzer {
     private static final Logger logger = LoggerFactory.getLogger(IAViewTextGenAnalyser.class);
 
-    private final Version matchVersion;
-
     private WordDelimiterFilterFactory wordDelimiterFilterFactory;
     private int positionIncrementGap;
     private final SynonymFilterFactory synonymFilterFactory;
@@ -43,15 +37,11 @@ public final class IAViewTextGenAnalyser extends Analyzer {
 
     /**
      * Creates a new tokenizer
-     * 
-     * @param matchVersion
-     *            Lucene version to match See
-     *            {@link <a href="#version">above</a>}
+     *
      */
-    public IAViewTextGenAnalyser(Version matchVersion, SynonymFilterFactory synonymFilterFactory,
-	    WordDelimiterFilterFactory wordDelimiterFilterFactory, AnalyzerType analyzerType) {
-	this.matchVersion = matchVersion;
-	this.synonymFilterFactory = synonymFilterFactory;
+    public IAViewTextGenAnalyser(SynonymFilterFactory synonymFilterFactory,
+                                 WordDelimiterFilterFactory wordDelimiterFilterFactory, AnalyzerType analyzerType) {
+        this.synonymFilterFactory = synonymFilterFactory;
 	this.wordDelimiterFilterFactory = wordDelimiterFilterFactory;
 	this.analyzerType = analyzerType;
     }
@@ -66,8 +56,8 @@ public final class IAViewTextGenAnalyser extends Analyzer {
     }
 
     @Override
-    protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
-	Tokenizer source = new ClassicTokenizer(reader);
+    protected TokenStreamComponents createComponents(final String fieldName) {
+	Tokenizer source = new ClassicTokenizer();
 
 	TokenStream result = null;
 
@@ -80,7 +70,7 @@ public final class IAViewTextGenAnalyser extends Analyzer {
 	}
 	result = this.wordDelimiterFilterFactory.create(result == null ? source : result);
 
-	result = new EnglishPossessiveFilter(this.matchVersion, result);
+	result = new EnglishPossessiveFilter(result);
 
 	result = new LowerCaseFilter(result);
 

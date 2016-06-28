@@ -8,25 +8,11 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer;
 
-import static org.junit.Assert.*;
-import uk.gov.nationalarchives.discovery.taxonomy.common.config.LuceneConfigurationTest;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.analysis.tokenattributes.KeywordAttribute;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
-import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.apache.lucene.analysis.tokenattributes.PositionLengthAttribute;
-import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
+import org.apache.lucene.analysis.tokenattributes.*;
 import org.apache.lucene.util.Attribute;
 import org.apache.lucene.util.AttributeImpl;
 import org.junit.After;
@@ -35,10 +21,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.nationalarchives.discovery.taxonomy.common.config.LuceneConfigurationTest;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests dedicated to the analysers<br/>
@@ -55,9 +49,6 @@ public class TaxonomyGeneralAnalyzerTest {
 
     // private static final Logger logger =
     // LoggerFactory.getLogger(Indexer.class);
-
-    @Value("${lucene.index.version}")
-    private String luceneVersion;
 
     @Autowired
     private StopFilterFactory stopFilterFactory;

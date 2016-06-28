@@ -8,33 +8,19 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queries.TermFilter;
-import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.TaxonomyMapper;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.annotation.Loggable;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryLight;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.IAViewUpdate;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.MongoInformationAssetView;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.*;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.InMemoryIAViewRepository;
@@ -44,6 +30,10 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.Inform
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.solr.SolrTaxonomyIAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.AsyncQueryBasedServiceTaskManager;
+
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @Service("categoriserService")
 @ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useQueryBasedCategoriser")
@@ -226,7 +216,7 @@ public class QueryBasedCategoriserServiceImpl implements CategoriserService<Cate
 	// TermQuery(new Term(
 	// InformationAssetViewFields.DOCREFERENCE.toString(),
 	// iaView.getDOCREFERENCE()))));
-	Filter filter = new TermFilter(new Term(InformationAssetViewFields.DOCREFERENCE.toString(),
+	Query filter = new TermQuery(new Term(InformationAssetViewFields.DOCREFERENCE.toString(),
 		iaView.getDOCREFERENCE()));
 	for (Category category : listOfRelevantCategories) {
 	    listOfFutureCategoryResults.add(asyncTaskManager.runUnitFSCategoryQuery(filter, category));

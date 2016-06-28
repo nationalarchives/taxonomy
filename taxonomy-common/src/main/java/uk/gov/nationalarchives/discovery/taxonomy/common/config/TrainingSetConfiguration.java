@@ -8,10 +8,6 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
@@ -20,20 +16,27 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.ReaderManager;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NRTCachingDirectory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.TaxonomyTrainingSetAnalyser;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.TrainingSetService;
+
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.text.ParseException;
 
 @Configuration
 @ConfigurationProperties(prefix = "lucene.index")
 @EnableConfigurationProperties
 public class TrainingSetConfiguration {
+    private  final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private String trainingSetCollectionPath;
 
@@ -42,6 +45,8 @@ public class TrainingSetConfiguration {
     private Boolean useSynonymFilter;
 
     private String maxShingleSize;
+    private double iaViewMaxMergeSizeMB;
+    private double iaViewMaxCachedMB;
 
     /**
      ************************* TSet Based
@@ -49,10 +54,9 @@ public class TrainingSetConfiguration {
 
     @ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useTSetBasedCategoriser")
     public @Bean Directory trainingSetDirectory() throws IOException {
-	// TODO TSETBASED Use MMapDirectory to be faster. is used on solr
-	// Server
-	File file = new File(trainingSetCollectionPath);
-	return new SimpleFSDirectory(file);
+        logger.info("lucene trainingSet index location: {}", trainingSetCollectionPath );
+        Directory fsDir = FSDirectory.open(Paths.get(trainingSetCollectionPath));
+        return new NRTCachingDirectory(fsDir, iaViewMaxMergeSizeMB, iaViewMaxCachedMB);
     }
 
     @ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useTSetBasedCategoriser")

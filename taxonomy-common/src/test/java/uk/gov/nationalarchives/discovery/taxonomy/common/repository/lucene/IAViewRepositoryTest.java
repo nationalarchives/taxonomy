@@ -8,23 +8,9 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
-import org.apache.lucene.search.SearcherManager;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -37,12 +23,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.config.LuceneConfigurationTest;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.PaginatedList;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @ActiveProfiles("tsetBased")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -72,9 +64,6 @@ public class IAViewRepositoryTest {
 
     @Autowired
     private LuceneHelperTools luceneHelperTools;
-
-    @Value("${lucene.index.version}")
-    private String luceneVersion;
 
     private static final String QUERY_WITH_LEADING_WILDCARD = "*quarters";
 
@@ -136,7 +125,7 @@ public class IAViewRepositoryTest {
     // @Ignore("to work on filters")
     public void testPerformSearchWithQueryWithFilter() {
 
-	List<Filter> filters = new ArrayList<Filter>();
+	List<Query> filters = new ArrayList<Query>();
 
 	String catDocRef = "BT 351/1/102117";
 	String docRef = "D8068594";
@@ -151,9 +140,9 @@ public class IAViewRepositoryTest {
 	filters.add(null);
 
 	TopDocs results = null;
-	for (Filter filter2 : filters) {
-	    results = iaViewRepository.performSearchWithoutAnyPostProcessing("Daniel", filter2, 0d, 1, 0);
-	    logger.info("testing filter: {}, found {} results", String.valueOf(filter2), results.scoreDocs.length);
+	for (Query filter : filters) {
+	    results = iaViewRepository.performSearchWithoutAnyPostProcessing("Daniel", filter, 0d, 1, 0);
+	    logger.info("testing filter: {}, found {} results", String.valueOf(filter), results.scoreDocs.length);
 	}
 	assertThat(results, is(notNullValue()));
 	assertThat(results.totalHits, is(equalTo(1)));

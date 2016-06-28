@@ -8,6 +8,18 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.store.Directory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.TrainingDocument;
@@ -17,23 +29,7 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneTaxonomyMapper;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
-
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.util.Version;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 @Repository
 @ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useTSetBasedCategoriser")
@@ -46,9 +42,6 @@ public class TrainingSetRepository {
 
     @Autowired
     private Directory trainingSetDirectory;
-
-    @Value("${lucene.index.version}")
-    private String luceneVersion;
 
     /**
      * Create a lucene document from an trainingDocument object and add it to
@@ -93,16 +86,13 @@ public class TrainingSetRepository {
     public void indexTrainingDocuments(List<TrainingDocument> trainingDocuments) {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.parseLeniently(luceneVersion),
-		    trainingSetAnalyser));
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(trainingSetAnalyser));
 
 	    indexTrainingDocuments(writer, trainingDocuments);
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	} catch (TaxonomyException e) {
 	    throw e;
-	} catch (ParseException e) {
-	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
 	    LuceneHelperTools.closeCloseableObjectQuietly(writer);
 	}
@@ -121,16 +111,13 @@ public class TrainingSetRepository {
     public void deleteTrainingDocumentsForCategory(Category category) {
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.parseLeniently(luceneVersion),
-		    trainingSetAnalyser));
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(trainingSetAnalyser));
 
 	    deleteTrainingDocumentsForCategory(writer, category);
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
 	} catch (TaxonomyException e) {
 	    throw e;
-	} catch (ParseException e) {
-	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
 	    LuceneHelperTools.closeCloseableObjectQuietly(writer);
 	}

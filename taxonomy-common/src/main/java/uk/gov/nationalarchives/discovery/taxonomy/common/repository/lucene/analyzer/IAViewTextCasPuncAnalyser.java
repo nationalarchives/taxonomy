@@ -8,8 +8,6 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer;
 
-import java.io.Reader;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
@@ -19,7 +17,6 @@ import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.AnalyzerType;
 
 /**
@@ -39,9 +36,6 @@ public final class IAViewTextCasPuncAnalyser extends Analyzer {
     /**
      * Creates a new {@link WhitespaceAnalyzer}
      * 
-     * @param matchVersion
-     *            Lucene version to match See
-     *            {@link <a href="#version">above</a>}
      */
     public IAViewTextCasPuncAnalyser(StopFilterFactory stopFilterFactory, SynonymFilterFactory synonymFilterFactory,
 	    AnalyzerType analyzerType) {
@@ -60,8 +54,8 @@ public final class IAViewTextCasPuncAnalyser extends Analyzer {
     }
 
     @Override
-    protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
-	Tokenizer source = new WhitespaceTokenizer(reader);
+    protected TokenStreamComponents createComponents(final String fieldName) {
+	Tokenizer source = new WhitespaceTokenizer();
 
 	TokenStream result = null;
 

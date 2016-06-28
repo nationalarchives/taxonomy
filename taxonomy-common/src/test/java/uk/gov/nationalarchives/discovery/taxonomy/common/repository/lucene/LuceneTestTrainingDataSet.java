@@ -8,6 +8,15 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.store.Directory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.TrainingDocument;
@@ -16,18 +25,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools
 
 import java.io.IOException;
 import java.util.Arrays;
-
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.util.Version;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
 
 @Component
 @ConditionalOnProperty(prefix = "lucene.categoriser.", value = "useTSetBasedCategoriser")
@@ -47,9 +44,6 @@ public class LuceneTestTrainingDataSet {
     private Directory trainingSetDirectory;
     @Autowired
     private Analyzer trainingSetAnalyser;
-
-    @Value("${lucene.index.version}")
-    private String luceneVersion;
 
     public Category getTestCategory() {
 	Category category = new Category();
@@ -76,14 +70,11 @@ public class LuceneTestTrainingDataSet {
 	logger.info(".deleteTrainingSetIndex");
 	IndexWriter writer = null;
 	try {
-	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(Version.parseLeniently(luceneVersion),
-		    trainingSetAnalyser));
+	    writer = new IndexWriter(trainingSetDirectory, new IndexWriterConfig(trainingSetAnalyser));
 
 	    writer.deleteAll();
 	} catch (IOException e) {
 	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_IO_EXCEPTION, e);
-	} catch (java.text.ParseException e) {
-	    throw new TaxonomyException(TaxonomyErrorType.LUCENE_PARSE_EXCEPTION, e);
 	} finally {
 	    LuceneHelperTools.closeCloseableObjectQuietly(writer);
 	}

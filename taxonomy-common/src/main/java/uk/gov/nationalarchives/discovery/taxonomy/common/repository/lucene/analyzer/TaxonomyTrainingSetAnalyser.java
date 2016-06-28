@@ -8,10 +8,6 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer;
 
-import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
-
-import java.io.Reader;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
@@ -22,6 +18,7 @@ import org.apache.lucene.analysis.shingle.ShingleFilter;
 import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 
 /**
  * Text General Analyser dedicated to querying from Solr configuration for
@@ -52,9 +49,6 @@ public final class TaxonomyTrainingSetAnalyser extends Analyzer {
     /**
      * Creates a new tokenizer
      * 
-     * @param matchVersion
-     *            Lucene version to match See
-     *            {@link <a href="#version">above</a>}
      */
     public TaxonomyTrainingSetAnalyser(StopFilterFactory stopFilterFactory, SynonymFilterFactory synonymFilterFactory,
 	    Integer maxShingleSize) {
@@ -64,8 +58,8 @@ public final class TaxonomyTrainingSetAnalyser extends Analyzer {
     }
 
     @Override
-    protected TokenStreamComponents createComponents(final String fieldName, final Reader reader) {
-	Tokenizer source = new WhitespaceTokenizer(reader);
+    protected TokenStreamComponents createComponents(final String fieldName) {
+	Tokenizer source = new WhitespaceTokenizer();
 
 	result = new LowerCaseFilter(source);
 

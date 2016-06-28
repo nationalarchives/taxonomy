@@ -8,13 +8,6 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.impl;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
@@ -24,11 +17,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.config.ServiceConfigurationTest;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.TrainingDocument;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetView;
@@ -37,6 +28,13 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.Lucen
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.TrainingSetRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.MongoTestDataSet;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.TrainingDocumentRepository;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @ActiveProfiles("tsetBased")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -65,9 +63,6 @@ public class TSetBasedCategoriserServiceTest {
 
     @Autowired
     private Directory trainingSetDirectory;
-
-    @Value("${lucene.index.version}")
-    private String luceneVersion;
 
     @Autowired
     private LuceneTestTrainingDataSet luceneTestDataSet;

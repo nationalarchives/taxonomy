@@ -8,18 +8,17 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.service.async;
 
-import java.util.concurrent.Future;
-
-import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.CategorisationResult;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.IAViewRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.task.RunUnitFSCategoryQueryTask;
+
+import java.util.concurrent.Future;
 
 /**
  * Task manager for Taxonomy query based services <br/>
@@ -53,7 +52,7 @@ public class AsyncQueryBasedServiceTaskManager {
      * @param filter
      * @param category
      */
-    public Future<CategorisationResult> runUnitFSCategoryQuery(Filter filter, Category category) {
+    public Future<CategorisationResult> runUnitFSCategoryQuery(Query filter, Category category) {
 	return fsSearchTaskExecutor.submit(new RunUnitFSCategoryQueryTask(filter, category, this.iaViewRepository));
     }
 

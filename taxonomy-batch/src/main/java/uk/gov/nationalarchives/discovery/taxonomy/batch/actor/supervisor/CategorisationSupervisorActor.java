@@ -26,7 +26,6 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
 import java.util.List;
 
 @SuppressWarnings("rawtypes")
-//TODO JCT shutdown application when categorisation all batch ended
 public class CategorisationSupervisorActor extends SupervisorActor {
 
     private final int nbOfDocsToCategoriseAtATime;
