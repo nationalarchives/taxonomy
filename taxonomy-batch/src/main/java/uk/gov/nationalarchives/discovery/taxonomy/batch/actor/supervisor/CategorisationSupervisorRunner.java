@@ -8,20 +8,20 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.batch.actor.supervisor;
 
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
+import akka.actor.AllDeadLetters;
+import akka.actor.Props;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-
+import uk.gov.nationalarchives.discovery.taxonomy.batch.actor.DeadLetterActor;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor.CategorisationSupervisorActor;
-import uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor.DeadLetterActor;
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
-import akka.actor.AllDeadLetters;
-import akka.actor.Props;
+
+import java.util.concurrent.Executors;
 
 ;
 
@@ -59,10 +59,11 @@ public class CategorisationSupervisorRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-	trackDeadLetters();
-
-	actorSystem.actorOf(Props.create(CategorisationSupervisorActor.class, nbOfDocsToCategoriseAtATime,
-		iaViewService, categoriserService), "supervisorActor");
+        Executors.newSingleThreadExecutor().submit(() -> {
+            trackDeadLetters();
+            actorSystem.actorOf(Props.create(CategorisationSupervisorActor.class, nbOfDocsToCategoriseAtATime,
+                    iaViewService, categoriserService), "supervisorActor");
+        });
     }
 
     private void trackDeadLetters() {

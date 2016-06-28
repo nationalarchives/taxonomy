@@ -8,17 +8,18 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy;
 
-import java.io.IOException;
-import java.text.ParseException;
-
+import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.legacy.impl.LegacySystemRepositoryImpl;
+
+import java.io.IOException;
+import java.text.ParseException;
 
 @Configuration
 @ComponentScan
@@ -26,8 +27,10 @@ import uk.gov.nationalarchives.discovery.taxonomy.common.repository.legacy.impl.
 @PropertySource("application.yml")
 public class BatchApplication {
 
+    private static ConfigurableApplicationContext appContext;
+
     public static void main(String[] args) throws IOException, ParseException {
-	SpringApplication.run(BatchApplication.class, args);
+        appContext = SpringApplication.run(BatchApplication.class, args);
     }
 
     /**
@@ -40,4 +43,8 @@ public class BatchApplication {
     LegacySystemRepositoryImpl legacySystemRepository() {
 	return null;
     };
+
+    public static void exit(){
+        SpringApplication.exit(appContext, new ExitCodeGenerator[0]);
+    }
 }

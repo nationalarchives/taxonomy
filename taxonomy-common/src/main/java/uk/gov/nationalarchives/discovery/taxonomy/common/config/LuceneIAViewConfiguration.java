@@ -8,16 +8,6 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.common.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
@@ -47,13 +37,21 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
-
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.AnalyzerType;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.lucene.InformationAssetViewFields;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextCasNoPuncAnalyser;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextCasPuncAnalyser;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextGenAnalyser;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.analyzer.IAViewTextNoCasNoPuncAnalyser;
+
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Configuration dedicated to Lucene:<br/>
@@ -87,6 +85,7 @@ public class LuceneIAViewConfiguration {
      */
 
     public @Bean Directory iaViewDirectory() throws IOException {
+        logger.info("lucene index location: {}", iaviewCollectionPath );
 	Directory fsDir = FSDirectory.open(new File(iaviewCollectionPath));
 	return new NRTCachingDirectory(fsDir, iaViewMaxMergeSizeMB, iaViewMaxCachedMB);
     }

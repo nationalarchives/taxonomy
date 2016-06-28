@@ -6,7 +6,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this 
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor;
+package uk.gov.nationalarchives.discovery.taxonomy.batch.actor;
 
 public enum CategorisationStatusEnum {
     NOT_STARTED, INITIATED, ONGOING, TERMINATED

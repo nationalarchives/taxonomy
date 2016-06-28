@@ -8,16 +8,15 @@
  */
 package uk.gov.nationalarchives.discovery.taxonomy.batch.msg.consumer;
 
-import java.util.Arrays;
-import java.util.List;
+import uk.gov.nationalarchives.discovery.taxonomy.batch.msg.consumer.message.TaxonomyDocumentMessageHolder;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.TextMessage;
-
-import uk.gov.nationalarchives.discovery.taxonomy.batch.msg.consumer.message.TaxonomyDocumentMessageHolder;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyErrorType;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * abstract Consumer dedicated to handling all requests sent to activeMQ

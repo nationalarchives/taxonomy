@@ -10,6 +10,8 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.config.mongo;
 
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -36,6 +38,7 @@ import java.util.List;
 @Component
 //TODO JCT ensure index when app starts
 public class MongoConfiguration {
+    private static final Logger logger = LoggerFactory.getLogger(MongoConfiguration.class);
 
     private String host;
     private Integer port;
@@ -82,6 +85,7 @@ public class MongoConfiguration {
     public
     @Bean
     MongoDbFactory mongoDbFactory() throws Exception {
+        logger.info("mongo database: {}:{}/{}", host,port,database);
         return new SimpleMongoDbFactory(new MongoClient(host, port), database);
     }
 
@@ -119,6 +123,7 @@ public class MongoConfiguration {
         if (splitHosts.length > 1) {
             List<ServerAddress> listOfServerAddresses = new ArrayList<>();
             for (int i = 0; i < splitHosts.length; i++) {
+                logger.info("mongo categories database: {}:{}/{}", splitHosts[i],splitPorts[i],categoriesDatabase);
                 listOfServerAddresses.add(new ServerAddress(splitHosts[i], Integer.valueOf(splitPorts[i])));
             }
             client = new MongoClient(listOfServerAddresses);

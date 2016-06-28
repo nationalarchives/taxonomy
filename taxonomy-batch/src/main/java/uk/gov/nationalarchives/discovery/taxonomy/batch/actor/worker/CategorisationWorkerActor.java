@@ -6,28 +6,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this 
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor;
+package uk.gov.nationalarchives.discovery.taxonomy.batch.actor.worker;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import akka.actor.ActorSelection;
+import akka.actor.UntypedActor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import uk.gov.nationalarchives.discovery.taxonomy.BatchApplication;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.exception.TaxonomyException;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.Category;
 import uk.gov.nationalarchives.discovery.taxonomy.common.domain.repository.mongo.CategoryWithLuceneQuery;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CategoriseDocuments;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.CurrentlyBusy;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.GimmeWork;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.RegisterWorker;
-import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.WorkAvailable;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.*;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.lucene.tools.LuceneHelperTools;
 import uk.gov.nationalarchives.discovery.taxonomy.common.repository.mongo.CategoryRepository;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
-import akka.actor.ActorSelection;
-import akka.actor.UntypedActor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CategorisationWorkerActor extends UntypedActor {
@@ -89,6 +85,9 @@ public class CategorisationWorkerActor extends UntypedActor {
 	    this.logger.info(".onReceive<  treatment completed");
 
 	    getSender().tell(new GimmeWork(), getSelf());
+    } else if (message instanceof Shutdown) {
+        this.logger.info("shutting down, as requested by supervisor");
+        BatchApplication.exit();
 	} else {
 	    unhandled(message);
 	}

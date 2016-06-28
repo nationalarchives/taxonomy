@@ -6,7 +6,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this 
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package uk.gov.nationalarchives.discovery.taxonomy.common.config;
+package uk.gov.nationalarchives.discovery.taxonomy.batch.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 
+import uk.gov.nationalarchives.discovery.taxonomy.common.config.PropertiesConfiguration;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.CategoriserService;
 import uk.gov.nationalarchives.discovery.taxonomy.common.service.IAViewService;
 import akka.actor.ActorSystem;

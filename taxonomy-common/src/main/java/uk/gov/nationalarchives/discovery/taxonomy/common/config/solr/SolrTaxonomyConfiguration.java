@@ -10,6 +10,8 @@ package uk.gov.nationalarchives.discovery.taxonomy.common.config.solr;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -27,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties
 @ConditionalOnProperty(prefix = "solr.taxonomy", value = "host")
 public class SolrTaxonomyConfiguration {
+    private  final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private String host;
 
@@ -44,6 +47,7 @@ public class SolrTaxonomyConfiguration {
      * @return the solrServer bean
      */
     public @Bean SolrServer solrTaxonomyServer() {
+        logger.info("Solr Taxonomy: {}", host);
 	SolrServer server = new HttpSolrServer(host);
 	return server;
     }

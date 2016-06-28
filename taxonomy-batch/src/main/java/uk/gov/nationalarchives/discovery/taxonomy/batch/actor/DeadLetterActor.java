@@ -6,15 +6,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this 
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package uk.gov.nationalarchives.discovery.taxonomy.common.service.async.actor;
+package uk.gov.nationalarchives.discovery.taxonomy.batch.actor;
 
+import akka.actor.DeadLetter;
+import akka.actor.UntypedActor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import akka.actor.DeadLetter;
-import akka.actor.UntypedActor;
+import uk.gov.nationalarchives.discovery.taxonomy.BatchApplication;
+import uk.gov.nationalarchives.discovery.taxonomy.common.domain.service.actor.RegisterWorker;
 
 @Component("DeadLetter")
 @Scope("prototype")
@@ -30,6 +31,10 @@ public class DeadLetterActor extends UntypedActor {
 	if (message instanceof DeadLetter) {
 	    Object innerMessage = ((DeadLetter) message).message();
 	    logger.warn(".onReceive: encountered dead letter: {}", innerMessage);
+        if (innerMessage instanceof RegisterWorker){
+            logger.error("worker could not register to supervisor, shutting down");
+            BatchApplication.exit();
+        }
 	}
     }
 
