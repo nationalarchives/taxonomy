@@ -242,7 +242,7 @@ public class LuceneIAViewConfiguration {
         BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
         for (String sourceValue : arrayOfSourceValues) {
             Query sourceFilter = getSourceFilterForValue(sourceValue);
-            queryBuilder.add(sourceFilter, BooleanClause.Occur.MUST);
+            queryBuilder.add(sourceFilter, BooleanClause.Occur.SHOULD);
         }
         return queryBuilder.build();
     }
