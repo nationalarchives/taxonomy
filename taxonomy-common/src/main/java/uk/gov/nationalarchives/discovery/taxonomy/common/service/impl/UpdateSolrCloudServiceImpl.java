@@ -96,8 +96,13 @@ public class UpdateSolrCloudServiceImpl implements UpdateSolrCloudService {
             listOfCiaidAndTtls.add(category.getCiaidAndTtl());
             listOfCiaids.add(category.getCiaid());
         }
-        solrInputDocument.setField(InformationAssetViewFields.TAXONOMY.toString(), listOfCiaidAndTtls);
-        solrInputDocument.setField(InformationAssetViewFields.TAXONOMYID.toString(), listOfCiaids);
+        Map<String, List<String>> partialUpdateOnListOfCiaidAndTtls = new HashMap<>();
+        partialUpdateOnListOfCiaidAndTtls.put("set", listOfCiaidAndTtls);
+        solrInputDocument.addField(InformationAssetViewFields.TAXONOMY.toString(), partialUpdateOnListOfCiaidAndTtls);
+
+        Map<String, List<String>> partialUpdateOnListOfCiaids = new HashMap<>();
+        partialUpdateOnListOfCiaids.put("set", listOfCiaids);
+        solrInputDocument.addField(InformationAssetViewFields.TAXONOMYID.toString(), partialUpdateOnListOfCiaids);
         return solrInputDocument;
     }
 
