@@ -64,20 +64,20 @@
 
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-actor_2.11</artifactId>
-            <version>2.3.9</version>
+            <artifactId>akka-actor_2.12</artifactId>
+            <version>2.5.18</version>
         </dependency>
 
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-remote_2.11</artifactId>
-            <version>2.3.9</version>
+            <artifactId>akka-remote_2.12</artifactId>
+            <version>2.5.18</version>
         </dependency>
 
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-testkit_2.11</artifactId>
-            <version>2.3.9</version>
+            <artifactId>akka-testkit_2.12</artifactId>
+            <version>2.5.18</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
